@@ -1,5 +1,8 @@
 
 #include <Windows.h>
+#include "Controller.h"
+#include <vector>
+#include "UserCMD.h"
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam );
 HRESULT InitializeWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow, UINT width, UINT height);
@@ -7,6 +10,9 @@ void Run();
 
 HINSTANCE	handleInstance;
 HWND	handleWindow;
+
+
+std::vector<UserCMD> userCMDS;
 
 float deltaTime;
 float gameTime;
@@ -17,6 +23,7 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	UNREFERENCED_PARAMETER( hPrevInstance );
     UNREFERENCED_PARAMETER( lpCmdLine );
 	InitializeWindow(hInstance,nCmdShow,1024,1024);
+
 	Run();
 
 	return 0;
@@ -25,7 +32,10 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
 void Run() 
 {
-
+	Controller p1_controller= Controller(0);
+	
+	UserCMD t_p1UserCMD;
+	userCMDS.push_back(t_p1UserCMD);
 	//message game loop
 	MSG msg = {0};
 	while( WM_QUIT != msg.message )
@@ -38,7 +48,27 @@ void Run()
 		}
 		else  //if there are no messages, update and draw
 		{
+			if (p1_controller.IsConnected())
+			{
+				XINPUT_STATE p1_state = p1_controller.GetState();
+				if (p1_state.Gamepad.wButtons & XINPUT_GAMEPAD_A &&  p1_state.Gamepad.wButtons & XINPUT_GAMEPAD_B)
+				{
+					p1_controller.Vibrate(64000,0);
+				}
+				else if (p1_state.Gamepad.wButtons & XINPUT_GAMEPAD_X)
+				{
+					p1_controller.Vibrate(0,0);
+				}
+				if (p1_state.Gamepad.bLeftTrigger & VK_PAD_LTRIGGER)
+				{
+					p1_controller.Vibrate(64000,0);
+				}
+				if (p1_state.Gamepad.bRightTrigger & VK_PAD_RTRIGGER)
+				{
+					p1_controller.Vibrate(64000,0);
+				}
 
+			}
 			
 			ULONGLONG timeCur = GetTickCount64();
 			if( prevTime == 0 )
@@ -49,6 +79,10 @@ void Run()
 
 			///UPDATE & DRAW
 		}
+	}
+	if (p1_controller.IsConnected())
+	{
+		p1_controller.Vibrate(0,0);
 	}
 }
 
