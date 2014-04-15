@@ -22,6 +22,8 @@ add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})
 target_link_libraries(${PROJECT_NAME} d3d11.lib)
 target_link_libraries(${PROJECT_NAME} d3dcompiler.lib)
 target_link_libraries(${PROJECT_NAME} dxguid.lib)
+target_link_libraries(${PROJECT_NAME} Xinput9_1_0.lib)
+
 
 
 # Set SUBSYSTEM:WINDOWS

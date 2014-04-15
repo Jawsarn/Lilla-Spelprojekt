@@ -15,6 +15,7 @@ class Player :
 {
 	///////////////VARIABLES///////////
 private:
+
 	float m_angle;
 	float m_boostMeter;
 	float m_wallMeter;
