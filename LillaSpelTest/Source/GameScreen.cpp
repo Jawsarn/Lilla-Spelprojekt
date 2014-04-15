@@ -13,7 +13,7 @@ GameScreen::~GameScreen(void)
 
 
 int GameScreen::Update(float p_dt, std::vector<UserCMD> p_userCMDS)
-{}
+{return 1;}
 
 void GameScreen::Draw()
 {}

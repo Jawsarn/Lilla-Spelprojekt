@@ -5,7 +5,7 @@
 #include "PlayerWall.h"
 #include "UserCMD.h"
 
-enum PlayerState{Normal,Dead,Immortal};
+enum PlayerState{NORMAL,DEAD,IMMORTAL};
 
 #define DEATH_TIME 2
 #define IMMORTAL_TIME 2

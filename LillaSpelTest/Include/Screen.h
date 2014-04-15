@@ -1,5 +1,6 @@
 #pragma once
 #include "UserCMD.h"
+#include <vector>
 class Screen
 {
 protected:

@@ -19,20 +19,20 @@ void Player::Update(float p_dt, UserCMD userCMD)
 {
 	switch (m_state)
 	{
-	case Normal:
+	case NORMAL:
 		break;
-	case Dead:
+	case DEAD:
 		m_deathTimer -= p_dt;
 		if (m_deathTimer <=0)
 		{
-			ChangeState(Immortal);
+			ChangeState(IMMORTAL);
 		}
 		break;
-	case Immortal:
+	case IMMORTAL:
 		m_immortalTimer -= p_dt;
 		if (m_immortalTimer <= 0)
 		{
-			ChangeState(Normal);
+			ChangeState(NORMAL);
 		}
 		break;
 	default:
@@ -42,6 +42,8 @@ void Player::Update(float p_dt, UserCMD userCMD)
 
 std::vector<Box*> Player::GetWallsToCheck()
 {
+	std::vector<Box*> r_return;
+	return r_return;
 }
 
 void Player::ChangeState(PlayerState p_state)
@@ -49,12 +51,12 @@ void Player::ChangeState(PlayerState p_state)
 	m_state = p_state;
 	switch (m_state)
 	{
-	case Normal:
+	case NORMAL:
 		break;
-	case Dead:
+	case DEAD:
 		m_deathTimer =  DEATH_TIME;
 		break;
-	case Immortal:
+	case IMMORTAL:
 		m_immortalTimer = IMMORTAL_TIME;
 		break;
 	default:
