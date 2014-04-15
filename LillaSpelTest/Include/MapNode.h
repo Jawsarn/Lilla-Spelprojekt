@@ -3,8 +3,8 @@
 #include "StaticObj.h"
 #include "PlayerWall.h"
 
-//using namespace std;
-//using namespace DirectX;
+using namespace std;
+using namespace DirectX;
 struct MapNode
 {
 	MapNode* m_previousNode;
