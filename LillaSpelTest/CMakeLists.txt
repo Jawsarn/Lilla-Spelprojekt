@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 2.8)
 
 # Root project settings
-set(PROJECT_NAME LillaSpelTest)
+set(PROJECT_NAME SpelProjekt)
 project(${PROJECT_NAME})
 
 # Set the files used in the target
@@ -14,12 +14,15 @@ file(GLOB_RECURSE HEADERS Include/*.h)
 include_directories(Include)		 # No idea what this is
 
 # Set library search path
-link_directories(${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/LillaSpel/Debug)
+#link_directories(${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/SpelProjekt/Debug)
 
 # Add the target
 add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})
 
+target_link_libraries(${PROJECT_NAME} d3d11.lib)
+target_link_libraries(${PROJECT_NAME} d3dcompiler.lib)
+target_link_libraries(${PROJECT_NAME} dxguid.lib)
 
 
 # Set SUBSYSTEM:WINDOWS
-set_target_properties(${PROJECT_NAME} )
+set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS")
