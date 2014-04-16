@@ -40,13 +40,13 @@ HRESULT GraphicEngine::Initialize( UINT p_Width, UINT p_Height, HWND handleWindo
 	if( FAILED( hr ) )
 		return hr;
 
-	//hr = InitializeDepthAndDepthStates();
-	//if( FAILED( hr ) )
-	//	return hr;
+	hr = InitializeDepthAndDepthStates();
+	if( FAILED( hr ) )
+		return hr;
 
-	//hr = InitializeBlendAndBlendStates();
-	//if( FAILED( hr ) )
-	//	return hr;
+	hr = InitializeBlendAndBlendStates();
+	if( FAILED( hr ) )
+		return hr;
 
 	//hr = InitializeShaders();
 	//if( FAILED( hr ) )
@@ -187,7 +187,8 @@ HRESULT GraphicEngine::InitializeRenderTargetView()
 
 void GraphicEngine::SetViewports()
 {
-	FLOAT t_HalfWidth = (FLOAT)m_Width/2;
+	//when adding more fix
+	/*FLOAT t_HalfWidth = (FLOAT)m_Width/2;
 	FLOAT t_HalfHeight = (FLOAT)m_Height/2;
 
     D3D11_VIEWPORT vp[4];
@@ -209,9 +210,18 @@ void GraphicEngine::SetViewports()
     vp[2].TopLeftY = t_HalfHeight;
 	
     vp[3].TopLeftX = t_HalfWidth;
-    vp[3].TopLeftY = t_HalfHeight;
+    vp[3].TopLeftY = t_HalfHeight;*/
 
-	m_DeviceContext->RSSetViewports( 4, vp );
+	D3D11_VIEWPORT vp;
+
+	vp.Width = m_Width;
+	vp.Height = m_Height;
+	vp.MinDepth = 0.0f;
+	vp.MaxDepth = 1.0f;
+	vp.TopLeftX = 0;
+	vp.TopLeftY = 0;
+
+	m_DeviceContext->RSSetViewports( 1, &vp );
 }
 
 HRESULT GraphicEngine::CreateRasterizers()
@@ -242,6 +252,119 @@ HRESULT GraphicEngine::CreateRasterizers()
 
 
 	m_DeviceContext->RSSetState(m_RasterizerStateNormal);
+
+	return hr;
+}
+
+HRESULT GraphicEngine::InitializeDepthAndDepthStates()
+{
+	HRESULT hr = S_OK;
+
+	// Create depth stencil texture
+    D3D11_TEXTURE2D_DESC descDepth;
+	ZeroMemory( &descDepth, sizeof(descDepth) );
+    descDepth.Width = m_Width;
+    descDepth.Height = m_Height;
+    descDepth.MipLevels = 1;
+    descDepth.ArraySize = 1;
+    descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    descDepth.SampleDesc.Count = 1;
+    descDepth.SampleDesc.Quality = 0;
+    descDepth.Usage = D3D11_USAGE_DEFAULT;
+    descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+    descDepth.CPUAccessFlags = 0;
+    descDepth.MiscFlags = 0;
+	
+	hr = m_Device->CreateTexture2D( &descDepth, nullptr, &m_DepthStencil );
+	if( FAILED( hr ) )
+        return hr;
+
+	 D3D11_DEPTH_STENCIL_VIEW_DESC t_DescDSV;
+	ZeroMemory( &t_DescDSV, sizeof(t_DescDSV) );
+    t_DescDSV.Format = descDepth.Format;
+    t_DescDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+    t_DescDSV.Texture2D.MipSlice = 0;
+	hr = m_Device->CreateDepthStencilView( m_DepthStencil, &t_DescDSV, &m_DepthStencilView );
+	//not sure if I can release the depth if I wanted?
+
+
+	//create states
+	D3D11_DEPTH_STENCIL_DESC t_DsDesc;
+
+	// Depth test parameters
+	t_DsDesc.DepthEnable = true;
+	t_DsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	t_DsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+
+	// Stencil test parameters
+	t_DsDesc.StencilEnable = true;
+	t_DsDesc.StencilReadMask = 0xFF;
+	t_DsDesc.StencilWriteMask = 0xFF;
+
+	// Stencil operations if pixel is front-facing
+	t_DsDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	t_DsDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+	t_DsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	t_DsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	// Stencil operations if pixel is back-facing
+	t_DsDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	t_DsDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+	t_DsDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	t_DsDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	// Create depth stencil state
+
+	hr = m_Device->CreateDepthStencilState(&t_DsDesc, &m_DepthStateOn);
+	if( FAILED( hr ) )
+        return hr;
+
+	t_DsDesc.DepthEnable = false;
+	t_DsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO ;
+
+	hr = m_Device->CreateDepthStencilState(&t_DsDesc, &m_DepthStateOff);
+	if( FAILED( hr ) )
+        return hr;
+
+	t_DsDesc.DepthEnable = true;
+	t_DsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	t_DsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+
+	hr = m_Device->CreateDepthStencilState(&t_DsDesc, &m_DepthStateNoWrite);
+
+	return hr;
+}
+
+HRESULT GraphicEngine::InitializeBlendAndBlendStates()
+{
+	HRESULT hr = S_OK;
+
+	D3D11_BLEND_DESC t_Blend_desc;
+	t_Blend_desc.AlphaToCoverageEnable = false;
+	t_Blend_desc.IndependentBlendEnable = false;
+	
+
+	t_Blend_desc.RenderTarget[0].BlendEnable = true;
+	t_Blend_desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	t_Blend_desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	t_Blend_desc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	t_Blend_desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	t_Blend_desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	t_Blend_desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	t_Blend_desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL; 
+
+
+	hr = m_Device->CreateBlendState( &t_Blend_desc, &m_BlendStateOn);
+	if( FAILED( hr ) )
+		return hr;
+
+	t_Blend_desc.RenderTarget[0].BlendEnable = false;
+	hr = m_Device->CreateBlendState( &t_Blend_desc, &m_BlendStateOff);
+	if( FAILED( hr ) )
+		return hr;
+
+	float t_BlendFactors[] = {0.0f, 0.0f, 0.0f, 0.0f};
+	m_DeviceContext->OMSetBlendState(m_BlendStateOff, t_BlendFactors, 0xffffffff);
 
 	return hr;
 }
