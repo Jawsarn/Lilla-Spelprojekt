@@ -5,6 +5,7 @@
 #include "UserCMD.h"
 #include <DirectXMath.h>
 #include "UserCMDHandler.h"
+#include "AzookaTest.h"
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam );
 HRESULT InitializeWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow, UINT width, UINT height);
@@ -55,6 +56,12 @@ void Run()
 		}
 		else  //if there are no messages, update and draw
 		{
+			AzookaTest t_azookaTest = AzookaTest();
+			t_azookaTest.Run();
+
+
+
+
 			for (int i = 0; i < 4; i++) ///Fixes UserCMDs for all connected players
 			{
 				if (userCMDS[i].controller.IsConnected())
