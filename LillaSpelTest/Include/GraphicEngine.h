@@ -1,11 +1,16 @@
 #pragma once
 
 #include <d3d11_1.h>
-#include <DirectXMath.h>
-#include "ShaderLoader.h"
 
+#include "ShaderLoader.h"
+#include <vector>
+#include <map>
+#include "GraphicStructs.h"
 
 using namespace DirectX;
+
+
+
 
 /*NOTE:
 the size you get to the engine is wrong, it should be gained from 
@@ -14,9 +19,11 @@ UINT width = rc.right - rc.left;
 UINT height = rc.bottom - rc.top;
 
 requires saving of hwind and rc
-
-
 */
+
+
+//is used for structured buffer as well
+
 class GraphicEngine
 {
 public:
@@ -28,18 +35,23 @@ public:
 
 	HRESULT Loadtexture();
 	
+	enum TextureType{DIFFUSE,NORMAL,GLOW,SPECULAR};
+
 	//object
-	HRESULT LoadMesh();
-	void CreateObject();
-	void MoveObject();
+	HRESULT LoadMesh(std::vector<UINT> &o_DrawPieceIDs);
+	HRESULT AddTextureToDrawPiece(UINT p_DrawPieceID, UINT p_TextureID,TextureType p_TextureType);
+	HRESULT CreateObject(std::vector<UINT> p_DrawPieceIDs, CXMMATRIX p_World, bool addToDrawNow, UINT &o_ObjectID);
+	HRESULT AddObjectLight(UINT p_ObjectID ,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float radius, UINT &o_LightID);
+	HRESULT ChangeObjectsLight(UINT p_ObjectID, UINT p_LightID,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius);
+	HRESULT MoveObject(UINT p_ObjectID, CXMMATRIX p_Matrix);
+	
 
 	//light funcs
-	void MoveLigth();
-	void ChangeLighting();
-	void CreateLight();
+	void CreateStaticLight(XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius);
+	HRESULT CreateDynamicLight(XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius, UINT &o_LightID);
+	HRESULT UpdateDynamicLight(UINT p_LightID,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius);
 
-
-	//hud functions
+	//hud functions //not yet implemented
 	void AddHudObject();
 	void CreatehudObject();
 	void UseHud();
@@ -59,9 +71,11 @@ public:
 	
 	
 	
-	void RemoveFromDrawObjects();
-	void AddToDrawObject();
+	//void RemoveFromDrawObjects();
+	//void AddToDrawObject();
 	void DrawHud();
+
+
 private:
 
 	GraphicEngine();
@@ -104,7 +118,7 @@ private:
 	ID3D11DepthStencilState*	m_DepthStateOn;
 	ID3D11DepthStencilState*	m_DepthStateOff;
 	ID3D11DepthStencilState*	m_DepthStateNoWrite;
-	ID3D11SamplerState*			m_SamplerState;
+	ID3D11SamplerState*			m_SamplerStateWrap;
 
 	ID3D11UnorderedAccessView* m_BackBufferUAV;
 	ID3D11ShaderResourceView* m_GbufferShaderResource[3];
@@ -115,5 +129,14 @@ private:
 	UINT m_Height;
 
 	ShaderLoader* m_ShaderLoader;
+
+	
+	std::map<UINT, DrawObject*> m_DrawOjbects;
+	std::map<UINT, Light*> m_DynamicLights;
+
+	std::vector<VertexBufferWithNOV> m_VertexBuffers;
+	std::vector<DrawPiece> m_DrawPieces;
+	std::vector<ID3D11ShaderResourceView*> m_Textures;
+	std::vector<Light> m_StaticLights;
 };
 
