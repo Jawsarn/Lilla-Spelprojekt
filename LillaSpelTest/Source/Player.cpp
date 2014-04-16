@@ -1,9 +1,12 @@
 #include "Player.h"
 
 
-Player::Player(void)
+
+Player::Player()
 {
+
 }
+
 
 Player::Player(MapNode* p_startNode, float p_startAngle)
 {
@@ -40,9 +43,9 @@ void Player::Update(float p_dt, UserCMD userCMD)
 	}
 }
 
-std::vector<Box*> Player::GetWallsToCheck()
+std::vector<BoundingOrientedBox*> Player::GetWallsToCheck()
 {
-	std::vector<Box*> r_return;
+	std::vector<BoundingOrientedBox*> r_return;
 	return r_return;
 }
 

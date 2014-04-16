@@ -12,20 +12,29 @@ MapLoader::~MapLoader(void)
 
 }
 
+string AddStrings(string p_string1, string p_string2)
+{
+	string r_string = p_string1;
+	r_string += p_string2;
+	return r_string;
+}
 
-vector<MapNode*> MapLoader::LoadMap(string mapName)
+
+vector<MapNode*> MapLoader::LoadMap(string p_mapName)
 {
 
 	vector<MapNode*> r_logicalMap;
 	//silly stuff. Apparently one does not simply add strings together
-	string t_centerSplineString = mapName;
-	t_centerSplineString += (string)("CenterSpline.obj");
-	string t_edgeSplineString = mapName;
-	t_edgeSplineString += (string)("EdgeSpline.obj");
+	string t_centerSplineString = AddStrings(p_mapName, "CenterSpline.obj");
+	string t_edgeSplineString = AddStrings(p_mapName, "EdgeSpline.obj");
+	string t_holeBoxString = AddStrings(p_mapName, "HoleBoxes.obj");
+	string t_wallBoxString = AddStrings(p_mapName, "WallBoxes.obj");
 
 
 	vector<vector<XMFLOAT3>> t_centerPositions = LoadLogicalObj(t_centerSplineString);
 	vector<vector<XMFLOAT3>> t_edgePositions = LoadLogicalObj(t_edgeSplineString);
+	vector<vector<XMFLOAT3>> t_holeBoxPositions = LoadLogicalObj(t_holeBoxString);
+	vector<vector<XMFLOAT3>> t_wallBoxPositions = LoadLogicalObj(t_wallBoxString);
 
 	for (int i = 0; i < t_centerPositions[0].size(); i++)
 	{
@@ -56,11 +65,11 @@ vector<MapNode*> MapLoader::LoadMap(string mapName)
 	return r_logicalMap; 
 }
 
-vector<vector<XMFLOAT3>> MapLoader::LoadLogicalObj(string splineName)
+vector<vector<XMFLOAT3>> MapLoader::LoadLogicalObj(string p_objName)
 {
 
 	FILE * file;
-	fopen_s(&file, splineName.c_str(), "r");
+	fopen_s(&file, p_objName.c_str(), "r");
 	vector<vector<XMFLOAT3>> t_positions;
 	int t_objectCounter = 0;
 
