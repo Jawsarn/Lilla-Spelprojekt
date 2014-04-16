@@ -3,6 +3,7 @@
 #include "Controller.h"
 #include <vector>
 #include "UserCMD.h"
+#include <DirectXMath.h>
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam );
 HRESULT InitializeWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow, UINT width, UINT height);
@@ -51,13 +52,23 @@ void Run()
 			if (p1_controller.IsConnected())
 			{
 				XINPUT_STATE p1_state = p1_controller.GetState();
-				if (p1_state.Gamepad.wButtons & XINPUT_GAMEPAD_A &&  p1_state.Gamepad.wButtons & XINPUT_GAMEPAD_B)
+				DirectX::XMFLOAT2 p1_leftJoystick = DirectX::XMFLOAT2(p1_controller.CheckMovmentStickLeft().x,p1_controller.CheckMovmentStickLeft().y);
+
+				if (p1_state.Gamepad.wButtons & XINPUT_GAMEPAD_A)
 				{
-					p1_controller.Vibrate(64000,0);
+					userCMDS[0].aButtonPressed = true;
 				}
-				else if (p1_state.Gamepad.wButtons & XINPUT_GAMEPAD_X)
+				else
 				{
-					p1_controller.Vibrate(0,0);
+					userCMDS[0].aButtonPressed = false;
+				}
+				if (p1_state.Gamepad.wButtons & XINPUT_GAMEPAD_B)
+				{
+					userCMDS[0].bButtonPressed = true;
+				}
+				else
+				{
+					userCMDS[0].bButtonPressed = false;
 				}
 				if (p1_state.Gamepad.bLeftTrigger & VK_PAD_LTRIGGER)
 				{
@@ -65,7 +76,11 @@ void Run()
 				}
 				if (p1_state.Gamepad.bRightTrigger & VK_PAD_RTRIGGER)
 				{
-					p1_controller.Vibrate(64000,0);
+					p1_controller.Vibrate(0,0);
+				}
+				if (p1_leftJoystick.x != 0, p1_leftJoystick.y !=0)
+				{
+					userCMDS[0].Joystick = p1_leftJoystick;
 				}
 
 			}

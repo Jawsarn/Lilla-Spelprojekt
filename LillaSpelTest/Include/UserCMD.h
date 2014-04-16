@@ -10,6 +10,6 @@ struct UserCMD
 	bool bButtonPressed;	
 	bool xButtonPressed ;
 	bool yButtonPressed;
-	DirectX::XMFLOAT2 deltaJoyStick;
+	DirectX::XMFLOAT2 Joystick;
 
 };
