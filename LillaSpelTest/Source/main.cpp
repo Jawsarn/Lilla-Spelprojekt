@@ -4,6 +4,7 @@
 #include <vector>
 #include "UserCMD.h"
 #include <DirectXMath.h>
+#include "UserCMDHandler.h"
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam );
 HRESULT InitializeWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow, UINT width, UINT height);
@@ -13,7 +14,7 @@ HINSTANCE	handleInstance;
 HWND	handleWindow;
 
 
-std::vector<UserCMD> userCMDS;
+
 
 float deltaTime;
 float gameTime;
@@ -33,10 +34,15 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
 void Run() 
 {
-	Controller p1_controller= Controller(0);
+	std::vector<UserCMD> userCMDS;
+	UserCMDHandler userCMDHandler = UserCMDHandler();
+
+	for (int i = 0; i < 4; i++)
+	{
+		UserCMD t_userCMD = UserCMD(i);
+		userCMDS.push_back(t_userCMD);
+	}
 	
-	UserCMD t_p1UserCMD;
-	userCMDS.push_back(t_p1UserCMD);
 	//message game loop
 	MSG msg = {0};
 	while( WM_QUIT != msg.message )
@@ -49,40 +55,16 @@ void Run()
 		}
 		else  //if there are no messages, update and draw
 		{
-			if (p1_controller.IsConnected())
+			for (int i = 0; i < 4; i++) ///Fixes UserCMDs for all connected players
 			{
-				XINPUT_STATE p1_state = p1_controller.GetState();
-				DirectX::XMFLOAT2 p1_leftJoystick = DirectX::XMFLOAT2(p1_controller.CheckMovmentStickLeft().x,p1_controller.CheckMovmentStickLeft().y);
-
-				if (p1_state.Gamepad.wButtons & XINPUT_GAMEPAD_A)
+				if (userCMDS[i].controller.IsConnected())
 				{
-					userCMDS[0].aButtonPressed = true;
-				}
+					userCMDHandler.AlterUserCMD(userCMDS[i]);
+				} 
 				else
 				{
-					userCMDS[0].aButtonPressed = false;
+					////Player i controller disconnected, plz connect again message
 				}
-				if (p1_state.Gamepad.wButtons & XINPUT_GAMEPAD_B)
-				{
-					userCMDS[0].bButtonPressed = true;
-				}
-				else
-				{
-					userCMDS[0].bButtonPressed = false;
-				}
-				if (p1_state.Gamepad.bLeftTrigger & VK_PAD_LTRIGGER)
-				{
-					p1_controller.Vibrate(64000,0);
-				}
-				if (p1_state.Gamepad.bRightTrigger & VK_PAD_RTRIGGER)
-				{
-					p1_controller.Vibrate(0,0);
-				}
-				if (p1_leftJoystick.x != 0, p1_leftJoystick.y !=0)
-				{
-					userCMDS[0].Joystick = p1_leftJoystick;
-				}
-
 			}
 			
 			ULONGLONG timeCur = GetTickCount64();
@@ -95,10 +77,7 @@ void Run()
 			///UPDATE & DRAW
 		}
 	}
-	if (p1_controller.IsConnected())
-	{
-		p1_controller.Vibrate(0,0);
-	}
+
 }
 
 //callback inte helt fixat då den inte får ligga som en medlemsfunktion, och måste därför vara static => vilket gör att den inte kan kalla på medlemsfunktioner, kan fixas med att lägga den i ett namespace och trixa med "this" , eller ha den i main där allt är static och kan skriva funktioner som inte behöver en klass

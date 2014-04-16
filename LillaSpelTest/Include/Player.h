@@ -4,6 +4,9 @@
 #include "MapNode.h"
 #include "PlayerWall.h"
 #include "UserCMD.h"
+#include <DirectXCollision.h>
+
+using namespace DirectX;
 
 enum PlayerState{NORMAL,DEAD,IMMORTAL};
 
@@ -36,12 +39,12 @@ private:
 
 	///////////////FUNCTIONS/////////////
 public:
-	Player(void);
+	Player();
 	Player(MapNode* p_startNode, float p_startAngle);
-	~Player(void);
+	~Player();
 
 	void Update(float p_dt,UserCMD p_userCMD); //Updates position and dropps walls
-	std::vector<Box*> GetWallsToCheck();
+	std::vector<BoundingOrientedBox*> GetWallsToCheck();
 	void ChangeState(PlayerState p_state);
 
 private:

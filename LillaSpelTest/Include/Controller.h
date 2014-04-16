@@ -59,6 +59,7 @@ public:
 	//player number from 0-3 (0-1 used)
 	//XBOXController();
 	Controller(int p_controllerNumber);
+	Controller();
 	~Controller();
 
 	XINPUT_STATE GetState();
