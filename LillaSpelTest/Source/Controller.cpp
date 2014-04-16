@@ -6,6 +6,10 @@ Controller::Controller(int p_controllerNumber)
 	m_controllerNumber = p_controllerNumber;
 }
 
+Controller::Controller()
+{
+}
+
 
 Controller::~Controller()
 {
