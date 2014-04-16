@@ -16,6 +16,7 @@ GraphicEngine::GraphicEngine(void)
 {
 	m_DriverType = D3D_DRIVER_TYPE_NULL;
 	m_FeatureLevel = D3D_FEATURE_LEVEL_11_0;
+	m_ShaderLoader = new ShaderLoader();
 }
 
 GraphicEngine::~GraphicEngine(void)
@@ -48,17 +49,17 @@ HRESULT GraphicEngine::Initialize( UINT p_Width, UINT p_Height, HWND handleWindo
 	if( FAILED( hr ) )
 		return hr;
 
-	//hr = InitializeShaders();
-	//if( FAILED( hr ) )
-	//	return hr;
+	hr = InitializeShaders();
+	if( FAILED( hr ) )
+		return hr;
 
-	//hr = InitializeConstantBuffers();
-	//if( FAILED( hr ) )
-	//	return hr;
+	hr = InitializeConstantBuffers();
+	if( FAILED( hr ) )
+		return hr;
 
-	//hr = InitializeGBuffers();
-	//if( FAILED( hr ) )
-	//	return hr;
+	hr = InitializeGBuffers();
+	if( FAILED( hr ) )
+		return hr;
 
 	//hr = InitializeSamplerState();
 	//if( FAILED( hr) )
@@ -366,5 +367,189 @@ HRESULT GraphicEngine::InitializeBlendAndBlendStates()
 	float t_BlendFactors[] = {0.0f, 0.0f, 0.0f, 0.0f};
 	m_DeviceContext->OMSetBlendState(m_BlendStateOff, t_BlendFactors, 0xffffffff);
 
+	return hr;
+}
+
+HRESULT GraphicEngine::InitializeShaders()
+{
+	HRESULT hr = S_OK;
+
+	/*ID3D11ComputeShader* t_TileDeferredCS;
+	hr = m_ShaderLoader->CreateComputeShader(L"DeferredRenderingCS.hlsl", "TileDeferredCS", "cs_5_0" , m_Device, &tileDeferredCS);
+	if( FAILED( hr ) )
+		return hr;
+
+	computeShaders.push_back(tileDeferredCS);
+
+	deviceContext->CSSetShader(computeShaders[0],nullptr,0);
+
+	ID3D11VertexShader* vertexShader;
+	ID3D11InputLayout* inputLayout;
+
+	D3D11_INPUT_ELEMENT_DESC layout[] =
+    {
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+
+	};
+	UINT numElements = ARRAYSIZE(layout);
+
+	hr = shaderLoader->CreateVertexShaderWithInputLayout(L"NormalVertexShader.hlsl","VS","vs_5_0",device,&vertexShader,layout,numElements,&inputLayout);
+	if( FAILED( hr ) )
+		return hr;
+
+	vertexShaders.push_back(vertexShader);
+	inputLayouts.push_back(inputLayout);
+
+	ID3D11PixelShader* pixelShader;
+	hr = shaderLoader->CreatePixelShader(L"NormalPixelShader.hlsl","PS","ps_5_0",device,&pixelShader);
+	if( FAILED( hr ))
+		return hr;
+	pixelShaders.push_back(pixelShader);
+
+	ShaderProgram newProgram;
+	newProgram.vertexShader = vertexShaders.size() - 1;
+	newProgram.domainShader = -1;
+	newProgram.hullShader = -1;
+	newProgram.geometryShader = -1;
+	newProgram.pixelShader = pixelShaders.size() - 1;
+
+	shaderPrograms.push_back(newProgram);*/
+
+	//fix  shaders here
+
+	return hr;
+}
+
+HRESULT GraphicEngine::InitializeConstantBuffers()
+{
+	HRESULT hr = S_OK;
+	
+	//D3D11_BUFFER_DESC bd;
+	//ZeroMemory( &bd, sizeof(bd) );
+	//bd.Usage = D3D11_USAGE_DEFAULT;
+	//bd.ByteWidth = sizeof(ConstantBuffer);
+ //   bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+ //   bd.CPUAccessFlags = 0;
+	//hr = device->CreateBuffer( &bd, nullptr, &constantBuffer );
+ //   if( FAILED( hr ) )
+ //       return hr;
+
+	//bd.ByteWidth = sizeof(PerFrameBuffer);
+	//hr = device->CreateBuffer( &bd, nullptr, &perFrameBuffer );
+ //   if( FAILED( hr ) )
+ //       return hr;
+
+	//bd.ByteWidth = sizeof(PerObjectBuffer);
+	//hr = device->CreateBuffer( &bd, nullptr, &perObjectBuffer );
+ //   if( FAILED( hr ) )
+ //       return hr;
+
+	//
+	//lights.resize(MAX_NUM_OF_LIGHTS);
+	///*bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	//bd.Usage = D3D11_USAGE_DYNAMIC;*/
+	//bd.ByteWidth = sizeof(Light) * lights.size();
+	//bd.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	//bd.StructureByteStride = sizeof(Light);
+	//bd.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+	//D3D11_SUBRESOURCE_DATA vinitDataA;
+	//vinitDataA.pSysMem = &lights[0];
+
+	//hr = device->CreateBuffer(&bd, &vinitDataA, &lightBuffer);
+	//if( FAILED(hr))
+	//	return hr;
+
+	//D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+	//srvDesc.Format = DXGI_FORMAT_UNKNOWN;
+	//srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFEREX;
+	//srvDesc.BufferEx.FirstElement = 0;
+	//srvDesc.BufferEx.Flags = 0;
+	//srvDesc.BufferEx.NumElements = lights.size()/*MAX_NUM_OF_LIGHTS*/;
+	//
+	//hr = device->CreateShaderResourceView(lightBuffer,&srvDesc,&lightBufferSRV);
+
+	//ConstantBuffer cb;
+	//cb.camNearFar = XMFLOAT2(0,0);
+	//cb.screenDimensions = XMFLOAT2(width,height);
+	//cb.lightCount = lights.size();
+	//cb.useFog = 0;
+	//cb.filler = 0;
+	//cb.filler2 = 0;
+	//
+	//deviceContext->UpdateSubresource(constantBuffer, 0, nullptr, &cb, 0, 0);
+
+	//deviceContext->VSSetConstantBuffers(0,1,&constantBuffer);
+	//deviceContext->VSSetConstantBuffers(1,1,&perFrameBuffer);
+	//deviceContext->VSSetConstantBuffers(2,1,&perObjectBuffer);
+
+	//deviceContext->HSSetConstantBuffers(1,1,&perFrameBuffer);
+
+	//deviceContext->DSSetConstantBuffers(1,1,&perFrameBuffer);
+
+	//deviceContext->GSSetConstantBuffers(1,1, &perFrameBuffer);
+	//deviceContext->GSSetConstantBuffers(2,1,&perObjectBuffer);
+
+	//deviceContext->PSSetConstantBuffers(2,1,&perObjectBuffer);
+
+	//deviceContext->CSSetConstantBuffers(0,1,&constantBuffer);
+	//deviceContext->CSSetConstantBuffers(1,1,&perFrameBuffer);
+
+
+
+	return hr;
+}
+
+
+
+HRESULT GraphicEngine::InitializeGBuffers()
+{
+	HRESULT hr = S_OK;
+
+	D3D11_TEXTURE2D_DESC desc;
+	desc.Width = m_Width;
+	desc.Height = m_Height;
+	desc.MipLevels = 1;
+	desc.ArraySize = 1;
+	desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT; //changed from format DXGI_FORMAT_R16G16B16A16_UNORM
+	desc.SampleDesc.Count = 1;
+	desc.SampleDesc.Quality = 0;
+	desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	desc.CPUAccessFlags = 0;
+	desc.MiscFlags = 0;
+	
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+	srvDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+	srvDesc.Texture2D.MipLevels = 1;
+
+
+	for (int i = 0; i < 3; i++)
+	{
+		ID3D11Texture2D* t_Texture = 0;
+
+		hr = m_Device->CreateTexture2D(&desc, 0, &t_Texture);
+		if( FAILED( hr ) )
+			return hr;
+
+		hr = m_Device->CreateShaderResourceView(t_Texture, &srvDesc, &m_GbufferShaderResource[i]);
+		if( FAILED( hr) )
+			return hr;
+
+		hr = m_Device->CreateRenderTargetView( t_Texture, nullptr, &m_GbufferTargetViews[i] );
+		if( FAILED( hr ) )
+			return hr;
+
+		t_Texture->Release();
+
+	}
+
+	
+	// Views save a reference to the texture so we can release our reference.
+	
 	return hr;
 }

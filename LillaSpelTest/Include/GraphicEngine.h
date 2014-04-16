@@ -2,6 +2,8 @@
 
 #include <d3d11_1.h>
 #include <DirectXMath.h>
+#include "ShaderLoader.h"
+
 
 using namespace DirectX;
 
@@ -111,5 +113,7 @@ private:
 
 	UINT m_Width;
 	UINT m_Height;
+
+	ShaderLoader* m_ShaderLoader;
 };
 
