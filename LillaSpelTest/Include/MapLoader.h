@@ -14,8 +14,7 @@ public:
 	vector<MapNode*>LoadMap(string mapName);
 	~MapLoader(void);
 private:
-	vector<vector<XMFLOAT3>> LoadLogicalObj(string splineName);
-	//vector<StaticObj*> LoadBoxes(string boxListName);
+	vector<vector<XMFLOAT3>> LoadLogicalObj(string p_objName);
 
 };
 
