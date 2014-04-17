@@ -13,15 +13,14 @@ public:
 	MeshLoader(void);
 	~MeshLoader(void);
 
-		struct SimpleVertex //structcclass
+		struct SimpleVertex //eric123
 {
-	XMFLOAT3 Pos;
-	XMFLOAT3 Norm;
-	XMFLOAT2 Tex;
+	XMFLOAT3 m_pos;
+	XMFLOAT3 m_norm;
+	XMFLOAT2 m_tex;
 };
 
-	HRESULT ReadObjFile(std::string filename,
-						ID3D11Device* device,
-						std::vector<std::vector<std::vector<SimpleVertex>>> &vertices, 
-						float scale);	
+	HRESULT ReadObjFile(std::string p_filename,
+						std::vector<std::vector<SimpleVertex>> &o_vertices, 
+						float p_scale);	
 };
