@@ -32,9 +32,11 @@ XMFLOAT3 MathHelper::Normalize(XMFLOAT3 p_vec)
 {
 	XMFLOAT3 t_vec;
 	XMVector3Normalize(XMLoadFloat3(&t_vec)); //INTEFÄRDIGT
+	return t_vec;
 }
 
 XMFLOAT3 MathHelper::VecSubVec(XMFLOAT3 p_vec1, XMFLOAT3 p_vec2)
 {
-
+	XMFLOAT3 temp;
+	return temp;
 }
