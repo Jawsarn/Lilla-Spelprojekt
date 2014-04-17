@@ -97,7 +97,8 @@ void Run()
 			gameTime += deltaTime;
 			prevTime = timeCur;
 
-			///UPDATE & DRAW
+			///UPDATE & DRAW TEMPDRAAWWWWW
+			m_GraphicHandle->DrawGame();
 		}
 	}
 

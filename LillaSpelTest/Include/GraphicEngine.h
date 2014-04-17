@@ -41,7 +41,7 @@ public:
 	//object
 	HRESULT LoadMesh(std::string p_FileName, std::vector<UINT> &o_DrawPieceIDs);
 	HRESULT AddTextureToDrawPiece(UINT p_DrawPieceID, UINT p_TextureID,TextureType p_TextureType);
-	HRESULT CreateObject(std::vector<UINT> p_DrawPieceIDs, CXMMATRIX p_World, bool addToDrawNow, UINT &o_ObjectID);
+	HRESULT CreateDrawObject(std::vector<UINT> p_DrawPieceIDs, CXMMATRIX p_World, bool addToDrawNow, UINT &o_ObjectID);
 	HRESULT AddObjectLight(UINT p_ObjectID ,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float radius, UINT &o_LightID);
 	HRESULT ChangeObjectsLight(UINT p_ObjectID, UINT p_LightID,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius);
 	HRESULT MoveObject(UINT p_ObjectID, CXMMATRIX p_Matrix);

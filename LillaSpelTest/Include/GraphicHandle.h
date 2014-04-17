@@ -27,7 +27,7 @@ public:
 	
 	
 	void Initialize(UINT p_Width, UINT p_Height, HWND p_Handle);
-	void Draw();
+	void DrawGame();
 	void ChangeHUDObject(int p_hudID, int p_hudObjID, int change());
 	void UpdateDynamicLight(UINT p_LightID,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius);
 	void UpdatePlayer(int p_playerID, CXMMATRIX p_matrix);

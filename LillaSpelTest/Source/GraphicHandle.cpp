@@ -26,20 +26,30 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	m_GraphicEngine = m_GraphicEngine->GetInstance();
 	m_GraphicEngine->Initialize(p_Width, p_Height, p_Handle);
 
+	//load a diffuse texture
+	UINT diffuseBollTestTexture;
+	m_GraphicEngine->LoadTexture(L"Boll.dds", diffuseBollTestTexture);
 
+	//load a ship mesh 
 	std::vector<UINT> t_Ship;
 	m_GraphicEngine->LoadMesh("Sphere.obj",t_Ship);
 	m_Ships.push_back(t_Ship);
-	m_GraphicEngine->AddTextureToDrawPiece(t_Ship[0],0,GraphicEngine::TextureType::SPECULAR);
-	//initialize varje skepp
 
-	
+	//add a texture to a ship mesh
+	m_GraphicEngine->AddTextureToDrawPiece(t_Ship[0],diffuseBollTestTexture,GraphicEngine::TextureType::DIFFUSE);
+
+	//creating a ship that the player is going to use, move to other place when we've done testing
+	UINT objectID;
+	XMMATRIX t_Mat = XMMatrixIdentity();
+	m_GraphicEngine->CreateDrawObject(m_Ships[0],t_Mat,true, objectID);
+
+	//add light to an already existing ship, (note to self maybe, if we have two ships that are the same for two players, same textures will be used, but not same lights, this is ok)
+	//second note, add light is in object space
+	UINT playerLightOne; //add to a player light array maybe?
+	m_GraphicEngine->AddObjectLight(objectID, XMFLOAT3(0,-2,0),XMFLOAT3(1,0,0),3, playerLightOne);
 
 }
-void GraphicHandle::Draw()
-{
 
-}
 void GraphicHandle::UpdatePlayer(int p_playerID,CXMMATRIX p_matrix)
 {
 	m_GraphicEngine->MoveObject(p_playerID, p_matrix);
@@ -50,10 +60,15 @@ void GraphicHandle::CreatePlayer(std::vector<UINT> p_DrawPieceIDs, CXMMATRIX p_W
 {
 
 	//object id o camera id kan vara samma
-	m_GraphicEngine->CreateObject(p_DrawPieceIDs, p_World,  addToDrawNow,  o_ObjectID);
+	m_GraphicEngine->CreateDrawObject(p_DrawPieceIDs, p_World,  addToDrawNow,  o_ObjectID);
 	m_GraphicEngine->CreateCamera(p_Pos, p_At, p_Up, p_FieldOfView, p_Width, p_Height, p_NearZ, p_FarZ, o_CameraID);
 	m_GraphicEngine->CreatehudObject();//itne klar i engine
 	//m_GraphicEngine->CreateParticleSystem();//ej klar
 	
 
+}
+
+void GraphicHandle::DrawGame() //test 
+{
+	m_GraphicEngine->DrawGame();
 }

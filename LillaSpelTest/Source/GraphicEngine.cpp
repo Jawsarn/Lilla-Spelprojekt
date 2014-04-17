@@ -679,7 +679,7 @@ HRESULT GraphicEngine::AddTextureToDrawPiece(UINT p_DrawPieceID,UINT p_TextureID
 	return S_OK;
 }
 
-HRESULT GraphicEngine::CreateObject(std::vector<UINT> p_DrawPieceIDs, CXMMATRIX p_World, bool addToDrawNow, UINT &o_ObjectID)
+HRESULT GraphicEngine::CreateDrawObject(std::vector<UINT> p_DrawPieceIDs, CXMMATRIX p_World, bool addToDrawNow, UINT &o_ObjectID)
 {
 	try
 	{
@@ -901,11 +901,12 @@ void GraphicEngine::DrawGame()
 	m_DeviceContext->ClearRenderTargetView(m_RenderTargetView, Colors::Black );
 	m_DeviceContext->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 	
-	//std::map<UINT, DrawObject*>::iterator it;
-	for (std::map<UINT, DrawObject*>::iterator it = m_DrawOjbects.begin(); it != m_DrawOjbects.end(); ++it)
-	{
-		
-	}
+	//int a = 0;
+	////std::map<UINT, DrawObject*>::iterator it;
+	//for (std::map<UINT, DrawObject*>::iterator it = m_DrawOjbects.begin(); it != m_DrawOjbects.end(); ++it)
+	//{
+	//	
+	//}
 
 	m_SwapChain->Present( 0, 0 );
 }
