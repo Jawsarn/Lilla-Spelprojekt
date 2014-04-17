@@ -810,19 +810,19 @@ HRESULT GraphicEngine::UpdateDynamicLight(UINT p_LightID, XMFLOAT3 p_Position, X
 }
 
 //==========HUD functions=================//
-void AddHudObject()
+void GraphicEngine::AddHudObject()
+{
+	
+}
+void GraphicEngine::CreatehudObject()
 {
 
 }
-void CreatehudObject()
+void GraphicEngine::UseHud()
 {
 
 }
-void UseHud()
-{
-
-}
-void LoadHud()
+void GraphicEngine::LoadHud()
 {
 
 }
