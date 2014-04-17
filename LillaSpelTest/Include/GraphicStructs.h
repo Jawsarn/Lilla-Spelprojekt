@@ -76,3 +76,16 @@ struct ShaderProgram
 	int geometryShader;
 	int pixelShader;
 };
+
+struct PerFramebuffer
+{
+	XMMATRIX View;
+	XMMATRIX Projection;
+	XMMATRIX ViewProjection;
+	XMFLOAT4 EyesPos;
+};
+
+struct PerObjectBuffer
+{
+	XMMATRIX World;
+};

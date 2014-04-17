@@ -1,3 +1,5 @@
+#include "GraphicShaderHelper.fx"
+
 
 struct GS_OUTPUT
 {

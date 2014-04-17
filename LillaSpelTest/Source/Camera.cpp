@@ -20,7 +20,6 @@ XMFLOAT3 Camera::GetPosition()const
 	return mPosition;
 }
 
-
 void Camera::LookAt(const XMFLOAT3& pos, const XMFLOAT3& target, const XMFLOAT3& up)
 {
 	XMVECTOR Eye = XMLoadFloat3(&pos);

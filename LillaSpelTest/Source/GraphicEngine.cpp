@@ -80,7 +80,6 @@ HRESULT GraphicEngine::Initialize( UINT p_Width, UINT p_Height, HWND handleWindo
 	return hr;
 }
 
-
 HRESULT GraphicEngine::InitializeDriverAndVersion( HWND handleWindow)
 {
 	HRESULT hr = S_OK;
@@ -901,6 +900,8 @@ void GraphicEngine::DrawGame()
 	m_DeviceContext->ClearRenderTargetView(m_RenderTargetView, Colors::Black );
 	m_DeviceContext->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 	
+	m_DeviceContext->UpdateSubresource(
+
 	//int a = 0;
 	////std::map<UINT, DrawObject*>::iterator it;
 	//for (std::map<UINT, DrawObject*>::iterator it = m_DrawOjbects.begin(); it != m_DrawOjbects.end(); ++it)
