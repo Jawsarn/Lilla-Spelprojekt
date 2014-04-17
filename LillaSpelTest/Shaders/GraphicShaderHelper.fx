@@ -11,6 +11,6 @@ cbuffer PerFrameBuffer : register(c0)
 cbuffer PerObjectBuffer	:register(c1)
 {
 	matrix World;
-
+	 
 }
 
