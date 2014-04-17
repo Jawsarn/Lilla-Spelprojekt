@@ -74,3 +74,14 @@ void Player::PlaceWall()
 void Player::UpdateCollisionBox()
 {
 }
+
+
+
+
+
+
+/// Gets yo
+void Player::GetPos()
+{
+	return m_position;
+}

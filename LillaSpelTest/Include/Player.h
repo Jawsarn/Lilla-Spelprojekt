@@ -47,6 +47,9 @@ public:
 	std::vector<BoundingOrientedBox*> GetWallsToCheck();
 	void ChangeState(PlayerState p_state);
 
+	//Gets yo
+	void GetPos();
+
 private:
 	void PlaceWall();
 	void UpdateCollisionBox();
