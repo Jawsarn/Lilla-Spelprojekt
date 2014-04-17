@@ -60,12 +60,7 @@ struct DrawObject
 	XMFLOAT4X4 worldMatrix;
 };
 
-struct PerObjectBuffer //updates for each object that needs this
-{
-	XMMATRIX world;
-	UINT typeOfObject; //with types of textures etc
-	XMFLOAT3 fillers;
-};
+
 
 struct ShaderProgram
 {
@@ -85,7 +80,9 @@ struct PerFramebuffer
 	XMFLOAT4 EyesPos;
 };
 
-struct PerObjectBuffer
+struct PerObjectBuffer //updates for each object that needs this
 {
-	XMMATRIX World;
+	XMMATRIX world;
+	UINT typeOfObject; //with types of textures etc
+	XMFLOAT3 fillers;
 };

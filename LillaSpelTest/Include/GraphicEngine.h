@@ -97,9 +97,11 @@ private:
 	HRESULT InitializeGBuffers();
 	HRESULT InitializeSamplerState();
 
-	void UpdateFramebuffers();
+	void UpdateFrameBuffer();
+	void DrawOpaqueObjects();
+	void SetShaderProgram(ShaderProgram p_Program);
 	void ComputeTileDeferredLightning();
-	void UpdateConstantBuffer();
+	void UpdateConstantBuffer(); //not written
 
 	UINT GraphicEngine::CheckProgram(DrawPiece p_Piece);
 
@@ -165,5 +167,9 @@ private:
 	
 	//vertexbuffer
 	std::vector<VertexBufferWithNOV> m_VertexBuffers;
+
+	//constant buffers
+	ID3D11Buffer* m_PerFrameBuffer;
+	ID3D11Buffer* m_PerObjectBuffer;
 };
 
