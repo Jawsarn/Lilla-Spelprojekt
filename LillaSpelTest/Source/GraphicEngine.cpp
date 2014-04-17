@@ -829,3 +829,17 @@ void GraphicEngine::LoadHud()
 
 //==========Camera functions=================//
 
+void GraphicEngine::CreateCamera()
+{
+
+}
+
+void GraphicEngine::MoveCamera()
+{
+
+}
+
+void GraphicEngine::UseCamera()
+{
+
+}
