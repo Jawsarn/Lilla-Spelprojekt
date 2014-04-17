@@ -878,6 +878,17 @@ HRESULT GraphicEngine::MoveCamera(UINT p_CameraID, float walk, float strafe, flo
 
 void GraphicEngine::UseCamera(UINT p_ViewPortID, UINT p_CameraID)
 {
+	m_ActiveCameras[p_ViewPortID] = m_Cameras[p_CameraID];
+}
+
+//==========Draw functions=================//
+
+void GraphicEngine::DrawGame()
+{
 
 }
 
+void GraphicEngine::DrawHud()
+{
+
+}

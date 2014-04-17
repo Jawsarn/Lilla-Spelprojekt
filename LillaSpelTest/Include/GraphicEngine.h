@@ -65,7 +65,7 @@ public:
 	HRESULT CreateCamera( XMFLOAT3 p_Pos, XMFLOAT3 p_At, XMFLOAT3 p_Up, float p_FieldOfView, float p_Width, float p_Height, float p_NearZ, float p_FarZ, UINT &o_CameraID);
 	HRESULT MoveCamera(UINT p_CameraID, float walk, float strafe, float hover, float pitch, float rotateY);
 	void UseCamera(UINT p_ViewPortID, UINT p_CameraID);
-	void RotateCamera();
+
 
 	void CreateParticleSystem();
 	
@@ -76,8 +76,9 @@ public:
 	
 	//void RemoveFromDrawObjects();
 	//void AddToDrawObject();
+	void DrawGame();
 	void DrawHud();
-
+	
 
 private:
 
@@ -138,10 +139,24 @@ private:
 	std::map<UINT, Light*> m_DynamicLights;
 	std::map<UINT, Camera*> m_Cameras;
 
-	std::vector<VertexBufferWithNOV> m_VertexBuffers;
+	
 	std::vector<DrawPiece> m_DrawPieces;
 	std::vector<ID3D11ShaderResourceView*> m_Textures;
 	std::vector<Light> m_StaticLights;
-	std::vector<Camera*> m_ActiveCameras;
+	Camera* m_ActiveCameras[4];
+
+	//shaders
+	std::vector<ID3D11VertexShader*> vertexShaders;
+	std::vector<ID3D11HullShader*> hullShaders;
+	std::vector<ID3D11DomainShader*> domainShaders;
+	std::vector<ID3D11GeometryShader*> geometryShaders;
+	std::vector<ID3D11PixelShader*> pixelShaders;
+	std::vector<ID3D11ComputeShader*> computeShaders;
+
+	//input layout
+	std::vector<ID3D11InputLayout*> inputLayouts;
+	std::vector<VertexBufferWithNOV> m_VertexBuffers;
+
+	//vertex
 };
 
