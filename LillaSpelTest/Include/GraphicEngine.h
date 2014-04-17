@@ -33,7 +33,7 @@ public:
 	HRESULT Initialize( UINT p_Width, UINT p_Height, HWND handleWindow );
 
 
-	HRESULT Loadtexture();
+	
 	
 	enum TextureType{DIFFUSE,NORMAL,GLOW,SPECULAR};
 
@@ -45,6 +45,8 @@ public:
 	HRESULT ChangeObjectsLight(UINT p_ObjectID, UINT p_LightID,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius);
 	HRESULT MoveObject(UINT p_ObjectID, CXMMATRIX p_Matrix);
 	
+	//texture functions
+	HRESULT LoadTexture(const wchar_t * p_FileName, UINT &o_TextureID);
 
 	//light funcs
 	void CreateStaticLight(XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius);

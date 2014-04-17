@@ -23,7 +23,9 @@ target_link_libraries(${PROJECT_NAME} d3d11.lib)
 target_link_libraries(${PROJECT_NAME} d3dcompiler.lib)
 target_link_libraries(${PROJECT_NAME} dxguid.lib)
 target_link_libraries(${PROJECT_NAME} Xinput9_1_0.lib)
-
+target_link_libraries(${PROJECT_NAME} dxguid.lib)
+target_link_libraries(${PROJECT_NAME} winmm.lib)
+target_link_libraries(${PROJECT_NAME} comctl32.lib)
 
 
 # Set SUBSYSTEM:WINDOWS

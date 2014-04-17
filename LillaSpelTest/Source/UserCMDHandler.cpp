@@ -1,5 +1,5 @@
 #include "UserCMDHandler.h"
-
+#include <Xinput.h>
 
 UserCMDHandler::UserCMDHandler(void)
 {

@@ -745,7 +745,21 @@ HRESULT GraphicEngine::MoveObject(UINT p_ObjectID, CXMMATRIX p_Matrix)
 }
 
 
+//==========Texture functions=================//
+HRESULT GraphicEngine::LoadTexture(const wchar_t * p_FileName, UINT &o_TextureID)
+{
+	HRESULT hr = S_OK;
+	ID3D11ShaderResourceView* t_NewSRV;
+	//hr = CreateDDSTextureFromFile(m_Device, p_FileName, nullptr, &t_NewSRV);
+	if( FAILED( hr ))
+		return hr;
 
+	m_Textures.push_back(t_NewSRV);
+
+	o_TextureID = m_Textures.size() - 1;
+
+	return hr;
+}
 
 //==========Light functions=================//
 
@@ -814,3 +828,4 @@ void LoadHud()
 }
 
 //==========Camera functions=================//
+
