@@ -4,9 +4,14 @@
 #include <DirectXMath.h>
 #include "ShaderLoader.h"
 #include <vector>
-
+#include <map>
+#include "GraphicStructs.h"
+#include "Camera.h"
 
 using namespace DirectX;
+
+
+
 
 /*NOTE:
 the size you get to the engine is wrong, it should be gained from 
@@ -15,30 +20,9 @@ UINT width = rc.right - rc.left;
 UINT height = rc.bottom - rc.top;
 
 requires saving of hwind and rc
-
-
 */
-struct DrawObject
-{
-	UINT meshID;
-	UINT textureID;
-	UINT normalMapTextureID;
-	UINT glowMapTextureID;
-};
 
-struct Light
-{
 
-};
-
-struct DrawEntity
-{
-	std::vector<DrawObject> objects;
-	std::vector<Light> lights;
-	//std::vector<transparentID>?
-	//std::vector<ParticleEffectID>
-	XMFLOAT4X4 worldMatrix;
-};
 
 class GraphicEngine
 {
@@ -49,20 +33,28 @@ public:
 	HRESULT Initialize( UINT p_Width, UINT p_Height, HWND handleWindow );
 
 
-	HRESULT Loadtexture();
 	
+	
+	enum TextureType{DIFFUSE,NORMAL,GLOW,SPECULAR};
+
 	//object
-	HRESULT LoadMesh(UINT o_MeshID);
-	void CreateEntity(UINT p_MeshID, UINT );
-	void MoveEntity();
+	HRESULT LoadMesh(std::vector<UINT> &o_DrawPieceIDs);
+	HRESULT AddTextureToDrawPiece(UINT p_DrawPieceID, UINT p_TextureID,TextureType p_TextureType);
+	HRESULT CreateObject(std::vector<UINT> p_DrawPieceIDs, CXMMATRIX p_World, bool addToDrawNow, UINT &o_ObjectID);
+	HRESULT AddObjectLight(UINT p_ObjectID ,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float radius, UINT &o_LightID);
+	HRESULT ChangeObjectsLight(UINT p_ObjectID, UINT p_LightID,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius);
+	HRESULT MoveObject(UINT p_ObjectID, CXMMATRIX p_Matrix);
+	
+	//texture functions
+	HRESULT LoadTexture(const wchar_t * p_FileName, UINT &o_TextureID);
+
 
 	//light funcs
-	void MoveLigth();
-	void ChangeLighting();
-	void CreateLight();
+	void CreateStaticLight(XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius);
+	HRESULT CreateDynamicLight(XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius, UINT &o_LightID);
+	HRESULT UpdateDynamicLight(UINT p_LightID,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius);
 
-
-	//hud functions
+	//hud functions //not yet implemented
 	void AddHudObject();
 	void CreatehudObject();
 	void UseHud();
@@ -70,8 +62,8 @@ public:
 
 
 	//camera funcs
-	void CreateCamera();
-	void MoveCamera();
+	HRESULT CreateCamera( XMFLOAT3 p_Pos, XMFLOAT3 p_At, XMFLOAT3 p_Up, float p_FieldOfView, float p_Width, float p_Height, float p_NearZ, float p_FarZ, UINT &o_CameraID);
+	HRESULT MoveCamera(UINT p_CameraID, float walk, float strafe, float hover, float pitch, float rotateY);
 	void UseCamera();
 	void RotateCamera();
 
@@ -82,9 +74,11 @@ public:
 	
 	
 	
-	void RemoveFromDrawObjects();
-	void AddToDrawObject();
+	//void RemoveFromDrawObjects();
+	//void AddToDrawObject();
 	void DrawHud();
+
+
 private:
 
 	GraphicEngine();
@@ -138,5 +132,15 @@ private:
 	UINT m_Height;
 
 	ShaderLoader* m_ShaderLoader;
+
+	
+	std::map<UINT, DrawObject*> m_DrawOjbects;
+	std::map<UINT, Light*> m_DynamicLights;
+	std::map<UINT, Camera*> m_Cameras;
+
+	std::vector<VertexBufferWithNOV> m_VertexBuffers;
+	std::vector<DrawPiece> m_DrawPieces;
+	std::vector<ID3D11ShaderResourceView*> m_Textures;
+	std::vector<Light> m_StaticLights;
 };
 

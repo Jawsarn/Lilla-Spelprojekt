@@ -1,5 +1,8 @@
 #include "GraphicEngine.h"
 #include "MeshLoader.h"
+#include <exception>
+
+
 
 GraphicEngine* GraphicEngine::singleton = nullptr;
 
@@ -21,6 +24,7 @@ GraphicEngine::GraphicEngine(void)
 
 GraphicEngine::~GraphicEngine(void)
 {
+	
 }
 
 HRESULT GraphicEngine::Initialize( UINT p_Width, UINT p_Height, HWND handleWindow )
@@ -581,19 +585,298 @@ HRESULT GraphicEngine::InitializeSamplerState()
 
 //==========Entity functions=================//
 
-HRESULT GraphicEngine::LoadMesh(UINT o_MeshID)
+
+HRESULT GraphicEngine::LoadMesh(std::vector<UINT> &o_DrawPieceIDs)
 {
 	//fix
 	HRESULT hr = S_OK;
 
+	std::vector<std::vector<SimpleVertex>> t_VertexGroupLists;
+	/*hr = meshLoader->ReadObjFile(objFileName,device,vertexGroupLists,1.0f);
+	if( FAILED( hr ))
+		return hr;*/
+	
+	D3D11_BUFFER_DESC vbd;
+	ZeroMemory( &vbd, sizeof(vbd));
+	vbd.Usage = D3D11_USAGE_IMMUTABLE;
+	vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vbd.CPUAccessFlags = 0;
+	vbd.MiscFlags = 0;
+	vbd.StructureByteStride = 0;
+
+	
+
+	D3D11_SUBRESOURCE_DATA t_VinitData;
+	ZeroMemory( &t_VinitData, sizeof(t_VinitData));
+
+	for (int i = 0; i < t_VertexGroupLists.size(); i++)
+	{
+		//create the buffer
+		ID3D11Buffer* t_NewVertexBuffer;
+		std::vector<SimpleVertex> t_vertexList = t_VertexGroupLists[i];
+		vbd.ByteWidth = sizeof(SimpleVertex) * t_vertexList.size();
+		t_VinitData.pSysMem = &t_vertexList[0];
+		hr = (m_Device->CreateBuffer(&vbd, &t_VinitData, &t_NewVertexBuffer));
+		if( FAILED( hr ))
+			return hr;
+
+		//add to the graphics buffer list
+		VertexBufferWithNOV t_NewVert;
+		t_NewVert.vertexBuffer = t_NewVertexBuffer;
+		t_NewVert.numberOfVertices = t_vertexList.size();
+		m_VertexBuffers.push_back(t_NewVert);
+
+		//create a new draw piece and add to output
+		DrawPiece t_DrawPiece;
+		t_DrawPiece.vertexBufferID = (m_VertexBuffers.size() - 1);
+
+		m_DrawPieces.push_back(t_DrawPiece);
+
+		o_DrawPieceIDs.push_back(m_DrawPieces.size() -1);
+	}
 
 	return hr;
 }
-void GraphicEngine::CreateEntity(UINT p_MeshID, UINT )
+
+HRESULT GraphicEngine::AddTextureToDrawPiece(UINT p_DrawPieceID,UINT p_TextureID,TextureType p_TextureType)
+{
+	if (p_DrawPieceID >= m_DrawPieces.size() || p_TextureID >= m_Textures.size())
+	{
+		return E_FAIL;
+	}
+
+	switch (p_TextureType)
+	{
+	case GraphicEngine::DIFFUSE:
+		m_DrawPieces[p_DrawPieceID].diffuseTID = p_TextureID;
+		break;
+	case GraphicEngine::NORMAL:
+		m_DrawPieces[p_DrawPieceID].normalTID = p_TextureID;
+		break;
+	case GraphicEngine::GLOW:
+		m_DrawPieces[p_DrawPieceID].glowTID = p_TextureID;
+		break;
+	case GraphicEngine::SPECULAR:
+		m_DrawPieces[p_DrawPieceID].specularTID = p_TextureID;
+		break;
+	default:
+		break;
+	}
+	
+	return S_OK;
+}
+
+HRESULT GraphicEngine::CreateObject(std::vector<UINT> p_DrawPieceIDs, CXMMATRIX p_World, bool addToDrawNow, UINT &o_ObjectID)
+{
+	try
+	{
+		DrawObject* t_NewDrawObject = new DrawObject();
+		t_NewDrawObject->piecesID = p_DrawPieceIDs;
+	
+
+		//hash object
+		std::hash<DrawObject*> T_Hashi;
+		o_ObjectID = T_Hashi(t_NewDrawObject);
+
+	
+		if (m_DrawOjbects[o_ObjectID] == nullptr)
+		{
+			m_DrawOjbects[o_ObjectID] = t_NewDrawObject;
+		}
+	}
+	catch( std::exception e )
+	{
+		MessageBox( nullptr, L"Catched exeption when attempting to hash and allocate new object", L"ErrorMessage", MB_OK );
+		return E_FAIL;
+	}
+	
+
+	if (addToDrawNow)
+	{
+		//add code
+	}
+}
+
+HRESULT GraphicEngine::AddObjectLight(UINT p_ObjectID ,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius, UINT &o_LightID)
+{
+	if (m_DrawOjbects[p_ObjectID] != nullptr)
+	{
+		m_DrawOjbects[p_ObjectID]->lights.push_back(Light(p_Position,p_Radius,p_Color,0));
+		o_LightID = m_DrawOjbects[p_ObjectID]->lights.size() -1;
+		return S_OK;
+	}
+	else
+	{
+		return E_FAIL;
+	}
+}
+
+HRESULT GraphicEngine::ChangeObjectsLight(UINT p_ObjectID, UINT p_LightID,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius)
+{
+	if (m_DrawOjbects[p_ObjectID] != nullptr)
+	{
+		if (p_LightID < m_DrawOjbects[p_ObjectID]->lights.size())
+		{
+			m_DrawOjbects[p_ObjectID]->lights[p_LightID] = Light(p_Position,p_Radius,p_Color,0);
+			return S_OK;
+		}
+		else
+		{
+			return E_FAIL;
+		}
+	}
+	else
+	{
+		return E_FAIL;
+	}
+}
+
+HRESULT GraphicEngine::MoveObject(UINT p_ObjectID, CXMMATRIX p_Matrix)
+{
+	if (m_DrawOjbects[p_ObjectID] != nullptr)
+	{
+		 XMStoreFloat4x4(&m_DrawOjbects[p_ObjectID]->worldMatrix, p_Matrix);
+
+		return S_OK;
+	}
+	else
+	{
+		return E_FAIL;
+	}
+}
+
+
+//==========Texture functions=================//
+HRESULT GraphicEngine::LoadTexture(const wchar_t * p_FileName, UINT &o_TextureID)
+{
+	HRESULT hr = S_OK;
+	ID3D11ShaderResourceView* t_NewSRV;
+	//hr = CreateDDSTextureFromFile(m_Device, p_FileName, nullptr, &t_NewSRV);
+	if( FAILED( hr ))
+		return hr;
+
+	m_Textures.push_back(t_NewSRV);
+
+	o_TextureID = m_Textures.size() - 1;
+
+	return hr;
+}
+
+//==========Light functions=================//
+
+void GraphicEngine::CreateStaticLight(XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius)
+{
+	Light t_NewLight(p_Position,p_Radius,p_Color,0);
+	m_StaticLights.push_back(t_NewLight);
+}
+
+HRESULT GraphicEngine::CreateDynamicLight(XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius, UINT &o_LightID)
+{
+	try
+	{
+		Light* t_NewLight = new Light(p_Position,p_Radius,p_Color,0);
+
+		std::hash<Light*> t_Hashii;
+
+		o_LightID = t_Hashii(t_NewLight);
+
+		if (m_DynamicLights[o_LightID] == nullptr)
+		{
+			m_DynamicLights[o_LightID] = t_NewLight;
+		}
+		
+	}
+	catch( std::exception e )
+	{
+		MessageBox( nullptr, L"Catched exeption when attempting to hash and allocate new object", L"ErrorMessage", MB_OK );
+		return E_FAIL;
+	}
+	return S_OK;
+}
+
+HRESULT GraphicEngine::UpdateDynamicLight(UINT p_LightID, XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius)
+{
+	if (m_DynamicLights[p_LightID] != nullptr)
+	{
+		m_DynamicLights[p_LightID]->color = p_Color;
+		m_DynamicLights[p_LightID]->position = p_Position;
+		m_DynamicLights[p_LightID]->radius = p_Radius;
+
+		return S_OK;
+	}
+	else
+	{
+		return E_FAIL;
+	}
+}
+
+//==========HUD functions=================//
+void GraphicEngine::AddHudObject()
+{
+	
+}
+void GraphicEngine::CreatehudObject()
 {
 
 }
-void GraphicEngine::MoveEntity()
+void GraphicEngine::UseHud()
+{
+
+}
+void GraphicEngine::LoadHud()
+{
+
+}
+
+//==========Camera functions=================//
+
+HRESULT GraphicEngine::CreateCamera( XMFLOAT3 p_Pos, XMFLOAT3 p_At, XMFLOAT3 p_Up, float p_FieldOfView, float p_Width, float p_Height, float p_NearZ, float p_FarZ, UINT &o_CameraID)
+{
+	try
+	{
+		Camera* t_NewCamera = new Camera();
+
+		std::hash<Camera*> t_Hashii;
+
+		o_CameraID = t_Hashii(t_NewCamera);
+
+		if (m_Cameras[o_CameraID] == nullptr)
+		{
+			m_Cameras[o_CameraID] = t_NewCamera;
+		}
+		
+	}
+	catch( std::exception e )
+	{
+		MessageBox( nullptr, L"Catched exeption when attempting to hash and allocate new object", L"ErrorMessage", MB_OK );
+		return E_FAIL;
+	}
+	
+	m_Cameras[o_CameraID]->LookAt(p_Pos,p_At,p_Up);
+	m_Cameras[o_CameraID]->SetLens(p_FieldOfView, p_Width / (FLOAT)p_Height, p_NearZ, p_FarZ);
+	return S_OK;
+}
+
+HRESULT GraphicEngine::MoveCamera(UINT p_CameraID, float walk, float strafe, float hover, float pitch, float rotateY)
+{
+	if (m_Cameras[p_CameraID] != nullptr)
+	{
+		m_Cameras[p_CameraID]->Walk(walk);
+		m_Cameras[p_CameraID]->Strafe(strafe);
+		m_Cameras[p_CameraID]->HoverY(hover);
+		m_Cameras[p_CameraID]->Pitch(pitch);
+		m_Cameras[p_CameraID]->RotateY(rotateY);
+
+		return S_OK;
+	}
+	else
+	{
+		return E_FAIL;
+	}
+	return S_OK;
+}
+
+void GraphicEngine::UseCamera()
 {
 
 }
