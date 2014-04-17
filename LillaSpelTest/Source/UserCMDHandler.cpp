@@ -56,6 +56,14 @@ void UserCMDHandler::AlterUserCMD(UserCMD& o_userCMD)
 	{
 		o_userCMD.startButtonPressed = false;
 	}
+	if (state.Gamepad.wButtons & XINPUT_GAMEPAD_BACK)
+	{
+		o_userCMD.backButtonPressed= true;
+	}
+	else
+	{
+		o_userCMD.backButtonPressed = false;
+	}
 	if (state.Gamepad.bLeftTrigger & VK_PAD_LTRIGGER)
 	{
 		o_userCMD.controller.Vibrate(64000,0);

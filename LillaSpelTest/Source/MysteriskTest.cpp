@@ -1,10 +1,13 @@
 #include "MysteriskTest.h"
 #include "GameSetupScreen.h"
+#include "JoinGameScreen.h"
 
-GameSetupScreen test;
+GameSetupScreen setuptest;
+JoinGameScreen jointest;
 MysteriskTest::MysteriskTest(void)
 {
-	test = GameSetupScreen();
+	setuptest = GameSetupScreen();
+	jointest = JoinGameScreen();
 }
 
 
@@ -14,5 +17,6 @@ MysteriskTest::~MysteriskTest(void)
 
 void MysteriskTest::Run(std::vector<UserCMD>* players)
 {
-	test.Update(players);
+	setuptest.Update(players);
+	jointest.Update(players);
 }
