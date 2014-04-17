@@ -6,6 +6,7 @@
 #include <DirectXMath.h>
 #include "UserCMDHandler.h"
 #include "AzookaTest.h"
+#include "MysteriskTest.h"
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam );
 HRESULT InitializeWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow, UINT width, UINT height);
@@ -35,15 +36,19 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
 void Run() 
 {
-	std::vector<UserCMD> userCMDS;
+	std::vector<UserCMD> *userCMDS = new std::vector<UserCMD>();
 	UserCMDHandler userCMDHandler = UserCMDHandler();
 
 	for (int i = 0; i < 4; i++)
 	{
 		UserCMD t_userCMD = UserCMD(i);
-		userCMDS.push_back(t_userCMD);
+		userCMDS->push_back(t_userCMD);
 	}
 	
+
+	MysteriskTest t_Mtest = MysteriskTest();
+
+
 	//message game loop
 	MSG msg = {0};
 	while( WM_QUIT != msg.message )
@@ -59,14 +64,15 @@ void Run()
 			AzookaTest t_azookaTest = AzookaTest();
 			t_azookaTest.Run();
 
-
+			
+			t_Mtest.Run(userCMDS);
 
 
 			for (int i = 0; i < 4; i++) ///Fixes UserCMDs for all connected players
 			{
-				if (userCMDS[i].controller.IsConnected())
+				if (userCMDS->at(i).controller.IsConnected())
 				{
-					userCMDHandler.AlterUserCMD(userCMDS[i]);
+					userCMDHandler.AlterUserCMD(userCMDS->at(i));
 				} 
 				else
 				{

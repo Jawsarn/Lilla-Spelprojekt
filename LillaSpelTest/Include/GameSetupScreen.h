@@ -4,8 +4,8 @@ class GameSetupScreen :
 	public MenuScreen
 {
 private:
-	std::string currentMap;
 	std::vector<std::string> mapList;
+	int currentMap;
 public:
 	GameSetupScreen(void);
 	GameSetupScreen(GameInfo* p_gameInfo);
