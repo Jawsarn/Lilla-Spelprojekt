@@ -64,3 +64,13 @@ struct PerObjectBuffer //updates for each object that needs this
 	UINT typeOfObject; //with types of textures etc
 	XMFLOAT3 fillers;
 };
+
+struct ShaderProgram
+{
+	int inputLayout;
+	int vertexShader;
+	int hullShader;
+	int domainShader;
+	int geometryShader;
+	int pixelShader;
+};
