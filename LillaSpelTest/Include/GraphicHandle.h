@@ -11,17 +11,22 @@ using namespace DirectX;
 class GraphicHandle
 {
 private:
+
+	GraphicHandle();
+	~GraphicHandle();
+
 	UINT m_Player[4];
 	
 	std::vector<std::vector<UINT>> m_Ships;
 	GraphicEngine* m_GraphicEngine;
 
+	static GraphicHandle* m_Singleton;
 public:
 
-	GraphicHandle();
-	~GraphicHandle();
+	static GraphicHandle* GetInstance();
 	
-	void Initialize();
+	
+	void Initialize(UINT p_Width, UINT p_Height, HWND p_Handle);
 	void Draw();
 	void ChangeHUDObject(int p_hudID, int p_hudObjID, int change());
 	void UpdateDynamicLight(UINT p_LightID,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius);

@@ -1,5 +1,4 @@
 #include "GraphicEngine.h"
-#include "MeshLoader.h"
 #include <exception>
 #include "DDSTextureLoader.h"
 #include <DirectXColors.h>
@@ -20,6 +19,7 @@ GraphicEngine::GraphicEngine(void)
 	m_DriverType = D3D_DRIVER_TYPE_NULL;
 	m_FeatureLevel = D3D_FEATURE_LEVEL_11_0;
 	m_ShaderLoader = new ShaderLoader();
+	m_MeshLoader = new MeshLoader();
 }
 
 GraphicEngine::~GraphicEngine(void)
@@ -599,15 +599,15 @@ HRESULT GraphicEngine::InitializeSamplerState()
 //==========Entity functions=================//
 
 
-HRESULT GraphicEngine::LoadMesh(const wchar_t * p_FileName, std::vector<UINT> &o_DrawPieceIDs)
+HRESULT GraphicEngine::LoadMesh(std::string p_FileName, std::vector<UINT> &o_DrawPieceIDs)
 {
 	//fix
 	HRESULT hr = S_OK;
 
 	std::vector<std::vector<SimpleVertex>> t_VertexGroupLists;
-	/*hr = meshLoader->ReadObjFile(p_FileName,m_Device,t_VertexGroupLists,1.0f);
+	hr = m_MeshLoader->ReadObjFile(p_FileName,t_VertexGroupLists,1.0f);
 	if( FAILED( hr ))
-		return hr;*/
+		return hr;
 	
 	D3D11_BUFFER_DESC vbd;
 	ZeroMemory( &vbd, sizeof(vbd));

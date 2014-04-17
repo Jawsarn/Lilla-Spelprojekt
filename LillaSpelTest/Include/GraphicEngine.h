@@ -7,6 +7,7 @@
 #include <map>
 #include "GraphicStructs.h"
 #include "Camera.h"
+#include "MeshLoader.h"
 
 using namespace DirectX;
 
@@ -38,7 +39,7 @@ public:
 	enum TextureType{DIFFUSE,NORMAL,GLOW,SPECULAR};
 
 	//object
-	HRESULT LoadMesh( const wchar_t * p_FileName, std::vector<UINT> &o_DrawPieceIDs);
+	HRESULT LoadMesh(std::string p_FileName, std::vector<UINT> &o_DrawPieceIDs);
 	HRESULT AddTextureToDrawPiece(UINT p_DrawPieceID, UINT p_TextureID,TextureType p_TextureType);
 	HRESULT CreateObject(std::vector<UINT> p_DrawPieceIDs, CXMMATRIX p_World, bool addToDrawNow, UINT &o_ObjectID);
 	HRESULT AddObjectLight(UINT p_ObjectID ,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float radius, UINT &o_LightID);
@@ -104,6 +105,8 @@ private:
 
 
 	static GraphicEngine* singleton;
+
+	MeshLoader* m_MeshLoader;
 
 	ID3D11Device*			m_Device;
 	ID3D11DeviceContext*	m_DeviceContext;

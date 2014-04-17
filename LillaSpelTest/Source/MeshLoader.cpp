@@ -9,8 +9,7 @@ MeshLoader::MeshLoader(void)
 MeshLoader::~MeshLoader(void)
 {
 }
-HRESULT MeshLoader::ReadObjFile(std::string p_filename,//int &podjas,		//.obj filename
-								std::vector<std::vector<SimpleVertex>> &o_vertices, float p_scale)
+HRESULT MeshLoader::ReadObjFile(std::string p_filename, std::vector<std::vector<SimpleVertex>> &o_vertices, float p_scale)
 {
 	HRESULT hr = S_OK;
 
@@ -81,14 +80,14 @@ HRESULT MeshLoader::ReadObjFile(std::string p_filename,//int &podjas,		//.obj fi
 			SimpleVertex t_vertices;
 			for (int i=0;i<3;i++)
 			{
-				t_vertices.m_pos.x = t_positions[vertexIndex[i]-1].x;
-				t_vertices.m_pos.y = t_positions[vertexIndex[i]-1].y;
-				t_vertices.m_pos.z = t_positions[vertexIndex[i]-1].z;
-				t_vertices.m_norm.x = t_normals[normalIndex[i]-1].x;
-				t_vertices.m_norm.y = t_normals[normalIndex[i]-1].y;
-				t_vertices.m_norm.z = t_normals[normalIndex[i]-1].z;
-				t_vertices.m_tex.x = t_uvs[uvIndex[i]-1].x;
-				t_vertices.m_tex.y = t_uvs[uvIndex[i]-1].y;
+				t_vertices.position.x = t_positions[vertexIndex[i]-1].x;
+				t_vertices.position.y = t_positions[vertexIndex[i]-1].y;
+				t_vertices.position.z = t_positions[vertexIndex[i]-1].z;
+				t_vertices.normal.x = t_normals[normalIndex[i]-1].x;
+				t_vertices.normal.y = t_normals[normalIndex[i]-1].y;
+				t_vertices.normal.z = t_normals[normalIndex[i]-1].z;
+				t_vertices.textureUV.x = t_uvs[uvIndex[i]-1].x;
+				t_vertices.textureUV.y = t_uvs[uvIndex[i]-1].y;
 				o_vertices[t_nrEntity-1].push_back(t_vertices);
 			}			
 		}

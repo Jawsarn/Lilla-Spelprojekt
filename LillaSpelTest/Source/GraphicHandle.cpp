@@ -1,6 +1,17 @@
 #include "GraphicHandle.h"
 #include "GraphicEngine.h"
 
+GraphicHandle* GraphicHandle::m_Singleton = nullptr;
+
+GraphicHandle* GraphicHandle::GetInstance()
+{
+	if(m_Singleton == nullptr)
+	{
+		m_Singleton = new GraphicHandle();
+	}
+	return m_Singleton;
+}
+
 GraphicHandle::GraphicHandle()
 {
 
@@ -10,12 +21,14 @@ GraphicHandle::~GraphicHandle()
 
 }
 
-void GraphicHandle::Initialize()
+void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 {
 	m_GraphicEngine = m_GraphicEngine->GetInstance();
+	m_GraphicEngine->Initialize(p_Width, p_Height, p_Handle);
+
 
 	std::vector<UINT> t_Ship;
-	m_GraphicEngine->LoadMesh(L"ships.obj",t_Ship);
+	m_GraphicEngine->LoadMesh("Sphere.obj",t_Ship);
 	m_Ships.push_back(t_Ship);
 	m_GraphicEngine->AddTextureToDrawPiece(t_Ship[0],0,GraphicEngine::TextureType::SPECULAR);
 	//initialize varje skepp

@@ -13,22 +13,31 @@ HRESULT InitializeWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow, UINT width
 void Run();
 
 HINSTANCE	handleInstance;
-HWND	handleWindow;
+HWND	m_HandleWindow;
 
 
-#include "GraphicEngine.h"
+#include "GraphicHandle.h"
 
 float deltaTime;
 float gameTime;
 ULONGLONG prevTime;
+
+GraphicHandle* m_GraphicHandle;
 
 int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow )
 {
 	UNREFERENCED_PARAMETER( hPrevInstance );
     UNREFERENCED_PARAMETER( lpCmdLine );
 	InitializeWindow(hInstance,nCmdShow,1024,1024);
-	GraphicEngine* a = a->GetInstance(); //Jaws is fucking up here
-	a->Initialize(1024,1024,handleWindow);
+
+	RECT t_Rectangle;
+	GetClientRect( m_HandleWindow, &t_Rectangle );
+	UINT t_Width = t_Rectangle.right - t_Rectangle.left;
+	UINT t_Height = t_Rectangle.bottom - t_Rectangle.top;
+
+	m_GraphicHandle = m_GraphicHandle->GetInstance();
+	m_GraphicHandle->Initialize(t_Width, t_Height, m_HandleWindow);
+
 	Run();
 
 	return 0;
@@ -154,13 +163,13 @@ HRESULT InitializeWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow, UINT width
     RECT rc = { 0, 0, width, height };
 	
     AdjustWindowRect( &rc, WS_OVERLAPPEDWINDOW, FALSE );
-    handleWindow = CreateWindow(  wcex.lpszClassName,  wcex.lpszClassName, WS_OVERLAPPEDWINDOW,
+    m_HandleWindow = CreateWindow(  wcex.lpszClassName,  wcex.lpszClassName, WS_OVERLAPPEDWINDOW,
                            CW_USEDEFAULT, CW_USEDEFAULT, rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, hInstance,
                            nullptr );
-    if( !handleWindow )
+    if( !m_HandleWindow )
         return E_FAIL;
 	
-    ShowWindow( handleWindow, nCmdShow );
+    ShowWindow( m_HandleWindow, nCmdShow );
 	//ChangeDisplaySettingsA(NULL, CDS_FULLSCREEN);
 
     return S_OK;
