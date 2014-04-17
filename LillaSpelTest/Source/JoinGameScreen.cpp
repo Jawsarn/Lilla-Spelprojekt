@@ -3,6 +3,13 @@
 
 JoinGameScreen::JoinGameScreen(void)
 {
+	
+	for (int i = 0; i < 4; i++)
+	{
+		modell[i] = 0;
+		color[i] = 0;
+		playerStatus[i] = DISCONNECTED;
+	}
 }
 
 
@@ -16,41 +23,103 @@ int JoinGameScreen::Update(std::vector<UserCMD>* userCMD)
 	{
 		if (userCMD->at(i).aButtonPressed)
 		{
-			players[i] = CHOOSE_MODDEL;
+			if (playerStatus[i] == CHOOSE_MODELL)
+			{
+				playerStatus[i]=CHOOSE_COLOR;
+			}
+			else if (playerStatus[i] == CHOOSE_COLOR)
+			{
+				playerStatus[i]=READY;
+			}
+			else if (playerStatus[i] == DISCONNECTED)
+			{
+				playerStatus[i]=CHOOSE_MODELL;
+			}
 		}
-		else if (userCMD->at(i).bButtonPressed)
+		else if (userCMD->at(i).backButtonPressed)
 		{
-			players[i] = DISCONNECTED;
+			playerStatus[i] = DISCONNECTED;
 		}
-		if (userCMD->at(i).xButtonPressed && players[i] == CHOOSE_MODDEL || players[i] == CHOOSE_COLOR)
+		if (userCMD->at(i).xButtonPressed && (playerStatus[i] == CHOOSE_MODELL || playerStatus[i] == CHOOSE_COLOR))
 		{
-			players[i] = READY;
+			playerStatus[i] = READY;
 		}
-		if (userCMD->at(i).yButtonPressed && players[i] == READY)
+		if (userCMD->at(i).bButtonPressed)
 		{
-			players[i] = CHOOSE_MODDEL;
-		}
-		if (userCMD->at(i).backButtonPressed)
-		{
-			return GAME_SETUP_SCREEN;
+			if (playerStatus[i] == READY)
+			{
+				playerStatus[i]=CHOOSE_COLOR;
+			}
+			else if (playerStatus[i] == CHOOSE_COLOR)
+			{
+				playerStatus[i]=CHOOSE_MODELL;
+			}
+			else if (playerStatus[i] == CHOOSE_MODELL)
+			{
+				return GAME_SETUP_SCREEN;
+			}	
 		}
 
-		if (players[i]=CHOOSE_MODDEL)
+		if (playerStatus[i]==CHOOSE_MODELL)
 		{
 			if (userCMD->at(i).Joystick.x < -0.8)
 			{
-				if (model[i] > 0)
+				if (modell[i] > 0)
 				{
-					model[i]--;
+					modell[i]--;
 				}
 				
 			}
 			else if (userCMD->at(i).Joystick.x > 0.8)
 			{
-				if (model[i] < NUMBER_OF_MODELLS - 1)
+				if (modell[i] < NUMBER_OF_MODELLS - 1)
 				{
-					model[i]++;
+					modell[i]++;
 				}	
+			}
+		}
+		if (playerStatus[i]==CHOOSE_COLOR)
+		{
+			if (userCMD->at(i).Joystick.x < -0.8)
+			{
+				if (color[i] > 0)
+				{
+					color[i]--;
+				}
+				
+			}
+			else if (userCMD->at(i).Joystick.x > 0.8)
+			{
+				if (color[i] < NUMBER_OF_COLORS - 1)
+				{
+					color[i]++;
+				}	
+			}
+		}
+
+		if (userCMD->at(i).startButtonPressed)
+		{
+			int t_numberOfPlayersReady = 0;
+			int t_numberOfPlayersDisconnected = 0;
+			for (int i = 0; i < 4; i++)
+			{
+				if (playerStatus[i]== READY)
+				{
+					t_numberOfPlayersReady++;
+				}
+				else if (playerStatus[i]== DISCONNECTED)
+				{
+					t_numberOfPlayersReady++;
+					t_numberOfPlayersDisconnected++;
+				}
+				else
+				{
+					break;
+				}
+			}
+			if (t_numberOfPlayersReady == 4 && t_numberOfPlayersDisconnected != 0)
+			{
+				return GAME_SCREEN;
 			}
 		}
 	}

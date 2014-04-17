@@ -5,9 +5,10 @@ class JoinGameScreen :
 	public MenuScreen
 {
 private:
-	enum PlayerStatus{DISCONNECTED,CHOOSE_MODDEL, CHOOSE_COLOR, READY};
-	PlayerStatus players[4];
-	int model[4];
+	enum PlayerStatus{DISCONNECTED,CHOOSE_MODELL, CHOOSE_COLOR, READY};
+	PlayerStatus playerStatus[4];
+	int modell[4];
+	int color[4];
 public:
 	JoinGameScreen(void);
 	~JoinGameScreen(void);

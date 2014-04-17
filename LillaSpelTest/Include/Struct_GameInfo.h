@@ -1,12 +1,12 @@
 #pragma once
 #include <string>
-#include <DirectXMath.h>
 #define NUMBER_OF_MODELLS 5
+#define NUMBER_OF_COLORS 5
 
 struct PlayerStartInfo
 {
 	int modell;
-	DirectX::XMFLOAT3 color;
+	int color;
 };
 
 struct GameInfo
