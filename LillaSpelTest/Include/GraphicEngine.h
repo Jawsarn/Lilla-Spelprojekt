@@ -38,7 +38,7 @@ public:
 	enum TextureType{DIFFUSE,NORMAL,GLOW,SPECULAR};
 
 	//object
-	HRESULT LoadMesh(std::vector<UINT> &o_DrawPieceIDs);
+	HRESULT LoadMesh( const wchar_t * p_FileName, std::vector<UINT> &o_DrawPieceIDs);
 	HRESULT AddTextureToDrawPiece(UINT p_DrawPieceID, UINT p_TextureID,TextureType p_TextureType);
 	HRESULT CreateObject(std::vector<UINT> p_DrawPieceIDs, CXMMATRIX p_World, bool addToDrawNow, UINT &o_ObjectID);
 	HRESULT AddObjectLight(UINT p_ObjectID ,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float radius, UINT &o_LightID);
@@ -64,8 +64,8 @@ public:
 	//camera funcs
 	HRESULT CreateCamera( XMFLOAT3 p_Pos, XMFLOAT3 p_At, XMFLOAT3 p_Up, float p_FieldOfView, float p_Width, float p_Height, float p_NearZ, float p_FarZ, UINT &o_CameraID);
 	HRESULT MoveCamera(UINT p_CameraID, float walk, float strafe, float hover, float pitch, float rotateY);
-	void UseCamera();
-	void RotateCamera();
+	void UseCamera(UINT p_ViewPortID, UINT p_CameraID);
+
 
 	void CreateParticleSystem();
 	
@@ -76,8 +76,9 @@ public:
 	
 	//void RemoveFromDrawObjects();
 	//void AddToDrawObject();
+	void DrawGame();
 	void DrawHud();
-
+	
 
 private:
 
@@ -138,9 +139,27 @@ private:
 	std::map<UINT, Light*> m_DynamicLights;
 	std::map<UINT, Camera*> m_Cameras;
 
-	std::vector<VertexBufferWithNOV> m_VertexBuffers;
+	
 	std::vector<DrawPiece> m_DrawPieces;
 	std::vector<ID3D11ShaderResourceView*> m_Textures;
 	std::vector<Light> m_StaticLights;
+	Camera* m_ActiveCameras[4];
+
+	//shader programs
+	std::vector<ShaderProgram> m_ShaderPrograms;
+
+	//shaders
+	std::vector<ID3D11VertexShader*> m_VertexShaders;
+	std::vector<ID3D11HullShader*> m_HullShaders;
+	std::vector<ID3D11DomainShader*> m_DomainShaders;
+	std::vector<ID3D11GeometryShader*> m_GeometryShaders;
+	std::vector<ID3D11PixelShader*> m_PixelShaders;
+	std::vector<ID3D11ComputeShader*> m_ComputeShaders;
+
+	//input layout
+	std::vector<ID3D11InputLayout*> inputLayouts;
+	
+	//vertexbuffer
+	std::vector<VertexBufferWithNOV> m_VertexBuffers;
 };
 

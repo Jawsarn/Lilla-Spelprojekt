@@ -1,7 +1,7 @@
 #include "GraphicEngine.h"
 #include "MeshLoader.h"
 #include <exception>
-
+#include "DDSTextureLoader.h"
 
 
 GraphicEngine* GraphicEngine::singleton = nullptr;
@@ -31,6 +31,9 @@ HRESULT GraphicEngine::Initialize( UINT p_Width, UINT p_Height, HWND handleWindo
 {
 	HRESULT hr = S_OK;
 	
+	m_Height = p_Height;
+	m_Width = p_Width;
+
 	hr = InitializeDriverAndVersion(handleWindow);
 	if( FAILED( hr ) )
 		return hr;
@@ -53,9 +56,9 @@ HRESULT GraphicEngine::Initialize( UINT p_Width, UINT p_Height, HWND handleWindo
 	if( FAILED( hr ) )
 		return hr;
 
-	hr = InitializeShaders();
-	if( FAILED( hr ) )
-		return hr;
+	//hr = InitializeShaders();
+	//if( FAILED( hr ) )
+	//	return hr;
 
 	hr = InitializeConstantBuffers();
 	if( FAILED( hr ) )
@@ -290,6 +293,9 @@ HRESULT GraphicEngine::InitializeDepthAndDepthStates()
     t_DescDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
     t_DescDSV.Texture2D.MipSlice = 0;
 	hr = m_Device->CreateDepthStencilView( m_DepthStencil, &t_DescDSV, &m_DepthStencilView );
+	if ( FAILED( hr ))
+		return hr;
+
 	//not sure if I can release the depth if I wanted?
 
 
@@ -378,14 +384,14 @@ HRESULT GraphicEngine::InitializeShaders()
 {
 	HRESULT hr = S_OK;
 
-	/*ID3D11ComputeShader* t_TileDeferredCS;
-	hr = m_ShaderLoader->CreateComputeShader(L"DeferredRenderingCS.hlsl", "TileDeferredCS", "cs_5_0" , m_Device, &tileDeferredCS);
+	ID3D11ComputeShader* t_TileDeferredCS;
+	hr = m_ShaderLoader->CreateComputeShader(L"GraphicDeferredLightingCS.hlsl", "TileDeferredCS", "cs_5_0" , m_Device, &t_TileDeferredCS);
 	if( FAILED( hr ) )
 		return hr;
 
-	computeShaders.push_back(tileDeferredCS);
+	m_ComputeShaders.push_back(t_TileDeferredCS);
 
-	deviceContext->CSSetShader(computeShaders[0],nullptr,0);
+	m_DeviceContext->CSSetShader(m_ComputeShaders[0],nullptr,0);
 
 	ID3D11VertexShader* vertexShader;
 	ID3D11InputLayout* inputLayout;
@@ -399,27 +405,27 @@ HRESULT GraphicEngine::InitializeShaders()
 	};
 	UINT numElements = ARRAYSIZE(layout);
 
-	hr = shaderLoader->CreateVertexShaderWithInputLayout(L"NormalVertexShader.hlsl","VS","vs_5_0",device,&vertexShader,layout,numElements,&inputLayout);
+	hr = m_ShaderLoader->CreateVertexShaderWithInputLayout(L"NormalVertexShader.hlsl","VS","vs_5_0",m_Device,&vertexShader,layout,numElements,&inputLayout);
 	if( FAILED( hr ) )
 		return hr;
 
-	vertexShaders.push_back(vertexShader);
+	m_VertexShaders.push_back(vertexShader);
 	inputLayouts.push_back(inputLayout);
 
 	ID3D11PixelShader* pixelShader;
-	hr = shaderLoader->CreatePixelShader(L"NormalPixelShader.hlsl","PS","ps_5_0",device,&pixelShader);
+	hr = m_ShaderLoader->CreatePixelShader(L"NormalPixelShader.hlsl","PS","ps_5_0",m_Device,&pixelShader);
 	if( FAILED( hr ))
 		return hr;
-	pixelShaders.push_back(pixelShader);
+	m_PixelShaders.push_back(pixelShader);
 
 	ShaderProgram newProgram;
-	newProgram.vertexShader = vertexShaders.size() - 1;
+	newProgram.vertexShader = m_VertexShaders.size() - 1;
 	newProgram.domainShader = -1;
 	newProgram.hullShader = -1;
 	newProgram.geometryShader = -1;
-	newProgram.pixelShader = pixelShaders.size() - 1;
+	newProgram.pixelShader = m_PixelShaders.size() - 1;
 
-	shaderPrograms.push_back(newProgram);*/
+	m_ShaderPrograms.push_back(newProgram);
 
 	//fix  shaders here
 
@@ -586,13 +592,13 @@ HRESULT GraphicEngine::InitializeSamplerState()
 //==========Entity functions=================//
 
 
-HRESULT GraphicEngine::LoadMesh(std::vector<UINT> &o_DrawPieceIDs)
+HRESULT GraphicEngine::LoadMesh(const wchar_t * p_FileName, std::vector<UINT> &o_DrawPieceIDs)
 {
 	//fix
 	HRESULT hr = S_OK;
 
 	std::vector<std::vector<SimpleVertex>> t_VertexGroupLists;
-	/*hr = meshLoader->ReadObjFile(objFileName,device,vertexGroupLists,1.0f);
+	/*hr = meshLoader->ReadObjFile(p_FileName,m_Device,t_VertexGroupLists,1.0f);
 	if( FAILED( hr ))
 		return hr;*/
 	
@@ -751,7 +757,7 @@ HRESULT GraphicEngine::LoadTexture(const wchar_t * p_FileName, UINT &o_TextureID
 {
 	HRESULT hr = S_OK;
 	ID3D11ShaderResourceView* t_NewSRV;
-	//hr = CreateDDSTextureFromFile(m_Device, p_FileName, nullptr, &t_NewSRV);
+	hr = CreateDDSTextureFromFile(m_Device, p_FileName, nullptr, &t_NewSRV);
 	if( FAILED( hr ))
 		return hr;
 
@@ -876,8 +882,19 @@ HRESULT GraphicEngine::MoveCamera(UINT p_CameraID, float walk, float strafe, flo
 	return S_OK;
 }
 
-void GraphicEngine::UseCamera()
+void GraphicEngine::UseCamera(UINT p_ViewPortID, UINT p_CameraID)
+{
+	m_ActiveCameras[p_ViewPortID] = m_Cameras[p_CameraID];
+}
+
+//==========Draw functions=================//
+
+void GraphicEngine::DrawGame()
 {
 
 }
 
+void GraphicEngine::DrawHud()
+{
+
+}
