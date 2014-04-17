@@ -81,7 +81,12 @@ void Player::UpdateCollisionBox()
 
 
 /// Gets yo
-void Player::GetPos()
+XMFLOAT3 Player::GetPos()
 {
 	return m_position;
+}
+
+XMFLOAT3 Player::GetDirection()
+{
+	return m_direction;
 }

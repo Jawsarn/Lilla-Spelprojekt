@@ -48,7 +48,8 @@ public:
 	void ChangeState(PlayerState p_state);
 
 	//Gets yo
-	void GetPos();
+	XMFLOAT3 GetPos();
+	XMFLOAT3 GetDirection();
 
 private:
 	void PlaceWall();
