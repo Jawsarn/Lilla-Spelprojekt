@@ -100,6 +100,7 @@ private:
 	void ComputeTileDeferredLightning();
 	void UpdateConstantBuffer();
 
+	UINT GraphicEngine::CheckProgram(DrawPiece p_Piece);
 
 
 	static GraphicEngine* singleton;

@@ -2,7 +2,7 @@
 #include "MeshLoader.h"
 #include <exception>
 #include "DDSTextureLoader.h"
-
+#include <DirectXColors.h>
 
 GraphicEngine* GraphicEngine::singleton = nullptr;
 
@@ -56,9 +56,9 @@ HRESULT GraphicEngine::Initialize( UINT p_Width, UINT p_Height, HWND handleWindo
 	if( FAILED( hr ) )
 		return hr;
 
-	//hr = InitializeShaders();
-	//if( FAILED( hr ) )
-	//	return hr;
+	hr = InitializeShaders();
+	if( FAILED( hr ) )
+		return hr;
 
 	hr = InitializeConstantBuffers();
 	if( FAILED( hr ) )
@@ -384,48 +384,55 @@ HRESULT GraphicEngine::InitializeShaders()
 {
 	HRESULT hr = S_OK;
 
-	ID3D11ComputeShader* t_TileDeferredCS;
+	/*ID3D11ComputeShader* t_TileDeferredCS;
 	hr = m_ShaderLoader->CreateComputeShader(L"GraphicDeferredLightingCS.hlsl", "TileDeferredCS", "cs_5_0" , m_Device, &t_TileDeferredCS);
 	if( FAILED( hr ) )
 		return hr;
 
 	m_ComputeShaders.push_back(t_TileDeferredCS);
 
-	m_DeviceContext->CSSetShader(m_ComputeShaders[0],nullptr,0);
+	m_DeviceContext->CSSetShader(m_ComputeShaders[0],nullptr,0);*/
 
-	ID3D11VertexShader* vertexShader;
-	ID3D11InputLayout* inputLayout;
-
-	D3D11_INPUT_ELEMENT_DESC layout[] =
+	ID3D11VertexShader* t_VertexShader;
+	ID3D11InputLayout* t_InputLayout;
+	D3D11_INPUT_ELEMENT_DESC t_Layout[] =
     {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 
 	};
-	UINT numElements = ARRAYSIZE(layout);
+	UINT t_NumElements = ARRAYSIZE(t_Layout);
 
-	hr = m_ShaderLoader->CreateVertexShaderWithInputLayout(L"NormalVertexShader.hlsl","VS","vs_5_0",m_Device,&vertexShader,layout,numElements,&inputLayout);
+	hr = m_ShaderLoader->CreateVertexShaderWithInputLayout(L"GraphicNormalVS.hlsl","VS","vs_5_0",m_Device,&t_VertexShader,t_Layout,t_NumElements,&t_InputLayout);
 	if( FAILED( hr ) )
 		return hr;
 
-	m_VertexShaders.push_back(vertexShader);
-	inputLayouts.push_back(inputLayout);
-
-	ID3D11PixelShader* pixelShader;
-	hr = m_ShaderLoader->CreatePixelShader(L"NormalPixelShader.hlsl","PS","ps_5_0",m_Device,&pixelShader);
+	m_VertexShaders.push_back(t_VertexShader);
+	inputLayouts.push_back(t_InputLayout);
+	
+	///GEOMETRY SHADER
+	ID3D11GeometryShader* t_GeometryShader;
+	hr = m_ShaderLoader->CreateGeometryShader(L"GraphicNormalGS.hlsl","GS","gs_5_0",m_Device,&t_GeometryShader);
 	if( FAILED( hr ))
 		return hr;
-	m_PixelShaders.push_back(pixelShader);
+	m_GeometryShaders.push_back(t_GeometryShader);
 
-	ShaderProgram newProgram;
-	newProgram.vertexShader = m_VertexShaders.size() - 1;
-	newProgram.domainShader = -1;
-	newProgram.hullShader = -1;
-	newProgram.geometryShader = -1;
-	newProgram.pixelShader = m_PixelShaders.size() - 1;
+	//PIXEL SHADER
+	ID3D11PixelShader* t_PixelShader;
+	hr = m_ShaderLoader->CreatePixelShader(L"GraphicNormalPS.hlsl","PS","ps_5_0",m_Device,&t_PixelShader);
+	if( FAILED( hr ))
+		return hr;
+	m_PixelShaders.push_back(t_PixelShader);
 
-	m_ShaderPrograms.push_back(newProgram);
+	ShaderProgram t_NewProgram;
+	t_NewProgram.vertexShader = m_VertexShaders.size() - 1;
+	t_NewProgram.domainShader = -1;
+	t_NewProgram.hullShader = -1;
+	t_NewProgram.geometryShader = m_GeometryShaders.size() -1;
+	t_NewProgram.pixelShader = m_PixelShaders.size() - 1;
+	t_NewProgram.inputLayout = inputLayouts.size() - 1;
+	m_ShaderPrograms.push_back(t_NewProgram);
 
 	//fix  shaders here
 
@@ -891,10 +898,24 @@ void GraphicEngine::UseCamera(UINT p_ViewPortID, UINT p_CameraID)
 
 void GraphicEngine::DrawGame()
 {
+	m_DeviceContext->ClearRenderTargetView(m_RenderTargetView, Colors::Black );
+	m_DeviceContext->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	
+	//std::map<UINT, DrawObject*>::iterator it;
+	for (std::map<UINT, DrawObject*>::iterator it = m_DrawOjbects.begin(); it != m_DrawOjbects.end(); ++it)
+	{
+		
+	}
 
+	m_SwapChain->Present( 0, 0 );
 }
 
 void GraphicEngine::DrawHud()
 {
 
+}
+
+UINT GraphicEngine::CheckProgram(DrawPiece p_Piece)
+{
+	return 0;
 }

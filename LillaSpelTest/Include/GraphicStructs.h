@@ -47,6 +47,7 @@ struct DrawPiece
 	UINT normalTID;
 	UINT glowTID;
 	UINT specularTID;
+	UINT shaderProgramID;
 };
 
 struct DrawObject
@@ -55,6 +56,7 @@ struct DrawObject
 	std::vector<Light> lights;	//lighteruuu
 	//std::vector<transparentID>?
 	//std::vector<ParticleEffectID>
+	XMFLOAT3 color;
 	XMFLOAT4X4 worldMatrix;
 };
 
