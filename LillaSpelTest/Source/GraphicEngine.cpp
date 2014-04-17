@@ -1,7 +1,7 @@
 #include "GraphicEngine.h"
 #include "MeshLoader.h"
 #include <exception>
-
+#include "DDSTextureLoader.h"
 
 
 GraphicEngine* GraphicEngine::singleton = nullptr;
@@ -751,7 +751,7 @@ HRESULT GraphicEngine::LoadTexture(const wchar_t * p_FileName, UINT &o_TextureID
 {
 	HRESULT hr = S_OK;
 	ID3D11ShaderResourceView* t_NewSRV;
-	//hr = CreateDDSTextureFromFile(m_Device, p_FileName, nullptr, &t_NewSRV);
+	hr = CreateDDSTextureFromFile(m_Device, p_FileName, nullptr, &t_NewSRV);
 	if( FAILED( hr ))
 		return hr;
 
@@ -876,7 +876,7 @@ HRESULT GraphicEngine::MoveCamera(UINT p_CameraID, float walk, float strafe, flo
 	return S_OK;
 }
 
-void GraphicEngine::UseCamera()
+void GraphicEngine::UseCamera(UINT p_ViewPortID, UINT p_CameraID)
 {
 
 }

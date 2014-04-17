@@ -64,7 +64,7 @@ public:
 	//camera funcs
 	HRESULT CreateCamera( XMFLOAT3 p_Pos, XMFLOAT3 p_At, XMFLOAT3 p_Up, float p_FieldOfView, float p_Width, float p_Height, float p_NearZ, float p_FarZ, UINT &o_CameraID);
 	HRESULT MoveCamera(UINT p_CameraID, float walk, float strafe, float hover, float pitch, float rotateY);
-	void UseCamera();
+	void UseCamera(UINT p_ViewPortID, UINT p_CameraID);
 	void RotateCamera();
 
 	void CreateParticleSystem();
@@ -142,5 +142,6 @@ private:
 	std::vector<DrawPiece> m_DrawPieces;
 	std::vector<ID3D11ShaderResourceView*> m_Textures;
 	std::vector<Light> m_StaticLights;
+	std::vector<Camera*> m_ActiveCameras;
 };
 
