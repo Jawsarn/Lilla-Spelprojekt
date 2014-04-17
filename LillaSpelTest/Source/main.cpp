@@ -15,7 +15,7 @@ HINSTANCE	handleInstance;
 HWND	handleWindow;
 
 
-
+#include "GraphicEngine.h"
 
 float deltaTime;
 float gameTime;
@@ -26,7 +26,8 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	UNREFERENCED_PARAMETER( hPrevInstance );
     UNREFERENCED_PARAMETER( lpCmdLine );
 	InitializeWindow(hInstance,nCmdShow,1024,1024);
-
+	GraphicEngine* a = a->GetInstance(); //Jaws is fucking up here
+	a->Initialize(1024,1024,handleWindow);
 	Run();
 
 	return 0;

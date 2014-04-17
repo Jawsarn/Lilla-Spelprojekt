@@ -67,6 +67,7 @@ struct PerObjectBuffer //updates for each object that needs this
 
 struct ShaderProgram
 {
+	int inputLayout;
 	int vertexShader;
 	int hullShader;
 	int domainShader;
