@@ -1,5 +1,5 @@
 #include "GraphicEngine.h"
-
+#include "MeshLoader.h"
 
 GraphicEngine* GraphicEngine::singleton = nullptr;
 
@@ -61,16 +61,16 @@ HRESULT GraphicEngine::Initialize( UINT p_Width, UINT p_Height, HWND handleWindo
 	if( FAILED( hr ) )
 		return hr;
 
-	//hr = InitializeSamplerState();
-	//if( FAILED( hr) )
-	//	return hr;
+	hr = InitializeSamplerState();
+	if( FAILED( hr) )
+		return hr;
 
 	/*particleSystem = particleSystem->GetInstance();
 	hr = particleSystem->Initialize(device,deviceContext,depthStateOn,depthStateOff, blendStateOn, blendStateOff,perObjectBuffer);
 	if( FAILED( hr ) )
 		return hr;*/
 
-
+	return hr;
 }
 
 
@@ -501,8 +501,6 @@ HRESULT GraphicEngine::InitializeConstantBuffers()
 	return hr;
 }
 
-
-
 HRESULT GraphicEngine::InitializeGBuffers()
 {
 	HRESULT hr = S_OK;
@@ -521,11 +519,11 @@ HRESULT GraphicEngine::InitializeGBuffers()
 	desc.MiscFlags = 0;
 	
 
-	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-	srvDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D.MostDetailedMip = 0;
-	srvDesc.Texture2D.MipLevels = 1;
+	D3D11_SHADER_RESOURCE_VIEW_DESC t_SrvDesc;
+	t_SrvDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	t_SrvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	t_SrvDesc.Texture2D.MostDetailedMip = 0;
+	t_SrvDesc.Texture2D.MipLevels = 1;
 
 
 	for (int i = 0; i < 3; i++)
@@ -536,7 +534,7 @@ HRESULT GraphicEngine::InitializeGBuffers()
 		if( FAILED( hr ) )
 			return hr;
 
-		hr = m_Device->CreateShaderResourceView(t_Texture, &srvDesc, &m_GbufferShaderResource[i]);
+		hr = m_Device->CreateShaderResourceView(t_Texture, &t_SrvDesc, &m_GbufferShaderResource[i]);
 		if( FAILED( hr) )
 			return hr;
 
@@ -553,3 +551,50 @@ HRESULT GraphicEngine::InitializeGBuffers()
 	
 	return hr;
 }
+
+HRESULT GraphicEngine::InitializeSamplerState()
+{
+	HRESULT hr = S_OK;
+	D3D11_SAMPLER_DESC sampDesc;
+    ZeroMemory( &sampDesc, sizeof(sampDesc) );
+    sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+
+    sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	
+    sampDesc.MinLOD = 0;
+    sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	hr = m_Device->CreateSamplerState( &sampDesc, &m_SamplerStateWrap);
+	if( FAILED(hr) )
+		return hr;
+
+	m_DeviceContext->VSSetSamplers(0,1,&m_SamplerStateWrap);
+	m_DeviceContext->HSSetSamplers(0,1,&m_SamplerStateWrap);
+	m_DeviceContext->DSSetSamplers(0,1,&m_SamplerStateWrap);
+	m_DeviceContext->GSSetSamplers(0,1,&m_SamplerStateWrap);
+	m_DeviceContext->PSSetSamplers(0,1,&m_SamplerStateWrap);
+	
+	return hr;
+}
+
+//==========Entity functions=================//
+
+HRESULT GraphicEngine::LoadMesh(UINT o_MeshID)
+{
+	//fix
+	HRESULT hr = S_OK;
+
+
+	return hr;
+}
+void GraphicEngine::CreateEntity(UINT p_MeshID, UINT )
+{
+
+}
+void GraphicEngine::MoveEntity()
+{
+
+}
+

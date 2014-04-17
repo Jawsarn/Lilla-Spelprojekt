@@ -3,6 +3,7 @@
 #include <d3d11_1.h>
 #include <DirectXMath.h>
 #include "ShaderLoader.h"
+#include <vector>
 
 
 using namespace DirectX;
@@ -17,6 +18,28 @@ requires saving of hwind and rc
 
 
 */
+struct DrawObject
+{
+	UINT meshID;
+	UINT textureID;
+	UINT normalMapTextureID;
+	UINT glowMapTextureID;
+};
+
+struct Light
+{
+
+};
+
+struct DrawEntity
+{
+	std::vector<DrawObject> objects;
+	std::vector<Light> lights;
+	//std::vector<transparentID>?
+	//std::vector<ParticleEffectID>
+	XMFLOAT4X4 worldMatrix;
+};
+
 class GraphicEngine
 {
 public:
@@ -29,9 +52,9 @@ public:
 	HRESULT Loadtexture();
 	
 	//object
-	HRESULT LoadMesh();
-	void CreateObject();
-	void MoveObject();
+	HRESULT LoadMesh(UINT o_MeshID);
+	void CreateEntity(UINT p_MeshID, UINT );
+	void MoveEntity();
 
 	//light funcs
 	void MoveLigth();
@@ -104,7 +127,7 @@ private:
 	ID3D11DepthStencilState*	m_DepthStateOn;
 	ID3D11DepthStencilState*	m_DepthStateOff;
 	ID3D11DepthStencilState*	m_DepthStateNoWrite;
-	ID3D11SamplerState*			m_SamplerState;
+	ID3D11SamplerState*			m_SamplerStateWrap;
 
 	ID3D11UnorderedAccessView* m_BackBufferUAV;
 	ID3D11ShaderResourceView* m_GbufferShaderResource[3];
