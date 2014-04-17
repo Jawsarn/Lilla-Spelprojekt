@@ -6,6 +6,7 @@
 #include <vector>
 #include <map>
 #include "GraphicStructs.h"
+#include "Camera.h"
 
 using namespace DirectX;
 
@@ -61,8 +62,8 @@ public:
 
 
 	//camera funcs
-	void CreateCamera();
-	void MoveCamera();
+	HRESULT CreateCamera( XMFLOAT3 p_Pos, XMFLOAT3 p_At, XMFLOAT3 p_Up, float p_FieldOfView, float p_Width, float p_Height, float p_NearZ, float p_FarZ, UINT &o_CameraID);
+	HRESULT MoveCamera(UINT p_CameraID, float walk, float strafe, float hover, float pitch, float rotateY);
 	void UseCamera();
 	void RotateCamera();
 
@@ -135,6 +136,7 @@ private:
 	
 	std::map<UINT, DrawObject*> m_DrawOjbects;
 	std::map<UINT, Light*> m_DynamicLights;
+	std::map<UINT, Camera*> m_Cameras;
 
 	std::vector<VertexBufferWithNOV> m_VertexBuffers;
 	std::vector<DrawPiece> m_DrawPieces;

@@ -829,14 +829,48 @@ void GraphicEngine::LoadHud()
 
 //==========Camera functions=================//
 
-void GraphicEngine::CreateCamera()
+HRESULT GraphicEngine::CreateCamera( XMFLOAT3 p_Pos, XMFLOAT3 p_At, XMFLOAT3 p_Up, float p_FieldOfView, float p_Width, float p_Height, float p_NearZ, float p_FarZ, UINT &o_CameraID)
 {
+	try
+	{
+		Camera* t_NewCamera = new Camera();
 
+		std::hash<Camera*> t_Hashii;
+
+		o_CameraID = t_Hashii(t_NewCamera);
+
+		if (m_Cameras[o_CameraID] == nullptr)
+		{
+			m_Cameras[o_CameraID] = t_NewCamera;
+		}
+		
+	}
+	catch( std::exception e )
+	{
+		MessageBox( nullptr, L"Catched exeption when attempting to hash and allocate new object", L"ErrorMessage", MB_OK );
+		return E_FAIL;
+	}
+	
+	m_Cameras[o_CameraID]->LookAt(p_Pos,p_At,p_Up);
+	m_Cameras[o_CameraID]->SetLens(p_FieldOfView, p_Width / (FLOAT)p_Height, p_NearZ, p_FarZ);
 }
 
-void GraphicEngine::MoveCamera()
+HRESULT GraphicEngine::MoveCamera(UINT p_CameraID, float walk, float strafe, float hover, float pitch, float rotateY)
 {
+	if (m_Cameras[p_CameraID] != nullptr)
+	{
+		m_Cameras[p_CameraID]->Walk(walk);
+		m_Cameras[p_CameraID]->Strafe(strafe);
+		m_Cameras[p_CameraID]->HoverY(hover);
+		m_Cameras[p_CameraID]->Pitch(pitch);
+		m_Cameras[p_CameraID]->RotateY(rotateY);
 
+		return S_OK;
+	}
+	else
+	{
+		return E_FAIL;
+	}
 }
 
 void GraphicEngine::UseCamera()
