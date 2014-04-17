@@ -74,3 +74,19 @@ void Player::PlaceWall()
 void Player::UpdateCollisionBox()
 {
 }
+
+
+
+
+
+
+/// Gets yo
+XMFLOAT3 Player::GetPos()
+{
+	return m_position;
+}
+
+XMFLOAT3 Player::GetDirection()
+{
+	return m_direction;
+}

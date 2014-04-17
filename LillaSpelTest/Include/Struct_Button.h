@@ -4,6 +4,8 @@
 
 struct Button
 {
+	
+	std::string buttonName;
 	Button* upButton;
 	Button* downButton;
 	Button* leftButton;
@@ -13,7 +15,6 @@ struct Button
 	DirectX::XMFLOAT2 lowerRightCorner;
 	DirectX::XMFLOAT2 centerPoint;
 
-	std::string buttonName;
 	Button()
 	{
 		upButton = nullptr;

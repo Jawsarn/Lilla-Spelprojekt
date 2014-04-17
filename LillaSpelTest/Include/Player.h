@@ -47,6 +47,10 @@ public:
 	std::vector<BoundingOrientedBox*> GetWallsToCheck();
 	void ChangeState(PlayerState p_state);
 
+	//Gets yo
+	XMFLOAT3 GetPos();
+	XMFLOAT3 GetDirection();
+
 private:
 	void PlaceWall();
 	void UpdateCollisionBox();

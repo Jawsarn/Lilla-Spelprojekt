@@ -18,7 +18,36 @@ MenuScreen::MenuScreen(GameInfo* p_gameInfo)
 int MenuScreen::Update(std::vector<UserCMD>* p_userCMDs){ return 1;}
 void MenuScreen::Draw(){}
 
-void MenuScreen::NavigateMenu(UserCMD* p_userCMD){}
+bool MenuScreen::FloatBetweenValues(float floatToCheck, float min, float max)
+{
+	return floatToCheck<max && floatToCheck>min;
+}
+
+std::string MenuScreen::NavigateMenu(UserCMD& p_userCMD)
+{
+	if (p_userCMD.aButtonPressed)
+	{
+		return currentButton->buttonName;
+	}
+
+	if (p_userCMD.Joystick.y > 0.8 && currentButton->upButton != nullptr)
+	{
+		currentButton = currentButton->upButton;
+	}
+	else if (p_userCMD.Joystick.y < -0.8 && currentButton->downButton != nullptr)
+	{
+		currentButton = currentButton->downButton;
+	}
+	else if (p_userCMD.Joystick.x > 0.8 && currentButton->rightButton != nullptr)
+	{
+		currentButton = currentButton->rightButton;
+	}
+	else if (p_userCMD.Joystick.x < -0.8 && currentButton->leftButton != nullptr)
+	{
+		currentButton = currentButton->leftButton;
+	}	
+	return "";
+}
 
 void MenuScreen::AddButton(std::string p_buttonName, DirectX::XMFLOAT2 p_centerPoint, float offsetX, float offsetY)
 {
@@ -26,6 +55,8 @@ void MenuScreen::AddButton(std::string p_buttonName, DirectX::XMFLOAT2 p_centerP
 	t_button.centerPoint = p_centerPoint;
 	t_button.upperLeftCorner = DirectX::XMFLOAT2(p_centerPoint.x-offsetX, p_centerPoint.y + offsetY);
 	t_button.lowerRightCorner = DirectX::XMFLOAT2(p_centerPoint.x+offsetX, p_centerPoint.y - offsetY);
+	t_button.buttonName = p_buttonName;
+	buttonList.push_back(new Button(t_button));
 }
 
 void MenuScreen::FixButtonPointers()
@@ -42,16 +73,10 @@ void MenuScreen::FixButtonPointers()
 			if (i != j )
 			{
 				DirectX::XMFLOAT2 t_buttonToCheckCenter = buttonList[j]->centerPoint;
-				//DirectX::XMFLOAT2 t_vecBetweenCenterPoints = DirectX::XMFLOAT2(buttonList[i].centerPoint.x - buttonList[j].centerPoint.x,buttonList[i].centerPoint.y - buttonList[j].centerPoint.y);
-				//float t_degrees = 
-				//if ()
-				//{
-
-				//}
 
 				if (t_buttonToFixCenter.x < t_buttonToCheckCenter.x+0.1f && t_buttonToFixCenter.x > t_buttonToCheckCenter.x-0.1f)
 				{
-					if (t_buttonToFixCenter.y < t_buttonToCheckCenter.y)
+					if (t_buttonToFixCenter.y > t_buttonToCheckCenter.y)
 					{
 						if (buttonList[i]->downButton == nullptr)
 						{
@@ -66,13 +91,39 @@ void MenuScreen::FixButtonPointers()
 					{
 						if (buttonList[i]->upButton == nullptr)
 						{
-							buttonList[i]->downButton = buttonList[j];
+							buttonList[i]->upButton = buttonList[j];
+						}
+							else if (std::abs(t_buttonToFixCenter.y- t_buttonToCheckCenter.y) < std::abs(t_buttonToFixCenter.y - buttonList[i]->upButton->centerPoint.y))
+						{
+							buttonList[i]->upButton = buttonList[j];
 						}
 					}
 				}
 				else
 				{
-
+					if (t_buttonToFixCenter.x > t_buttonToCheckCenter.x)
+					{
+						if (buttonList[i]->leftButton == nullptr)
+						{
+							buttonList[i]->leftButton = buttonList[j];
+						}
+					
+						else if (std::abs(t_buttonToFixCenter.x- t_buttonToCheckCenter.x) < std::abs(t_buttonToFixCenter.x - buttonList[i]->leftButton->centerPoint.x))
+						{
+							buttonList[i]->leftButton = buttonList[j];
+						}
+					}
+					else
+					{
+						if (buttonList[i]->rightButton == nullptr)
+						{
+							buttonList[i]->rightButton = buttonList[j];
+						}
+							else if (std::abs(t_buttonToFixCenter.x- t_buttonToCheckCenter.x) < std::abs(t_buttonToFixCenter.x - buttonList[i]->rightButton->centerPoint.x))
+						{
+							buttonList[i]->rightButton = buttonList[j];
+						}
+					}
 				}
 			}
 		}
