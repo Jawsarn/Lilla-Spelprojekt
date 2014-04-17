@@ -35,13 +35,18 @@ vector<MapNode*> MapLoader::LoadMap(string p_mapName)
 	vector<vector<XMFLOAT3>> t_edgePositions = LoadLogicalObj(t_edgeSplineString);
 
 	//Load all information necessary for static object creation
-	//vector<vector<XMFLOAT3>> t_holeBoxPositions = LoadLogicalObj(t_holeBoxString);
+	vector<vector<XMFLOAT3>> t_holeBoxPositions = LoadLogicalObj(t_holeBoxString);
 	//vector<vector<XMFLOAT3>> t_wallBoxPositions = LoadLogicalObj(t_wallBoxString);
 
 	//Create Nodes and stores them in member variable
 	LoadNodes(&t_centerPositions[0], &t_edgePositions[0]);
 
 	return m_logicalMap;
+}
+
+void LoadBoxes(vector<vector<XMFLOAT3>>* p_boxCornerPositions)
+{
+	/////////////////IMPLEMENT BOX CREATION//////////////
 }
 
 void MapLoader::LoadNodes(vector<XMFLOAT3>* p_centerPositions, vector<XMFLOAT3>* p_edgePositions)
@@ -74,6 +79,8 @@ void MapLoader::LoadNodes(vector<XMFLOAT3>* p_centerPositions, vector<XMFLOAT3>*
 
 
 
+
+
 vector<vector<XMFLOAT3>> MapLoader::LoadLogicalObj(string p_objName)
 {
 
@@ -92,7 +99,7 @@ vector<vector<XMFLOAT3>> MapLoader::LoadLogicalObj(string p_objName)
 		{
 			break; // EOF = End Of File. Quit the loop.
 		}
-		if ( strcmp( lineHeader, "o" ) == 0 )
+		if ( strcmp( lineHeader, "g" ) == 0 || strcmp( lineHeader, "o" ) == 0)
 		{
 			t_objectCounter++;
 			t_positions.resize(t_objectCounter);
@@ -105,7 +112,8 @@ vector<vector<XMFLOAT3>> MapLoader::LoadLogicalObj(string p_objName)
 			t_positions[t_objectCounter-1].push_back(XMFLOAT3(position.x,position.y,position.z));
 		}
 	}
-
+	
+	fclose(file);
 	return t_positions;
 }
 
