@@ -1,0 +1,32 @@
+#pragma once
+
+#include <vector>
+#include <d3d11_1.h>
+#include <DirectXMath.h>
+
+class GraphicEngine;
+
+using namespace DirectX;
+
+class GraphicHandle
+{
+private:
+	UINT m_Player[4];
+	
+	std::vector<std::vector<UINT>> m_Ships;
+	GraphicEngine* m_GraphicEngine;
+
+public:
+
+	GraphicHandle();
+	~GraphicHandle();
+	
+	void Initialize();
+	void Draw();
+	void ChangeHUDObject(int p_hudID, int p_hudObjID, int change());
+	void UpdateDynamicLight(UINT p_LightID,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius);
+	void UpdatePlayer(int p_playerID, CXMMATRIX p_matrix);
+	void CreatePlayer(std::vector<UINT> p_DrawPieceIDs, CXMMATRIX p_World, bool addToDrawNow, UINT &o_ObjectID,XMFLOAT3 p_Pos, XMFLOAT3 p_At, XMFLOAT3 p_Up, float p_FieldOfView, float p_Width, float p_Height, float p_NearZ, float p_FarZ, UINT &o_CameraID);
+
+
+};
