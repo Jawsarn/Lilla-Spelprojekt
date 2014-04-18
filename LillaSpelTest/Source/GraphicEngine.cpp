@@ -20,6 +20,11 @@ GraphicEngine::GraphicEngine(void)
 	m_FeatureLevel = D3D_FEATURE_LEVEL_11_0;
 	m_ShaderLoader = new ShaderLoader();
 	m_MeshLoader = new MeshLoader();
+
+	for (int i = 0; i < 4; i++)
+	{
+		m_ActiveCameras[i] = nullptr;
+	}
 }
 
 GraphicEngine::~GraphicEngine(void)
@@ -237,7 +242,7 @@ HRESULT GraphicEngine::CreateRasterizers()
 	D3D11_RASTERIZER_DESC desc;
 	
 	desc.FillMode = D3D11_FILL_SOLID;
-	desc.CullMode = D3D11_CULL_BACK;  //TODO
+	desc.CullMode = D3D11_CULL_NONE;  //TODO
 	desc.FrontCounterClockwise = false;
 	desc.DepthBias = 0;
 	desc.SlopeScaledDepthBias = 0.0f;
@@ -341,6 +346,8 @@ HRESULT GraphicEngine::InitializeDepthAndDepthStates()
 	t_DsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 
 	hr = m_Device->CreateDepthStencilState(&t_DsDesc, &m_DepthStateNoWrite);
+
+	m_DeviceContext->OMSetDepthStencilState(m_DepthStateOn, 0);
 
 	return hr;
 }
@@ -672,13 +679,14 @@ HRESULT GraphicEngine::AddTextureToDrawPiece(UINT p_DrawPieceID,UINT p_TextureID
 	return S_OK;
 }
 
-HRESULT GraphicEngine::CreateDrawObject(std::vector<UINT> p_DrawPieceIDs, CXMMATRIX p_World, bool addToDrawNow, UINT &o_ObjectID)
+HRESULT GraphicEngine::CreateDrawObject(std::vector<UINT> p_DrawPieceIDs, CXMMATRIX p_World, XMFLOAT3 p_Color, bool addToDrawNow, UINT &o_ObjectID)
 {
 	try
 	{
 		DrawObject* t_NewDrawObject = new DrawObject();
 		t_NewDrawObject->piecesID = p_DrawPieceIDs;
-	
+		XMStoreFloat4x4( &t_NewDrawObject->worldMatrix,p_World );
+		t_NewDrawObject->color = p_Color;
 
 		//hash object
 		std::hash<DrawObject*> T_Hashi;
@@ -858,7 +866,7 @@ HRESULT GraphicEngine::CreateCamera( XMFLOAT3 p_Pos, XMFLOAT3 p_At, XMFLOAT3 p_U
 
 		o_CameraID = t_Hashii(t_NewCamera);
 
-		if (m_Cameras[o_CameraID] == nullptr)
+		if (m_Cameras[o_CameraID] == nullptr) //always true
 		{
 			m_Cameras[o_CameraID] = t_NewCamera;
 		}
@@ -869,9 +877,14 @@ HRESULT GraphicEngine::CreateCamera( XMFLOAT3 p_Pos, XMFLOAT3 p_At, XMFLOAT3 p_U
 		MessageBox( nullptr, L"Catched exeption when attempting to hash and allocate new object", L"ErrorMessage", MB_OK );
 		return E_FAIL;
 	}
-	
+	//Camera* t_NewCamear = new Camera();
+	//t_NewCamear->LookAt(p_Pos,p_At,p_Up);
+	//t_NewCamear->SetLens(p_FieldOfView, p_Width / (FLOAT)p_Height, p_NearZ, p_FarZ);
 	m_Cameras[o_CameraID]->LookAt(p_Pos,p_At,p_Up);
 	m_Cameras[o_CameraID]->SetLens(p_FieldOfView, p_Width / (FLOAT)p_Height, p_NearZ, p_FarZ);
+
+	//m_Cameras.push_back(t_NewCamear);
+
 	return S_OK;
 }
 
@@ -924,11 +937,21 @@ void GraphicEngine::DrawGame()
 void GraphicEngine::UpdateFrameBuffer()
 {
 	PerFramebuffer t_PerFrame;
-	t_PerFrame.EyesPos = XMFLOAT4(0,0,0,0);
-	t_PerFrame.Projection = XMMatrixIdentity();
-	t_PerFrame.View = XMMatrixIdentity();
-	t_PerFrame.ViewProjection = XMMatrixIdentity();
-	m_DeviceContext->UpdateSubresource(m_PerFrameBuffer,0,nullptr, &t_PerFrame,0,0);
+	if (m_ActiveCameras[0] != nullptr)
+	{
+		m_ActiveCameras[0]->UpdateViewMatrix();
+		XMFLOAT3 t_Pos = m_ActiveCameras[0]->GetPosition();
+		t_PerFrame.EyesPos = XMFLOAT4(t_Pos.x, t_Pos.y, t_Pos.y, 1);
+
+		t_PerFrame.Projection = XMMatrixTranspose( m_ActiveCameras[0]->Proj() );
+		t_PerFrame.View = XMMatrixTranspose( m_ActiveCameras[0]->View() );
+		t_PerFrame.ViewProjection = XMMatrixTranspose( m_ActiveCameras[0]->ViewProj() );
+
+		m_DeviceContext->UpdateSubresource(m_PerFrameBuffer,0,nullptr, &t_PerFrame,0,0);
+	}
+	
+
+	
 }
 
 void GraphicEngine::DrawOpaqueObjects()
@@ -943,6 +966,14 @@ void GraphicEngine::DrawOpaqueObjects()
 	//std::map<UINT, DrawObject*>::iterator it;
 	for (std::map<UINT, DrawObject*>::iterator it = m_DrawOjbects.begin(); it != m_DrawOjbects.end(); ++it)
 	{
+		//update the object buffer
+		PerObjectBuffer t_PerObjBuff;
+		t_PerObjBuff.world = XMMatrixTranspose( XMLoadFloat4x4( &it->second->worldMatrix ));
+		t_PerObjBuff.typeOfObject = 0;
+		t_PerObjBuff.fillers = XMFLOAT3(0,0,0);
+
+		m_DeviceContext->UpdateSubresource(m_PerObjectBuffer, 0, nullptr, &t_PerObjBuff, 0, 0 );
+
 		int a = it->second->piecesID.size();
 		for (int i = 0; i < a; i++)
 		{
@@ -963,6 +994,7 @@ void GraphicEngine::DrawOpaqueObjects()
 	}
 
 }
+
 void GraphicEngine::SetShaderProgram(ShaderProgram p_Program)
 {
 	m_DeviceContext->IASetInputLayout(inputLayouts[p_Program.inputLayout]);
@@ -979,7 +1011,7 @@ void GraphicEngine::SetShaderProgram(ShaderProgram p_Program)
 	}
 	if (p_Program.geometryShader != -1)
 	{
-		m_DeviceContext->GSSetShader(m_GeometryShaders[p_Program.geometryShader], nullptr, 0);
+		//m_DeviceContext->GSSetShader(m_GeometryShaders[p_Program.geometryShader], nullptr, 0);
 	}
 	
 	m_DeviceContext->PSSetShader(m_PixelShaders[p_Program.pixelShader], nullptr, 0);

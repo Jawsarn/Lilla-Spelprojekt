@@ -1,9 +1,9 @@
 #pragma once
-
-#define _XM_NO_INTRINSICS_
+//#define _XM_NO_INTRINSICS_ //fuck this include, need it to extract frustrum planes buuuuuuut it will crash other functions
 #include <DirectXMath.h>
 #include <vector>
 
+//http://msdn.microsoft.com/en-gb/library/windows/desktop/ee418725(v=vs.85).aspx
 using namespace DirectX;
 
 class Camera
@@ -32,6 +32,7 @@ public:
 	void LookAt(const XMFLOAT3& pos, const XMFLOAT3& target, const XMFLOAT3& up);
 
 	// Get View/Proj matrices.
+	
 	XMMATRIX View()const;
 	XMMATRIX Proj()const;
 	XMMATRIX ViewProj()const;

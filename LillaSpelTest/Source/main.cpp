@@ -28,7 +28,7 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 {
 	UNREFERENCED_PARAMETER( hPrevInstance );
     UNREFERENCED_PARAMETER( lpCmdLine );
-	InitializeWindow(hInstance,nCmdShow,1024,1024);
+	InitializeWindow(hInstance,nCmdShow,1920,1080);
 
 	RECT t_Rectangle;
 	GetClientRect( m_HandleWindow, &t_Rectangle );

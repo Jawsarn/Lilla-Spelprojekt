@@ -32,7 +32,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 
 	//load a ship mesh 
 	std::vector<UINT> t_Ship;
-	m_GraphicEngine->LoadMesh("Sphere.obj",t_Ship);
+	m_GraphicEngine->LoadMesh("sphere.obj",t_Ship);
 	m_Ships.push_back(t_Ship);
 
 	//add a texture to a ship mesh
@@ -41,13 +41,20 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	//creating a ship that the player is going to use, move to other place when we've done testing
 	UINT objectID;
 	XMMATRIX t_Mat = XMMatrixIdentity();
-	m_GraphicEngine->CreateDrawObject(m_Ships[0],t_Mat,true, objectID);
+	XMFLOAT3 t_Color = XMFLOAT3(0,1,0);
+	m_GraphicEngine->CreateDrawObject(m_Ships[0],t_Mat, t_Color,true, objectID);
 
 	//add light to an already existing ship, (note to self maybe, if we have two ships that are the same for two players, same textures will be used, but not same lights, this is ok)
 	//second note, add light is in object space
 	UINT playerLightOne; //add to a player light array maybe?
 	m_GraphicEngine->AddObjectLight(objectID, XMFLOAT3(0,-2,0),XMFLOAT3(1,0,0),3, playerLightOne);
 
+
+	//create a camera, just for testing and stuff, think you'll want to create it later with players tho, because the hud wont rely on camera at first
+	UINT cameraID;
+	m_GraphicEngine->CreateCamera(XMFLOAT3(4,0,-20),XMFLOAT3(0,0,1),XMFLOAT3(0,1,0),XM_PIDIV4,p_Width,p_Height,1,10000, cameraID);
+
+	m_GraphicEngine->UseCamera(0,cameraID); //not fixed yet, just for testing
 }
 
 void GraphicHandle::UpdatePlayer(int p_playerID,CXMMATRIX p_matrix)
@@ -60,7 +67,7 @@ void GraphicHandle::CreatePlayer(std::vector<UINT> p_DrawPieceIDs, CXMMATRIX p_W
 {
 
 	//object id o camera id kan vara samma
-	m_GraphicEngine->CreateDrawObject(p_DrawPieceIDs, p_World,  addToDrawNow,  o_ObjectID);
+	//m_GraphicEngine->CreateDrawObject(p_DrawPieceIDs, p_World,  addToDrawNow,  o_ObjectID);
 	m_GraphicEngine->CreateCamera(p_Pos, p_At, p_Up, p_FieldOfView, p_Width, p_Height, p_NearZ, p_FarZ, o_CameraID);
 	m_GraphicEngine->CreatehudObject();//itne klar i engine
 	//m_GraphicEngine->CreateParticleSystem();//ej klar
