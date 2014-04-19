@@ -5,7 +5,8 @@ cbuffer PerFrameBuffer : register(c0)
 	matrix View;
 	matrix Projection;
 	matrix ViewProjection;
-	float4 EyesPos;
+	float3 EyesPos;
+	uint NumberOfViewports;
 }
 
 cbuffer PerObjectBuffer	:register(c1)

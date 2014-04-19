@@ -67,6 +67,8 @@ public:
 	HRESULT MoveCamera(UINT p_CameraID, float walk, float strafe, float hover, float pitch, float rotateY);
 	void UseCamera(UINT p_ViewPortID, UINT p_CameraID);
 
+	//viewport function
+	void SetViewportAmount(int p_NumOfViewports);
 
 	void CreateParticleSystem();
 	
@@ -172,5 +174,7 @@ private:
 	//constant buffers
 	ID3D11Buffer* m_PerFrameBuffer;
 	ID3D11Buffer* m_PerObjectBuffer;
+
+	UINT m_NumberOfViewports;
 };
 

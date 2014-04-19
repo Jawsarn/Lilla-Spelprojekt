@@ -234,6 +234,8 @@ void GraphicEngine::SetViewports()
 	vp.TopLeftY = 0;
 
 	m_DeviceContext->RSSetViewports( 1, &vp );
+
+	m_NumberOfViewports = 1;
 }
 
 HRESULT GraphicEngine::CreateRasterizers()
@@ -913,6 +915,96 @@ void GraphicEngine::UseCamera(UINT p_ViewPortID, UINT p_CameraID)
 }
 
 ///////////////////////////////////////////////
+//==========Viewport functions===============//
+///////////////////////////////////////////////
+
+void GraphicEngine::SetViewportAmount(int p_NumOfViewports)
+{
+	if (p_NumOfViewports == 1)
+	{
+		D3D11_VIEWPORT t_Vp;
+
+		t_Vp.Width = m_Width;
+		t_Vp.Height = m_Height;
+		t_Vp.MinDepth = 0.0f;
+		t_Vp.MaxDepth = 1.0f;
+		t_Vp.TopLeftX = 0;
+		t_Vp.TopLeftY = 0;
+
+		m_DeviceContext->RSSetViewports( 1, &t_Vp );
+	}
+	else if (p_NumOfViewports == 2)
+	{
+		D3D11_VIEWPORT t_Vp[2];
+
+		for (int i = 0; i < 2; i++)
+		{
+			t_Vp[i].Width = m_Width/2;
+			t_Vp[i].Height = m_Height;
+			t_Vp[i].MinDepth = 0.0f;
+			t_Vp[i].MaxDepth = 1.0f;
+			t_Vp[i].TopLeftY = 0;
+		}
+		
+		t_Vp[0].TopLeftX = 0;
+		t_Vp[1].TopLeftX = m_Width/2;
+		
+
+		m_DeviceContext->RSSetViewports( 2, t_Vp );
+	}
+	else if(p_NumOfViewports == 3)
+	{
+		D3D11_VIEWPORT t_Vp[3];
+
+		for (int i = 0; i < 3; i++)
+		{
+			t_Vp[i].Width = m_Width/2;
+			t_Vp[i].Height = m_Height/2;
+			t_Vp[i].MinDepth = 0.0f;
+			t_Vp[i].MaxDepth = 1.0f;
+		}
+		
+		t_Vp[0].TopLeftX = 0;
+		t_Vp[0].TopLeftY = 0;
+		t_Vp[1].TopLeftX = m_Width/2;;
+		t_Vp[1].TopLeftY = 0;
+		t_Vp[2].TopLeftX = 0;
+		t_Vp[2].TopLeftY = m_Height/2;
+
+		m_DeviceContext->RSSetViewports( 3, t_Vp );
+	}
+	else if (p_NumOfViewports == 4)
+	{
+		D3D11_VIEWPORT t_Vp[4];
+
+		for (int i = 0; i < 4; i++)
+		{
+			t_Vp[i].Width = m_Width/2;
+			t_Vp[i].Height = m_Height/2;
+			t_Vp[i].MinDepth = 0.0f;
+			t_Vp[i].MaxDepth = 1.0f;
+		}
+		
+		t_Vp[0].TopLeftX = 0;
+		t_Vp[0].TopLeftY = 0;
+		t_Vp[1].TopLeftX = m_Width/2;
+		t_Vp[1].TopLeftY = 0;
+		t_Vp[2].TopLeftX = 0;
+		t_Vp[2].TopLeftY = m_Height/2;
+		t_Vp[3].TopLeftX = m_Width/2;
+		t_Vp[3].TopLeftY = m_Height/2;
+
+		m_DeviceContext->RSSetViewports( 4, t_Vp );
+	}
+
+	if (0 < p_NumOfViewports < 5)
+	{
+		m_NumberOfViewports = p_NumOfViewports;
+	}
+	
+}
+
+///////////////////////////////////////////////
 //==========Draw functions===================//
 ///////////////////////////////////////////////
 
@@ -941,11 +1033,12 @@ void GraphicEngine::UpdateFrameBuffer()
 	{
 		m_ActiveCameras[0]->UpdateViewMatrix();
 		XMFLOAT3 t_Pos = m_ActiveCameras[0]->GetPosition();
-		t_PerFrame.EyesPos = XMFLOAT4(t_Pos.x, t_Pos.y, t_Pos.y, 1);
+		t_PerFrame.EyesPos = XMFLOAT3(t_Pos.x, t_Pos.y, t_Pos.y);
 
 		t_PerFrame.Projection = XMMatrixTranspose( m_ActiveCameras[0]->Proj() );
 		t_PerFrame.View = XMMatrixTranspose( m_ActiveCameras[0]->View() );
 		t_PerFrame.ViewProjection = XMMatrixTranspose( m_ActiveCameras[0]->ViewProj() );
+		t_PerFrame.NumberOfViewports = m_NumberOfViewports;
 
 		m_DeviceContext->UpdateSubresource(m_PerFrameBuffer,0,nullptr, &t_PerFrame,0,0);
 	}
@@ -1011,7 +1104,7 @@ void GraphicEngine::SetShaderProgram(ShaderProgram p_Program)
 	}
 	if (p_Program.geometryShader != -1)
 	{
-		//m_DeviceContext->GSSetShader(m_GeometryShaders[p_Program.geometryShader], nullptr, 0);
+		m_DeviceContext->GSSetShader(m_GeometryShaders[p_Program.geometryShader], nullptr, 0);
 	}
 	
 	m_DeviceContext->PSSetShader(m_PixelShaders[p_Program.pixelShader], nullptr, 0);

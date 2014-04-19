@@ -77,7 +77,8 @@ struct PerFramebuffer
 	XMMATRIX View;
 	XMMATRIX Projection;
 	XMMATRIX ViewProjection;
-	XMFLOAT4 EyesPos;
+	XMFLOAT3 EyesPos;
+	UINT NumberOfViewports;
 };
 
 struct PerObjectBuffer //updates for each object that needs this

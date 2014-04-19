@@ -52,9 +52,11 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 
 	//create a camera, just for testing and stuff, think you'll want to create it later with players tho, because the hud wont rely on camera at first
 	UINT cameraID;
-	m_GraphicEngine->CreateCamera(XMFLOAT3(4,0,-20),XMFLOAT3(0,0,1),XMFLOAT3(0,1,0),XM_PIDIV4,p_Width,p_Height,1,10000, cameraID);
+	m_GraphicEngine->CreateCamera(XMFLOAT3(4,0,-20),XMFLOAT3(0,0,1),XMFLOAT3(0,1,0),XM_PIDIV4,p_Width,p_Height,1.0f,10000, cameraID);
 
 	m_GraphicEngine->UseCamera(0,cameraID); //not fixed yet, just for testing
+
+	m_GraphicEngine->SetViewportAmount(4);
 }
 
 void GraphicHandle::UpdatePlayer(int p_playerID,CXMMATRIX p_matrix)
