@@ -24,13 +24,14 @@ void GS( triangle GS_INPUT input[3], inout TriangleStream<GS_OUTPUT> triangleStr
 		{
 			GS_OUTPUT output;
 			output.position = mul(float4(input[i].position, 1), World);
-			output.position = mul(output.position, View);
-			output.position = mul(output.position, Projection);
+			output.position = mul(output.position, View[j]);
+			output.position = mul(output.position, Projection[j]);
 		/*	output.position = mul(output.position, ViewProjection);*/
 			output.tex = input[i].tex;
 			output.normal = input[i].normal;
 			output.viewport = j;
 			triangleStream.Append(output);
 		}
+		triangleStream.RestartStrip();
 	}
 }

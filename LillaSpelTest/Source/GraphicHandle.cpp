@@ -32,7 +32,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 
 	//load a ship mesh 
 	std::vector<UINT> t_Ship;
-	m_GraphicEngine->LoadMesh("sphere.obj",t_Ship);
+	m_GraphicEngine->LoadMesh("Tube.obj",t_Ship);
 	m_Ships.push_back(t_Ship);
 
 	//add a texture to a ship mesh
@@ -51,12 +51,26 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 
 
 	//create a camera, just for testing and stuff, think you'll want to create it later with players tho, because the hud wont rely on camera at first
-	UINT cameraID;
-	m_GraphicEngine->CreateCamera(XMFLOAT3(4,0,-20),XMFLOAT3(0,0,1),XMFLOAT3(0,1,0),XM_PIDIV4,p_Width,p_Height,1.0f,10000, cameraID);
+	UINT cameraID[4];
+	for (int i = 0; i < 4; i++)
+	{
+		m_GraphicEngine->CreateCamera(XMFLOAT3(0,0,-160),XMFLOAT3(0,0,1),XMFLOAT3(0,1,0),XM_PIDIV4,p_Width/2,p_Height/2,1.0f,10000, cameraID[i]);
+	}
+	
+	//set cameras
+	for (int i = 0; i < 4; i++)
+	{
+		m_GraphicEngine->UseCamera(i,cameraID[i]);
+	}
 
-	m_GraphicEngine->UseCamera(0,cameraID); //not fixed yet, just for testing
-
+	 //not fixed yet, just for testing
 	m_GraphicEngine->SetViewportAmount(4);
+
+	m_GraphicEngine->MoveCamera(cameraID[0], 20,0,0,0,0);
+	m_GraphicEngine->MoveCamera(cameraID[1], 50,0,0,0,0);
+	m_GraphicEngine->MoveCamera(cameraID[2], 0,0,0,0,0);
+	m_GraphicEngine->MoveCamera(cameraID[3], 0,0,0,0,0);
+
 }
 
 void GraphicHandle::UpdatePlayer(int p_playerID,CXMMATRIX p_matrix)

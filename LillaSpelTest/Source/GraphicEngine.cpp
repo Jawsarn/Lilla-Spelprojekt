@@ -1029,22 +1029,34 @@ void GraphicEngine::DrawGame()
 void GraphicEngine::UpdateFrameBuffer()
 {
 	PerFramebuffer t_PerFrame;
-	if (m_ActiveCameras[0] != nullptr)
+	for (int i = 0; i < m_NumberOfViewports; i++)
 	{
-		m_ActiveCameras[0]->UpdateViewMatrix();
-		XMFLOAT3 t_Pos = m_ActiveCameras[0]->GetPosition();
-		t_PerFrame.EyesPos = XMFLOAT3(t_Pos.x, t_Pos.y, t_Pos.y);
+		if (m_ActiveCameras[i] != nullptr)
+		{
+			m_ActiveCameras[i]->UpdateViewMatrix();
+			XMFLOAT3 t_Pos = m_ActiveCameras[i]->GetPosition();
+			t_PerFrame.EyesPos[i] = XMFLOAT4(t_Pos.x, t_Pos.y, t_Pos.z, 1);
 
-		t_PerFrame.Projection = XMMatrixTranspose( m_ActiveCameras[0]->Proj() );
-		t_PerFrame.View = XMMatrixTranspose( m_ActiveCameras[0]->View() );
-		t_PerFrame.ViewProjection = XMMatrixTranspose( m_ActiveCameras[0]->ViewProj() );
-		t_PerFrame.NumberOfViewports = m_NumberOfViewports;
-
-		m_DeviceContext->UpdateSubresource(m_PerFrameBuffer,0,nullptr, &t_PerFrame,0,0);
+			t_PerFrame.Projection[i] = XMMatrixTranspose( m_ActiveCameras[i]->Proj() );
+			t_PerFrame.View[i] = XMMatrixTranspose( m_ActiveCameras[i]->View() );
+			t_PerFrame.ViewProjection[i] = XMMatrixTranspose( m_ActiveCameras[i]->ViewProj() );
+			
+			t_PerFrame.fillers3 = XMFLOAT3(0,0,0);
+			
+		}
+		else
+		{
+			t_PerFrame.EyesPos[i] = XMFLOAT4(0,0,0,0);
+			t_PerFrame.fillers3 = XMFLOAT3(0,0,0);
+			t_PerFrame.Projection[i] = XMMatrixIdentity();
+			t_PerFrame.View[i] = XMMatrixIdentity();
+			t_PerFrame.ViewProjection[i] = XMMatrixIdentity();
+		}
 	}
-	
 
-	
+	t_PerFrame.NumberOfViewports = m_NumberOfViewports;
+
+	m_DeviceContext->UpdateSubresource(m_PerFrameBuffer,0,nullptr, &t_PerFrame,0,0);
 }
 
 void GraphicEngine::DrawOpaqueObjects()

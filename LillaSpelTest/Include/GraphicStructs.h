@@ -74,10 +74,11 @@ struct ShaderProgram
 
 struct PerFramebuffer
 {
-	XMMATRIX View;
-	XMMATRIX Projection;
-	XMMATRIX ViewProjection;
-	XMFLOAT3 EyesPos;
+	XMMATRIX View[4];
+	XMMATRIX Projection[4];
+	XMMATRIX ViewProjection[4];
+	XMFLOAT4 EyesPos[4];
+	XMFLOAT3 fillers3;
 	UINT NumberOfViewports;
 };
 
