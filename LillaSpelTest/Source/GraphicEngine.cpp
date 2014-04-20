@@ -890,15 +890,15 @@ HRESULT GraphicEngine::CreateCamera( XMFLOAT3 p_Pos, XMFLOAT3 p_At, XMFLOAT3 p_U
 	return S_OK;
 }
 
-HRESULT GraphicEngine::MoveCamera(UINT p_CameraID, float walk, float strafe, float hover, float pitch, float rotateY)
+HRESULT GraphicEngine::MoveCamera(UINT p_CameraID, float p_Walk, float p_Strafe, float p_Hover, float p_Pitch, float p_RotateY)
 {
 	if (m_Cameras[p_CameraID] != nullptr)
 	{
-		m_Cameras[p_CameraID]->Walk(walk);
-		m_Cameras[p_CameraID]->Strafe(strafe);
-		m_Cameras[p_CameraID]->HoverY(hover);
-		m_Cameras[p_CameraID]->Pitch(pitch);
-		m_Cameras[p_CameraID]->RotateY(rotateY);
+		m_Cameras[p_CameraID]->Walk(p_Walk);
+		m_Cameras[p_CameraID]->Strafe(p_Strafe);
+		m_Cameras[p_CameraID]->HoverY(p_Hover);
+		m_Cameras[p_CameraID]->Pitch(p_Pitch);
+		m_Cameras[p_CameraID]->RotateY(p_RotateY);
 
 		return S_OK;
 	}
