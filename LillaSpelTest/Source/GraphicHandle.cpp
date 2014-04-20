@@ -86,7 +86,6 @@ void GraphicHandle::UpdateCamera(UINT p_CameraLogicID,float p_Walk, float p_Stra
 	{
 		m_GraphicEngine->MoveCamera(m_CameraID[p_CameraLogicID],p_Walk,p_Strafe,p_Hover,p_Pitch,p_RotateY);
 	}
-	
 }
 
 void GraphicHandle::CreatePlayer(std::vector<UINT> p_DrawPieceIDs, CXMMATRIX p_World, bool addToDrawNow, UINT &o_ObjectID,XMFLOAT3 p_Pos, XMFLOAT3 p_At, XMFLOAT3 p_Up, float p_FieldOfView, float p_Width, float p_Height, float p_NearZ, float p_FarZ, UINT &o_CameraID)
@@ -97,8 +96,6 @@ void GraphicHandle::CreatePlayer(std::vector<UINT> p_DrawPieceIDs, CXMMATRIX p_W
 	m_GraphicEngine->CreateCamera(p_Pos, p_At, p_Up, p_FieldOfView, p_Width, p_Height, p_NearZ, p_FarZ, o_CameraID);
 	m_GraphicEngine->CreatehudObject();//itne klar i engine
 	//m_GraphicEngine->CreateParticleSystem();//ej klar
-	
-
 }
 
 void GraphicHandle::DrawGame() //test 
