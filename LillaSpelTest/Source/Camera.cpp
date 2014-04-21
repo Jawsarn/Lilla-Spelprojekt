@@ -60,11 +60,6 @@ void Camera::SetLens(float p_FovY,float p_Aspect, float p_Znear, float p_Zfar)
 
 }
 
-void Camera::SetView(CXMMATRIX p_View)
-{
-	XMStoreFloat4x4(&m_View, p_View);
-}
-
 float Camera::GetFieldOfViewX()const
 {
 	float halfWidth = 0.5f*GetNearWindowWidth();

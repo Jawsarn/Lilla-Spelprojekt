@@ -909,11 +909,11 @@ HRESULT GraphicEngine::MoveCamera(UINT p_CameraID, float p_Walk, float p_Strafe,
 	return S_OK;
 }
 
-HRESULT GraphicEngine::SetCamera(UINT p_CameraID, CXMMATRIX p_ViewMatrix)
+HRESULT GraphicEngine::SetCamera(UINT p_CameraID, XMFLOAT3 p_Pos, XMFLOAT3 p_At, XMFLOAT3 p_Up)
 {
 	if (m_Cameras[p_CameraID] != nullptr)
 	{
-		m_Cameras[p_CameraID]->SetView(p_ViewMatrix);
+		m_Cameras[p_CameraID]->LookAt(p_Pos,p_At, p_Up);
 
 		return S_OK;
 	}
@@ -1048,7 +1048,7 @@ void GraphicEngine::UpdateFrameBuffer()
 	{
 		if (m_ActiveCameras[i] != nullptr)
 		{
-			//m_ActiveCameras[i]->UpdateViewMatrix(); //if we use free camera we have to have two different modes in a bool or something
+			m_ActiveCameras[i]->UpdateViewMatrix(); 
 			XMFLOAT3 t_Pos = m_ActiveCameras[i]->GetPosition();
 			t_PerFrame.EyesPos[i] = XMFLOAT4(t_Pos.x, t_Pos.y, t_Pos.z, 1);
 

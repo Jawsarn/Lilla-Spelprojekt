@@ -15,12 +15,18 @@
 //	float4 frustrum[4];
 //};
 //
+////lights
 //StructuredBuffer<Light> lights	:register(t4);
+//
+////input textures
 //Texture2D<float4> Normal_Depth	:register(t1);
 //Texture2D<float4> DiffuseColor_AO	:register(t2);
 //Texture2D<float4> Specular	:register(t3);
+//
+////output texture
 //RWTexture2D<float4> output	:register(u0);
 //
+////groupshared
 //groupshared uint visibleLightCount;
 //groupshared uint visibleLightIndices[1024];
 //groupshared uint minDepth;
@@ -30,7 +36,7 @@
 //#define BLOCK_SIZE 16
 //
 //
-//////////////////////////////////////////////
+/////////////////////////////////////////////+/
 ////////////////functions/////////////////////
 //////////////////////////////////////////////
 //

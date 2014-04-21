@@ -32,7 +32,6 @@ public:
 	void LookAt(const XMFLOAT3& p_Pos, const XMFLOAT3& p_Target, const XMFLOAT3& p_Up);
 
 	// set view matrix
-	void SetView(CXMMATRIX p_View);
 
 
 	// Get View/Proj matrices.
