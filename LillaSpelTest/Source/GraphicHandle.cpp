@@ -28,7 +28,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 
 	//load a diffuse texture
 	UINT diffuseBollTestTexture;
-	m_GraphicEngine->LoadTexture(L"Boll.dds", diffuseBollTestTexture);
+	m_GraphicEngine->LoadTexture(L"TubeTexture1.dds", diffuseBollTestTexture);
 
 	//load a ship mesh 
 	std::vector<UINT> t_Ship;
@@ -68,8 +68,11 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 
 	m_GraphicEngine->MoveCamera(m_CameraID[0], 20,0,0,0,0);
 	m_GraphicEngine->MoveCamera(m_CameraID[1], 50,0,0,0,0);
-	m_GraphicEngine->MoveCamera(m_CameraID[2], 0,0,0,0,0);
-	m_GraphicEngine->MoveCamera(m_CameraID[3], 0,0,0,0,0);
+	m_GraphicEngine->MoveCamera(m_CameraID[2], 100,0,0,0,0);
+	m_GraphicEngine->MoveCamera(m_CameraID[2], 0,0,0,-1.2,0);
+	m_GraphicEngine->MoveCamera(m_CameraID[2], 0,0,-130,0,0);
+	m_GraphicEngine->MoveCamera(m_CameraID[2], 120,-5,0,0,0);
+	m_GraphicEngine->SetCamera(m_CameraID[3], XMFLOAT3(0, 0, -120),XMFLOAT3(0, 0, 1),XMFLOAT3(0, 1, 0));
 
 }
 

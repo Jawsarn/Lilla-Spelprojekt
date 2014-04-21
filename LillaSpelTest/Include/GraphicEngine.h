@@ -103,10 +103,11 @@ private:
 	void UpdateFrameBuffer();
 	void DrawOpaqueObjects();
 	void SetShaderProgram(ShaderProgram p_Program);
+	void SetTextures(DrawPiece p_DrawPiece);
 	void ComputeTileDeferredLightning();
 	void UpdateConstantBuffer(); //not written
 
-	UINT GraphicEngine::CheckProgram(DrawPiece p_Piece);
+	UINT CheckProgram(DrawPiece p_Piece);
 
 
 	static GraphicEngine* singleton;

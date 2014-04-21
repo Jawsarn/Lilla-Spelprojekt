@@ -244,7 +244,7 @@ HRESULT GraphicEngine::CreateRasterizers()
 	D3D11_RASTERIZER_DESC desc;
 	
 	desc.FillMode = D3D11_FILL_SOLID;
-	desc.CullMode = D3D11_CULL_NONE;  //TODO
+	desc.CullMode = D3D11_CULL_NONE;  //TODO D3D11_CULL_BACK D3D11_CULL_NONE
 	desc.FrontCounterClockwise = false;
 	desc.DepthBias = 0;
 	desc.SlopeScaledDepthBias = 0.0f;
@@ -1100,12 +1100,13 @@ void GraphicEngine::DrawOpaqueObjects()
 			//set vertex buffer
 			UINT t_VertexBuffID = m_DrawPieces[i].vertexBufferID;
 			m_DeviceContext->IASetVertexBuffers(0, 1, &m_VertexBuffers[t_VertexBuffID].vertexBuffer, &strides, &offsets);
-			
+
 			//set shader program
 			ShaderProgram t_Program = m_ShaderPrograms[0];//m_ShaderPrograms[m_DrawPieces[i].shaderProgramID]; // not yet implemented to get the right program
 			SetShaderProgram(t_Program);
 
 			//update textures
+			SetTextures(m_DrawPieces[i]);
 
 
 			//draw
@@ -1135,6 +1136,15 @@ void GraphicEngine::SetShaderProgram(ShaderProgram p_Program)
 	}
 	
 	m_DeviceContext->PSSetShader(m_PixelShaders[p_Program.pixelShader], nullptr, 0);
+}
+
+void GraphicEngine::SetTextures(DrawPiece p_DrawPiece)
+{
+	if (p_DrawPiece.diffuseTID != -1)
+	{
+		m_DeviceContext->PSSetShaderResources(0, 1, &m_Textures[p_DrawPiece.diffuseTID]);
+	}
+	//add the other textures
 }
 
 void GraphicEngine::ComputeTileDeferredLightning()

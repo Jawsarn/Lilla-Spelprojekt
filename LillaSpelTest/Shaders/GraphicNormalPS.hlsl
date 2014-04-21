@@ -13,5 +13,7 @@ struct GS_OUTPUT
 
 float4 PS(GS_OUTPUT input) : SV_TARGET
 {
-	return float4(1.0f, 1.0f, 1.0f, 1.0f);
+	float4 finalColor = diffuseTexture.Sample(wrapSampler, input.tex);
+
+	return finalColor;
 }
