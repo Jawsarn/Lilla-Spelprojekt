@@ -23,6 +23,7 @@ float m_DeltaTime;
 float m_GameTime;
 ULONGLONG m_PrevTime;
 XMFLOAT2 m_LastMousePos;
+int m_ActiveCamera = 0; //just for testing and show
 
 GraphicHandle* m_GraphicHandle;
 
@@ -116,7 +117,7 @@ void OnMouseMove(WPARAM btnStae, int x, int y)
 		float dx = XMConvertToRadians(0.25f*static_cast<float>(x - m_LastMousePos.x));
 		float dy = XMConvertToRadians(0.25f*static_cast<float>(y - m_LastMousePos.y));
 
-		m_GraphicHandle->UpdateCamera(0,0,0,0,dy,dx);
+		m_GraphicHandle->UpdateCamera(m_ActiveCamera,0,0,0,dy,dx);
 	}
 
 	m_LastMousePos.x = x;
@@ -127,19 +128,35 @@ void OnKeyMove()
 {
 	if(GetAsyncKeyState('W')&0x8000)
 	{
-		m_GraphicHandle->UpdateCamera(0,1,0,0,0,0);
+		m_GraphicHandle->UpdateCamera(m_ActiveCamera,1,0,0,0,0);
 	}
 	if(GetAsyncKeyState('S')&0x8000)
 	{
-		m_GraphicHandle->UpdateCamera(0,-1,0,0,0,0);
+		m_GraphicHandle->UpdateCamera(m_ActiveCamera,-1,0,0,0,0);
 	}
 	if(GetAsyncKeyState('A')&0x8000)
 	{
-		m_GraphicHandle->UpdateCamera(0,0,-1,0,0,0);
+		m_GraphicHandle->UpdateCamera(m_ActiveCamera,0,-1,0,0,0);
 	}
 	if(GetAsyncKeyState('D')&0x8000)
 	{
-		m_GraphicHandle->UpdateCamera(0,0,1,0,0,0);
+		m_GraphicHandle->UpdateCamera(m_ActiveCamera,0,1,0,0,0);
+	}
+	if(GetAsyncKeyState('1')&0x8000)
+	{
+		m_ActiveCamera = 0;
+	}
+	if(GetAsyncKeyState('2')&0x8000)
+	{
+		m_ActiveCamera = 1;
+	}
+	if(GetAsyncKeyState('3')&0x8000)
+	{
+		m_ActiveCamera = 2;
+	}
+	if(GetAsyncKeyState('4')&0x8000)
+	{
+		m_ActiveCamera = 3;
 	}
 }
 
