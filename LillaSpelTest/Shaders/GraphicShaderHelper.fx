@@ -17,6 +17,8 @@ cbuffer PerObjectBuffer	:register(c1)
 	float3 fillers3;
 }
 
+
+
 Texture2D diffuseTexture	: register(t0);
 Texture2D specularTexture	: register(t1);
 Texture2D normalTexture		: register(t2);

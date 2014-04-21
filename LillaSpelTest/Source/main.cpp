@@ -1,5 +1,6 @@
 
 #include <Windows.h>
+#include <windowsx.h>
 #include "Controller.h"
 #include <vector>
 #include "UserCMD.h"
@@ -18,9 +19,10 @@ HWND	m_HandleWindow;
 
 #include "GraphicHandle.h"
 
-float deltaTime;
-float gameTime;
-ULONGLONG prevTime;
+float m_DeltaTime;
+float m_GameTime;
+ULONGLONG m_PrevTime;
+XMFLOAT2 m_LastMousePos;
 
 GraphicHandle* m_GraphicHandle;
 
@@ -34,6 +36,7 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	GetClientRect( m_HandleWindow, &t_Rectangle );
 	UINT t_Width = t_Rectangle.right - t_Rectangle.left;
 	UINT t_Height = t_Rectangle.bottom - t_Rectangle.top;
+	m_LastMousePos = XMFLOAT2(0,0);
 
 	m_GraphicHandle = m_GraphicHandle->GetInstance();
 	m_GraphicHandle->Initialize(t_Width, t_Height, m_HandleWindow);
@@ -91,11 +94,11 @@ void Run()
 			}
 			
 			ULONGLONG timeCur = GetTickCount64();
-			if( prevTime == 0 )
-				prevTime = timeCur;
-			deltaTime = ( timeCur - prevTime ) / 1000.0f;
-			gameTime += deltaTime;
-			prevTime = timeCur;
+			if( m_PrevTime == 0 )
+				m_PrevTime = timeCur;
+			m_DeltaTime = ( timeCur - m_PrevTime ) / 1000.0f;
+			m_GameTime += m_DeltaTime;
+			m_PrevTime = timeCur;
 
 			///UPDATE & DRAW TEMPDRAAWWWWW
 			m_GraphicHandle->DrawGame();
@@ -105,6 +108,40 @@ void Run()
 }
 
 //callback inte helt fixat då den inte får ligga som en medlemsfunktion, och måste därför vara static => vilket gör att den inte kan kalla på medlemsfunktioner, kan fixas med att lägga den i ett namespace och trixa med "this" , eller ha den i main där allt är static och kan skriva funktioner som inte behöver en klass
+
+void OnMouseMove(WPARAM btnStae, int x, int y)
+{
+	if (btnStae & MK_LBUTTON != 0)
+	{
+		float dx = XMConvertToRadians(0.25f*static_cast<float>(x - m_LastMousePos.x));
+		float dy = XMConvertToRadians(0.25f*static_cast<float>(y - m_LastMousePos.y));
+
+		m_GraphicHandle->UpdateCamera(0,0,0,0,dy,dx);
+	}
+
+	m_LastMousePos.x = x;
+	m_LastMousePos.y = y;
+}
+
+void OnKeyMove()
+{
+	if(GetAsyncKeyState('W')&0x8000)
+	{
+		m_GraphicHandle->UpdateCamera(0,1,0,0,0,0);
+	}
+	if(GetAsyncKeyState('S')&0x8000)
+	{
+		m_GraphicHandle->UpdateCamera(0,-1,0,0,0,0);
+	}
+	if(GetAsyncKeyState('A')&0x8000)
+	{
+		m_GraphicHandle->UpdateCamera(0,0,-1,0,0,0);
+	}
+	if(GetAsyncKeyState('D')&0x8000)
+	{
+		m_GraphicHandle->UpdateCamera(0,0,1,0,0,0);
+	}
+}
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
@@ -123,6 +160,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
             break;
 
 		case WM_KEYDOWN:
+			OnKeyMove();
 			switch(wParam)
 			{
 				case VK_ESCAPE:
@@ -131,6 +169,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 			}
 			break;
 		case WM_MOUSEMOVE:
+			OnMouseMove(wParam, GET_X_LPARAM(lParam),GET_Y_LPARAM(lParam));
 			break;
 
         default:

@@ -1,4 +1,4 @@
-#include "GraphicShaderhelper.fx"
+#include "GraphicShaderHelper.fx"
 
 struct VS_INPUT
 {
