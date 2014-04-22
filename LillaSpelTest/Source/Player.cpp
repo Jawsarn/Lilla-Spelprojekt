@@ -11,6 +11,7 @@ Player::Player()
 Player::Player(MapNode* p_startNode, float p_startAngle)
 {
 	m_mapNode = p_startNode;
+	m_angle = p_startAngle;
 }
 
 
@@ -73,6 +74,11 @@ void Player::PlaceWall()
 
 void Player::UpdateCollisionBox()
 {
+}
+
+void Player::CheckMapNode()
+{
+	////klurigjävlakod;
 }
 
 

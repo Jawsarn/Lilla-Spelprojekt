@@ -26,7 +26,7 @@ std::vector<DirectX::XMFLOAT3> PhysicsManager::GetForceInCollision(Player p_p1, 
 	float t_p1DirSkal = t_mHelp.DotProduct(p_p1.GetDirection(), t_collisionVec); //Första delen i projiceringsformeln (Skalären mellan den som ska projeceras och den som den ska projiceras på!)
 	float t_p2DirSkal = t_mHelp.DotProduct(p_p2.GetDirection(), t_collisionVec); //Första delen i projiceringsformeln 
 
-	t_collisionVec = t_mHelp.Normalize(XMFLOAT3(t_p1Pos.x-t_p2Pos.x, t_p1Pos.y - t_p2Pos.y, t_p1Pos.z - t_p2Pos.z)); //Vi ska projecera på denna vector NORMALISERAD!!!!
+	t_collisionVec = t_mHelp.Normalize(t_mHelp.VecSubVec(t_p1Pos, t_p2Pos)); //Vi ska projecera på denna vector NORMALISERAD!!!!
 
 	float t_collisionSkal = t_mHelp.DotProduct(t_collisionVec, t_collisionVec); //AbsolutBelopp av vectorn som ska projiceras på
 	t_collisionSkal *= t_collisionSkal;
@@ -40,7 +40,9 @@ std::vector<DirectX::XMFLOAT3> PhysicsManager::GetForceInCollision(Player p_p1, 
 	t_p2Projection = t_mHelp.FloatMultiVec((t_p2DirSkal / t_collisionSkal),t_collisionVec); //Projektionen från player 2 Skalären multiplicerad till vectorn som skulle projiceras på!
 	t_p2Projection.x = -t_p2Projection.x; t_p2Projection.y = -t_p2Projection.y;  t_p2Projection.z = -t_p2Projection.z; //vänder på ena vectorn
 
-	XMFLOAT3 t_magnitude;
+	float t_magnitude = t_mHelp.Abs(t_mHelp.VecSubVec(t_p1Projection, t_p2Projection));
+	r_return.push_back(t_mHelp.FloatMultiVec(t_magnitude, t_mHelp.Normalize(t_mHelp.VecSubVec(t_p1Pos, t_p2Pos))));
+	r_return.push_back(t_mHelp.FloatMultiVec(t_magnitude, t_mHelp.Normalize(t_mHelp.VecSubVec(t_p2Pos, t_p2Pos))));
 	
 
 

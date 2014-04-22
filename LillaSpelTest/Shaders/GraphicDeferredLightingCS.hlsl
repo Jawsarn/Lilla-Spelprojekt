@@ -3,7 +3,12 @@
 cbuffer PerComputeBuffer	:register(c2)
 {
 	float2 offset;
-	float2 fillerrus;
+	float2 camNearFar;
+}
+
+cbuffer ConstantConstantBuffer
+{
+	float2 screenDimensions;
 }
 
 struct Light
@@ -43,7 +48,6 @@ groupshared uint maxDepth;
 ///////////////////////////////////////////+/
 //////////////functions/////////////////////
 ////////////////////////////////////////////
-
 float4 CreateFrustrum(float4 F, float4 S)
 {
 	float4 outFrust;
@@ -62,9 +66,9 @@ float GetDistanceFromPlane(float3 lightpos, float3 plane)
 	return output;
 }
 
-bool Intersects(Light L,Tile T )
+bool Intersects(Light L,Tile T , int viewport)
 {
-	float3 lightPos = mul(float4(L.position,1), view).xyz;
+	float3 lightPos = mul(float4(L.position,1), View[viewport]).xyz;
 
 	float radius = L.radius;
 
@@ -85,9 +89,9 @@ bool Intersects(Light L,Tile T )
 }
 
 
-float3 DirectIllumination(float3 pos, float3 norm , Light light)
+float3 DirectIllumination(float3 pos, float3 norm , Light light, int viewport)
 {
-	float3 lightPos = mul(float4(light.position,1),view);
+	float3 lightPos = mul(float4(light.position,1),View[viewport]);
 
 	float3 lightVec = lightPos - pos;
 
@@ -121,9 +125,9 @@ struct PixelData
 	float3 positionView;
 };
 
-float3 ReconstructPosViewFromDepth(float2 screenPos, float depth)
+float3 ReconstructPosViewFromDepth(float2 screenPos, float depth, int viewport)
 {
-	float2 screenSpaceRay = float2(screenPos.x / projection._11, screenPos.y / projection._22); //the scale variables from linear distance
+	float2 screenSpaceRay = float2(screenPos.x / Projection[viewport]._11, screenPos.y / Projection[viewport]._22); //the scale variables from linear distance
 
 
 	float3 posView;
@@ -134,7 +138,14 @@ float3 ReconstructPosViewFromDepth(float2 screenPos, float depth)
 	return posView;
 }
 
-PixelData GetPixelData(uint2 globalCord)
+
+
+
+
+
+
+
+PixelData GetPixelData(uint2 globalCord, int viewport)
 {
 	PixelData output;
 	
@@ -151,39 +162,24 @@ PixelData GetPixelData(uint2 globalCord)
 
 	float2 posScreen = (float2(globalCord.xy) + 0.5f ) * screenPixelOffset.xy + float2(-1.0f,1.0f);
 	
-	depth = projection._43 / (depth - projection._33);
+	depth = Projection[viewport]._43 / (depth - Projection[viewport]._33);
 
-	output.positionView = ReconstructPosViewFromDepth(posScreen, depth);
-	output.normalView = mul(float4(normal,0), view).xyz;
+	output.positionView = ReconstructPosViewFromDepth(posScreen, depth, viewport);
+	output.normalView = mul(float4(normal,0), View[viewport]).xyz;
 	
 	return output;
 }
 
-
-
-[numthreads(BLOCK_SIZE, BLOCK_SIZE, 1)]
-void TileDeferredCS( uint3 threadID		: SV_DispatchThreadID, 
-		uint3 groupThreadID : SV_GroupThreadID,
-		uint3 groupID		: SV_GroupID)
+void CalculateDepth(uint groupIndex, PixelData data)
 {
-	uint groupIndex = groupThreadID.y * BLOCK_SIZE + groupThreadID.x;
-
-	//get number of Lights
-	uint maxNumOfLights, d;
-	lights.GetDimensions(maxNumOfLights, d);
-
-	//gather pixel info
-	uint2 globalCord = threadID.xy;
-	PixelData data = GetPixelData(globalCord);
-
-	//calc depth
+	//gather info
 	float minZ = camNearFar.y;
 	float maxZ = camNearFar.x;
+	
 	float depth = data.positionView.z; 
 
-
-	//get this below in when you've gathered info correctly
-	bool validPixel = depth >= camNearFar.x && depth < camNearFar.y;
+	bool validPixel = depth >= camNearFar.x && 
+						depth < camNearFar.y;
 
 	if(validPixel)
 	{
@@ -191,7 +187,7 @@ void TileDeferredCS( uint3 threadID		: SV_DispatchThreadID,
 		maxZ = max(maxZ, depth);
 	}
 	
-	//initiation groupixel initiate stuff
+
 	if(groupIndex == 0)
 	{
 		minDepth = 0x7F7FFFFF;
@@ -199,29 +195,32 @@ void TileDeferredCS( uint3 threadID		: SV_DispatchThreadID,
 		visibleLightCount = 0;
 	}
 
-	//find min max
 	GroupMemoryBarrierWithGroupSync();
+
 	if(maxZ >= minZ)
 	{
 		InterlockedMax(maxDepth, asuint(maxZ));
 		InterlockedMin(minDepth, asuint(minZ));
 	}
 	GroupMemoryBarrierWithGroupSync();
+}
 
-
+void CalculateFrustrums(uint2 groupID, inout float4 frustrumPlanes[6], int viewport)
+{
+	
 	float minTileY = asfloat(minDepth);
 	float maxTileY = asfloat(maxDepth);
 
-	// rcp =  1 / x in a fast way, could change to 1/float(2*BLOCK_SIZE)
+	//										rcp =  1 / x in a fast way, could change to 1/float(2*BLOCK_SIZE)
 	float2 tileScale = float2(screenDimensions.xy * rcp(float(2*BLOCK_SIZE)));
 	float2 tileBias = tileScale - float2(groupID.xy);
 
 	//magic, getting the relevant columns from view matrix
-	float4 c1 = float4(projection._11 * tileScale.x		, 0.0f								, tileBias.x	, 0.0f);
-	float4 c2 = float4(0.0f								, -projection._22 * tileScale.y		, tileBias.y	, 0.0f);
-	float4 c4 = float4(0.0f								,0.0f								,1.0f			, 0.0f);
+	float4 c1 = float4(Projection[viewport]._11 * tileScale.x		, 0.0f											, tileBias.x	, 0.0f);
+	float4 c2 = float4(0.0f											, -Projection[viewport]._22 * tileScale.y		, tileBias.y	, 0.0f);
+	float4 c4 = float4(0.0f											,0.0f											,1.0f			, 0.0f);
 
-	float4 frustrumPlanes[6];
+	
 
 	frustrumPlanes[0] = c4 - c1;
 	frustrumPlanes[1] = c4 + c1;
@@ -235,7 +234,106 @@ void TileDeferredCS( uint3 threadID		: SV_DispatchThreadID,
 	{
 		frustrumPlanes[i] *= rcp(length(frustrumPlanes[i].xyz));
 	}
+}
 
+
+
+[numthreads(BLOCK_SIZE, BLOCK_SIZE, 1)]
+void CS( uint3 threadID		: SV_DispatchThreadID, 
+		uint3 groupThreadID : SV_GroupThreadID,
+		uint3 groupID		: SV_GroupID)
+{
+	uint groupIndex = groupThreadID.y * BLOCK_SIZE + groupThreadID.x;
+
+	//get number of Lights
+	uint maxNumOfLights, d;
+	lights.GetDimensions(maxNumOfLights, d);
+
+	
+	int viewport;
+	if (screenDimensions.x > threadID.x)
+	{
+		if (screenDimensions.y > threadID.y)
+		{
+			viewport = 0;
+		}
+		else
+		{
+			viewport = 2;
+		}
+	}
+	else
+	{
+		if (screenDimensions.y > threadID.y)
+		{
+			viewport = 1;
+		}
+		else
+		{
+			viewport = 3;
+		}
+	}
+
+
+
+
+
+
+	////////////////////////////
+	/////////Get Data///////////
+	////////////////////////////
+
+	uint2 globalCord = threadID.xy;
+	PixelData data = GetPixelData(globalCord, viewport);
+
+
+
+
+
+
+
+
+
+
+	////////////////////////////
+	/////////Calc Depth/////////
+	////////////////////////////
+	
+	CalculateDepth(groupIndex ,data);
+
+
+
+
+
+
+
+
+
+
+
+	////////////////////////////
+	/////////Calc Frustum///////
+	////////////////////////////
+
+	float4 frustrumPlanes[6];
+	CalculateFrustrums(groupID, frustrumPlanes, viewport);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	////////////////////////////
+	/////////Calc lights////////
+	////////////////////////////
 	uint groupSize = BLOCK_SIZE * BLOCK_SIZE;
 	//lightcull for this tile, may change more towards the dice implementation
 	for (uint lightIndex = groupIndex; lightIndex < maxNumOfLights; lightIndex+= groupSize)
@@ -243,16 +341,14 @@ void TileDeferredCS( uint3 threadID		: SV_DispatchThreadID,
 		Light light = lights[lightIndex];
 
 
-
 		bool inFrustum = true;
 		for (int i = 0; i < 6 && inFrustum; i++)
 		{
-			float4 lightPos = mul(float4(light.position,1),view);
+			float4 lightPos = mul(float4(light.position,1), View[viewport]);
 
 			float distance = dot(frustrumPlanes[i], lightPos);
 			inFrustum = inFrustum && (distance >= -light.radius);
 		}
-
 		if(inFrustum)
 		{
 			uint index;
@@ -263,6 +359,16 @@ void TileDeferredCS( uint3 threadID		: SV_DispatchThreadID,
 
 	GroupMemoryBarrierWithGroupSync();
 
+
+
+
+
+
+
+
+	////////////////////////////
+	/////////Add lights/////////
+	////////////////////////////
 	uint numOfLights = visibleLightCount;
 
 	float3 finalColor = DiffuseColor_AO[threadID.xy].xyz*0.2;
@@ -273,43 +379,13 @@ void TileDeferredCS( uint3 threadID		: SV_DispatchThreadID,
 			uint lightIndex = visibleLightIndices[i];
 			Light light = lights[lightIndex];
 	
-			finalColor += DirectIllumination(data.positionView, data.normalView , light);
+			finalColor += DirectIllumination(data.positionView, data.normalView , light, viewport);
 		}
 	}
 
 	if(Specular[globalCord].x == 1) 
 	{
-		/*if (swapper == 1)
-		{
-			if (numOfLights == 0)
-			{
-				output[threadID.xy] = float4(0, 0, 0, 1);
-			}
-			else if (numOfLights == 1)
-			{
-				output[threadID.xy] = float4(0.1, 0.1, 0.1, 1);
-			}
-			else if (numOfLights == 2)
-			{
-				output[threadID.xy] = float4(0.3, 0.3, 0.3, 1);
-			}
-			else if (numOfLights == 3)
-			{
-				output[threadID.xy] = float4(0.6, 0.6, 0.6, 1);
-			}
-			else if (numOfLights > 3)
-			{
-				output[threadID.xy] = float4(1, 1, 1, 1);
-			}
-		}
-		else
-		{*/
-			/*float3 normal = Normal_Depth[threadID.xy].xyz;
-			output[threadID.xy] = float4(normal,1);*/
-		//Light l = lights[0];
-		//output[threadID.xy] = float4(l.radius,0,0,1);
-			output[threadID.xy] = float4(finalColor.x,finalColor.y,finalColor.z, 1);
-		//}
+		output[threadID.xy] = float4(finalColor.x,finalColor.y,finalColor.z, 1);
 	}
 }
 
