@@ -28,15 +28,20 @@ XMFLOAT3 MathHelper::FloatMultiVec(float p_float, XMFLOAT3 p_vec)
 
 }
 
-XMFLOAT3 MathHelper::Normalize(XMFLOAT3 p_vec)
+XMFLOAT3 MathHelper::Normalize(XMFLOAT3 p_fl3)
 {
-	XMFLOAT3 t_vec;
-	XMVector3Normalize(XMLoadFloat3(&t_vec)); //INTEFÄRDIGT
-	return t_vec;
+	XMVECTOR t_vec = XMLoadFloat3(&p_fl3);
+	t_vec = XMVector3Normalize(t_vec); 
+	XMFLOAT3 r_fl3;
+	XMStoreFloat3(&r_fl3, t_vec); 
+	return r_fl3;
 }
 
-XMFLOAT3 MathHelper::VecSubVec(XMFLOAT3 p_vec1, XMFLOAT3 p_vec2)
+XMFLOAT3 MathHelper::VecSubVec(XMFLOAT3 p_fl31, XMFLOAT3 p_fl32)
 {
-	XMFLOAT3 temp;
-	return temp;
+	XMVECTOR t_vec1 = XMLoadFloat3(&p_fl31);
+	XMVECTOR t_vec2 = XMLoadFloat3(&p_fl32);
+	XMFLOAT3 r_fl3;
+	XMStoreFloat3(&r_fl3, (t_vec1 - t_vec2));
+
 }
