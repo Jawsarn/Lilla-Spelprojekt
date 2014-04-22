@@ -18,6 +18,7 @@ GraphicEngine::GraphicEngine(void)
 {
 	m_DriverType = D3D_DRIVER_TYPE_NULL;
 	m_FeatureLevel = D3D_FEATURE_LEVEL_11_0;
+	m_CurrentNumOfLights = 0;
 	m_ShaderLoader = new ShaderLoader();
 	m_MeshLoader = new MeshLoader();
 
@@ -450,6 +451,7 @@ HRESULT GraphicEngine::InitializeShaders()
 		return hr;
 
 	m_ComputeShaders.push_back(t_ComputeShader);
+	m_DeviceContext->CSSetShader(m_ComputeShaders[0],nullptr,0); //HÅRDKODAT
 
 	return hr;
 }
@@ -477,40 +479,35 @@ HRESULT GraphicEngine::InitializeConstantBuffers()
     if( FAILED( hr ) )
         return hr;
 
+	//per object buffer
+	t_BufferDesc.ByteWidth = sizeof(PerComputeBuffer);
+	hr = m_Device->CreateBuffer( &t_BufferDesc, nullptr, &m_PerComputeBuffer );
+    if( FAILED( hr ) )
+        return hr;
 
-	//
-	//lights.resize(MAX_NUM_OF_LIGHTS);
-	///*bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	//bd.Usage = D3D11_USAGE_DYNAMIC;*/
-	//bd.ByteWidth = sizeof(Light) * lights.size();
-	//bd.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	//bd.StructureByteStride = sizeof(Light);
-	//bd.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-	//D3D11_SUBRESOURCE_DATA vinitDataA;
-	//vinitDataA.pSysMem = &lights[0];
+	m_StaticLights.resize(MAX_NUM_OF_LIGHTS);
+	/*bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	bd.Usage = D3D11_USAGE_DYNAMIC;*/
+	t_BufferDesc.ByteWidth = sizeof(Light) * m_StaticLights.size();
+	t_BufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	t_BufferDesc.StructureByteStride = sizeof(Light);
+	t_BufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+	D3D11_SUBRESOURCE_DATA t_InitData;
+	t_InitData.pSysMem = &m_StaticLights[0];
 
-	//hr = device->CreateBuffer(&bd, &vinitDataA, &lightBuffer);
-	//if( FAILED(hr))
-	//	return hr;
+	hr = m_Device->CreateBuffer(&t_BufferDesc, &t_InitData, &m_LightBuffer);
+	if( FAILED(hr))
+		return hr;
 
-	//D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-	//srvDesc.Format = DXGI_FORMAT_UNKNOWN;
-	//srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFEREX;
-	//srvDesc.BufferEx.FirstElement = 0;
-	//srvDesc.BufferEx.Flags = 0;
-	//srvDesc.BufferEx.NumElements = lights.size()/*MAX_NUM_OF_LIGHTS*/;
-	//
-	//hr = device->CreateShaderResourceView(lightBuffer,&srvDesc,&lightBufferSRV);
+	D3D11_SHADER_RESOURCE_VIEW_DESC t_SrvDesc;
+	t_SrvDesc.Format = DXGI_FORMAT_UNKNOWN;
+	t_SrvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFEREX;
+	t_SrvDesc.BufferEx.FirstElement = 0;
+	t_SrvDesc.BufferEx.Flags = 0;
+	t_SrvDesc.BufferEx.NumElements = m_StaticLights.size()/*MAX_NUM_OF_LIGHTS*/;
+	
+	hr = m_Device->CreateShaderResourceView(m_LightBuffer,&t_SrvDesc,&m_LightBufferSRV);
 
-	//ConstantBuffer cb;
-	//cb.camNearFar = XMFLOAT2(0,0);
-	//cb.screenDimensions = XMFLOAT2(width,height);
-	//cb.lightCount = lights.size();
-	//cb.useFog = 0;
-	//cb.filler = 0;
-	//cb.filler2 = 0;
-	//
-	//deviceContext->UpdateSubresource(constantBuffer, 0, nullptr, &cb, 0, 0);
 
 	m_DeviceContext->VSSetConstantBuffers(0,1,&m_PerFrameBuffer);
 	m_DeviceContext->VSSetConstantBuffers(1,1,&m_PerObjectBuffer);
@@ -521,7 +518,7 @@ HRESULT GraphicEngine::InitializeConstantBuffers()
 	m_DeviceContext->PSSetConstantBuffers(1,1,&m_PerObjectBuffer);
 
 	m_DeviceContext->CSSetConstantBuffers(0,1,&m_PerFrameBuffer);
-	m_DeviceContext->CSSetConstantBuffers(1,1,&m_PerObjectBuffer);
+	m_DeviceContext->CSSetConstantBuffers(1,1,&m_PerComputeBuffer);
 
 	return hr;
 }
@@ -791,10 +788,17 @@ HRESULT GraphicEngine::LoadTexture(const wchar_t * p_FileName, UINT &o_TextureID
 //==========Light functions=================//
 ///////////////////////////////////////////////
 
-void GraphicEngine::CreateStaticLight(XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius)
+void GraphicEngine::CreateStaticLight(XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius, UINT &o_LightID)
 {
 	Light t_NewLight(p_Position,p_Radius,p_Color,0);
-	m_StaticLights.push_back(t_NewLight);
+
+	m_StaticLights[m_CurrentNumOfLights] = t_NewLight;
+
+	o_LightID = m_CurrentNumOfLights;
+
+	m_CurrentNumOfLights++;
+
+	m_DeviceContext->UpdateSubresource(m_LightBuffer, 0, nullptr, &m_StaticLights[0], 0, 0);
 }
 
 HRESULT GraphicEngine::CreateDynamicLight(XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius, UINT &o_LightID)
@@ -1032,17 +1036,27 @@ void GraphicEngine::SetViewportAmount(int p_NumOfViewports)
 
 void GraphicEngine::DrawGame()
 {
+	//clear the render target
 	m_DeviceContext->ClearRenderTargetView(m_RenderTargetView, Colors::Black );
 	m_DeviceContext->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+	//clear g buffers
+	for (int i = 0; i < 3; i++)
+	{
+		m_DeviceContext->ClearRenderTargetView( m_GbufferTargetViews[i], Colors::Black );
+	}
 	
+	//set render target, I guess for if swapping between hud etc
+	m_DeviceContext->OMSetRenderTargets( 3, m_GbufferTargetViews, m_DepthStencilView);
+
 	//update per frame buffer
 	UpdateFrameBuffer();
 
 	//draw opaque objects
 	DrawOpaqueObjects();
 
-
-
+	//compute tiled lighting
+	ComputeTileDeferredLightning();
 
 
 	m_SwapChain->Present( 1, 0 );
@@ -1061,7 +1075,6 @@ void GraphicEngine::UpdateFrameBuffer()
 
 			t_PerFrame.Projection[i] = XMMatrixTranspose( m_ActiveCameras[i]->Proj() );
 			t_PerFrame.View[i] = XMMatrixTranspose( m_ActiveCameras[i]->View() );
-			t_PerFrame.ViewProjection[i] = XMMatrixTranspose( m_ActiveCameras[i]->ViewProj() );
 			
 			t_PerFrame.fillers3 = XMFLOAT3(0,0,0);
 			
@@ -1072,7 +1085,6 @@ void GraphicEngine::UpdateFrameBuffer()
 			t_PerFrame.fillers3 = XMFLOAT3(0,0,0);
 			t_PerFrame.Projection[i] = XMMatrixIdentity();
 			t_PerFrame.View[i] = XMMatrixIdentity();
-			t_PerFrame.ViewProjection[i] = XMMatrixIdentity();
 		}
 	}
 
@@ -1084,7 +1096,7 @@ void GraphicEngine::UpdateFrameBuffer()
 void GraphicEngine::DrawOpaqueObjects()
 {
 	//need to set the render target here if changing elsewhere
-	m_DeviceContext->OMSetRenderTargets(1, &m_RenderTargetView, m_DepthStencilView);
+	//m_DeviceContext->OMSetRenderTargets(1, &m_RenderTargetView, m_DepthStencilView);
 	
 	m_DeviceContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	UINT strides = sizeof(SimpleVertex);
@@ -1156,7 +1168,38 @@ void GraphicEngine::SetTextures(DrawPiece p_DrawPiece)
 
 void GraphicEngine::ComputeTileDeferredLightning()
 {
+	m_DeviceContext->OMSetRenderTargets(0,nullptr,nullptr);
+	
+	m_DeviceContext->CSSetUnorderedAccessViews(0, 1, &m_BackBufferUAV, nullptr);
+	m_DeviceContext->CSSetShaderResources(1, 3, m_GbufferShaderResource);
+	m_DeviceContext->CSSetShaderResources(4, 1, &m_LightBufferSRV);
 
+	//update buffer here
+	PerComputeBuffer t_Pcb;
+	t_Pcb.camNearFar = XMFLOAT2(1.0f,10000); //HÅRDKODNING DELUX
+	if (m_NumberOfViewports > 2)
+	{
+		t_Pcb.screenDimensions = XMFLOAT2(m_Width/2, m_Height/2);
+	}
+	else if (m_NumberOfViewports == 2)
+	{
+		t_Pcb.screenDimensions = XMFLOAT2(m_Width/2, m_Height);
+	}
+	else
+	{
+		t_Pcb.screenDimensions = XMFLOAT2(m_Width, m_Height);
+	}
+	
+	m_DeviceContext->UpdateSubresource(m_PerComputeBuffer,0,nullptr, &t_Pcb,0,0);
+	
+
+	UINT x = (m_Width/ THREAD_BLOCK_DIMENSIONS);
+	UINT y = (m_Height/ THREAD_BLOCK_DIMENSIONS);
+
+	m_DeviceContext->Dispatch(x,y,1);
+
+	ID3D11ShaderResourceView* temp[3] = {0,0,0};
+	m_DeviceContext->CSSetShaderResources(1,3,temp);
 }
 
 void GraphicEngine::DrawHud()

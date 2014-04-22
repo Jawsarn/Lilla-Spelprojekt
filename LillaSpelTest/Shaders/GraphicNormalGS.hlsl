@@ -2,17 +2,18 @@
 
 struct GS_INPUT
 {
-	float3 position : POSITION;
-	float3 normal	: NORMAL;
-	float2 tex		: TEXCOORD;
+	float3 Position : POSITION;
+	float3 Normal	: NORMAL;
+	float2 Tex		: TEXCOORD;
 };
 
 struct GS_OUTPUT
 {
-	float4 position : SV_POSITION;
-	float3 normal	: NORMAL;
-	float2 tex		: TEXCOORD;
-	uint viewport	: SV_ViewportArrayIndex;
+	float4 Position : SV_POSITION;
+	float3 Normal	: NORMAL;
+	float2 Tex		: TEXCOORD;
+	float2 Depth	: DEPTH;
+	uint Viewport	: SV_ViewportArrayIndex;
 };
 
 [maxvertexcount(12)]
@@ -23,13 +24,14 @@ void GS( triangle GS_INPUT input[3], inout TriangleStream<GS_OUTPUT> triangleStr
 		for (uint i = 0; i < 3; i++)
 		{
 			GS_OUTPUT output;
-			output.position = mul(float4(input[i].position, 1), World);
-			output.position = mul(output.position, View[j]);
-			output.position = mul(output.position, Projection[j]);
+			output.Position = mul(float4(input[i].Position, 1), World);
+			output.Position = mul(output.Position, View[j]);
+			output.Position = mul(output.Position, Projection[j]);
 		/*	output.position = mul(output.position, ViewProjection);*/
-			output.tex = input[i].tex;
-			output.normal = input[i].normal;
-			output.viewport = j;
+			output.Tex = input[i].Tex;
+			output.Normal = input[i].Normal;
+			output.Depth = output.Position.zw;
+			output.Viewport = j;
 			triangleStream.Append(output);
 		}
 		triangleStream.RestartStrip();

@@ -89,6 +89,8 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	//m_GraphicEngine->MoveCamera(m_CameraID[2], 100,0,0,0,0);
 	//m_GraphicEngine->SetCamera(m_CameraID[3], XMFLOAT3(0, 0, -120),XMFLOAT3(0, 0, 1),XMFLOAT3(0, 1, 0));
 
+	UINT t_LightID;
+	m_GraphicEngine->CreateStaticLight(XMFLOAT3(30,0,0), XMFLOAT3(1,0,0), 300, t_LightID);
 }
 
 void GraphicHandle::UpdatePlayer(int p_playerID,CXMMATRIX p_matrix)

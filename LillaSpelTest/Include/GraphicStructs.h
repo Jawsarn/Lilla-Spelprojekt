@@ -16,6 +16,8 @@ struct Light
 	float radius;
 	XMFLOAT3 color;
 	float filler;
+	Light()
+	{}
 	Light(XMFLOAT3 p_Pos, float p_Rad, XMFLOAT3 p_Col, float p_Fil)
 	{
 		position = p_Pos;
@@ -76,15 +78,20 @@ struct PerFramebuffer
 {
 	XMMATRIX View[4];
 	XMMATRIX Projection[4];
-	XMMATRIX ViewProjection[4];
 	XMFLOAT4 EyesPos[4];
 	XMFLOAT3 fillers3;
-	UINT NumberOfViewports;
+	float NumberOfViewports;
 };
 
 struct PerObjectBuffer //updates for each object that needs this
 {
 	XMMATRIX world;
-	UINT typeOfObject; //with types of textures etc
+	float typeOfObject; //with types of textures etc
 	XMFLOAT3 fillers;
+};
+
+struct PerComputeBuffer
+{
+	XMFLOAT2 screenDimensions;
+	XMFLOAT2 camNearFar;
 };

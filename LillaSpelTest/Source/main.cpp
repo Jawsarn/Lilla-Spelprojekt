@@ -43,7 +43,7 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	m_LastMousePos = XMFLOAT2(0,0);
 
 	m_GraphicHandle = m_GraphicHandle->GetInstance();
-	m_GraphicHandle->Initialize(t_Width, t_Height, m_HandleWindow);
+	m_GraphicHandle->Initialize(1920, 1080, m_HandleWindow); //fix this input variables right
 
 	Run();
 

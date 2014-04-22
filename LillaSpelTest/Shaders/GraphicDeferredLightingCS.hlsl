@@ -1,15 +1,20 @@
-#include "GraphicShaderHelper.fx"
+//#include "GraphicShaderHelper.fx"
 
-cbuffer PerComputeBuffer	:register(c2)
+cbuffer PerFrameBuffer : register(c0)
 {
-	float2 offset;
+	matrix View[4];
+	matrix Projection[4];
+	float4 EyesPos[4];
+	float3 fillers;
+	float NumberOfViewports;
+}
+
+cbuffer PerComputeBuffer : register(c1)
+{
+	float2 screenDimensions;
 	float2 camNearFar;
 }
 
-cbuffer ConstantConstantBuffer
-{
-	float2 screenDimensions;
-}
 
 struct Light
 {
@@ -88,7 +93,6 @@ bool Intersects(Light L,Tile T , int viewport)
 	return false;
 }
 
-
 float3 DirectIllumination(float3 pos, float3 norm , Light light, int viewport)
 {
 	float3 lightPos = mul(float4(light.position,1),View[viewport]);
@@ -137,13 +141,6 @@ float3 ReconstructPosViewFromDepth(float2 screenPos, float depth, int viewport)
 
 	return posView;
 }
-
-
-
-
-
-
-
 
 PixelData GetPixelData(uint2 globalCord, int viewport)
 {
@@ -383,6 +380,27 @@ void CS( uint3 threadID		: SV_DispatchThreadID,
 		}
 	}
 
+	/*if(Specular[globalCord].x == 1) 
+	{
+		output[threadID.xy] = float4(finalColor.x,finalColor.y,finalColor.z, 1);
+	}
+	if (viewport == 0 )
+	{
+		output[threadID.xy] = float4(1,0,0,0);
+	}
+	else if (viewport == 1)
+	{
+		output[threadID.xy] = float4(1,1,0,0);
+	}
+	else if (viewport == 2)
+	{
+		output[threadID.xy] = float4(0,0,1,0);
+
+	}
+	else if (viewport == 3)
+	{
+		output[threadID.xy] = float4(0,1,0,0);
+	}*/
 	if(Specular[globalCord].x == 1) 
 	{
 		output[threadID.xy] = float4(finalColor.x,finalColor.y,finalColor.z, 1);

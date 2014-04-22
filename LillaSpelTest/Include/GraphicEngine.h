@@ -23,7 +23,8 @@ UINT height = rc.bottom - rc.top;
 requires saving of hwind and rc
 */
 
-
+#define THREAD_BLOCK_DIMENSIONS 16
+#define MAX_NUM_OF_LIGHTS 1024
 
 class GraphicEngine
 {
@@ -51,7 +52,7 @@ public:
 
 
 	//light funcs
-	void CreateStaticLight(XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius);
+	void CreateStaticLight(XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius, UINT &o_LightID);
 	HRESULT CreateDynamicLight(XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius, UINT &o_LightID);
 	HRESULT UpdateDynamicLight(UINT p_LightID,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius);
 
@@ -154,6 +155,7 @@ private:
 	std::vector<DrawPiece> m_DrawPieces;
 	std::vector<ID3D11ShaderResourceView*> m_Textures;
 	std::vector<Light> m_StaticLights;
+	int m_CurrentNumOfLights;
 	Camera* m_ActiveCameras[4];
 
 	//shader programs
@@ -176,7 +178,12 @@ private:
 	//constant buffers
 	ID3D11Buffer* m_PerFrameBuffer;
 	ID3D11Buffer* m_PerObjectBuffer;
+	ID3D11Buffer* m_PerComputeBuffer;
 
-	UINT m_NumberOfViewports;
+	//light bufferu
+	ID3D11Buffer*				m_LightBuffer;
+	ID3D11ShaderResourceView*	m_LightBufferSRV;
+
+	float m_NumberOfViewports;
 };
 
