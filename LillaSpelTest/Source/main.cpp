@@ -128,19 +128,19 @@ void OnKeyMove()
 {
 	if(GetAsyncKeyState('W')&0x8000)
 	{
-		m_GraphicHandle->UpdateCamera(m_ActiveCamera,1,0,0,0,0);
+		m_GraphicHandle->UpdateCamera(m_ActiveCamera,100*m_DeltaTime,0,0,0,0);
 	}
 	if(GetAsyncKeyState('S')&0x8000)
 	{
-		m_GraphicHandle->UpdateCamera(m_ActiveCamera,-1,0,0,0,0);
+		m_GraphicHandle->UpdateCamera(m_ActiveCamera,-100*m_DeltaTime,0,0,0,0);
 	}
 	if(GetAsyncKeyState('A')&0x8000)
 	{
-		m_GraphicHandle->UpdateCamera(m_ActiveCamera,0,-1,0,0,0);
+		m_GraphicHandle->UpdateCamera(m_ActiveCamera,0,-100*m_DeltaTime,0,0,0);
 	}
 	if(GetAsyncKeyState('D')&0x8000)
 	{
-		m_GraphicHandle->UpdateCamera(m_ActiveCamera,0,1,0,0,0);
+		m_GraphicHandle->UpdateCamera(m_ActiveCamera,0,100*m_DeltaTime,0,0,0);
 	}
 	if(GetAsyncKeyState('1')&0x8000)
 	{
