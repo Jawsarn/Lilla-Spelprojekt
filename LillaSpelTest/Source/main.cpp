@@ -32,11 +32,14 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	UNREFERENCED_PARAMETER( hPrevInstance );
     UNREFERENCED_PARAMETER( lpCmdLine );
 	InitializeWindow(hInstance,nCmdShow,1920,1080);
+	
 
 	RECT t_Rectangle;
 	GetClientRect( m_HandleWindow, &t_Rectangle );
 	UINT t_Width = t_Rectangle.right - t_Rectangle.left;
 	UINT t_Height = t_Rectangle.bottom - t_Rectangle.top;
+
+
 	m_LastMousePos = XMFLOAT2(0,0);
 
 	m_GraphicHandle = m_GraphicHandle->GetInstance();
@@ -217,11 +220,14 @@ HRESULT InitializeWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow, UINT width
 
     // Create window
     handleInstance = hInstance;
-    RECT rc = { 0, 0, width, height };
+
+	RECT t_rc = { 0, 0, 1920, 1080 };
+	AdjustWindowRect(&t_rc, WS_OVERLAPPEDWINDOW, false);
+
 	
-    AdjustWindowRect( &rc, WS_OVERLAPPEDWINDOW, FALSE );
+    //AdjustWindowRect( &t_rc, WS_OVERLAPPEDWINDOW, FALSE );
     m_HandleWindow = CreateWindow(  wcex.lpszClassName,  wcex.lpszClassName, WS_OVERLAPPEDWINDOW,
-                           CW_USEDEFAULT, CW_USEDEFAULT, rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, hInstance,
+                           CW_USEDEFAULT, CW_USEDEFAULT, t_rc.right - t_rc.left, t_rc.bottom - t_rc.top, nullptr, nullptr, hInstance,
                            nullptr );
     if( !m_HandleWindow )
         return E_FAIL;
