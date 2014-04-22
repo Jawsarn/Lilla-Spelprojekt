@@ -46,6 +46,7 @@ public:
 	void Update(float p_dt,UserCMD p_userCMD); //Updates position and dropps walls
 	std::vector<BoundingOrientedBox*> GetWallsToCheck();
 	void ChangeState(PlayerState p_state);
+	
 
 	//Gets yo
 	XMFLOAT3 GetPos();
@@ -54,5 +55,6 @@ public:
 private:
 	void PlaceWall();
 	void UpdateCollisionBox();
+	void CheckMapNode();
 };
 
