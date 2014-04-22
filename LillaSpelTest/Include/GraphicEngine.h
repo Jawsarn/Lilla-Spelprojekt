@@ -145,7 +145,7 @@ private:
 	ShaderLoader* m_ShaderLoader;
 
 	
-	std::map<UINT, DrawObject*> m_DrawOjbects;
+	std::map<UINT, DrawObject*> m_DrawObjects;
 	std::map<UINT, Light*> m_DynamicLights;
 	//std::vector<Camera*> m_Cameras;
 	std::map<UINT, Camera*> m_Cameras;
@@ -168,7 +168,7 @@ private:
 	std::vector<ID3D11ComputeShader*> m_ComputeShaders;
 
 	//input layout
-	std::vector<ID3D11InputLayout*> inputLayouts;
+	std::vector<ID3D11InputLayout*> m_InputLayouts;
 	
 	//vertexbuffer
 	std::vector<VertexBufferWithNOV> m_VertexBuffers;

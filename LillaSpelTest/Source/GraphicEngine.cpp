@@ -417,7 +417,7 @@ HRESULT GraphicEngine::InitializeShaders()
 		return hr;
 
 	m_VertexShaders.push_back(t_VertexShader);
-	inputLayouts.push_back(t_InputLayout);
+	m_InputLayouts.push_back(t_InputLayout);
 	
 	///GEOMETRY SHADER
 	ID3D11GeometryShader* t_GeometryShader;
@@ -439,10 +439,17 @@ HRESULT GraphicEngine::InitializeShaders()
 	t_NewProgram.hullShader = -1;
 	t_NewProgram.geometryShader = m_GeometryShaders.size() -1;
 	t_NewProgram.pixelShader = m_PixelShaders.size() - 1;
-	t_NewProgram.inputLayout = inputLayouts.size() - 1;
+	t_NewProgram.inputLayout = m_InputLayouts.size() - 1;
 	m_ShaderPrograms.push_back(t_NewProgram);
 
-	//fix  shaders here
+
+	//COMPUTE SHADER
+	ID3D11ComputeShader* t_ComputeShader;
+	hr = m_ShaderLoader->CreateComputeShader( L"GraphicDeferredLightingCS.hlsl", "CS", "cs_5_0", m_Device, &t_ComputeShader);
+	if( FAILED( hr ))
+		return hr;
+
+	m_ComputeShaders.push_back(t_ComputeShader);
 
 	return hr;
 }
@@ -695,9 +702,9 @@ HRESULT GraphicEngine::CreateDrawObject(std::vector<UINT> p_DrawPieceIDs, CXMMAT
 		o_ObjectID = T_Hashi(t_NewDrawObject);
 
 	
-		if (m_DrawOjbects[o_ObjectID] == nullptr)
+		if (m_DrawObjects[o_ObjectID] == nullptr)
 		{
-			m_DrawOjbects[o_ObjectID] = t_NewDrawObject;
+			m_DrawObjects[o_ObjectID] = t_NewDrawObject;
 		}
 	}
 	catch( std::exception e )
@@ -715,10 +722,10 @@ HRESULT GraphicEngine::CreateDrawObject(std::vector<UINT> p_DrawPieceIDs, CXMMAT
 
 HRESULT GraphicEngine::AddObjectLight(UINT p_ObjectID ,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius, UINT &o_LightID)
 {
-	if (m_DrawOjbects[p_ObjectID] != nullptr)
+	if (m_DrawObjects[p_ObjectID] != nullptr)
 	{
-		m_DrawOjbects[p_ObjectID]->lights.push_back(Light(p_Position,p_Radius,p_Color,0));
-		o_LightID = m_DrawOjbects[p_ObjectID]->lights.size() -1;
+		m_DrawObjects[p_ObjectID]->lights.push_back(Light(p_Position,p_Radius,p_Color,0));
+		o_LightID = m_DrawObjects[p_ObjectID]->lights.size() -1;
 		return S_OK;
 	}
 	else
@@ -729,11 +736,11 @@ HRESULT GraphicEngine::AddObjectLight(UINT p_ObjectID ,XMFLOAT3 p_Position, XMFL
 
 HRESULT GraphicEngine::ChangeObjectsLight(UINT p_ObjectID, UINT p_LightID,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius)
 {
-	if (m_DrawOjbects[p_ObjectID] != nullptr)
+	if (m_DrawObjects[p_ObjectID] != nullptr)
 	{
-		if (p_LightID < m_DrawOjbects[p_ObjectID]->lights.size())
+		if (p_LightID < m_DrawObjects[p_ObjectID]->lights.size())
 		{
-			m_DrawOjbects[p_ObjectID]->lights[p_LightID] = Light(p_Position,p_Radius,p_Color,0);
+			m_DrawObjects[p_ObjectID]->lights[p_LightID] = Light(p_Position,p_Radius,p_Color,0);
 			return S_OK;
 		}
 		else
@@ -749,9 +756,9 @@ HRESULT GraphicEngine::ChangeObjectsLight(UINT p_ObjectID, UINT p_LightID,XMFLOA
 
 HRESULT GraphicEngine::MoveObject(UINT p_ObjectID, CXMMATRIX p_Matrix)
 {
-	if (m_DrawOjbects[p_ObjectID] != nullptr)
+	if (m_DrawObjects[p_ObjectID] != nullptr)
 	{
-		 XMStoreFloat4x4(&m_DrawOjbects[p_ObjectID]->worldMatrix, p_Matrix);
+		 XMStoreFloat4x4(&m_DrawObjects[p_ObjectID]->worldMatrix, p_Matrix);
 
 		return S_OK;
 	}
@@ -1084,7 +1091,7 @@ void GraphicEngine::DrawOpaqueObjects()
 	UINT offsets = 0;
 
 	//std::map<UINT, DrawObject*>::iterator it;
-	for (std::map<UINT, DrawObject*>::iterator it = m_DrawOjbects.begin(); it != m_DrawOjbects.end(); ++it)
+	for (std::map<UINT, DrawObject*>::iterator it = m_DrawObjects.begin(); it != m_DrawObjects.end(); ++it)
 	{
 		//update the object buffer
 		PerObjectBuffer t_PerObjBuff;
@@ -1118,7 +1125,7 @@ void GraphicEngine::DrawOpaqueObjects()
 
 void GraphicEngine::SetShaderProgram(ShaderProgram p_Program)
 {
-	m_DeviceContext->IASetInputLayout(inputLayouts[p_Program.inputLayout]);
+	m_DeviceContext->IASetInputLayout(m_InputLayouts[p_Program.inputLayout]);
 
 	m_DeviceContext->VSSetShader(m_VertexShaders[p_Program.vertexShader], nullptr, 0);
 
