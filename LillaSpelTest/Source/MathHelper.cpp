@@ -32,7 +32,7 @@ XMFLOAT3 MathHelper::Normalize(XMFLOAT3 p_fl3)
 {
 	XMVECTOR t_vec= XMLoadFloat3(&p_fl3);
 	XMFLOAT3 r_fl3;
-	XMStoreFloat3(&r_fl3, (XMVector3Normalize(t_vec))); //INTEFÄRDIGT
+	XMStoreFloat3(&r_fl3, (XMVector3Normalize(t_vec)));
 	return r_fl3;
 }
 
@@ -50,5 +50,5 @@ float MathHelper::Abs(XMFLOAT3 p_fl3)
 	XMVECTOR t_vec = XMLoadFloat3(&p_fl3);
 	XMFLOAT3 r_vec;
 	XMStoreFloat3(&r_vec, XMVector3Length(t_vec));
-	return r_vec.x; //vetinteriktigtomdetfunkar
+	return r_vec.x; //vetinteriktigtomdetfunkar varför vill den att jag sparar ner den som en vector? :(
 }
