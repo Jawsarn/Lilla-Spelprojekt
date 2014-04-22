@@ -1098,7 +1098,7 @@ void GraphicEngine::DrawOpaqueObjects()
 		for (int i = 0; i < a; i++)
 		{
 			//set vertex buffer
-			UINT t_VertexBuffID = m_DrawPieces[i].vertexBufferID;
+			UINT t_VertexBuffID = m_DrawPieces[it->second->piecesID[i]].vertexBufferID;
 			m_DeviceContext->IASetVertexBuffers(0, 1, &m_VertexBuffers[t_VertexBuffID].vertexBuffer, &strides, &offsets);
 
 			//set shader program
@@ -1106,7 +1106,7 @@ void GraphicEngine::DrawOpaqueObjects()
 			SetShaderProgram(t_Program);
 
 			//update textures
-			SetTextures(m_DrawPieces[i]);
+			SetTextures(m_DrawPieces[it->second->piecesID[i]]);
 
 
 			//draw

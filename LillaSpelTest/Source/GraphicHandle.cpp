@@ -30,6 +30,8 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	UINT diffuseBollTestTexture;
 	m_GraphicEngine->LoadTexture(L"TubeTexture1.dds", diffuseBollTestTexture);
 
+
+	
 	//load a ship mesh 
 	std::vector<UINT> t_Ship;
 	m_GraphicEngine->LoadMesh("Tube.obj",t_Ship);
@@ -38,16 +40,31 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	//add a texture to a ship mesh
 	m_GraphicEngine->AddTextureToDrawPiece(t_Ship[0],diffuseBollTestTexture,GraphicEngine::TextureType::DIFFUSE);
 
+	//testshppiie
+	t_Ship.clear();
+	m_GraphicEngine->LoadMesh("spaceship.obj",t_Ship);
+	m_Ships.push_back(t_Ship);
+	m_GraphicEngine->AddTextureToDrawPiece(t_Ship[0],diffuseBollTestTexture,GraphicEngine::TextureType::DIFFUSE);
+	
+	
+
+
 	//creating a ship that the player is going to use, move to other place when we've done testing
 	UINT objectID;
-	XMMATRIX t_Mat = XMMatrixIdentity();
+	XMMATRIX t_Mat = XMMatrixTranslation(100,100,100);
 	XMFLOAT3 t_Color = XMFLOAT3(0,1,0);
 	m_GraphicEngine->CreateDrawObject(m_Ships[0],t_Mat, t_Color,true, objectID);
+
+	UINT objectID1;
+	XMMATRIX t_Mat1 = XMMatrixIdentity();
+	//XMFLOAT3 t_Color = XMFLOAT3(0,1,0);
+	m_GraphicEngine->CreateDrawObject(m_Ships[1],t_Mat1, t_Color,true, objectID1);
+
 
 	//add light to an already existing ship, (note to self maybe, if we have two ships that are the same for two players, same textures will be used, but not same lights, this is ok)
 	//second note, add light is in object space
 	UINT playerLightOne; //add to a player light array maybe?
-	m_GraphicEngine->AddObjectLight(objectID, XMFLOAT3(0,-2,0),XMFLOAT3(1,0,0),3, playerLightOne);
+	//m_GraphicEngine->AddObjectLight(objectID, XMFLOAT3(0,-2,0),XMFLOAT3(1,0,0),3, playerLightOne);
 
 
 	//create a camera, just for testing and stuff, think you'll want to create it later with players tho, because the hud wont rely on camera at first
@@ -66,13 +83,11 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	 //not fixed yet, just for testing
 	m_GraphicEngine->SetViewportAmount(4);
 
-	m_GraphicEngine->MoveCamera(m_CameraID[0], 20,0,0,0,0);
-	m_GraphicEngine->MoveCamera(m_CameraID[1], 50,0,0,0,0);
-	m_GraphicEngine->MoveCamera(m_CameraID[2], 100,0,0,0,0);
-	m_GraphicEngine->MoveCamera(m_CameraID[2], 0,0,0,-1.2,0);
-	m_GraphicEngine->MoveCamera(m_CameraID[2], 0,0,-130,0,0);
-	m_GraphicEngine->MoveCamera(m_CameraID[2], 120,-5,0,0,0);
-	m_GraphicEngine->SetCamera(m_CameraID[3], XMFLOAT3(0, 0, -120),XMFLOAT3(0, 0, 1),XMFLOAT3(0, 1, 0));
+
+	//m_GraphicEngine->MoveCamera(m_CameraID[0], 20,0,0,0,0);
+	//m_GraphicEngine->MoveCamera(m_CameraID[1], 50,0,0,0,0);
+	//m_GraphicEngine->MoveCamera(m_CameraID[2], 100,0,0,0,0);
+	//m_GraphicEngine->SetCamera(m_CameraID[3], XMFLOAT3(0, 0, -120),XMFLOAT3(0, 0, 1),XMFLOAT3(0, 1, 0));
 
 }
 
@@ -89,6 +104,7 @@ void GraphicHandle::UpdateCamera(UINT p_CameraLogicID,float p_Walk, float p_Stra
 	{
 		m_GraphicEngine->MoveCamera(m_CameraID[p_CameraLogicID],p_Walk,p_Strafe,p_Hover,p_Pitch,p_RotateY);
 	}
+	
 }
 void GraphicHandle::SetCamera(UINT p_CameraLogicID, XMFLOAT3 p_Pos, XMFLOAT3 p_At, XMFLOAT3 p_Up)
 {
@@ -111,4 +127,12 @@ void GraphicHandle::CreatePlayer(std::vector<UINT> p_DrawPieceIDs, CXMMATRIX p_W
 void GraphicHandle::DrawGame() //test 
 {
 	m_GraphicEngine->DrawGame();
+}
+void GraphicHandle::CreateShip(int p_PlayerIndex, XMFLOAT3 p_Color, CXMMATRIX p_PlayerWorld,int p_ShipIndex)
+{
+	m_GraphicEngine->CreateDrawObject(m_Ships[p_ShipIndex],p_PlayerWorld, p_Color,true, m_Player[p_PlayerIndex]);
+}
+void GraphicHandle::CreateLight(int p_PlayerIndex,XMFLOAT3 p_Color,UINT p_ObjectId, LightStruct &p_LightStruct)
+{
+	m_GraphicEngine->AddObjectLight(p_ObjectId,p_LightStruct.m_Position,p_LightStruct.m_Color,p_LightStruct.m_Radius,p_LightStruct.m_LightID);
 }

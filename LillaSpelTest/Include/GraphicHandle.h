@@ -14,7 +14,13 @@ private:
 
 	GraphicHandle();
 	~GraphicHandle();
-
+	struct LightStruct 
+	{
+	float m_Radius;
+	XMFLOAT3 m_Position;
+	XMFLOAT3 m_Color;
+	UINT m_LightID;
+	};
 	UINT m_Player[4];
 	
 	std::vector<std::vector<UINT>> m_Ships;
@@ -22,8 +28,12 @@ private:
 
 	UINT m_CameraID[4];
 
+	
 	static GraphicHandle* m_Singleton;
+	void CreateShip(int p_PlayerIndex, XMFLOAT3 p_Color, CXMMATRIX p_PlayerWorld,int p_ShipIndex);
+	void CreateLight(int p_PlayerIndex,XMFLOAT3 p_Color,UINT p_ObjectId, LightStruct &p_LightStruct);
 public:
+
 
 	static GraphicHandle* GetInstance();
 	
