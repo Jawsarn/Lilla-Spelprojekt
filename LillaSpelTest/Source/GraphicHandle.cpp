@@ -165,7 +165,7 @@ void GraphicHandle::UpdatePlayer(int p_playerID,CXMMATRIX p_matrix)
 }
 void GraphicHandle::UpdateSelectVehicle(float p_DeltaTime)
 {
-	XMMATRIX t_Rotii = XMMatrixRotationY(p_DeltaTime);
+	/*XMMATRIX t_Rotii = XMMatrixRotationY(p_DeltaTime);
 
 	for (int i = 0; i < m_SelectionShipMatrix.size(); i++)
 	{
@@ -174,7 +174,7 @@ void GraphicHandle::UpdateSelectVehicle(float p_DeltaTime)
 		XMFLOAT4X4 t_Storii;
 		XMStoreFloat4x4(&t_Storii,t_Tempii);
 		m_SelectionShipMatrix[i] = t_Storii;
-	}
+	}*/
 
 }
 

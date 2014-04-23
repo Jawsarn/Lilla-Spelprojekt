@@ -1043,7 +1043,7 @@ void GraphicEngine::DrawGame()
 	//clear g buffers
 	for (int i = 0; i < 3; i++)
 	{
-		m_DeviceContext->ClearRenderTargetView( m_GbufferTargetViews[i], Colors::White );
+		m_DeviceContext->ClearRenderTargetView( m_GbufferTargetViews[i], Colors::Black );
 	}
 	
 	//set render target, I guess for if swapping between hud etc
@@ -1107,7 +1107,8 @@ void GraphicEngine::DrawOpaqueObjects()
 	{
 		//update the object buffer
 		PerObjectBuffer t_PerObjBuff;
-		t_PerObjBuff.world = XMMatrixTranspose( XMLoadFloat4x4( &it->second->worldMatrix ));
+		t_PerObjBuff.World = XMMatrixTranspose( XMLoadFloat4x4( &it->second->worldMatrix ));
+		
 		t_PerObjBuff.typeOfObject = 0;
 		t_PerObjBuff.fillers = XMFLOAT3(0,0,0);
 

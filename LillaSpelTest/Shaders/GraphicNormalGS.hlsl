@@ -29,7 +29,7 @@ void GS( triangle GS_INPUT input[3], inout TriangleStream<GS_OUTPUT> triangleStr
 			output.Position = mul(output.Position, Projection[j]);
 		/*	output.position = mul(output.position, ViewProjection);*/
 			output.Tex = input[i].Tex;
-			output.Normal = input[i].Normal;
+			output.Normal = mul(float4(input[i].Normal.xyz,0), World);
 			output.Depth = output.Position.zw;
 			output.Viewport = j;
 			triangleStream.Append(output);

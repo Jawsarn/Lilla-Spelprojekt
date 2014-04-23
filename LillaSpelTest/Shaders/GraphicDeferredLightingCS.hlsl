@@ -157,8 +157,24 @@ PixelData GetPixelData(uint2 globalCord, int viewport)
 	//might be other dimensions, but it should work as this as well if it's the screen dim, might be sample dimensions form the SSAO
 	float2 screenPixelOffset = float2(2.0f, -2.0f) / screenDimensions;
 
-
-	float2 posScreen = (float2(globalCord.xy) + 0.5f ) * screenPixelOffset.xy + float2(-1.0f,1.0f);
+	float2 posScreen;
+	if (viewport == 0)
+	{
+		posScreen = (float2(globalCord.xy) + 0.5f ) * screenPixelOffset.xy + float2(-1.0f,1.0f);
+	}
+	else if (viewport == 1)
+	{
+		posScreen = (float2(globalCord.x - screenDimensions.x, globalCord.y) + 0.5f ) * screenPixelOffset.xy + float2(-1.0f,1.0f);
+	}
+	else if (viewport == 2)
+	{
+		posScreen = (float2(globalCord.x, globalCord.y  - screenDimensions.y) + 0.5f ) * screenPixelOffset.xy + float2(-1.0f,1.0f);
+	}
+	else if (viewport == 3)
+	{
+		posScreen = (float2(globalCord.x - screenDimensions.x, globalCord.y  - screenDimensions.y) + 0.5f ) * screenPixelOffset.xy + float2(-1.0f,1.0f);
+	}
+	
 	
 	depth = Projection[viewport]._43 / (depth - Projection[viewport]._33);
 
@@ -390,6 +406,8 @@ void CS( uint3 threadID		: SV_DispatchThreadID,
 	//{
 	//	output[threadID.xy] = float4(1,1,1,1);
 	//}
+	
+	
 
 	/*
 	if (viewport == 0 )
