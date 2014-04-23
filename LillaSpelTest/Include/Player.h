@@ -27,7 +27,8 @@ private:
 	///Timers///
 	float m_deathTimer;
 	float m_immortalTimer;
-	
+
+	XMFLOAT3 m_logicalPosition;
 	DirectX::XMFLOAT3 m_acceleration;
 	DirectX::XMFLOAT3 m_color;
 	DirectX::XMFLOAT3 m_upVector;
@@ -56,6 +57,6 @@ public:
 private:
 	void PlaceWall();
 	void UpdateCollisionBox();
-	void CheckMapNode();
+	void UpdateMapNode();
 };
 

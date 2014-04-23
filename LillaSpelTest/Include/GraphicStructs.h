@@ -16,6 +16,7 @@ struct Light
 	float radius;
 	XMFLOAT3 color;
 	float filler;
+
 	Light()
 	{}
 	Light(XMFLOAT3 p_Pos, float p_Rad, XMFLOAT3 p_Col, float p_Fil)
@@ -78,7 +79,7 @@ struct PerFramebuffer
 {
 	XMMATRIX View[4];
 	XMMATRIX Projection[4];
-	XMFLOAT4 EyesPos[4];
+	//XMFLOAT4 EyesPos[4];
 	XMFLOAT3 fillers3;
 	float NumberOfViewports;
 };
