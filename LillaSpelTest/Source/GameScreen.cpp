@@ -23,7 +23,7 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS, GraphicHand
 	////Free moving////
 	for (int i = 0; i < 4; i++)
 	{	
-		m_GraphicHandle->UpdateCamera(i,0,0,0,p_userCMDS->at(i).Joystick.y/100,p_userCMDS->at(i).Joystick.x/100);
+		m_GraphicHandle->UpdateCamera(i,0,0,0,p_userCMDS->at(i).Joystick.y*p_dt,p_userCMDS->at(i).Joystick.x*p_dt);
 		if (p_userCMDS->at(i).leftTriggerPressed)
 		{
 			m_GraphicHandle->UpdateCamera(i,100*p_dt,0,0,0,0);
