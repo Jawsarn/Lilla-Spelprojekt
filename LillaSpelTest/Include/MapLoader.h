@@ -2,6 +2,7 @@
 #include <DirectXMath.h>
 #include <vector>
 #include <d3d11_1.h>
+#include "MathHelper.h"
 #include "MapNode.h"
 
 using namespace std;
@@ -16,7 +17,9 @@ public:
 private:
 	//variables
 	vector<MapNode*> m_logicalMap;
-	vector<StaticObj> m_boxes;
+	vector<StaticObj*> m_boxes;
+	MathHelper m_mathHelper;
+
 
 	//methods
 	vector<vector<XMFLOAT3>> LoadLogicalObj(string p_objName);
