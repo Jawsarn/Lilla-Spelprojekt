@@ -1,10 +1,12 @@
 #include "Player.h"
-
+#include "MathHelper.h"
 
 
 Player::Player()
 {
-
+	m_speed = 30;
+	m_position = DirectX::XMFLOAT3(0,0,0);
+	m_direction = DirectX::XMFLOAT3(0,0,0);
 }
 
 
@@ -42,6 +44,16 @@ void Player::Update(float p_dt, UserCMD userCMD)
 	default:
 		break;
 	}
+}
+void Player::UpdatePosition(float p_dt, UserCMD p_userCMD)
+{
+	////free moving////
+	MathHelper t_mathHelper;
+	m_direction.x += p_userCMD.Joystick.x;
+	m_direction.y += p_userCMD.Joystick.y;
+	m_direction = t_mathHelper.Normalize(m_direction);
+
+	m_position = t_mathHelper.FloatMultiVec(p_dt,t_mathHelper.FloatMultiVec(m_speed,m_direction));
 }
 
 std::vector<BoundingOrientedBox*> Player::GetWallsToCheck()
