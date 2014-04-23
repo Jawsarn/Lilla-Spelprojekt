@@ -4,6 +4,7 @@
 #include "Player.h"
 #include "MapLoader.h"
 #include <string>
+#include "GraphicHandle.h"
 
 class GameScreen :
 	public Screen
@@ -16,7 +17,7 @@ public:
 	GameScreen(void);
 	GameScreen(std::string p_mapName, int p_numberOfPlayers );
 	~GameScreen(void);
-	int Update(float p_dt, std::vector<UserCMD> p_userCMDS);
+	int Update(float p_dt, std::vector<UserCMD>* p_userCMDS, GraphicHandle* m_GraphicHandle); //shouldnt be here
 	void Draw();
 };
 

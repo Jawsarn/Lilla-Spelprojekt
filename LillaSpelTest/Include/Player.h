@@ -27,7 +27,8 @@ private:
 	///Timers///
 	float m_deathTimer;
 	float m_immortalTimer;
-	
+
+	XMFLOAT3 m_logicalPosition;
 	DirectX::XMFLOAT3 m_acceleration;
 	DirectX::XMFLOAT3 m_color;
 	DirectX::XMFLOAT3 m_upVector;
@@ -44,6 +45,7 @@ public:
 	~Player();
 
 	void Update(float p_dt,UserCMD p_userCMD); //Updates position and dropps walls
+	void UpdatePosition(float p_dt, UserCMD p_userCMD);
 	std::vector<BoundingOrientedBox*> GetWallsToCheck();
 	void ChangeState(PlayerState p_state);
 	
@@ -55,6 +57,6 @@ public:
 private:
 	void PlaceWall();
 	void UpdateCollisionBox();
-	void CheckMapNode();
+	void UpdateMapNode();
 };
 

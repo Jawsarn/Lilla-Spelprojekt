@@ -45,6 +45,16 @@ XMFLOAT3 MathHelper::VecSubVec(XMFLOAT3 p_fl31, XMFLOAT3 p_fl32) //första minus 
 	return r_vec;
 }
 
+XMFLOAT3 MathHelper::VecAddVec(XMFLOAT3 p_fl31, XMFLOAT3 p_fl32) //första minus den andra
+{
+	XMVECTOR t_vec1 = XMLoadFloat3(&p_fl31);
+	XMVECTOR t_vec2 = XMLoadFloat3(&p_fl32);
+	XMFLOAT3 r_vec;
+	XMStoreFloat3(&r_vec, t_vec1+t_vec2);
+	return r_vec;
+}
+
+
 float MathHelper::Abs(XMFLOAT3 p_fl3)
 {
 	XMVECTOR t_vec = XMLoadFloat3(&p_fl3);

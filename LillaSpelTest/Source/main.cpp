@@ -8,6 +8,7 @@
 #include "UserCMDHandler.h"
 #include "AzookaTest.h"
 #include "MysteriskTest.h"
+#include "GameScreen.h"
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam );
 HRESULT InitializeWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow, UINT width, UINT height);
@@ -55,7 +56,7 @@ void Run()
 {
 	std::vector<UserCMD> *userCMDS = new std::vector<UserCMD>();
 	UserCMDHandler userCMDHandler = UserCMDHandler();
-
+	GameScreen gameScreen = GameScreen();
 	for (int i = 0; i < 4; i++)
 	{
 		UserCMD t_userCMD = UserCMD(i);
@@ -96,14 +97,14 @@ void Run()
 					////Player i controller disconnected, plz connect again message
 				}
 			}
-			
+		
 			ULONGLONG timeCur = GetTickCount64();
 			if( m_PrevTime == 0 )
 				m_PrevTime = timeCur;
 			m_DeltaTime = ( timeCur - m_PrevTime ) / 1000.0f;
 			m_GameTime += m_DeltaTime;
 			m_PrevTime = timeCur;
-
+			gameScreen.Update(m_DeltaTime,userCMDS,m_GraphicHandle);
 			///UPDATE & DRAW TEMPDRAAWWWWW
 			m_GraphicHandle->UpdateSelectVehicle(m_DeltaTime);
 			m_GraphicHandle->DrawGame();

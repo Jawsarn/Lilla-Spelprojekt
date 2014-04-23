@@ -4,7 +4,7 @@ cbuffer PerFrameBuffer : register(c0)
 {
 	matrix View[4];
 	matrix Projection[4];
-	float4 EyesPos[4];
+	//float4 EyesPos[4];
 	float3 fillers;
 	float NumberOfViewports;
 }
@@ -13,15 +13,16 @@ cbuffer PerComputeBuffer : register(c1)
 {
 	float2 screenDimensions;
 	float2 camNearFar;
+
 }
 
 
 struct Light
 {
 	float3 position;
-	float filler;
-	float3 color;
 	float radius;
+	float3 color;
+	float filler;
 };
 
 struct Tile
@@ -369,8 +370,9 @@ void CS( uint3 threadID		: SV_DispatchThreadID,
 	uint numOfLights = visibleLightCount;
 
 	float3 finalColor = DiffuseColor_AO[threadID.xy].xyz*0.2;
-	if(all(globalCord < screenDimensions)) //checks for all components if blow zero, uses this for checking if outside screendim
-	{
+
+	//if(all(globalCord < screenDimensions)) //checks for all components if blow zero, uses this for checking if outside screendim
+	//{
 		for (uint i = 0; i < visibleLightCount; i++)
 		{
 			uint lightIndex = visibleLightIndices[i];
@@ -378,12 +380,18 @@ void CS( uint3 threadID		: SV_DispatchThreadID,
 	
 			finalColor += DirectIllumination(data.positionView, data.normalView , light, viewport);
 		}
-	}
+	//}
 
-	/*if(Specular[globalCord].x == 1) 
+	if(Specular[globalCord].x == 1) 
 	{
 		output[threadID.xy] = float4(finalColor.x,finalColor.y,finalColor.z, 1);
 	}
+	if (visibleLightCount > 5)
+	{
+		output[threadID.xy] = float4(1,1,1,1);
+	}
+
+	/*
 	if (viewport == 0 )
 	{
 		output[threadID.xy] = float4(1,0,0,0);
@@ -401,14 +409,11 @@ void CS( uint3 threadID		: SV_DispatchThreadID,
 	{
 		output[threadID.xy] = float4(0,1,0,0);
 	}*/
-	if(Specular[globalCord].x == 1) 
+	/*if(Specular[globalCord].x == 1) 
 	{
 		output[threadID.xy] = float4(finalColor.x,finalColor.y,finalColor.z, 1);
-	}
+	}*/
 }
-
-
-
 
 
 /*

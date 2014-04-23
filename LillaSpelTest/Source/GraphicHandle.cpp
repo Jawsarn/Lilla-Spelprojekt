@@ -139,8 +139,23 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 
 	UINT t_LightID;
 	m_GraphicEngine->CreateStaticLight(XMFLOAT3(30,0,0), XMFLOAT3(1,0,0), 300, t_LightID);
-	//t_Mat = XMMatrixTranslation(0,0,7*m_MeshShips.size());
-	//t_Mats = XMMatrixIdentity();
+
+	for (int i = 0; i < 6; i++)
+	{
+		for (int j = 0; j < 6; j++)
+		{
+			
+			for (int k = 0; k < 6; k++)
+			{
+				int r, g, b;
+				r = rand() % 2;
+				g = rand() % 2;
+				b = rand() % 2;
+
+				m_GraphicEngine->CreateStaticLight(XMFLOAT3(-50 + 30*i,30*j,-50 + 30*k), XMFLOAT3(r,g,b), 40, t_LightID);
+			}
+		}
+	}
 }
 
 void GraphicHandle::UpdatePlayer(int p_playerID,CXMMATRIX p_matrix)
