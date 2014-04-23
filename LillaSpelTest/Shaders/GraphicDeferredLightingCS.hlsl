@@ -386,10 +386,10 @@ void CS( uint3 threadID		: SV_DispatchThreadID,
 	{
 		output[threadID.xy] = float4(finalColor.x,finalColor.y,finalColor.z, 1);
 	}
-	if (visibleLightCount > 5)
-	{
-		output[threadID.xy] = float4(1,1,1,1);
-	}
+	//if (visibleLightCount > 5)
+	//{
+	//	output[threadID.xy] = float4(1,1,1,1);
+	//}
 
 	/*
 	if (viewport == 0 )
