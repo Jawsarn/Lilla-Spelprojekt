@@ -1,9 +1,8 @@
 #include "MapLoader.h"
 
-
 MapLoader::MapLoader(void)
 {
-
+	m_mathHelper = MathHelper();
 }
 
 
@@ -59,9 +58,8 @@ void MapLoader::AssignBoxesToNodes()
 	//iterate all boxes over each mapnode
 	for (int i = 0; i < m_logicalMap.size(); i++)
 	{
-		//generate local box for MapNode i
+		//////////////////generate local box for MapNode i
 
-		BoundingOrientedBox t_box = BoundingOrientedBox();
 		XMVECTOR t_position = XMLoadFloat3(&m_logicalMap[i]->m_position);
 		XMVECTOR t_target = XMLoadFloat3(&m_logicalMap[i]->m_normal);
 		//create up vector. Here called radius, as up orientation doesn't really matter in a tube. 
@@ -69,14 +67,37 @@ void MapLoader::AssignBoxesToNodes()
 		XMVECTOR t_vector= XMLoadFloat3(&t_float3);
 		XMVECTOR t_radiusVector = XMVector3Cross(t_vector, t_target);
 
-		XMMATRIX t_boxOrientationMatrix = XMMatrixLookAtLH(t_position, t_target, t_radiusVector);
+		///////creates orientation quaternion
 		XMFLOAT4 t_boxOrientationQuaternion = XMFLOAT4(0,0,0,1);
-		
+		//creates transformation matrix for orientation quaternion. Using lookat
+		XMMATRIX t_boxOrientationMatrix = XMMatrixLookAtLH(t_position, t_target, t_radiusVector);
+		XMVECTOR t_boxOrientationVector = XMLoadFloat4(&t_boxOrientationQuaternion);
+		t_boxOrientationVector = XMVector4Transform(t_boxOrientationVector, t_boxOrientationMatrix);
+		t_boxOrientationVector = XMVector4Normalize(t_boxOrientationVector);
+		XMStoreFloat4(&t_boxOrientationQuaternion, t_boxOrientationVector);
 
-
+		///////creates local collision box
+		//creates box center
+		XMFLOAT3 t_boxCenter = m_mathHelper.VecAddVec(m_logicalMap[i]->m_position, m_mathHelper.FloatMultiVec(0.5f, m_logicalMap[i]->m_normal));
+		//checks which radius is largest. Don't wanna miss boxes in case of big slopes
+		float radius = m_logicalMap[i]->m_radius;
+		if(i<m_logicalMap.size()-1 && radius < m_logicalMap[i]->m_nextNode->m_radius)
+			radius = m_logicalMap[i]->m_nextNode->m_radius;
+		//uses radius and abs(normal) to create extents. (Normal is not normalized; it is the vector to the next node)
+		XMFLOAT3 t_boxExtents = XMFLOAT3(radius, radius, m_mathHelper.Abs(m_logicalMap[i]->m_normal));
+		BoundingOrientedBox t_box = BoundingOrientedBox(t_boxCenter, t_boxExtents, t_boxOrientationQuaternion);
 		for (int j = 0; j < m_boxes.size(); j++)
 		{
-
+			//BoundingOrientedBox derp = m_boxes[j];
+			if(t_box.Intersects(*m_boxes[j]->GetBox()))
+			{
+				m_logicalMap[i]->m_staticObjs.push_back(m_boxes[j]);
+			}
+			else
+			{
+				int k = 0;
+				k++;
+			}
 		}
 	}
 }
@@ -88,7 +109,7 @@ void MapLoader::LoadBoxes(vector<vector<XMFLOAT3>>* p_boxCornerPositions, Object
 	{
 		BoundingOrientedBox t_box = BoundingOrientedBox();
 		t_box.CreateFromPoints(t_box, 8, &p_boxCornerPositions->at(i).at(0), sizeof(XMFLOAT3));
-		m_boxes.push_back(StaticObj(p_objectType, t_box));
+		m_boxes.push_back(new StaticObj(p_objectType, t_box));
 	}
 
 }

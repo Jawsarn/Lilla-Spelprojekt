@@ -8,6 +8,7 @@ private:
 public:
 	PlayerWall(void);
 	PlayerWall(DirectX::XMFLOAT3 p_color, DirectX::XMFLOAT3 p_position);
+	BoundingOrientedBox* GetBox();
 	~PlayerWall(void);
 
 	void Update(float p_dt);

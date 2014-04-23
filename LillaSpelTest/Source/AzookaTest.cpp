@@ -60,7 +60,7 @@ void MapLoaderTest()
 
 void AzookaTest::Run()
 {
-	//BoundingBoxTest();
+	BoundingBoxTest();
 	MapLoaderTest();
 }
 

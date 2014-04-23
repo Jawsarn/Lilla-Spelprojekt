@@ -106,6 +106,7 @@ void Run()
 			m_PrevTime = timeCur;
 			gameScreen.Update(m_DeltaTime,userCMDS,m_GraphicHandle);
 			///UPDATE & DRAW TEMPDRAAWWWWW
+			m_GraphicHandle->UpdateSelectVehicle(m_DeltaTime);
 			m_GraphicHandle->DrawGame();
 		}
 	}
@@ -122,6 +123,7 @@ void OnMouseMove(WPARAM btnStae, int x, int y)
 		float dy = XMConvertToRadians(0.25f*static_cast<float>(y - m_LastMousePos.y));
 
 		m_GraphicHandle->UpdateCamera(m_ActiveCamera,0,0,0,dy,dx);
+		
 	}
 
 	m_LastMousePos.x = x;

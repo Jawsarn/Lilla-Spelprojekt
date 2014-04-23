@@ -1043,7 +1043,7 @@ void GraphicEngine::DrawGame()
 	//clear g buffers
 	for (int i = 0; i < 3; i++)
 	{
-		m_DeviceContext->ClearRenderTargetView( m_GbufferTargetViews[i], Colors::Black );
+		m_DeviceContext->ClearRenderTargetView( m_GbufferTargetViews[i], Colors::White );
 	}
 	
 	//set render target, I guess for if swapping between hud etc
@@ -1065,13 +1065,13 @@ void GraphicEngine::DrawGame()
 void GraphicEngine::UpdateFrameBuffer()
 {
 	PerFramebuffer t_PerFrame;
-	for (int i = 0; i < m_NumberOfViewports; i++)
+	for (int i = 0; i < 4; i++)
 	{
 		if (m_ActiveCameras[i] != nullptr)
 		{
 			m_ActiveCameras[i]->UpdateViewMatrix(); 
 			XMFLOAT3 t_Pos = m_ActiveCameras[i]->GetPosition();
-			t_PerFrame.EyesPos[i] = XMFLOAT4(t_Pos.x, t_Pos.y, t_Pos.z, 1);
+			//t_PerFrame.EyesPos[i] = XMFLOAT4(t_Pos.x, t_Pos.y, t_Pos.z, 1);
 
 			t_PerFrame.Projection[i] = XMMatrixTranspose( m_ActiveCameras[i]->Proj() );
 			t_PerFrame.View[i] = XMMatrixTranspose( m_ActiveCameras[i]->View() );
@@ -1081,7 +1081,7 @@ void GraphicEngine::UpdateFrameBuffer()
 		}
 		else
 		{
-			t_PerFrame.EyesPos[i] = XMFLOAT4(0,0,0,0);
+			//t_PerFrame.EyesPos[i] = XMFLOAT4(0,0,0,0);
 			t_PerFrame.fillers3 = XMFLOAT3(0,0,0);
 			t_PerFrame.Projection[i] = XMMatrixIdentity();
 			t_PerFrame.View[i] = XMMatrixIdentity();
