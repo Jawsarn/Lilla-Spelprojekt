@@ -1,10 +1,11 @@
 #include "StaticObj.h"
 
 
-StaticObj::StaticObj(DirectX::XMFLOAT3 p_position,DirectX::XMFLOAT3 p_direction, ObjectType p_typeOfObject, BoundingOrientedBox p_box)
-	:Object(p_box, p_direction, p_position)
+
+StaticObj::StaticObj(ObjectType p_typeOfObject, BoundingOrientedBox p_box)
 {
 	m_typeOfObject = p_typeOfObject;
+	m_box = p_box;
 }
 
 StaticObj::~StaticObj(void)

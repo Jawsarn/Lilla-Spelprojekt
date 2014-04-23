@@ -38,15 +38,24 @@ vector<MapNode*> MapLoader::LoadMap(string p_mapName)
 	vector<vector<XMFLOAT3>> t_holeBoxPositions = LoadLogicalObj(t_holeBoxString);
 	//vector<vector<XMFLOAT3>> t_wallBoxPositions = LoadLogicalObj(t_wallBoxString);
 
+	LoadBoxes(&t_holeBoxPositions, HOLE);
+
 	//Create Nodes and stores them in member variable
 	LoadNodes(&t_centerPositions[0], &t_edgePositions[0]);
 
 	return m_logicalMap;
 }
 
-void LoadBoxes(vector<vector<XMFLOAT3>>* p_boxCornerPositions)
+void MapLoader::LoadBoxes(vector<vector<XMFLOAT3>>* p_boxCornerPositions, ObjectType p_objectType)
 {
-	/////////////////IMPLEMENT BOX CREATION//////////////
+	//iterate over each set of box corners
+	for (int i = 0; i < p_boxCornerPositions->size(); i++)
+	{
+		BoundingOrientedBox t_box = BoundingOrientedBox();
+		t_box.CreateFromPoints(t_box, 8, &p_boxCornerPositions->at(i).at(0), sizeof(XMFLOAT3));
+		m_boxes.push_back(StaticObj(p_objectType, t_box));
+	}
+
 }
 
 void MapLoader::LoadNodes(vector<XMFLOAT3>* p_centerPositions, vector<XMFLOAT3>* p_edgePositions)

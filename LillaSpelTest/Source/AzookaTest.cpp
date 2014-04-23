@@ -54,12 +54,13 @@ void MapLoaderTest()
 {
 	MapLoader t_mapLoader = MapLoader();
 	t_mapLoader.LoadMap("testMap");
+	
 }
 
 
 void AzookaTest::Run()
 {
 	//BoundingBoxTest();
-	//MapLoaderTest();
+	MapLoaderTest();
 }
 
