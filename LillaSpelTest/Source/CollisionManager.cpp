@@ -37,6 +37,37 @@ bool CollisionManager::PlayerVsPlayerWall(BoundingOrientedBox* p_player, std::ve
 std::vector<int> CollisionManager::PlayerVsPlayer(BoundingOrientedBox* p_p1, BoundingOrientedBox* p_p2,BoundingOrientedBox* p_p3,BoundingOrientedBox* p_p4)
 {
 	std::vector<int> r_return;
+	if(p_p1->Intersects(*p_p2)==true)
+	{
+		r_return.push_back(1);
+		r_return.push_back(2);
+	}
+	if(p_p1->Intersects(*p_p3)==true)
+	{
+		r_return.push_back(1);
+		r_return.push_back(3);
+	}
+	if(p_p1->Intersects(*p_p4)==true) //detta är rätt fult ändra om nån känner för
+	{
+		r_return.push_back(1);
+		r_return.push_back(4);
+	}
+	if(p_p2->Intersects(*p_p3)==true)
+	{
+		r_return.push_back(2);
+		r_return.push_back(3);
+	}
+	if(p_p2->Intersects(*p_p4)==true)
+	{
+		r_return.push_back(2);
+		r_return.push_back(4);
+	}
+	if(p_p3->Intersects(*p_p4)==true)
+	{
+		r_return.push_back(3);
+		r_return.push_back(4);
+	}
+
 	return r_return;
 }
 
