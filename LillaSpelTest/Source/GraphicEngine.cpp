@@ -1043,7 +1043,7 @@ void GraphicEngine::DrawGame()
 	//clear g buffers
 	for (int i = 0; i < 3; i++)
 	{
-		m_DeviceContext->ClearRenderTargetView( m_GbufferTargetViews[i], Colors::Black );
+		m_DeviceContext->ClearRenderTargetView( m_GbufferTargetViews[i], Colors::White );
 	}
 	
 	//set render target, I guess for if swapping between hud etc
