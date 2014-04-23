@@ -11,6 +11,8 @@ struct PlayerStartInfo
 
 struct GameInfo
 {
+	int shipModell[4];
+	int playerColor[4];
 	bool playerOnline[4];
 	int resolution;
 	std::string mapName;

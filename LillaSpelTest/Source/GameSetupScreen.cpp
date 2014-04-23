@@ -4,8 +4,6 @@
 GameSetupScreen::GameSetupScreen(void)
 {
 	AddButton("Start", DirectX::XMFLOAT2(0,-0.7),0.1,0.1);
-	AddButton("Next map", DirectX::XMFLOAT2(0.5,-0.7),0.1,0.1);
-	AddButton("Prev map", DirectX::XMFLOAT2(-0.5,-0.7),0.1,0.1);
 
 	FixButtonPointers();
 	currentButton = buttonList[0];
@@ -20,25 +18,35 @@ GameSetupScreen::~GameSetupScreen(void)
 GameSetupScreen::GameSetupScreen(GameInfo* p_gameInfo)
 	:MenuScreen(p_gameInfo)
 {
-	
+	AddButton("Start", DirectX::XMFLOAT2(0,-0.7),0.1,0.1);
+
+	FixButtonPointers();
+	currentButton = buttonList[0];
+	currentMap = 0;
+
+	mapList.push_back("1");
+	mapList.push_back("2");
+	mapList.push_back("3");
 }
 
 
-int GameSetupScreen::Update(std::vector<UserCMD>* userCMD)
+int GameSetupScreen::Update(std::vector<UserCMD>* userCMD, float p_dt)
 {
+	MenuScreen::Update(userCMD,p_dt);
 	std::string t_menuChoice = NavigateMenu(userCMD->at(0));
-	if (t_menuChoice == "Start")
+	if (t_menuChoice == "Start" || userCMD->at(0).startButtonPressed)
 	{
-		return GAME_SCREEN;
+		SaveInfo();
+		return JOIN_GAME_SCREEN;
 	}
-	else if (t_menuChoice == "Next map")
+	else if (userCMD->at(0).Joystick.x>0.8)
 	{
 		if (mapList.size() - 1 > currentMap)
 		{
 			currentMap++;
 		}
 	}
-	else if (t_menuChoice == "Prev map")
+	else if (userCMD->at(0).Joystick.x<-0.8)
 	{
 		if (0 < currentMap)
 		{
@@ -55,4 +63,9 @@ int GameSetupScreen::Update(std::vector<UserCMD>* userCMD)
 void GameSetupScreen::Draw()
 {
 
+}
+
+void GameSetupScreen::SaveInfo()
+{
+	m_gameInfo->mapName = mapList[currentMap];
 }

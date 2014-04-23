@@ -11,7 +11,9 @@ public:
 	GameSetupScreen(GameInfo* p_gameInfo);
 	~GameSetupScreen(void);
 
-	int Update(std::vector<UserCMD>* userCMD);
+	int Update(std::vector<UserCMD>* userCMD, float p_dt);
 	void Draw();
+private:
+	void SaveInfo();
 };
 

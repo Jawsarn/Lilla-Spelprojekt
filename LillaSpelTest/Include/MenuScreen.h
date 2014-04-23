@@ -15,11 +15,12 @@ protected:
 	Button* currentButton;
 	std::vector<Button*> buttonList;
 	GameInfo* m_gameInfo;
+	float timeSinceLastChange[4];
 public:
 	MenuScreen(void);
 	MenuScreen(GameInfo* p_gameInfo);
 	~MenuScreen(void);
-	int virtual Update(std::vector<UserCMD>* p_userCMDs);
+	int virtual Update(std::vector<UserCMD>* p_userCMDs, float p_dt);
 	void virtual Draw();
 protected:
 	std::string virtual NavigateMenu(UserCMD& p_userCMD);

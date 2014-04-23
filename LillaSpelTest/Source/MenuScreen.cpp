@@ -3,6 +3,10 @@
 
 MenuScreen::MenuScreen(void)
 {
+	for (int i = 0; i < 4; i++)
+	{
+		timeSinceLastChange[i]=0;
+	}
 }
 
 
@@ -13,9 +17,20 @@ MenuScreen::~MenuScreen(void)
 MenuScreen::MenuScreen(GameInfo* p_gameInfo)
 {
 	m_gameInfo = p_gameInfo;
+	for (int i = 0; i < 4; i++)
+	{
+		timeSinceLastChange[i]=0;
+	}
 }
 
-int MenuScreen::Update(std::vector<UserCMD>* p_userCMDs){ return 1;}
+int MenuScreen::Update(std::vector<UserCMD>* p_userCMDs, float p_dt)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		timeSinceLastChange[i] += p_dt;
+	}
+	return 1;
+}
 void MenuScreen::Draw(){}
 
 bool MenuScreen::FloatBetweenValues(float floatToCheck, float min, float max)
@@ -25,28 +40,39 @@ bool MenuScreen::FloatBetweenValues(float floatToCheck, float min, float max)
 
 std::string MenuScreen::NavigateMenu(UserCMD& p_userCMD)
 {
-	if (p_userCMD.aButtonPressed)
-	{
-		return currentButton->buttonName;
-	}
 
-	if (p_userCMD.Joystick.y > 0.8 && currentButton->upButton != nullptr)
+
+	if (timeSinceLastChange[0] < 0.5)
 	{
-		currentButton = currentButton->upButton;
+		if (p_userCMD.aButtonPressed)
+		{
+			timeSinceLastChange[0]=0;
+			return currentButton->buttonName;
+		}
+
+		if (p_userCMD.Joystick.y > 0.8 && currentButton->upButton != nullptr)
+		{
+			currentButton = currentButton->upButton;
+		}
+		else if (p_userCMD.Joystick.y < -0.8 && currentButton->downButton != nullptr)
+		{
+			currentButton = currentButton->downButton;
+		}
+		else if (p_userCMD.Joystick.x > 0.8 && currentButton->rightButton != nullptr)
+		{
+			currentButton = currentButton->rightButton;
+		}
+		else if (p_userCMD.Joystick.x < -0.8 && currentButton->leftButton != nullptr)
+		{
+			currentButton = currentButton->leftButton;
+		}
+		else
+		{
+			return ""; 
+		}
+		timeSinceLastChange[0]=0;
 	}
-	else if (p_userCMD.Joystick.y < -0.8 && currentButton->downButton != nullptr)
-	{
-		currentButton = currentButton->downButton;
-	}
-	else if (p_userCMD.Joystick.x > 0.8 && currentButton->rightButton != nullptr)
-	{
-		currentButton = currentButton->rightButton;
-	}
-	else if (p_userCMD.Joystick.x < -0.8 && currentButton->leftButton != nullptr)
-	{
-		currentButton = currentButton->leftButton;
-	}	
-	return "";
+	return ""; 
 }
 
 void MenuScreen::AddButton(std::string p_buttonName, DirectX::XMFLOAT2 p_centerPoint, float offsetX, float offsetY)

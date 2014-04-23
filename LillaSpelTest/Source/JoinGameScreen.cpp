@@ -6,93 +6,104 @@ JoinGameScreen::JoinGameScreen(void)
 	
 	for (int i = 0; i < 4; i++)
 	{
-		modell[i] = 0;
-		color[i] = 0;
-		playerStatus[i] = DISCONNECTED;
+		m_modell[i] = 0;
+		m_color[i] = 0;
+		m_playerStatus[i] = DISCONNECTED;
 	}
 }
 
+JoinGameScreen::JoinGameScreen(GameInfo* p_gameInfo)
+	:MenuScreen(p_gameInfo)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		m_modell[i] = 0;
+		m_color[i] = 0;
+		m_playerStatus[i] = DISCONNECTED;
+	}
+}
 
 JoinGameScreen::~JoinGameScreen(void)
 {
 }
 
-int JoinGameScreen::Update(std::vector<UserCMD>* userCMD)
+int JoinGameScreen::Update(std::vector<UserCMD>* userCMD, float p_dt)
 {
+	MenuScreen::Update(userCMD,p_dt);
 	for (int i = 0; i < 4; i++)
 	{
 		if (userCMD->at(i).aButtonPressed)
 		{
-			if (playerStatus[i] == CHOOSE_MODELL)
+			if (m_playerStatus[i] == CHOOSE_MODELL)
 			{
-				playerStatus[i]=CHOOSE_COLOR;
+				m_playerStatus[i]=CHOOSE_COLOR;
 			}
-			else if (playerStatus[i] == CHOOSE_COLOR)
+			else if (m_playerStatus[i] == CHOOSE_COLOR)
 			{
-				playerStatus[i]=READY;
+				m_playerStatus[i]=READY;
 			}
-			else if (playerStatus[i] == DISCONNECTED)
+			else if (m_playerStatus[i] == DISCONNECTED)
 			{
-				playerStatus[i]=CHOOSE_MODELL;
+				m_playerStatus[i]=CHOOSE_MODELL;
 			}
 		}
 		else if (userCMD->at(i).backButtonPressed)
 		{
-			playerStatus[i] = DISCONNECTED;
+			m_playerStatus[i] = DISCONNECTED;
 		}
-		if (userCMD->at(i).xButtonPressed && (playerStatus[i] == CHOOSE_MODELL || playerStatus[i] == CHOOSE_COLOR))
+		if (userCMD->at(i).xButtonPressed && (m_playerStatus[i] == CHOOSE_MODELL || m_playerStatus[i] == CHOOSE_COLOR))
 		{
-			playerStatus[i] = READY;
+			m_playerStatus[i] = READY;
 		}
 		if (userCMD->at(i).bButtonPressed)
 		{
-			if (playerStatus[i] == READY)
+			if (m_playerStatus[i] == READY)
 			{
-				playerStatus[i]=CHOOSE_COLOR;
+				m_playerStatus[i]=CHOOSE_COLOR;
 			}
-			else if (playerStatus[i] == CHOOSE_COLOR)
+			else if (m_playerStatus[i] == CHOOSE_COLOR)
 			{
-				playerStatus[i]=CHOOSE_MODELL;
+				m_playerStatus[i]=CHOOSE_MODELL;
 			}
-			else if (playerStatus[i] == CHOOSE_MODELL)
+			else if (m_playerStatus[i] == CHOOSE_MODELL)
 			{
 				return GAME_SETUP_SCREEN;
 			}	
 		}
 
-		if (playerStatus[i]==CHOOSE_MODELL)
+		if (m_playerStatus[i]==CHOOSE_MODELL)
 		{
 			if (userCMD->at(i).Joystick.x < -0.8)
 			{
-				if (modell[i] > 0)
+				if (m_modell[i] > 0)
 				{
-					modell[i]--;
+					m_modell[i]--;
 				}
 				
 			}
 			else if (userCMD->at(i).Joystick.x > 0.8)
 			{
-				if (modell[i] < NUMBER_OF_MODELLS - 1)
+				if (m_modell[i] < NUMBER_OF_MODELLS - 1)
 				{
-					modell[i]++;
+					m_modell[i]++;
 				}	
 			}
 		}
-		if (playerStatus[i]==CHOOSE_COLOR)
+		if (m_playerStatus[i]==CHOOSE_COLOR)
 		{
 			if (userCMD->at(i).Joystick.x < -0.8)
 			{
-				if (color[i] > 0)
+				if (m_color[i] > 0)
 				{
-					color[i]--;
+					m_color[i]--;
 				}
 				
 			}
 			else if (userCMD->at(i).Joystick.x > 0.8)
 			{
-				if (color[i] < NUMBER_OF_COLORS - 1)
+				if (m_color[i] < NUMBER_OF_COLORS - 1)
 				{
-					color[i]++;
+					m_color[i]++;
 				}	
 			}
 		}
@@ -103,11 +114,11 @@ int JoinGameScreen::Update(std::vector<UserCMD>* userCMD)
 			int t_numberOfPlayersDisconnected = 0;
 			for (int i = 0; i < 4; i++)
 			{
-				if (playerStatus[i]== READY)
+				if (m_playerStatus[i]== READY)
 				{
 					t_numberOfPlayersReady++;
 				}
-				else if (playerStatus[i]== DISCONNECTED)
+				else if (m_playerStatus[i]== DISCONNECTED)
 				{
 					t_numberOfPlayersReady++;
 					t_numberOfPlayersDisconnected++;
@@ -117,16 +128,30 @@ int JoinGameScreen::Update(std::vector<UserCMD>* userCMD)
 					break;
 				}
 			}
-			if (t_numberOfPlayersReady == 4 && t_numberOfPlayersDisconnected != 0)
+			if (t_numberOfPlayersReady == 4 && t_numberOfPlayersDisconnected != 4)
 			{
+				SaveInfo();
 				return GAME_SCREEN;
 			}
 		}
 	}
 
-	return 1;
+	return JOIN_GAME_SCREEN;
 }
 void JoinGameScreen::Draw()
 {
 
+}
+
+void JoinGameScreen::SaveInfo()
+{
+	for (int i = 0; i < 4; i++)
+	{
+		if (m_playerStatus[i] != DISCONNECTED)
+		{
+			m_gameInfo->playerOnline[i] = true;
+		}
+		m_gameInfo->shipModell[i] = m_modell[i];
+		m_gameInfo->playerColor[i] = m_color[i];
+	}
 }

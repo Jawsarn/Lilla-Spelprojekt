@@ -66,7 +66,7 @@ void UserCMDHandler::AlterUserCMD(UserCMD& o_userCMD)
 	}
 	if (state.Gamepad.bLeftTrigger & VK_PAD_LTRIGGER)
 	{
-		o_userCMD.controller.Vibrate(64000,0);
+		//o_userCMD.controller.Vibrate(64000,0);
 		o_userCMD.leftTriggerPressed = true;
 	}
 	else

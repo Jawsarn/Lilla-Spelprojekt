@@ -83,7 +83,7 @@ void Run()
 			t_azookaTest.Run();
 
 			
-			t_Mtest.Run(userCMDS);
+			t_Mtest.Run(userCMDS,m_DeltaTime);
 
 
 			for (int i = 0; i < 4; i++) ///Fixes UserCMDs for all connected players
