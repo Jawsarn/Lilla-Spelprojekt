@@ -13,7 +13,7 @@ UserCMDHandler::~UserCMDHandler(void)
 void UserCMDHandler::AlterUserCMD(UserCMD& o_userCMD)
 {
 	XINPUT_STATE state = o_userCMD.controller.GetState();
-	DirectX::XMFLOAT2 leftJoystick = DirectX::XMFLOAT2(o_userCMD.controller.CheckMovmentStickRight().x,o_userCMD.controller.CheckMovmentStickRight().y);
+	DirectX::XMFLOAT2 leftJoystick = DirectX::XMFLOAT2(o_userCMD.controller.CheckMovmentStickLeft().x,o_userCMD.controller.CheckMovmentStickLeft().y);
 	o_userCMD.Joystick = leftJoystick;
 
 	if (state.Gamepad.wButtons & XINPUT_GAMEPAD_A)
