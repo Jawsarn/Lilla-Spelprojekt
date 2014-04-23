@@ -44,6 +44,7 @@ public:
 	~Player();
 
 	void Update(float p_dt,UserCMD p_userCMD); //Updates position and dropps walls
+	void UpdatePosition(float p_dt, UserCMD p_userCMD);
 	std::vector<BoundingOrientedBox*> GetWallsToCheck();
 	void ChangeState(PlayerState p_state);
 	
