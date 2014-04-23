@@ -1,9 +1,9 @@
 #pragma once
-
-#define _XM_NO_INTRINSICS_
+//#define _XM_NO_INTRINSICS_ //fuck this include, need it to extract frustrum planes buuuuuuut it will crash other functions
 #include <DirectXMath.h>
 #include <vector>
 
+//http://msdn.microsoft.com/en-gb/library/windows/desktop/ee418725(v=vs.85).aspx
 using namespace DirectX;
 
 class Camera
@@ -26,24 +26,28 @@ public:
 	float GetFarWindowHeight()const;
 
 	// Set frustum.
-	void SetLens(float fovY, float aspect, float zn, float zf);
+	void SetLens(float p_FovY, float p_Aspect, float p_Znear, float p_Zfar);
 
 	// Define camera space via LookAt parameters.
-	void LookAt(const XMFLOAT3& pos, const XMFLOAT3& target, const XMFLOAT3& up);
+	void LookAt(const XMFLOAT3& p_Pos, const XMFLOAT3& p_Target, const XMFLOAT3& p_Up);
+
+	// set view matrix
+
 
 	// Get View/Proj matrices.
+	
 	XMMATRIX View()const;
 	XMMATRIX Proj()const;
 	XMMATRIX ViewProj()const;
 
 	// Strafe/Walk the camera a distance d.
-	void Strafe(float d);
-	void Walk(float d);
-	void HoverY(float amount);
+	void Strafe(float p_Distance);
+	void Walk(float p_Distance);
+	void HoverY(float p_Amount);
 
 	// Rotate the camera.
-	void Pitch(float angle);
-	void RotateY(float angle);
+	void Pitch(float p_Angle);
+	void RotateY(float p_Angle);
 	
 
 	// After modifying camera position/orientation, call
@@ -53,25 +57,25 @@ public:
 	float GetFarDistance();
 	float GetNearDistance();
 
-	void Camera::ExtractFrustumPlanes( CXMMATRIX M, std::vector<XMFLOAT4> &planes); //combine those two
+	void Camera::ExtractFrustumPlanes( CXMMATRIX p_Matrix, std::vector<XMFLOAT4> &o_Planes); //combine those two
 	
 private:
 	// Camera coordinate system with coordinates relative to world space.
-	XMFLOAT3 mPosition; // view space origin
-	XMFLOAT3 mRight; // view space x-axis
-	XMFLOAT3 mUp; // view space y-axis
-	XMFLOAT3 mLook; // view space z-axis
+	XMFLOAT3 m_Position; // view space origin
+	XMFLOAT3 m_Right; // view space x-axis
+	XMFLOAT3 m_Up; // view space y-axis
+	XMFLOAT3 m_Look; // view space z-axis
 	
 	// Cache frustum properties.
-	float mNearZ;
-	float mFarZ;
-	float mAspect;
-	float mFovY;
-	float mNearWindowHeight;
-	float mFarWindowHeight;
+	float m_NearZ;
+	float m_FarZ;
+	float m_Aspect;
+	float m_FovY;
+	float m_NearWindowHeight;
+	float m_FarWindowHeight;
 
 	// Cache View/Proj matrices.
-	XMFLOAT4X4 mView;
-	XMFLOAT4X4 mProj;
+	XMFLOAT4X4 m_View;
+	XMFLOAT4X4 m_Proj;
 };
 

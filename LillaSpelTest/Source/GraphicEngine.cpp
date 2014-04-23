@@ -1,8 +1,7 @@
 #include "GraphicEngine.h"
-#include "MeshLoader.h"
 #include <exception>
-
-
+#include "DDSTextureLoader.h"
+#include <DirectXColors.h>
 
 GraphicEngine* GraphicEngine::singleton = nullptr;
 
@@ -19,7 +18,14 @@ GraphicEngine::GraphicEngine(void)
 {
 	m_DriverType = D3D_DRIVER_TYPE_NULL;
 	m_FeatureLevel = D3D_FEATURE_LEVEL_11_0;
+	m_CurrentNumOfLights = 0;
 	m_ShaderLoader = new ShaderLoader();
+	m_MeshLoader = new MeshLoader();
+
+	for (int i = 0; i < 4; i++)
+	{
+		m_ActiveCameras[i] = nullptr;
+	}
 }
 
 GraphicEngine::~GraphicEngine(void)
@@ -31,6 +37,9 @@ HRESULT GraphicEngine::Initialize( UINT p_Width, UINT p_Height, HWND handleWindo
 {
 	HRESULT hr = S_OK;
 	
+	m_Height = p_Height;
+	m_Width = p_Width;
+
 	hr = InitializeDriverAndVersion(handleWindow);
 	if( FAILED( hr ) )
 		return hr;
@@ -76,7 +85,6 @@ HRESULT GraphicEngine::Initialize( UINT p_Width, UINT p_Height, HWND handleWindo
 
 	return hr;
 }
-
 
 HRESULT GraphicEngine::InitializeDriverAndVersion( HWND handleWindow)
 {
@@ -227,6 +235,8 @@ void GraphicEngine::SetViewports()
 	vp.TopLeftY = 0;
 
 	m_DeviceContext->RSSetViewports( 1, &vp );
+
+	m_NumberOfViewports = 1;
 }
 
 HRESULT GraphicEngine::CreateRasterizers()
@@ -235,7 +245,7 @@ HRESULT GraphicEngine::CreateRasterizers()
 	D3D11_RASTERIZER_DESC desc;
 	
 	desc.FillMode = D3D11_FILL_SOLID;
-	desc.CullMode = D3D11_CULL_BACK;  //TODO
+	desc.CullMode = D3D11_CULL_NONE;  //TODO D3D11_CULL_BACK D3D11_CULL_NONE
 	desc.FrontCounterClockwise = false;
 	desc.DepthBias = 0;
 	desc.SlopeScaledDepthBias = 0.0f;
@@ -290,6 +300,9 @@ HRESULT GraphicEngine::InitializeDepthAndDepthStates()
     t_DescDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
     t_DescDSV.Texture2D.MipSlice = 0;
 	hr = m_Device->CreateDepthStencilView( m_DepthStencil, &t_DescDSV, &m_DepthStencilView );
+	if ( FAILED( hr ))
+		return hr;
+
 	//not sure if I can release the depth if I wanted?
 
 
@@ -337,6 +350,8 @@ HRESULT GraphicEngine::InitializeDepthAndDepthStates()
 
 	hr = m_Device->CreateDepthStencilState(&t_DsDesc, &m_DepthStateNoWrite);
 
+	m_DeviceContext->OMSetDepthStencilState(m_DepthStateOn, 0);
+
 	return hr;
 }
 
@@ -379,49 +394,64 @@ HRESULT GraphicEngine::InitializeShaders()
 	HRESULT hr = S_OK;
 
 	/*ID3D11ComputeShader* t_TileDeferredCS;
-	hr = m_ShaderLoader->CreateComputeShader(L"DeferredRenderingCS.hlsl", "TileDeferredCS", "cs_5_0" , m_Device, &tileDeferredCS);
+	hr = m_ShaderLoader->CreateComputeShader(L"GraphicDeferredLightingCS.hlsl", "TileDeferredCS", "cs_5_0" , m_Device, &t_TileDeferredCS);
 	if( FAILED( hr ) )
 		return hr;
 
-	computeShaders.push_back(tileDeferredCS);
+	m_ComputeShaders.push_back(t_TileDeferredCS);
 
-	deviceContext->CSSetShader(computeShaders[0],nullptr,0);
+	m_DeviceContext->CSSetShader(m_ComputeShaders[0],nullptr,0);*/
 
-	ID3D11VertexShader* vertexShader;
-	ID3D11InputLayout* inputLayout;
-
-	D3D11_INPUT_ELEMENT_DESC layout[] =
+	ID3D11VertexShader* t_VertexShader;
+	ID3D11InputLayout* t_InputLayout;
+	D3D11_INPUT_ELEMENT_DESC t_Layout[] =
     {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 
 	};
-	UINT numElements = ARRAYSIZE(layout);
+	UINT t_NumElements = ARRAYSIZE(t_Layout);
 
-	hr = shaderLoader->CreateVertexShaderWithInputLayout(L"NormalVertexShader.hlsl","VS","vs_5_0",device,&vertexShader,layout,numElements,&inputLayout);
+	hr = m_ShaderLoader->CreateVertexShaderWithInputLayout(L"GraphicNormalVS.hlsl","VS","vs_5_0",m_Device,&t_VertexShader,t_Layout,t_NumElements,&t_InputLayout);
 	if( FAILED( hr ) )
 		return hr;
 
-	vertexShaders.push_back(vertexShader);
-	inputLayouts.push_back(inputLayout);
-
-	ID3D11PixelShader* pixelShader;
-	hr = shaderLoader->CreatePixelShader(L"NormalPixelShader.hlsl","PS","ps_5_0",device,&pixelShader);
+	m_VertexShaders.push_back(t_VertexShader);
+	m_InputLayouts.push_back(t_InputLayout);
+	
+	///GEOMETRY SHADER
+	ID3D11GeometryShader* t_GeometryShader;
+	hr = m_ShaderLoader->CreateGeometryShader(L"GraphicNormalGS.hlsl","GS","gs_5_0",m_Device,&t_GeometryShader);
 	if( FAILED( hr ))
 		return hr;
-	pixelShaders.push_back(pixelShader);
+	m_GeometryShaders.push_back(t_GeometryShader);
 
-	ShaderProgram newProgram;
-	newProgram.vertexShader = vertexShaders.size() - 1;
-	newProgram.domainShader = -1;
-	newProgram.hullShader = -1;
-	newProgram.geometryShader = -1;
-	newProgram.pixelShader = pixelShaders.size() - 1;
+	//PIXEL SHADER
+	ID3D11PixelShader* t_PixelShader;
+	hr = m_ShaderLoader->CreatePixelShader(L"GraphicNormalPS.hlsl","PS","ps_5_0",m_Device,&t_PixelShader);
+	if( FAILED( hr ))
+		return hr;
+	m_PixelShaders.push_back(t_PixelShader);
 
-	shaderPrograms.push_back(newProgram);*/
+	ShaderProgram t_NewProgram;
+	t_NewProgram.vertexShader = m_VertexShaders.size() - 1;
+	t_NewProgram.domainShader = -1;
+	t_NewProgram.hullShader = -1;
+	t_NewProgram.geometryShader = m_GeometryShaders.size() -1;
+	t_NewProgram.pixelShader = m_PixelShaders.size() - 1;
+	t_NewProgram.inputLayout = m_InputLayouts.size() - 1;
+	m_ShaderPrograms.push_back(t_NewProgram);
 
-	//fix  shaders here
+
+	//COMPUTE SHADER
+	ID3D11ComputeShader* t_ComputeShader;
+	hr = m_ShaderLoader->CreateComputeShader( L"GraphicDeferredLightingCS.hlsl", "CS", "cs_5_0", m_Device, &t_ComputeShader);
+	if( FAILED( hr ))
+		return hr;
+
+	m_ComputeShaders.push_back(t_ComputeShader);
+	m_DeviceContext->CSSetShader(m_ComputeShaders[0],nullptr,0); //HÅRDKODAT
 
 	return hr;
 }
@@ -430,77 +460,65 @@ HRESULT GraphicEngine::InitializeConstantBuffers()
 {
 	HRESULT hr = S_OK;
 	
-	//D3D11_BUFFER_DESC bd;
-	//ZeroMemory( &bd, sizeof(bd) );
-	//bd.Usage = D3D11_USAGE_DEFAULT;
-	//bd.ByteWidth = sizeof(ConstantBuffer);
- //   bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
- //   bd.CPUAccessFlags = 0;
-	//hr = device->CreateBuffer( &bd, nullptr, &constantBuffer );
- //   if( FAILED( hr ) )
- //       return hr;
+	//start with desc
+	D3D11_BUFFER_DESC t_BufferDesc;
+	ZeroMemory( &t_BufferDesc, sizeof(t_BufferDesc) );
+	t_BufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	t_BufferDesc.ByteWidth = sizeof(PerFramebuffer);
+    t_BufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    t_BufferDesc.CPUAccessFlags = 0;
 
-	//bd.ByteWidth = sizeof(PerFrameBuffer);
-	//hr = device->CreateBuffer( &bd, nullptr, &perFrameBuffer );
- //   if( FAILED( hr ) )
- //       return hr;
+	//per frame buffer
+	hr = m_Device->CreateBuffer( &t_BufferDesc, nullptr, &m_PerFrameBuffer );
+    if( FAILED( hr ) )
+        return hr;
 
-	//bd.ByteWidth = sizeof(PerObjectBuffer);
-	//hr = device->CreateBuffer( &bd, nullptr, &perObjectBuffer );
- //   if( FAILED( hr ) )
- //       return hr;
+	//per object buffer
+	t_BufferDesc.ByteWidth = sizeof(PerObjectBuffer);
+	hr = m_Device->CreateBuffer( &t_BufferDesc, nullptr, &m_PerObjectBuffer );
+    if( FAILED( hr ) )
+        return hr;
 
-	//
-	//lights.resize(MAX_NUM_OF_LIGHTS);
-	///*bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	//bd.Usage = D3D11_USAGE_DYNAMIC;*/
-	//bd.ByteWidth = sizeof(Light) * lights.size();
-	//bd.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	//bd.StructureByteStride = sizeof(Light);
-	//bd.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-	//D3D11_SUBRESOURCE_DATA vinitDataA;
-	//vinitDataA.pSysMem = &lights[0];
+	//per object buffer
+	t_BufferDesc.ByteWidth = sizeof(PerComputeBuffer);
+	hr = m_Device->CreateBuffer( &t_BufferDesc, nullptr, &m_PerComputeBuffer );
+    if( FAILED( hr ) )
+        return hr;
 
-	//hr = device->CreateBuffer(&bd, &vinitDataA, &lightBuffer);
-	//if( FAILED(hr))
-	//	return hr;
+	m_StaticLights.resize(MAX_NUM_OF_LIGHTS);
+	/*bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	bd.Usage = D3D11_USAGE_DYNAMIC;*/
+	t_BufferDesc.ByteWidth = sizeof(Light) * m_StaticLights.size();
+	t_BufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	t_BufferDesc.StructureByteStride = sizeof(Light);
+	t_BufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+	D3D11_SUBRESOURCE_DATA t_InitData;
+	t_InitData.pSysMem = &m_StaticLights[0];
 
-	//D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-	//srvDesc.Format = DXGI_FORMAT_UNKNOWN;
-	//srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFEREX;
-	//srvDesc.BufferEx.FirstElement = 0;
-	//srvDesc.BufferEx.Flags = 0;
-	//srvDesc.BufferEx.NumElements = lights.size()/*MAX_NUM_OF_LIGHTS*/;
-	//
-	//hr = device->CreateShaderResourceView(lightBuffer,&srvDesc,&lightBufferSRV);
+	hr = m_Device->CreateBuffer(&t_BufferDesc, &t_InitData, &m_LightBuffer);
+	if( FAILED(hr))
+		return hr;
 
-	//ConstantBuffer cb;
-	//cb.camNearFar = XMFLOAT2(0,0);
-	//cb.screenDimensions = XMFLOAT2(width,height);
-	//cb.lightCount = lights.size();
-	//cb.useFog = 0;
-	//cb.filler = 0;
-	//cb.filler2 = 0;
-	//
-	//deviceContext->UpdateSubresource(constantBuffer, 0, nullptr, &cb, 0, 0);
-
-	//deviceContext->VSSetConstantBuffers(0,1,&constantBuffer);
-	//deviceContext->VSSetConstantBuffers(1,1,&perFrameBuffer);
-	//deviceContext->VSSetConstantBuffers(2,1,&perObjectBuffer);
-
-	//deviceContext->HSSetConstantBuffers(1,1,&perFrameBuffer);
-
-	//deviceContext->DSSetConstantBuffers(1,1,&perFrameBuffer);
-
-	//deviceContext->GSSetConstantBuffers(1,1, &perFrameBuffer);
-	//deviceContext->GSSetConstantBuffers(2,1,&perObjectBuffer);
-
-	//deviceContext->PSSetConstantBuffers(2,1,&perObjectBuffer);
-
-	//deviceContext->CSSetConstantBuffers(0,1,&constantBuffer);
-	//deviceContext->CSSetConstantBuffers(1,1,&perFrameBuffer);
+	D3D11_SHADER_RESOURCE_VIEW_DESC t_SrvDesc;
+	t_SrvDesc.Format = DXGI_FORMAT_UNKNOWN;
+	t_SrvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFEREX;
+	t_SrvDesc.BufferEx.FirstElement = 0;
+	t_SrvDesc.BufferEx.Flags = 0;
+	t_SrvDesc.BufferEx.NumElements = m_StaticLights.size()/*MAX_NUM_OF_LIGHTS*/;
+	
+	hr = m_Device->CreateShaderResourceView(m_LightBuffer,&t_SrvDesc,&m_LightBufferSRV);
 
 
+	m_DeviceContext->VSSetConstantBuffers(0,1,&m_PerFrameBuffer);
+	m_DeviceContext->VSSetConstantBuffers(1,1,&m_PerObjectBuffer);
+
+	m_DeviceContext->GSSetConstantBuffers(0,1, &m_PerFrameBuffer);
+	m_DeviceContext->GSSetConstantBuffers(1,1,&m_PerObjectBuffer);
+
+	m_DeviceContext->PSSetConstantBuffers(1,1,&m_PerObjectBuffer);
+
+	m_DeviceContext->CSSetConstantBuffers(0,1,&m_PerFrameBuffer);
+	m_DeviceContext->CSSetConstantBuffers(1,1,&m_PerComputeBuffer);
 
 	return hr;
 }
@@ -583,18 +601,19 @@ HRESULT GraphicEngine::InitializeSamplerState()
 	return hr;
 }
 
+///////////////////////////////////////////////
 //==========Entity functions=================//
+///////////////////////////////////////////////
 
-
-HRESULT GraphicEngine::LoadMesh(std::vector<UINT> &o_DrawPieceIDs)
+HRESULT GraphicEngine::LoadMesh(std::string p_FileName, std::vector<UINT> &o_DrawPieceIDs)
 {
 	//fix
 	HRESULT hr = S_OK;
 
 	std::vector<std::vector<SimpleVertex>> t_VertexGroupLists;
-	/*hr = meshLoader->ReadObjFile(objFileName,device,vertexGroupLists,1.0f);
+	hr = m_MeshLoader->ReadObjFile(p_FileName,t_VertexGroupLists,1.0f);
 	if( FAILED( hr ))
-		return hr;*/
+		return hr;
 	
 	D3D11_BUFFER_DESC vbd;
 	ZeroMemory( &vbd, sizeof(vbd));
@@ -666,22 +685,23 @@ HRESULT GraphicEngine::AddTextureToDrawPiece(UINT p_DrawPieceID,UINT p_TextureID
 	return S_OK;
 }
 
-HRESULT GraphicEngine::CreateObject(std::vector<UINT> p_DrawPieceIDs, CXMMATRIX p_World, bool addToDrawNow, UINT &o_ObjectID)
+HRESULT GraphicEngine::CreateDrawObject(std::vector<UINT> p_DrawPieceIDs, CXMMATRIX p_World, XMFLOAT3 p_Color, bool addToDrawNow, UINT &o_ObjectID)
 {
 	try
 	{
 		DrawObject* t_NewDrawObject = new DrawObject();
 		t_NewDrawObject->piecesID = p_DrawPieceIDs;
-	
+		XMStoreFloat4x4( &t_NewDrawObject->worldMatrix,p_World );
+		t_NewDrawObject->color = p_Color;
 
 		//hash object
 		std::hash<DrawObject*> T_Hashi;
 		o_ObjectID = T_Hashi(t_NewDrawObject);
 
 	
-		if (m_DrawOjbects[o_ObjectID] == nullptr)
+		if (m_DrawObjects[o_ObjectID] == nullptr)
 		{
-			m_DrawOjbects[o_ObjectID] = t_NewDrawObject;
+			m_DrawObjects[o_ObjectID] = t_NewDrawObject;
 		}
 	}
 	catch( std::exception e )
@@ -699,10 +719,10 @@ HRESULT GraphicEngine::CreateObject(std::vector<UINT> p_DrawPieceIDs, CXMMATRIX 
 
 HRESULT GraphicEngine::AddObjectLight(UINT p_ObjectID ,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius, UINT &o_LightID)
 {
-	if (m_DrawOjbects[p_ObjectID] != nullptr)
+	if (m_DrawObjects[p_ObjectID] != nullptr)
 	{
-		m_DrawOjbects[p_ObjectID]->lights.push_back(Light(p_Position,p_Radius,p_Color,0));
-		o_LightID = m_DrawOjbects[p_ObjectID]->lights.size() -1;
+		m_DrawObjects[p_ObjectID]->lights.push_back(Light(p_Position,p_Radius,p_Color,0));
+		o_LightID = m_DrawObjects[p_ObjectID]->lights.size() -1;
 		return S_OK;
 	}
 	else
@@ -713,11 +733,11 @@ HRESULT GraphicEngine::AddObjectLight(UINT p_ObjectID ,XMFLOAT3 p_Position, XMFL
 
 HRESULT GraphicEngine::ChangeObjectsLight(UINT p_ObjectID, UINT p_LightID,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius)
 {
-	if (m_DrawOjbects[p_ObjectID] != nullptr)
+	if (m_DrawObjects[p_ObjectID] != nullptr)
 	{
-		if (p_LightID < m_DrawOjbects[p_ObjectID]->lights.size())
+		if (p_LightID < m_DrawObjects[p_ObjectID]->lights.size())
 		{
-			m_DrawOjbects[p_ObjectID]->lights[p_LightID] = Light(p_Position,p_Radius,p_Color,0);
+			m_DrawObjects[p_ObjectID]->lights[p_LightID] = Light(p_Position,p_Radius,p_Color,0);
 			return S_OK;
 		}
 		else
@@ -733,9 +753,9 @@ HRESULT GraphicEngine::ChangeObjectsLight(UINT p_ObjectID, UINT p_LightID,XMFLOA
 
 HRESULT GraphicEngine::MoveObject(UINT p_ObjectID, CXMMATRIX p_Matrix)
 {
-	if (m_DrawOjbects[p_ObjectID] != nullptr)
+	if (m_DrawObjects[p_ObjectID] != nullptr)
 	{
-		 XMStoreFloat4x4(&m_DrawOjbects[p_ObjectID]->worldMatrix, p_Matrix);
+		 XMStoreFloat4x4(&m_DrawObjects[p_ObjectID]->worldMatrix, p_Matrix);
 
 		return S_OK;
 	}
@@ -745,13 +765,15 @@ HRESULT GraphicEngine::MoveObject(UINT p_ObjectID, CXMMATRIX p_Matrix)
 	}
 }
 
-
+///////////////////////////////////////////////
 //==========Texture functions=================//
+///////////////////////////////////////////////
+
 HRESULT GraphicEngine::LoadTexture(const wchar_t * p_FileName, UINT &o_TextureID)
 {
 	HRESULT hr = S_OK;
 	ID3D11ShaderResourceView* t_NewSRV;
-	//hr = CreateDDSTextureFromFile(m_Device, p_FileName, nullptr, &t_NewSRV);
+	hr = CreateDDSTextureFromFile(m_Device, p_FileName, nullptr, &t_NewSRV);
 	if( FAILED( hr ))
 		return hr;
 
@@ -762,12 +784,21 @@ HRESULT GraphicEngine::LoadTexture(const wchar_t * p_FileName, UINT &o_TextureID
 	return hr;
 }
 
+///////////////////////////////////////////////
 //==========Light functions=================//
+///////////////////////////////////////////////
 
-void GraphicEngine::CreateStaticLight(XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius)
+void GraphicEngine::CreateStaticLight(XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius, UINT &o_LightID)
 {
 	Light t_NewLight(p_Position,p_Radius,p_Color,0);
-	m_StaticLights.push_back(t_NewLight);
+
+	m_StaticLights[m_CurrentNumOfLights] = t_NewLight;
+
+	o_LightID = m_CurrentNumOfLights;
+
+	m_CurrentNumOfLights++;
+
+	m_DeviceContext->UpdateSubresource(m_LightBuffer, 0, nullptr, &m_StaticLights[0], 0, 0);
 }
 
 HRESULT GraphicEngine::CreateDynamicLight(XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius, UINT &o_LightID)
@@ -810,25 +841,33 @@ HRESULT GraphicEngine::UpdateDynamicLight(UINT p_LightID, XMFLOAT3 p_Position, X
 	}
 }
 
-//==========HUD functions=================//
+///////////////////////////////////////////////
+//==========HUD functions====================//
+///////////////////////////////////////////////
+
 void GraphicEngine::AddHudObject()
 {
 	
 }
+
 void GraphicEngine::CreatehudObject()
 {
 
 }
+
 void GraphicEngine::UseHud()
 {
 
 }
+
 void GraphicEngine::LoadHud()
 {
 
 }
 
+///////////////////////////////////////////////
 //==========Camera functions=================//
+///////////////////////////////////////////////
 
 HRESULT GraphicEngine::CreateCamera( XMFLOAT3 p_Pos, XMFLOAT3 p_At, XMFLOAT3 p_Up, float p_FieldOfView, float p_Width, float p_Height, float p_NearZ, float p_FarZ, UINT &o_CameraID)
 {
@@ -840,7 +879,7 @@ HRESULT GraphicEngine::CreateCamera( XMFLOAT3 p_Pos, XMFLOAT3 p_At, XMFLOAT3 p_U
 
 		o_CameraID = t_Hashii(t_NewCamera);
 
-		if (m_Cameras[o_CameraID] == nullptr)
+		if (m_Cameras[o_CameraID] == nullptr) //always true
 		{
 			m_Cameras[o_CameraID] = t_NewCamera;
 		}
@@ -851,21 +890,26 @@ HRESULT GraphicEngine::CreateCamera( XMFLOAT3 p_Pos, XMFLOAT3 p_At, XMFLOAT3 p_U
 		MessageBox( nullptr, L"Catched exeption when attempting to hash and allocate new object", L"ErrorMessage", MB_OK );
 		return E_FAIL;
 	}
-	
+	//Camera* t_NewCamear = new Camera();
+	//t_NewCamear->LookAt(p_Pos,p_At,p_Up);
+	//t_NewCamear->SetLens(p_FieldOfView, p_Width / (FLOAT)p_Height, p_NearZ, p_FarZ);
 	m_Cameras[o_CameraID]->LookAt(p_Pos,p_At,p_Up);
 	m_Cameras[o_CameraID]->SetLens(p_FieldOfView, p_Width / (FLOAT)p_Height, p_NearZ, p_FarZ);
+
+	//m_Cameras.push_back(t_NewCamear);
+
 	return S_OK;
 }
 
-HRESULT GraphicEngine::MoveCamera(UINT p_CameraID, float walk, float strafe, float hover, float pitch, float rotateY)
+HRESULT GraphicEngine::MoveCamera(UINT p_CameraID, float p_Walk, float p_Strafe, float p_Hover, float p_Pitch, float p_RotateY)
 {
 	if (m_Cameras[p_CameraID] != nullptr)
 	{
-		m_Cameras[p_CameraID]->Walk(walk);
-		m_Cameras[p_CameraID]->Strafe(strafe);
-		m_Cameras[p_CameraID]->HoverY(hover);
-		m_Cameras[p_CameraID]->Pitch(pitch);
-		m_Cameras[p_CameraID]->RotateY(rotateY);
+		m_Cameras[p_CameraID]->Walk(p_Walk);
+		m_Cameras[p_CameraID]->Strafe(p_Strafe);
+		m_Cameras[p_CameraID]->HoverY(p_Hover);
+		m_Cameras[p_CameraID]->Pitch(p_Pitch);
+		m_Cameras[p_CameraID]->RotateY(p_RotateY);
 
 		return S_OK;
 	}
@@ -876,8 +920,294 @@ HRESULT GraphicEngine::MoveCamera(UINT p_CameraID, float walk, float strafe, flo
 	return S_OK;
 }
 
-void GraphicEngine::UseCamera()
+HRESULT GraphicEngine::SetCamera(UINT p_CameraID, XMFLOAT3 p_Pos, XMFLOAT3 p_At, XMFLOAT3 p_Up)
+{
+	if (m_Cameras[p_CameraID] != nullptr)
+	{
+		m_Cameras[p_CameraID]->LookAt(p_Pos,p_At, p_Up);
+
+		return S_OK;
+	}
+	else
+	{
+		return E_FAIL;
+	}
+	return S_OK;
+}
+
+void GraphicEngine::UseCamera(UINT p_ViewPortID, UINT p_CameraID)
+{
+	m_ActiveCameras[p_ViewPortID] = m_Cameras[p_CameraID];
+}
+
+///////////////////////////////////////////////
+//==========Viewport functions===============//
+///////////////////////////////////////////////
+
+void GraphicEngine::SetViewportAmount(int p_NumOfViewports)
+{
+	if (p_NumOfViewports == 1)
+	{
+		D3D11_VIEWPORT t_Vp;
+
+		t_Vp.Width = m_Width;
+		t_Vp.Height = m_Height;
+		t_Vp.MinDepth = 0.0f;
+		t_Vp.MaxDepth = 1.0f;
+		t_Vp.TopLeftX = 0;
+		t_Vp.TopLeftY = 0;
+
+		m_DeviceContext->RSSetViewports( 1, &t_Vp );
+	}
+	else if (p_NumOfViewports == 2)
+	{
+		D3D11_VIEWPORT t_Vp[2];
+
+		for (int i = 0; i < 2; i++)
+		{
+			t_Vp[i].Width = m_Width/2;
+			t_Vp[i].Height = m_Height;
+			t_Vp[i].MinDepth = 0.0f;
+			t_Vp[i].MaxDepth = 1.0f;
+			t_Vp[i].TopLeftY = 0;
+		}
+		
+		t_Vp[0].TopLeftX = 0;
+		t_Vp[1].TopLeftX = m_Width/2;
+		
+
+		m_DeviceContext->RSSetViewports( 2, t_Vp );
+	}
+	else if(p_NumOfViewports == 3)
+	{
+		D3D11_VIEWPORT t_Vp[3];
+
+		for (int i = 0; i < 3; i++)
+		{
+			t_Vp[i].Width = m_Width/2;
+			t_Vp[i].Height = m_Height/2;
+			t_Vp[i].MinDepth = 0.0f;
+			t_Vp[i].MaxDepth = 1.0f;
+		}
+		
+		t_Vp[0].TopLeftX = 0;
+		t_Vp[0].TopLeftY = 0;
+		t_Vp[1].TopLeftX = m_Width/2;;
+		t_Vp[1].TopLeftY = 0;
+		t_Vp[2].TopLeftX = 0;
+		t_Vp[2].TopLeftY = m_Height/2;
+
+		m_DeviceContext->RSSetViewports( 3, t_Vp );
+	}
+	else if (p_NumOfViewports == 4)
+	{
+		D3D11_VIEWPORT t_Vp[4];
+
+		for (int i = 0; i < 4; i++)
+		{
+			t_Vp[i].Width = m_Width/2;
+			t_Vp[i].Height = m_Height/2;
+			t_Vp[i].MinDepth = 0.0f;
+			t_Vp[i].MaxDepth = 1.0f;
+		}
+		
+		t_Vp[0].TopLeftX = 0;
+		t_Vp[0].TopLeftY = 0;
+		t_Vp[1].TopLeftX = m_Width/2;
+		t_Vp[1].TopLeftY = 0;
+		t_Vp[2].TopLeftX = 0;
+		t_Vp[2].TopLeftY = m_Height/2;
+		t_Vp[3].TopLeftX = m_Width/2;
+		t_Vp[3].TopLeftY = m_Height/2;
+
+		m_DeviceContext->RSSetViewports( 4, t_Vp );
+	}
+
+	if (0 < p_NumOfViewports < 5)
+	{
+		m_NumberOfViewports = p_NumOfViewports;
+	}
+	
+}
+
+///////////////////////////////////////////////
+//==========Draw functions===================//
+///////////////////////////////////////////////
+
+void GraphicEngine::DrawGame()
+{
+	//clear the render target
+	m_DeviceContext->ClearRenderTargetView(m_RenderTargetView, Colors::Black );
+	m_DeviceContext->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+	//clear g buffers
+	for (int i = 0; i < 3; i++)
+	{
+		m_DeviceContext->ClearRenderTargetView( m_GbufferTargetViews[i], Colors::Black );
+	}
+	
+	//set render target, I guess for if swapping between hud etc
+	m_DeviceContext->OMSetRenderTargets( 3, m_GbufferTargetViews, m_DepthStencilView);
+
+	//update per frame buffer
+	UpdateFrameBuffer();
+
+	//draw opaque objects
+	DrawOpaqueObjects();
+
+	//compute tiled lighting
+	ComputeTileDeferredLightning();
+
+
+	m_SwapChain->Present( 1, 0 );
+}
+
+void GraphicEngine::UpdateFrameBuffer()
+{
+	PerFramebuffer t_PerFrame;
+	for (int i = 0; i < m_NumberOfViewports; i++)
+	{
+		if (m_ActiveCameras[i] != nullptr)
+		{
+			m_ActiveCameras[i]->UpdateViewMatrix(); 
+			XMFLOAT3 t_Pos = m_ActiveCameras[i]->GetPosition();
+			t_PerFrame.EyesPos[i] = XMFLOAT4(t_Pos.x, t_Pos.y, t_Pos.z, 1);
+
+			t_PerFrame.Projection[i] = XMMatrixTranspose( m_ActiveCameras[i]->Proj() );
+			t_PerFrame.View[i] = XMMatrixTranspose( m_ActiveCameras[i]->View() );
+			
+			t_PerFrame.fillers3 = XMFLOAT3(0,0,0);
+			
+		}
+		else
+		{
+			t_PerFrame.EyesPos[i] = XMFLOAT4(0,0,0,0);
+			t_PerFrame.fillers3 = XMFLOAT3(0,0,0);
+			t_PerFrame.Projection[i] = XMMatrixIdentity();
+			t_PerFrame.View[i] = XMMatrixIdentity();
+		}
+	}
+
+	t_PerFrame.NumberOfViewports = m_NumberOfViewports;
+
+	m_DeviceContext->UpdateSubresource(m_PerFrameBuffer,0,nullptr, &t_PerFrame,0,0);
+}
+
+void GraphicEngine::DrawOpaqueObjects()
+{
+	//need to set the render target here if changing elsewhere
+	//m_DeviceContext->OMSetRenderTargets(1, &m_RenderTargetView, m_DepthStencilView);
+	
+	m_DeviceContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	UINT strides = sizeof(SimpleVertex);
+	UINT offsets = 0;
+
+	//std::map<UINT, DrawObject*>::iterator it;
+	for (std::map<UINT, DrawObject*>::iterator it = m_DrawObjects.begin(); it != m_DrawObjects.end(); ++it)
+	{
+		//update the object buffer
+		PerObjectBuffer t_PerObjBuff;
+		t_PerObjBuff.world = XMMatrixTranspose( XMLoadFloat4x4( &it->second->worldMatrix ));
+		t_PerObjBuff.typeOfObject = 0;
+		t_PerObjBuff.fillers = XMFLOAT3(0,0,0);
+
+		m_DeviceContext->UpdateSubresource(m_PerObjectBuffer, 0, nullptr, &t_PerObjBuff, 0, 0 );
+
+		int a = it->second->piecesID.size();
+		for (int i = 0; i < a; i++)
+		{
+			//set vertex buffer
+			UINT t_VertexBuffID = m_DrawPieces[it->second->piecesID[i]].vertexBufferID;
+			m_DeviceContext->IASetVertexBuffers(0, 1, &m_VertexBuffers[t_VertexBuffID].vertexBuffer, &strides, &offsets);
+
+			//set shader program
+			ShaderProgram t_Program = m_ShaderPrograms[0];//m_ShaderPrograms[m_DrawPieces[i].shaderProgramID]; // not yet implemented to get the right program
+			SetShaderProgram(t_Program);
+
+			//update textures
+			SetTextures(m_DrawPieces[it->second->piecesID[i]]);
+
+
+			//draw
+			m_DeviceContext->Draw(m_VertexBuffers[t_VertexBuffID].numberOfVertices, 0);
+		}
+	}
+
+}
+
+void GraphicEngine::SetShaderProgram(ShaderProgram p_Program)
+{
+	m_DeviceContext->IASetInputLayout(m_InputLayouts[p_Program.inputLayout]);
+
+	m_DeviceContext->VSSetShader(m_VertexShaders[p_Program.vertexShader], nullptr, 0);
+
+	if (p_Program.hullShader != -1)
+	{
+		m_DeviceContext->HSSetShader(m_HullShaders[p_Program.hullShader], nullptr, 0);
+	}
+	if (p_Program.domainShader != -1)
+	{
+		m_DeviceContext->DSSetShader(m_DomainShaders[p_Program.domainShader], nullptr, 0);
+	}
+	if (p_Program.geometryShader != -1)
+	{
+		m_DeviceContext->GSSetShader(m_GeometryShaders[p_Program.geometryShader], nullptr, 0);
+	}
+	
+	m_DeviceContext->PSSetShader(m_PixelShaders[p_Program.pixelShader], nullptr, 0);
+}
+
+void GraphicEngine::SetTextures(DrawPiece p_DrawPiece)
+{
+	if (p_DrawPiece.diffuseTID != -1)
+	{
+		m_DeviceContext->PSSetShaderResources(0, 1, &m_Textures[p_DrawPiece.diffuseTID]);
+	}
+	//add the other textures
+}
+
+void GraphicEngine::ComputeTileDeferredLightning()
+{
+	m_DeviceContext->OMSetRenderTargets(0,nullptr,nullptr);
+	
+	m_DeviceContext->CSSetUnorderedAccessViews(0, 1, &m_BackBufferUAV, nullptr);
+	m_DeviceContext->CSSetShaderResources(1, 3, m_GbufferShaderResource);
+	m_DeviceContext->CSSetShaderResources(4, 1, &m_LightBufferSRV);
+
+	//update buffer here
+	PerComputeBuffer t_Pcb;
+	t_Pcb.camNearFar = XMFLOAT2(1.0f,10000); //HÅRDKODNING DELUX
+	if (m_NumberOfViewports > 2)
+	{
+		t_Pcb.screenDimensions = XMFLOAT2(m_Width/2, m_Height/2);
+	}
+	else if (m_NumberOfViewports == 2)
+	{
+		t_Pcb.screenDimensions = XMFLOAT2(m_Width/2, m_Height);
+	}
+	else
+	{
+		t_Pcb.screenDimensions = XMFLOAT2(m_Width, m_Height);
+	}
+	
+	m_DeviceContext->UpdateSubresource(m_PerComputeBuffer,0,nullptr, &t_Pcb,0,0);
+	
+
+	UINT x = (m_Width/ THREAD_BLOCK_DIMENSIONS);
+	UINT y = (m_Height/ THREAD_BLOCK_DIMENSIONS);
+
+	m_DeviceContext->Dispatch(x,y,1);
+
+	ID3D11ShaderResourceView* temp[3] = {0,0,0};
+	m_DeviceContext->CSSetShaderResources(1,3,temp);
+}
+
+void GraphicEngine::DrawHud()
 {
 
 }
 
+UINT GraphicEngine::CheckProgram(DrawPiece p_Piece)
+{
+	return 0;
+}

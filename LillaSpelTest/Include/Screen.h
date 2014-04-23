@@ -1,6 +1,9 @@
 #pragma once
 #include "UserCMD.h"
 #include <vector>
+
+enum ApplicationState{GAME_SETUP_SCREEN, PAUSE_SCREEN, GAME_SCREEN, JOIN_GAME_SCREEN,OPTIONS_SCREEN, MAIN_MENU_SCREEN};
+
 class Screen
 {
 protected:

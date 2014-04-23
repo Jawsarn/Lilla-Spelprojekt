@@ -1,6 +1,4 @@
 #include "Screen.h"
-
-
 Screen::Screen(void)
 {
 }

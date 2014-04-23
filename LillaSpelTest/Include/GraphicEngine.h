@@ -7,6 +7,7 @@
 #include <map>
 #include "GraphicStructs.h"
 #include "Camera.h"
+#include "MeshLoader.h"
 
 using namespace DirectX;
 
@@ -22,7 +23,8 @@ UINT height = rc.bottom - rc.top;
 requires saving of hwind and rc
 */
 
-
+#define THREAD_BLOCK_DIMENSIONS 16
+#define MAX_NUM_OF_LIGHTS 1024
 
 class GraphicEngine
 {
@@ -38,9 +40,9 @@ public:
 	enum TextureType{DIFFUSE,NORMAL,GLOW,SPECULAR};
 
 	//object
-	HRESULT LoadMesh(std::vector<UINT> &o_DrawPieceIDs);
+	HRESULT LoadMesh(std::string p_FileName, std::vector<UINT> &o_DrawPieceIDs);
 	HRESULT AddTextureToDrawPiece(UINT p_DrawPieceID, UINT p_TextureID,TextureType p_TextureType);
-	HRESULT CreateObject(std::vector<UINT> p_DrawPieceIDs, CXMMATRIX p_World, bool addToDrawNow, UINT &o_ObjectID);
+	HRESULT CreateDrawObject(std::vector<UINT> p_DrawPieceIDs, CXMMATRIX p_World, XMFLOAT3 p_Color, bool addToDrawNow, UINT &o_ObjectID);
 	HRESULT AddObjectLight(UINT p_ObjectID ,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float radius, UINT &o_LightID);
 	HRESULT ChangeObjectsLight(UINT p_ObjectID, UINT p_LightID,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius);
 	HRESULT MoveObject(UINT p_ObjectID, CXMMATRIX p_Matrix);
@@ -50,7 +52,7 @@ public:
 
 
 	//light funcs
-	void CreateStaticLight(XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius);
+	void CreateStaticLight(XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius, UINT &o_LightID);
 	HRESULT CreateDynamicLight(XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius, UINT &o_LightID);
 	HRESULT UpdateDynamicLight(UINT p_LightID,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius);
 
@@ -63,9 +65,12 @@ public:
 
 	//camera funcs
 	HRESULT CreateCamera( XMFLOAT3 p_Pos, XMFLOAT3 p_At, XMFLOAT3 p_Up, float p_FieldOfView, float p_Width, float p_Height, float p_NearZ, float p_FarZ, UINT &o_CameraID);
-	HRESULT MoveCamera(UINT p_CameraID, float walk, float strafe, float hover, float pitch, float rotateY);
-	void UseCamera();
-	void RotateCamera();
+	HRESULT MoveCamera(UINT p_CameraID, float p_Walk, float p_Strafe, float p_Hover, float p_Pitch, float p_RotateY);
+	HRESULT SetCamera(UINT p_CameraID, XMFLOAT3 p_Pos, XMFLOAT3 p_At, XMFLOAT3 p_Up);
+	void UseCamera(UINT p_ViewPortID, UINT p_CameraID);
+
+	//viewport function
+	void SetViewportAmount(int p_NumOfViewports);
 
 	void CreateParticleSystem();
 	
@@ -76,8 +81,9 @@ public:
 	
 	//void RemoveFromDrawObjects();
 	//void AddToDrawObject();
+	void DrawGame();
 	void DrawHud();
-
+	
 
 private:
 
@@ -95,13 +101,19 @@ private:
 	HRESULT InitializeGBuffers();
 	HRESULT InitializeSamplerState();
 
-	void UpdateFramebuffers();
+	void UpdateFrameBuffer();
+	void DrawOpaqueObjects();
+	void SetShaderProgram(ShaderProgram p_Program);
+	void SetTextures(DrawPiece p_DrawPiece);
 	void ComputeTileDeferredLightning();
-	void UpdateConstantBuffer();
+	void UpdateConstantBuffer(); //not written
 
+	UINT CheckProgram(DrawPiece p_Piece);
 
 
 	static GraphicEngine* singleton;
+
+	MeshLoader* m_MeshLoader;
 
 	ID3D11Device*			m_Device;
 	ID3D11DeviceContext*	m_DeviceContext;
@@ -134,13 +146,44 @@ private:
 	ShaderLoader* m_ShaderLoader;
 
 	
-	std::map<UINT, DrawObject*> m_DrawOjbects;
+	std::map<UINT, DrawObject*> m_DrawObjects;
 	std::map<UINT, Light*> m_DynamicLights;
+	//std::vector<Camera*> m_Cameras;
 	std::map<UINT, Camera*> m_Cameras;
 
-	std::vector<VertexBufferWithNOV> m_VertexBuffers;
+	
 	std::vector<DrawPiece> m_DrawPieces;
 	std::vector<ID3D11ShaderResourceView*> m_Textures;
 	std::vector<Light> m_StaticLights;
+	int m_CurrentNumOfLights;
+	Camera* m_ActiveCameras[4];
+
+	//shader programs
+	std::vector<ShaderProgram> m_ShaderPrograms;
+
+	//shaders
+	std::vector<ID3D11VertexShader*> m_VertexShaders;
+	std::vector<ID3D11HullShader*> m_HullShaders;
+	std::vector<ID3D11DomainShader*> m_DomainShaders;
+	std::vector<ID3D11GeometryShader*> m_GeometryShaders;
+	std::vector<ID3D11PixelShader*> m_PixelShaders;
+	std::vector<ID3D11ComputeShader*> m_ComputeShaders;
+
+	//input layout
+	std::vector<ID3D11InputLayout*> m_InputLayouts;
+	
+	//vertexbuffer
+	std::vector<VertexBufferWithNOV> m_VertexBuffers;
+
+	//constant buffers
+	ID3D11Buffer* m_PerFrameBuffer;
+	ID3D11Buffer* m_PerObjectBuffer;
+	ID3D11Buffer* m_PerComputeBuffer;
+
+	//light bufferu
+	ID3D11Buffer*				m_LightBuffer;
+	ID3D11ShaderResourceView*	m_LightBufferSRV;
+
+	float m_NumberOfViewports;
 };
 

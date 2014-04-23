@@ -11,6 +11,8 @@ struct UserCMD
 	bool bButtonPressed;	
 	bool xButtonPressed ;
 	bool yButtonPressed;
+	bool startButtonPressed;
+	bool backButtonPressed;
 	DirectX::XMFLOAT2 Joystick;
 
 	Controller controller;
@@ -23,6 +25,9 @@ struct UserCMD
 		bButtonPressed = false;	
 		xButtonPressed = false;
 		yButtonPressed = false;
+		startButtonPressed = false;
+		backButtonPressed = false;
+		Joystick = DirectX::XMFLOAT2(0,0);
 		controller = Controller(p_controllerNumber);
 	}
 };

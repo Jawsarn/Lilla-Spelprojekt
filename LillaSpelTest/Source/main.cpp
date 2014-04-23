@@ -1,31 +1,49 @@
 
 #include <Windows.h>
+#include <windowsx.h>
 #include "Controller.h"
 #include <vector>
 #include "UserCMD.h"
 #include <DirectXMath.h>
 #include "UserCMDHandler.h"
 #include "AzookaTest.h"
+#include "MysteriskTest.h"
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam );
 HRESULT InitializeWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow, UINT width, UINT height);
 void Run();
 
 HINSTANCE	handleInstance;
-HWND	handleWindow;
+HWND	m_HandleWindow;
 
 
+#include "GraphicHandle.h"
 
+float m_DeltaTime;
+float m_GameTime;
+ULONGLONG m_PrevTime;
+XMFLOAT2 m_LastMousePos;
+int m_ActiveCamera = 0; //just for testing and show
 
-float deltaTime;
-float gameTime;
-ULONGLONG prevTime;
+GraphicHandle* m_GraphicHandle;
 
 int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow )
 {
 	UNREFERENCED_PARAMETER( hPrevInstance );
     UNREFERENCED_PARAMETER( lpCmdLine );
-	InitializeWindow(hInstance,nCmdShow,1024,1024);
+	InitializeWindow(hInstance,nCmdShow,1920,1080);
+	
+
+	RECT t_Rectangle;
+	GetClientRect( m_HandleWindow, &t_Rectangle );
+	UINT t_Width = t_Rectangle.right - t_Rectangle.left;
+	UINT t_Height = t_Rectangle.bottom - t_Rectangle.top;
+
+
+	m_LastMousePos = XMFLOAT2(0,0);
+
+	m_GraphicHandle = m_GraphicHandle->GetInstance();
+	m_GraphicHandle->Initialize(1920, 1080, m_HandleWindow); //fix this input variables right
 
 	Run();
 
@@ -35,15 +53,19 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
 void Run() 
 {
-	std::vector<UserCMD> userCMDS;
+	std::vector<UserCMD> *userCMDS = new std::vector<UserCMD>();
 	UserCMDHandler userCMDHandler = UserCMDHandler();
 
 	for (int i = 0; i < 4; i++)
 	{
 		UserCMD t_userCMD = UserCMD(i);
-		userCMDS.push_back(t_userCMD);
+		userCMDS->push_back(t_userCMD);
 	}
 	
+
+	MysteriskTest t_Mtest = MysteriskTest();
+
+
 	//message game loop
 	MSG msg = {0};
 	while( WM_QUIT != msg.message )
@@ -59,14 +81,15 @@ void Run()
 			AzookaTest t_azookaTest = AzookaTest();
 			t_azookaTest.Run();
 
-
+			
+			t_Mtest.Run(userCMDS);
 
 
 			for (int i = 0; i < 4; i++) ///Fixes UserCMDs for all connected players
 			{
-				if (userCMDS[i].controller.IsConnected())
+				if (userCMDS->at(i).controller.IsConnected())
 				{
-					userCMDHandler.AlterUserCMD(userCMDS[i]);
+					userCMDHandler.AlterUserCMD(userCMDS->at(i));
 				} 
 				else
 				{
@@ -75,19 +98,70 @@ void Run()
 			}
 			
 			ULONGLONG timeCur = GetTickCount64();
-			if( prevTime == 0 )
-				prevTime = timeCur;
-			deltaTime = ( timeCur - prevTime ) / 1000.0f;
-			gameTime += deltaTime;
-			prevTime = timeCur;
+			if( m_PrevTime == 0 )
+				m_PrevTime = timeCur;
+			m_DeltaTime = ( timeCur - m_PrevTime ) / 1000.0f;
+			m_GameTime += m_DeltaTime;
+			m_PrevTime = timeCur;
 
-			///UPDATE & DRAW
+			///UPDATE & DRAW TEMPDRAAWWWWW
+			m_GraphicHandle->DrawGame();
 		}
 	}
 
 }
 
 //callback inte helt fixat då den inte får ligga som en medlemsfunktion, och måste därför vara static => vilket gör att den inte kan kalla på medlemsfunktioner, kan fixas med att lägga den i ett namespace och trixa med "this" , eller ha den i main där allt är static och kan skriva funktioner som inte behöver en klass
+
+void OnMouseMove(WPARAM btnStae, int x, int y)
+{
+	if (btnStae & MK_LBUTTON != 0)
+	{
+		float dx = XMConvertToRadians(0.25f*static_cast<float>(x - m_LastMousePos.x));
+		float dy = XMConvertToRadians(0.25f*static_cast<float>(y - m_LastMousePos.y));
+
+		m_GraphicHandle->UpdateCamera(m_ActiveCamera,0,0,0,dy,dx);
+	}
+
+	m_LastMousePos.x = x;
+	m_LastMousePos.y = y;
+}
+
+void OnKeyMove()
+{
+	if(GetAsyncKeyState('W')&0x8000)
+	{
+		m_GraphicHandle->UpdateCamera(m_ActiveCamera,100*m_DeltaTime,0,0,0,0);
+	}
+	if(GetAsyncKeyState('S')&0x8000)
+	{
+		m_GraphicHandle->UpdateCamera(m_ActiveCamera,-100*m_DeltaTime,0,0,0,0);
+	}
+	if(GetAsyncKeyState('A')&0x8000)
+	{
+		m_GraphicHandle->UpdateCamera(m_ActiveCamera,0,-100*m_DeltaTime,0,0,0);
+	}
+	if(GetAsyncKeyState('D')&0x8000)
+	{
+		m_GraphicHandle->UpdateCamera(m_ActiveCamera,0,100*m_DeltaTime,0,0,0);
+	}
+	if(GetAsyncKeyState('1')&0x8000)
+	{
+		m_ActiveCamera = 0;
+	}
+	if(GetAsyncKeyState('2')&0x8000)
+	{
+		m_ActiveCamera = 1;
+	}
+	if(GetAsyncKeyState('3')&0x8000)
+	{
+		m_ActiveCamera = 2;
+	}
+	if(GetAsyncKeyState('4')&0x8000)
+	{
+		m_ActiveCamera = 3;
+	}
+}
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
@@ -106,6 +180,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
             break;
 
 		case WM_KEYDOWN:
+			OnKeyMove();
 			switch(wParam)
 			{
 				case VK_ESCAPE:
@@ -114,6 +189,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 			}
 			break;
 		case WM_MOUSEMOVE:
+			OnMouseMove(wParam, GET_X_LPARAM(lParam),GET_Y_LPARAM(lParam));
 			break;
 
         default:
@@ -133,8 +209,8 @@ HRESULT InitializeWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow, UINT width
     wcex.cbWndExtra = 0;
     wcex.hInstance = hInstance;
     wcex.hIcon = LoadIcon( hInstance, ( LPCTSTR )107 );
-    wcex.hCursor = LoadCursor( nullptr, IDC_NO  );
-	ShowCursor(false);
+    wcex.hCursor = LoadCursor( nullptr, IDC_ARROW  ); //IDC_ARROW IDC_NO
+	//ShowCursor(false);
     wcex.hbrBackground = ( HBRUSH )( COLOR_WINDOW + 1 );
     wcex.lpszMenuName = nullptr;
     wcex.lpszClassName = L"Pipe Panic";
@@ -144,16 +220,19 @@ HRESULT InitializeWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow, UINT width
 
     // Create window
     handleInstance = hInstance;
-    RECT rc = { 0, 0, width, height };
+
+	RECT t_rc = { 0, 0, 1920, 1080 };
+	AdjustWindowRect(&t_rc, WS_OVERLAPPEDWINDOW, false);
+
 	
-    AdjustWindowRect( &rc, WS_OVERLAPPEDWINDOW, FALSE );
-    handleWindow = CreateWindow(  wcex.lpszClassName,  wcex.lpszClassName, WS_OVERLAPPEDWINDOW,
-                           CW_USEDEFAULT, CW_USEDEFAULT, rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, hInstance,
+    //AdjustWindowRect( &t_rc, WS_OVERLAPPEDWINDOW, FALSE );
+    m_HandleWindow = CreateWindow(  wcex.lpszClassName,  wcex.lpszClassName, WS_OVERLAPPEDWINDOW,
+                           CW_USEDEFAULT, CW_USEDEFAULT, t_rc.right - t_rc.left, t_rc.bottom - t_rc.top, nullptr, nullptr, hInstance,
                            nullptr );
-    if( !handleWindow )
+    if( !m_HandleWindow )
         return E_FAIL;
 	
-    ShowWindow( handleWindow, nCmdShow );
+    ShowWindow( m_HandleWindow, nCmdShow );
 	//ChangeDisplaySettingsA(NULL, CDS_FULLSCREEN);
 
     return S_OK;

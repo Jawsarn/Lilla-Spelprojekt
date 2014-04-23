@@ -3,6 +3,7 @@
 #include <DirectXMath.h>
 #include <vector>
 #include <d3d11_1.h>
+#include "GraphicStructs.h"
 //#include "VertexHelper.h"
 
 using namespace DirectX;
@@ -13,15 +14,6 @@ public:
 	MeshLoader(void);
 	~MeshLoader(void);
 
-		struct SimpleVertex //structcclass
-{
-	XMFLOAT3 Pos;
-	XMFLOAT3 Norm;
-	XMFLOAT2 Tex;
-};
 
-	HRESULT ReadObjFile(std::string filename,
-						ID3D11Device* device,
-						std::vector<std::vector<std::vector<SimpleVertex>>> &vertices, 
-						float scale);	
+	HRESULT ReadObjFile(std::string p_filename,	std::vector<std::vector<SimpleVertex>> &o_vertices, float p_scale);	
 };

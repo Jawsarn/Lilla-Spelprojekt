@@ -16,6 +16,8 @@ struct Light
 	float radius;
 	XMFLOAT3 color;
 	float filler;
+	Light()
+	{}
 	Light(XMFLOAT3 p_Pos, float p_Rad, XMFLOAT3 p_Col, float p_Fil)
 	{
 		position = p_Pos;
@@ -43,10 +45,11 @@ struct VertexBufferWithNOV
 struct DrawPiece
 {
 	UINT vertexBufferID; //VertexBufferWithNOV
-	UINT diffuseTID;
-	UINT normalTID;
-	UINT glowTID;
-	UINT specularTID;
+	int diffuseTID;
+	int normalTID;
+	int glowTID;
+	int specularTID;
+	UINT shaderProgramID;
 };
 
 struct DrawObject
@@ -55,12 +58,40 @@ struct DrawObject
 	std::vector<Light> lights;	//lighteruuu
 	//std::vector<transparentID>?
 	//std::vector<ParticleEffectID>
+	XMFLOAT3 color;
 	XMFLOAT4X4 worldMatrix;
+};
+
+
+
+struct ShaderProgram
+{
+	int inputLayout;
+	int vertexShader;
+	int hullShader;
+	int domainShader;
+	int geometryShader;
+	int pixelShader;
+};
+
+struct PerFramebuffer
+{
+	XMMATRIX View[4];
+	XMMATRIX Projection[4];
+	XMFLOAT4 EyesPos[4];
+	XMFLOAT3 fillers3;
+	float NumberOfViewports;
 };
 
 struct PerObjectBuffer //updates for each object that needs this
 {
 	XMMATRIX world;
-	UINT typeOfObject; //with types of textures etc
+	float typeOfObject; //with types of textures etc
 	XMFLOAT3 fillers;
+};
+
+struct PerComputeBuffer
+{
+	XMFLOAT2 screenDimensions;
+	XMFLOAT2 camNearFar;
 };

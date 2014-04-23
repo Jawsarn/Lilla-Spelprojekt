@@ -74,9 +74,9 @@ XboxStickDirection Controller::CheckMovmentStick(float LX,float LY)
 	//determine how far the controller is pushed
 	float magnitude = sqrt(LX*LX + LY*LY);
 
-	//determine the direction the controller is pushed
-	float normalizedLX = LX / magnitude;
-	float normalizedLY = LY / magnitude;
+	//determine the direction the controller is pushed with values between -1 - 1
+	float normalizedLX = LX/32767 ;// magnitude;
+	float normalizedLY = LY/32767 ;// magnitude;
 
 	//float normalizedMagnitude = 0;
 

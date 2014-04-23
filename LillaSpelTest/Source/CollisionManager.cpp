@@ -12,6 +12,7 @@ CollisionManager::~CollisionManager(void)
 
 int CollisionManager::PlayerVsObj(BoundingOrientedBox* p_player, std::vector<BoundingOrientedBox*> p_collisionBoxes)
 {
+
 	return 1;
 }
 
