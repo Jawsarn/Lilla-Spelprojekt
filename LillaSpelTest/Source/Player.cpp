@@ -98,10 +98,6 @@ void Player::UpdateMapNode()
 			t_WhileBreak = 1;
 		}
 	}
-
-
-
-
 	//Med Antagande att position är uppdaterad redan
 }
 

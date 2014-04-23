@@ -14,7 +14,7 @@ int CollisionManager::PlayerVsObj(BoundingOrientedBox* p_player, std::vector<Sta
 {
 	for (int i = 0; i < p_collisionBoxes.size(); i++)
 	{
-		if(p_player->Intersects(*p_collisionBoxes[i]->GetBox())==true)
+		if(p_player->Intersects(*p_collisionBoxes[i]->GetBox())==true) ///Kolla om det stämmer med pointern
 		{
 			return p_collisionBoxes[i]->GetType();    ///har john gjort getsen?
 		}

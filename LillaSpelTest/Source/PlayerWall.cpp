@@ -18,5 +18,5 @@ PlayerWall::~PlayerWall(void)
 }
 BoundingOrientedBox* PlayerWall::GetBox()
 {
-	return m_box;
+	return &m_box;
 }
