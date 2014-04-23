@@ -1,5 +1,5 @@
 #include "Player.h"
-
+#include "MathHelper.h"
 
 
 Player::Player()
@@ -76,9 +76,33 @@ void Player::UpdateCollisionBox()
 {
 }
 
-void Player::CheckMapNode()
+void Player::UpdateMapNode()
 {
-	////klurigjävlakod;
+	int t_WhileBreak = 0;
+	XMFLOAT3 t_vec;
+	MathHelper t_mathHelp = MathHelper();
+	float t_distFromPlayerToCurrNode = t_mathHelp.Abs(t_mathHelp.VecSubVec(m_mapNode->m_position, m_position));
+	while(t_WhileBreak = 0)
+	{
+		if(t_distFromPlayerToCurrNode > t_mathHelp.Abs(m_mapNode->m_normal))
+		{
+			t_distFromPlayerToCurrNode -= t_mathHelp.Abs(m_mapNode->m_normal);
+			m_mapNode = m_mapNode->m_nextNode;
+			t_vec = t_mathHelp.FloatMultiVec(t_distFromPlayerToCurrNode, t_mathHelp.Normalize(m_mapNode->m_normal));
+			m_position = t_vec;
+			t_distFromPlayerToCurrNode = t_mathHelp.Abs(t_vec);
+			
+		}
+		else
+		{
+			t_WhileBreak = 1;
+		}
+	}
+
+
+
+
+	//Med Antagande att position är uppdaterad redan
 }
 
 

@@ -16,3 +16,7 @@ PlayerWall::PlayerWall(DirectX::XMFLOAT3 p_color,DirectX::XMFLOAT3 p_position)
 PlayerWall::~PlayerWall(void)
 {
 }
+BoundingOrientedBox* PlayerWall::GetBox()
+{
+	return m_box;
+}

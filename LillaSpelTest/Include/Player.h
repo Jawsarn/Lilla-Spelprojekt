@@ -55,6 +55,6 @@ public:
 private:
 	void PlaceWall();
 	void UpdateCollisionBox();
-	void CheckMapNode();
+	void UpdateMapNode();
 };
 
