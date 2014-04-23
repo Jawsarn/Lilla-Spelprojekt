@@ -49,7 +49,7 @@ vector<MapNode*> MapLoader::LoadMap(string p_mapName)
 	//Creates Wall boxes and stores them in StaticObj list member variable
 	LoadBoxes(&t_wallBoxPositions, WALL);
 
-
+	AssignBoxesToNodes();
 
 	return m_logicalMap;
 }
@@ -64,14 +64,15 @@ void MapLoader::AssignBoxesToNodes()
 		BoundingOrientedBox t_box = BoundingOrientedBox();
 		XMVECTOR t_position = XMLoadFloat3(&m_logicalMap[i]->m_position);
 		XMVECTOR t_target = XMLoadFloat3(&m_logicalMap[i]->m_normal);
-		//create upvector. 
+		//create up vector. Here called radius, as up orientation doesn't really matter in a tube. 
 		XMFLOAT3 t_float3 = XMFLOAT3(0,0,1);
 		XMVECTOR t_vector= XMLoadFloat3(&t_float3);
-		
-		//XMVECTOR t_radius = XMVector3Cross(;
+		XMVECTOR t_radiusVector = XMVector3Cross(t_vector, t_target);
 
-		//XMMATRIX t_boxOrientationMatrix = XMMatrixLookAtLH(t_position, t_target, t_up);
-		XMFLOAT4 t_boxOrientationQuaternion;
+		XMMATRIX t_boxOrientationMatrix = XMMatrixLookAtLH(t_position, t_target, t_radiusVector);
+		XMFLOAT4 t_boxOrientationQuaternion = XMFLOAT4(0,0,0,1);
+		
+
 
 		for (int j = 0; j < m_boxes.size(); j++)
 		{
