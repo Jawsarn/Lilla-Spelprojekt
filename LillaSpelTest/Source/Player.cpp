@@ -88,21 +88,21 @@ void Player::UpdateCollisionBox()
 {
 }
 
-void Player::UpdateMapNode()
+void Player::UpdateMapNode() //Uppdaterar logisk playerpos(m_logicalPosition) och currMapnode
 {
 	int t_WhileBreak = 0;
 	XMFLOAT3 t_vec;
 	MathHelper t_mathHelp = MathHelper();
-	float t_distFromPlayerToCurrNode = t_mathHelp.Abs(t_mathHelp.VecSubVec(m_mapNode->m_position, m_position));
+	float t_distFromPlayerToCurrNode = t_mathHelp.Abs(t_mathHelp.VecSubVec(m_mapNode->m_position, m_logicalPosition)); //Skapar en vector mellan playerpos å currentnodepos och tar absolutvärde
 	while(t_WhileBreak = 0)
 	{
-		if(t_distFromPlayerToCurrNode > t_mathHelp.Abs(m_mapNode->m_normal))
+		if(t_distFromPlayerToCurrNode > t_mathHelp.Abs(m_mapNode->m_normal)) //Kolla om den skapade vectorn är längre än vad normalen(Vectorn mellan node och node->next
 		{
-			t_distFromPlayerToCurrNode -= t_mathHelp.Abs(m_mapNode->m_normal);
-			m_mapNode = m_mapNode->m_nextNode;
-			t_vec = t_mathHelp.FloatMultiVec(t_distFromPlayerToCurrNode, t_mathHelp.Normalize(m_mapNode->m_normal));
-			m_position = t_vec;
-			t_distFromPlayerToCurrNode = t_mathHelp.Abs(t_vec);
+			t_distFromPlayerToCurrNode -= t_mathHelp.Abs(m_mapNode->m_normal); //Tar bort den "travelade" längden 
+			m_mapNode = m_mapNode->m_nextNode;									//Byta currmapnode
+			t_vec = t_mathHelp.FloatMultiVec(t_distFromPlayerToCurrNode, t_mathHelp.Normalize(m_mapNode->m_normal));  //Skapa ny vector solm har samma uppgift å egenskaper som den första
+			m_logicalPosition = t_vec;																							//Uppdatera playerpos
+			//t_distFromPlayerToCurrNode = t_mathHelp.Abs(t_vec);															//Behövs inte 
 			
 		}
 		else
