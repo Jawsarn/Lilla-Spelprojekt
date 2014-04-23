@@ -28,7 +28,7 @@ vector<MapNode*> MapLoader::LoadMap(string p_mapName)
 	string t_centerSplineString = AddStrings(p_mapName, "CenterSpline.obj");
 	string t_edgeSplineString = AddStrings(p_mapName, "EdgeSpline.obj");
 	string t_holeBoxString = AddStrings(p_mapName, "HoleBoxes.obj");
-	string t_wallBoxString = AddStrings(p_mapName, "WallBoxes.obj");
+	string t_wallBoxString = AddStrings(p_mapName, "HoleBoxes.obj");		///////////TO BE CHANGED. RATHER SILLY AS IT IS//////////////
 
 	//Load all information necessary for node creation
 	vector<vector<XMFLOAT3>> t_centerPositions = LoadLogicalObj(t_centerSplineString);
@@ -36,14 +36,48 @@ vector<MapNode*> MapLoader::LoadMap(string p_mapName)
 
 	//Load all information necessary for static object creation
 	vector<vector<XMFLOAT3>> t_holeBoxPositions = LoadLogicalObj(t_holeBoxString);
-	//vector<vector<XMFLOAT3>> t_wallBoxPositions = LoadLogicalObj(t_wallBoxString);
+	vector<vector<XMFLOAT3>> t_wallBoxPositions = LoadLogicalObj(t_wallBoxString);
 
-	LoadBoxes(&t_holeBoxPositions, HOLE);
+
 
 	//Create Nodes and stores them in member variable
 	LoadNodes(&t_centerPositions[0], &t_edgePositions[0]);
 
+	//Creates Hole boxes and stores them in StaticObj list member variable
+	LoadBoxes(&t_holeBoxPositions, HOLE);
+
+	//Creates Wall boxes and stores them in StaticObj list member variable
+	LoadBoxes(&t_wallBoxPositions, WALL);
+
+
+
 	return m_logicalMap;
+}
+
+void MapLoader::AssignBoxesToNodes()
+{
+	//iterate all boxes over each mapnode
+	for (int i = 0; i < m_logicalMap.size(); i++)
+	{
+		//generate local box for MapNode i
+
+		BoundingOrientedBox t_box = BoundingOrientedBox();
+		XMVECTOR t_position = XMLoadFloat3(&m_logicalMap[i]->m_position);
+		XMVECTOR t_target = XMLoadFloat3(&m_logicalMap[i]->m_normal);
+		//create upvector. 
+		XMFLOAT3 t_float3 = XMFLOAT3(0,0,1);
+		XMVECTOR t_vector= XMLoadFloat3(&t_float3);
+		
+		//XMVECTOR t_radius = XMVector3Cross(;
+
+		//XMMATRIX t_boxOrientationMatrix = XMMatrixLookAtLH(t_position, t_target, t_up);
+		XMFLOAT4 t_boxOrientationQuaternion;
+
+		for (int j = 0; j < m_boxes.size(); j++)
+		{
+
+		}
+	}
 }
 
 void MapLoader::LoadBoxes(vector<vector<XMFLOAT3>>* p_boxCornerPositions, ObjectType p_objectType)

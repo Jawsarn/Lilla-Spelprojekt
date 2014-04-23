@@ -1,5 +1,8 @@
 #pragma once
-#include "object.h"
+#include <DirectXCollision.h>
+#include <DirectXMath.h>
+
+using namespace DirectX;
 
 enum ObjectType{HOLE, WALL};
 
@@ -13,6 +16,8 @@ public:
 
 	StaticObj(ObjectType p_typeOfObject, BoundingOrientedBox p_box);
 	StaticObj(void);
+	ObjectType GetType();
+	BoundingOrientedBox* GetBox();
 	~StaticObj(void);
 
 };

@@ -12,3 +12,13 @@ StaticObj::~StaticObj(void)
 {
 }
 
+BoundingOrientedBox* StaticObj::GetBox()
+{
+	return &m_box;
+}
+
+ObjectType StaticObj::GetType()
+{
+	return m_typeOfObject;
+}
+
