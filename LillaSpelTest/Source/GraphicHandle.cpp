@@ -93,10 +93,10 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	VilkenVehicle.push_back(0);
 	VilkenVehicle.push_back(0);
 	VilkenVehicle.push_back(0);
-	StartGame(0,VilkenVehicle,plajerwurld,plajercullur,t_World,t_Color);
+	//StartGame(0,VilkenVehicle,plajerwurld,plajercullur,t_World,t_Color);
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	//SelectVehicle();
+	SelectVehicle();
 
 
 
@@ -186,49 +186,56 @@ void GraphicHandle::UpdateCamera(UINT p_CameraLogicID,float p_Walk, float p_Stra
 		m_GraphicEngine->MoveCamera(m_CameraID[p_CameraLogicID],p_Walk,p_Strafe,p_Hover,p_Pitch,p_RotateY);
 	}
 }
-void GraphicHandle::UpdateCameraVehicleSelection(UINT p_CameraLogicID)
+void GraphicHandle::UpdateCameraVehicleSelection(UINT p_CameraLogicID, UINT p_LookingAtWhatVehicle,float p_DeltaTime)
 {
 	if (p_CameraLogicID < 5)
-	{
-
-
-				//XMMATRIX t_Rot2=;
-		//XMMATRIX t_Rot = XMMatrixRotationY(XM_PI);
-
-
-		//FUNgerar
-		//	XMMATRIX t_Tempura = XMMatrixTranslation(0,0,12*m_MeshShips.size());
-		//XMMATRIX t_Rot = XMMatrixRotationY(2*XM_PI/m_MeshShips.size());
-
-		//
-
-		//t_Rot = XMMatrixMultiply(t_Rot, t_Tempura);
-		//
-		//t_Tempura = XMMatrixRotationY(XM_PI);
-
-		//t_Rot = XMMatrixMultiply(t_Tempura,t_Rot);
-
-		//
-		//t_Rot = XMMatrixMultiply(t_Tempura,t_Rot);	
-		
-		
+	{	
+		/////////////////////////////////fungerande
 		XMMATRIX t_Tempura = XMMatrixTranslation(0,1,8*m_MeshShips.size());
-		XMMATRIX t_Rot = XMMatrixRotationY(2*XM_PI/m_MeshShips.size());
+		XMMATRIX t_Rot = XMMatrixRotationY(2*XM_PI/m_MeshShips.size()*p_LookingAtWhatVehicle);
 		XMMATRIX t_Rot2 = XMMatrixRotationX(-XM_PIDIV4/8);
 		
-		t_Rot = XMMatrixMultiply(t_Rot,t_Rot2);
-		t_Rot = XMMatrixMultiply(t_Rot, t_Tempura);
+		t_Rot = XMMatrixMultiply(t_Rot,t_Rot2);//sätter ihop rotationerna
+		t_Rot = XMMatrixMultiply(t_Rot, t_Tempura);//roterar matrisen
 		
-		t_Tempura = XMMatrixRotationY(XM_PI);
+		t_Tempura = XMMatrixRotationY(XM_PI);//vänder med 180 grader
 
-		t_Rot = XMMatrixMultiply(t_Tempura,t_Rot);
+		t_Rot = XMMatrixMultiply(t_Tempura,t_Rot);//lägger in den sista rotationen
 
 		
-		t_Rot = XMMatrixMultiply(t_Tempura,t_Rot);
+		//t_Rot = XMMatrixMultiply(t_Tempura,t_Rot);
 
 		m_GraphicEngine->SetCamera(m_CameraID[p_CameraLogicID],t_Rot);
+		/////////////////////////////////////////////////////////////////////////////////
+
+
+		
+
+		// t_Tempura = XMMatrixTranslation(0,1,8*m_MeshShips.size());
+		//XMMATRIX t_Rot3 = XMMatrixRotationY(2*XM_PI/m_MeshShips.size()*(p_LookingAtWhatVehicle+1));
+		//XMMATRIX t_Rot2 = XMMatrixRotationX(-XM_PIDIV4/8);
+		//
+		//t_Rot3 = XMMatrixMultiply(t_Rot3,t_Rot2);//sätter ihop rotationerna
+		//t_Rot3 = XMMatrixMultiply(t_Rot3, t_Tempura);//roterar matrisen
+		//
+		//t_Tempura = XMMatrixRotationY(XM_PI);//vänder med 180 grader
+
+		//t_Rot3 = XMMatrixMultiply(t_Tempura,t_Rot3);//lägger in den sista rotationen
+
+
+		//t_Rot;//startposition
+		//t_Rot3;//slutpositionen
+
+
+
+
 	}
 }
+//void GraphicHandle::TurnCameraSelection(float p_DeltaTime,CXMMATRIX p_Start, CXMMATRIX p_End,)
+//{
+//
+//}
+
 void GraphicHandle::JohnSetCamera(CXMMATRIX p_World, UINT p_CameraLogicID)
 {
 	m_GraphicEngine->SetCamera(m_CameraID[p_CameraLogicID],p_World);
@@ -266,7 +273,8 @@ void GraphicHandle::CreateLight(int p_PlayerIndex,XMFLOAT3 p_Color,UINT p_Object
 
 void GraphicHandle::StartGame(int p_WhatLevel,
 							  std::vector<int> p_WhatVehicle,
-							  std::vector<XMMATRIX> p_PlayerWorld,
+							  std::vector
+							  <XMMATRIX> p_PlayerWorld,
 							  std::vector<XMFLOAT3>p_Color,
 							  CXMMATRIX p_LevelWorld,
 							  XMFLOAT3 p_LevelColor)
@@ -305,7 +313,10 @@ void GraphicHandle::SelectVehicle()
 		m_SelectionShipMatrix.push_back(t_Tempus);
 	}
 }
-
+int GraphicHandle::GetAmountOfVehicles()
+{
+	return m_MeshShips.size();
+}
 //void GraphicHandle::SelectVehicle()
 //{
 //	XMMATRIX m_SelectionShipMatrix = XMMatrixTranslation(0,0,7*m_MeshShips.size());
