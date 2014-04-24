@@ -13,9 +13,7 @@ cbuffer PerComputeBuffer : register(c1)
 {
 	float2 screenDimensions;
 	float2 camNearFar;
-
 }
-
 
 struct Light
 {
@@ -25,10 +23,6 @@ struct Light
 	float filler;
 };
 
-struct Tile
-{
-	float4 frustrum[4];
-};
 
 //lights
 StructuredBuffer<Light> lights	:register(t4);
@@ -65,34 +59,7 @@ float4 CreateFrustrum(float4 F, float4 S)
 	return outFrust;
 }
 
-float GetDistanceFromPlane(float3 lightpos, float3 plane)
-{
-	float output = dot( plane, lightpos); //we know w = 0, so we don't have to add it, else it's the point put into the planes equation
 
-	return output;
-}
-
-bool Intersects(Light L,Tile T , int viewport)
-{
-	float3 lightPos = mul(float4(L.position,1), View[viewport]).xyz;
-
-	float radius = L.radius;
-
-	if( (lightPos.z + radius) > asfloat(minDepth) &&
-		(lightPos.z - radius) < asfloat(maxDepth)) //not sure if correct maybe take min < pos + radius
-	{
-		if(GetDistanceFromPlane(lightPos, T.frustrum[0].xyz) < radius &&
-			GetDistanceFromPlane(lightPos, T.frustrum[1].xyz) < radius&&
-			GetDistanceFromPlane(lightPos, T.frustrum[2].xyz) < radius&&
-			GetDistanceFromPlane(lightPos, T.frustrum[3].xyz) < radius)
-		{
-			return true;
-		}
-	}
-
-
-	return false;
-}
 
 float3 DirectIllumination(float3 pos, float3 norm , Light light, int viewport)
 {
@@ -187,13 +154,13 @@ PixelData GetPixelData(uint2 globalCord, int viewport)
 void CalculateDepth(uint groupIndex, PixelData data)
 {
 	//gather info
-	float minZ = camNearFar.y;
-	float maxZ = camNearFar.x;
+	float minZ = camNearFar.y; //camNearFar.y
+	float maxZ = camNearFar.x; //camNearFar.x
 	
 	float depth = data.positionView.z; 
 
-	bool validPixel = depth >= camNearFar.x && 
-						depth < camNearFar.y;
+	bool validPixel = depth >= camNearFar.x && 	//camNearFar.y
+						depth < camNearFar.y;	//camNearFar.x
 
 	if(validPixel)
 	{
@@ -222,12 +189,31 @@ void CalculateDepth(uint groupIndex, PixelData data)
 void CalculateFrustrums(uint2 groupID, inout float4 frustrumPlanes[6], int viewport)
 {
 	
-	float minTileY = asfloat(minDepth);
-	float maxTileY = asfloat(maxDepth);
+	float minTileY = asfloat(minDepth); //
+	float maxTileY = asfloat(maxDepth); //
+
+	float2 viewportGroupID;
+	if (viewport == 0)
+	{
+		viewportGroupID = groupID;
+	}
+	else if (viewport == 1)
+	{
+		viewportGroupID = float2( groupID.x - 60 , groupID.y);
+	}
+	else if (viewport == 2)
+	{
+		viewportGroupID = float2( groupID.x, groupID.y - 34);
+	}
+	else if (viewport == 3)
+	{
+		viewportGroupID = float2( groupID.x - 60, groupID.y - 34);
+	}
+
 
 	//										rcp =  1 / x in a fast way, could change to 1/float(2*BLOCK_SIZE)
 	float2 tileScale = float2(screenDimensions.xy * rcp(float(2*BLOCK_SIZE)));
-	float2 tileBias = tileScale - float2(groupID.xy);
+	float2 tileBias = tileScale - float2(viewportGroupID);
 
 	//magic, getting the relevant columns from view matrix
 	float4 c1 = float4(Projection[viewport]._11 * tileScale.x		, 0.0f											, tileBias.x	, 0.0f);
@@ -260,8 +246,8 @@ void CS( uint3 threadID		: SV_DispatchThreadID,
 	uint groupIndex = groupThreadID.y * BLOCK_SIZE + groupThreadID.x;
 
 	//get number of Lights
-	uint maxNumOfLights, d;
-	lights.GetDimensions(maxNumOfLights, d);
+	uint maxNumOfLights, stride;
+	lights.GetDimensions(maxNumOfLights, stride);
 
 	
 	int viewport;
@@ -402,31 +388,32 @@ void CS( uint3 threadID		: SV_DispatchThreadID,
 	{
 		output[threadID.xy] = float4(finalColor.x,finalColor.y,finalColor.z, 1);
 	}
-	//if (visibleLightCount > 5)
+
+
+	/*float4 lightPos = mul(float4(lights[1].position,1), View[viewport]);
+
+	float distance = dot(frustrumPlanes[0], lightPos);
+	
+	output[threadID.xy] = float4(distance,distance,distance, 1);*/
+
+	
+	//if (viewport == 0 )
 	//{
-	//	output[threadID.xy] = float4(1,1,1,1);
+	//	output[threadID.xy] = float4(1,0,0,0);
 	//}
-	
-	
+	//else if (viewport == 1)
+	//{
+	//	output[threadID.xy] = float4(1,1,0,0);
+	//}
+	//else if (viewport == 2)
+	//{
+	//	output[threadID.xy] = float4(0,0,1,0);
 
-	/*
-	if (viewport == 0 )
-	{
-		output[threadID.xy] = float4(1,0,0,0);
-	}
-	else if (viewport == 1)
-	{
-		output[threadID.xy] = float4(1,1,0,0);
-	}
-	else if (viewport == 2)
-	{
-		output[threadID.xy] = float4(0,0,1,0);
-
-	}
-	else if (viewport == 3)
-	{
-		output[threadID.xy] = float4(0,1,0,0);
-	}*/
+	//}
+	//else if (viewport == 3)
+	//{
+	//	output[threadID.xy] = float4(0,1,0,0);
+	//}
 	/*if(Specular[globalCord].x == 1) 
 	{
 		output[threadID.xy] = float4(finalColor.x,finalColor.y,finalColor.z, 1);
