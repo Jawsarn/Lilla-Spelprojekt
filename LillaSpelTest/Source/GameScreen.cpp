@@ -39,7 +39,10 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 	for (int i = 0; i < 1; i++)			//i<1 for test purposes. Make sure to change later
 	{
 		m_players[i]->ProperUpdatePosition(p_dt, p_userCMDS->at(i));
+		m_graphicHandle->JohnSetCamera(m_players[i]->GetWorldMatrix(), i);
 	}
+
+	
 
 
 

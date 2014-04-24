@@ -13,8 +13,8 @@ Player::Player(MapNode* p_startNode, float p_startAngle)
 	m_mapNode = p_startNode;
 	m_angle = p_startAngle;
 	m_distance = 0.0f;
-	m_speed = 3;
-	m_position = DirectX::XMFLOAT3(0,0,0);
+	m_speed = 50;
+	m_position = m_mapNode->m_position;
 	m_direction = DirectX::XMFLOAT3(0,0,0);
 }
 
@@ -60,29 +60,45 @@ void Player::UpdatePosition(float p_dt, UserCMD p_userCMD)
 
 void Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 {
+	float testDT = 0.01f;
 	MathHelper t_mathHelper;
 	//adds distance from the current node based on speed and time since last update
-	m_distance+=m_speed*p_dt;
+	m_distance+=m_speed*testDT;
 	//Checks of distance exceeds distance to new node. In other words, if the player "overshoots" the next node
 	while(m_distance >= t_mathHelper.Abs(m_mapNode->m_normal))
 	{
-		m_distance -= t_mathHelper.Abs(m_mapNode->m_normal);
+		float t_remainingDistance = m_distance - t_mathHelper.Abs(m_mapNode->m_normal);
+		m_distance = t_remainingDistance;
 		m_mapNode = m_mapNode->m_nextNode;
 	}
 	//Moves the position along the normal of current node with distance
 	XMFLOAT3 t_nodeNormalDirection = t_mathHelper.Normalize(m_mapNode->m_normal);
 	XMFLOAT3 t_vectorToMove = t_mathHelper.FloatMultiVec(m_distance, t_nodeNormalDirection);
+
 	m_position = t_mathHelper.VecAddVec(m_mapNode->m_position, t_vectorToMove);
+	
+	
+
+
+
+	//interpolate normals between current and previous
+	float t_interpolation;
+	t_interpolation = m_distance/t_mathHelper.Abs(m_mapNode->m_normal);
+	XMFLOAT3 t_frontNormalComponent = t_mathHelper.FloatMultiVec(t_interpolation, t_mathHelper.Normalize(m_mapNode->m_nextNode->m_normal));
+	XMFLOAT3 t_currentNormalComponent = t_mathHelper.FloatMultiVec(1-t_interpolation,t_mathHelper.Normalize(m_mapNode->m_normal));
+	m_direction = t_mathHelper.Normalize( t_mathHelper.VecAddVec(t_frontNormalComponent, t_currentNormalComponent));
+	//m_direction = m_mapNode->m_normal;
 
 }
 
 XMMATRIX Player::GetWorldMatrix()
 {
-	XMVECTOR t_eye = XMLoadFloat3(&m_position);
-	XMVECTOR t_target = XMLoadFloat3(&XMFLOAT3(0,0,1));
+	XMFLOAT3 t_position = XMFLOAT3(m_position.x, m_position.y, m_position.z);
+	XMVECTOR t_eye = XMLoadFloat3(&t_position);
+	XMVECTOR t_target = XMLoadFloat3(&m_direction);
 	XMVECTOR t_up = XMLoadFloat3(&XMFLOAT3(0,1,0));
 
-	XMMATRIX r_worldMatrix = XMMatrixLookAtLH(t_eye, t_target, t_up);
+	XMMATRIX r_worldMatrix = XMMatrixLookToLH(t_eye, t_target, t_up);
 
 	return r_worldMatrix;
 

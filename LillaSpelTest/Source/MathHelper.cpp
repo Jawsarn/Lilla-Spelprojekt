@@ -55,7 +55,7 @@ XMFLOAT3 MathHelper::VecAddVec(XMFLOAT3 p_fl31, XMFLOAT3 p_fl32) //första minus 
 }
 
 
-float MathHelper::Abs(XMFLOAT3 p_fl3)
+float MathHelper::Abs(XMFLOAT3 p_fl3) //vectorlängd
 {
 	XMVECTOR t_vec = XMLoadFloat3(&p_fl3);
 	XMFLOAT3 r_vec;
