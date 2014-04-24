@@ -12,7 +12,7 @@ class MapLoader
 {
 public:
 	MapLoader(void);
-	vector<MapNode*>LoadMap(string mapName);
+	vector<MapNode*>* LoadMap(string mapName);
 	~MapLoader(void);
 private:
 	//variables

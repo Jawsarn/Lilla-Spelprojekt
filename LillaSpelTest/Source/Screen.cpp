@@ -2,7 +2,10 @@
 Screen::Screen(void)
 {
 }
-
+Screen::Screen(GraphicHandle* p_graphicHandle)
+{
+	m_graphicHandle = p_graphicHandle;
+}
 
 Screen::~Screen(void)
 {

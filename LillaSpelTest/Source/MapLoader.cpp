@@ -19,15 +19,14 @@ string AddStrings(string p_string1, string p_string2)
 }
 
 
-vector<MapNode*> MapLoader::LoadMap(string p_mapName)
+vector<MapNode*>* MapLoader::LoadMap(string p_mapName)
 {
 
-	vector<MapNode*> r_logicalMap;
 	//silly stuff. Apparently one does not simply add strings together
 	string t_centerSplineString = AddStrings(p_mapName, "CenterSpline.obj");
 	string t_edgeSplineString = AddStrings(p_mapName, "EdgeSpline.obj");
 	string t_holeBoxString = AddStrings(p_mapName, "HoleBoxes.obj");
-	string t_wallBoxString = AddStrings(p_mapName, "HoleBoxes.obj");		///////////TO BE CHANGED. RATHER SILLY AS IT IS//////////////
+	string t_wallBoxString = AddStrings(p_mapName, "wallBoxes.obj");		///////////TO BE CHANGED. RATHER SILLY AS IT IS//////////////
 
 	//Load all information necessary for node creation
 	vector<vector<XMFLOAT3>> t_centerPositions = LoadLogicalObj(t_centerSplineString);
@@ -50,7 +49,7 @@ vector<MapNode*> MapLoader::LoadMap(string p_mapName)
 
 	AssignBoxesToNodes();
 
-	return m_logicalMap;
+	return &m_logicalMap;
 }
 
 void MapLoader::AssignBoxesToNodes()

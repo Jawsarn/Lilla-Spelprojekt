@@ -20,6 +20,7 @@ class Player :
 private:
 
 	float m_angle;
+	float m_distance;
 	float m_boostMeter;
 	float m_wallMeter;
 	float m_coolDown;
@@ -46,6 +47,7 @@ public:
 
 	void Update(float p_dt,UserCMD p_userCMD); //Updates position and dropps walls
 	void UpdatePosition(float p_dt, UserCMD p_userCMD);
+	void ProperUpdatePosition(float p_dt, UserCMD p_userCMD);
 	std::vector<BoundingOrientedBox*> GetWallsToCheck();
 	void ChangeState(PlayerState p_state);
 	
@@ -53,6 +55,7 @@ public:
 	//Gets yo
 	XMFLOAT3 GetPos();
 	XMFLOAT3 GetDirection();
+	XMMATRIX GetWorldMatrix();		//game screen grabs and sends off to graphichandle
 
 private:
 	void PlaceWall();

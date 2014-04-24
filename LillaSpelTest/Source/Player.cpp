@@ -4,9 +4,7 @@
 
 Player::Player()
 {
-	m_speed = 30;
-	m_position = DirectX::XMFLOAT3(0,0,0);
-	m_direction = DirectX::XMFLOAT3(0,0,0);
+
 }
 
 
@@ -14,6 +12,10 @@ Player::Player(MapNode* p_startNode, float p_startAngle)
 {
 	m_mapNode = p_startNode;
 	m_angle = p_startAngle;
+	m_distance = 0.0f;
+	m_speed = 3;
+	m_position = DirectX::XMFLOAT3(0,0,0);
+	m_direction = DirectX::XMFLOAT3(0,0,0);
 }
 
 
@@ -55,6 +57,38 @@ void Player::UpdatePosition(float p_dt, UserCMD p_userCMD)
 
 	m_position = t_mathHelper.FloatMultiVec(p_dt,t_mathHelper.FloatMultiVec(m_speed,m_direction));
 }
+
+void Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
+{
+	MathHelper t_mathHelper;
+	//adds distance from the current node based on speed and time since last update
+	m_distance+=m_speed*p_dt;
+	//Checks of distance exceeds distance to new node. In other words, if the player "overshoots" the next node
+	while(m_distance >= t_mathHelper.Abs(m_mapNode->m_normal))
+	{
+		m_distance -= t_mathHelper.Abs(m_mapNode->m_normal);
+		m_mapNode = m_mapNode->m_nextNode;
+	}
+	//Moves the position along the normal of current node with distance
+	XMFLOAT3 t_nodeNormalDirection = t_mathHelper.Normalize(m_mapNode->m_normal);
+	XMFLOAT3 t_vectorToMove = t_mathHelper.FloatMultiVec(m_distance, t_nodeNormalDirection);
+	m_position = t_mathHelper.VecAddVec(m_mapNode->m_position, t_vectorToMove);
+
+}
+
+XMMATRIX Player::GetWorldMatrix()
+{
+	XMVECTOR t_eye = XMLoadFloat3(&m_position);
+	XMVECTOR t_target = XMLoadFloat3(&XMFLOAT3(0,0,1));
+	XMVECTOR t_up = XMLoadFloat3(&XMFLOAT3(0,1,0));
+
+	XMMATRIX r_worldMatrix = XMMatrixLookAtLH(t_eye, t_target, t_up);
+
+	return r_worldMatrix;
+
+}
+
+
 
 std::vector<BoundingOrientedBox*> Player::GetWallsToCheck()
 {
@@ -103,7 +137,7 @@ void Player::UpdateMapNode() //Uppdaterar logisk playerpos(m_logicalPosition) oc
 			t_vec = t_mathHelp.FloatMultiVec(t_distFromPlayerToCurrNode, t_mathHelp.Normalize(m_mapNode->m_normal));  //Skapa ny vector solm har samma uppgift å egenskaper som den första
 			m_logicalPosition = t_vec;																							//Uppdatera playerpos
 			//t_distFromPlayerToCurrNode = t_mathHelp.Abs(t_vec);															//Behövs inte 
-			
+
 		}
 		else
 		{

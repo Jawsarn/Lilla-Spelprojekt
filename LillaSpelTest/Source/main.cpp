@@ -56,7 +56,7 @@ void Run()
 {
 	std::vector<UserCMD> *userCMDS = new std::vector<UserCMD>();
 	UserCMDHandler userCMDHandler = UserCMDHandler();
-	GameScreen gameScreen = GameScreen();
+	GameScreen gameScreen = GameScreen("testMap2", 4, m_GraphicHandle);
 	for (int i = 0; i < 4; i++)
 	{
 		UserCMD t_userCMD = UserCMD(i);
@@ -104,7 +104,7 @@ void Run()
 			m_DeltaTime = ( timeCur - m_PrevTime ) / 1000.0f;
 			m_GameTime += m_DeltaTime;
 			m_PrevTime = timeCur;
-			gameScreen.Update(m_DeltaTime,userCMDS,m_GraphicHandle);
+			gameScreen.Update(m_DeltaTime,userCMDS);
 			///UPDATE & DRAW TEMPDRAAWWWWW
 			m_GraphicHandle->UpdateSelectVehicle(m_DeltaTime);
 			m_GraphicHandle->DrawGame();

@@ -53,7 +53,7 @@ void BoundingBoxTest()
 void MapLoaderTest()
 {
 	MapLoader t_mapLoader = MapLoader();
-	t_mapLoader.LoadMap("testMap");
+	t_mapLoader.LoadMap("testMap2");
 	
 }
 
