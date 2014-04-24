@@ -64,7 +64,8 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 
 
 //////////////////////////////////////////////////////////////TEST!!!!!!!!!!!!!!!!!!!///////////////////////////
-	XMMATRIX t_Mat = XMMatrixTranslation(1,1,1);
+	XMMATRIX t_Mat = XMMatrixTranslation(0,0,0);
+	XMMATRIX t_World=t_Mat;
 	//XMMATRIX t_MajsMat=XMMatrixTranslation(100,100,100);
 	XMFLOAT3 t_Color = XMFLOAT3(0,1,0);
 	std::vector<int>VilkenVehicle;
@@ -92,7 +93,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	VilkenVehicle.push_back(0);
 	VilkenVehicle.push_back(0);
 	VilkenVehicle.push_back(0);
-	StartGame(0,VilkenVehicle,plajerwurld,plajercullur,t_Mat,t_Color);
+	StartGame(0,VilkenVehicle,plajerwurld,plajercullur,t_World,t_Color);
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	//SelectVehicle();
@@ -211,11 +212,11 @@ void GraphicHandle::UpdateCameraVehicleSelection(UINT p_CameraLogicID)
 		//t_Rot = XMMatrixMultiply(t_Tempura,t_Rot);	
 		
 		
-		XMMATRIX t_Tempura = XMMatrixTranslation(0,0,12*m_MeshShips.size());
+		XMMATRIX t_Tempura = XMMatrixTranslation(0,1,8*m_MeshShips.size());
 		XMMATRIX t_Rot = XMMatrixRotationY(2*XM_PI/m_MeshShips.size());
-		//XMMATRIX t_Rot2 = XMMatrixRotationY
+		XMMATRIX t_Rot2 = XMMatrixRotationX(-XM_PIDIV4/8);
 		
-
+		t_Rot = XMMatrixMultiply(t_Rot,t_Rot2);
 		t_Rot = XMMatrixMultiply(t_Rot, t_Tempura);
 		
 		t_Tempura = XMMatrixRotationY(XM_PI);
@@ -278,6 +279,7 @@ void GraphicHandle::StartGame(int p_WhatLevel,
 			m_Player[i]);
 	}
 	m_GraphicEngine->CreateDrawObject(m_MeshLevels[p_WhatLevel],p_LevelWorld,p_Color[0],true,m_CurrentLevel);
+	//StartGame(0,VilkenVehicle,plajerwurld,plajercullur,t_Mat,t_Color);
 }
 void GraphicHandle::SelectVehicle()
 {
