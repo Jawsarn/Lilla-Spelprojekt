@@ -934,7 +934,19 @@ HRESULT GraphicEngine::SetCamera(UINT p_CameraID, XMFLOAT3 p_Pos, XMFLOAT3 p_At,
 	}
 	return S_OK;
 }
-
+HRESULT GraphicEngine::SetCamera(UINT p_CameraID, CXMMATRIX p_Matrix)
+{
+	if (m_Cameras[p_CameraID] != nullptr)
+	{
+		m_Cameras[p_CameraID]->SetView(p_Matrix);
+		return S_OK;
+	}
+	else
+	{
+		return E_FAIL;
+	}
+	return S_OK;
+}
 void GraphicEngine::UseCamera(UINT p_ViewPortID, UINT p_CameraID)
 {
 	m_ActiveCameras[p_ViewPortID] = m_Cameras[p_CameraID];
@@ -1069,7 +1081,8 @@ void GraphicEngine::UpdateFrameBuffer()
 	{
 		if (m_ActiveCameras[i] != nullptr)
 		{
-			m_ActiveCameras[i]->UpdateViewMatrix(); 
+			//m_ActiveCameras[i]->UpdateViewMatrix(); 
+			
 			XMFLOAT3 t_Pos = m_ActiveCameras[i]->GetPosition();
 			//t_PerFrame.EyesPos[i] = XMFLOAT4(t_Pos.x, t_Pos.y, t_Pos.z, 1);
 
