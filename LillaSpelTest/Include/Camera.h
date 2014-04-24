@@ -25,6 +25,7 @@ public:
 	float GetFarWindowWidth()const;
 	float GetFarWindowHeight()const;
 
+	void SetView(CXMMATRIX p_Matrix);
 	// Set frustum.
 	void SetLens(float p_FovY, float p_Aspect, float p_Znear, float p_Zfar);
 

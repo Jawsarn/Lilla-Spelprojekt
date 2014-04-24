@@ -57,4 +57,6 @@ public:
 		CXMMATRIX p_LevelWorld,
 		XMFLOAT3 p_LevelColor);
 	void SelectVehicle();
+	void UpdateCameraVehicleSelection(UINT p_CameraLogicID);
+	void JohnSetCamera(CXMMATRIX p_World, UINT p_CameraLogicID);
 };
