@@ -24,6 +24,7 @@ private:
 	UINT m_Player[4];
 	UINT m_CurrentLevel;
 	UINT m_SelectionShips[4];
+
 	std::vector <std::vector<UINT>> m_MeshLevels;
 	std::vector<std::vector<UINT>> m_MeshShips;
 	GraphicEngine* m_GraphicEngine;
@@ -57,6 +58,8 @@ public:
 		CXMMATRIX p_LevelWorld,
 		XMFLOAT3 p_LevelColor);
 	void SelectVehicle();
-	void UpdateCameraVehicleSelection(UINT p_CameraLogicID);
+	void UpdateCameraVehicleSelection(UINT p_CameraLogicID,UINT p_LookingAtWhatVehicle,float p_DeltaTime);
 	void JohnSetCamera(CXMMATRIX p_World, UINT p_CameraLogicID);
+	int GetAmountOfVehicles();
+	//void TurnCameraSelection(float p_DeltaTime,CXMMATRIX p_Start, CXMMATRIX p_End)
 };
