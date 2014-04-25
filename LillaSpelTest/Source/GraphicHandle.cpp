@@ -360,10 +360,13 @@ void GraphicHandle::SetColourAndVehicle(std::vector<UINT> p_PlayerColour,std::ve
 }
 void GraphicHandle::CreateHUD(UINT &o_HUDID)
 {
-	//skapa hud via engine
+	
 }
 void GraphicHandle::CreateHUDObject(UINT p_HUDID,XMFLOAT2 p_LowerRight, XMFLOAT2 p_UpperLeft,std::string p_TextureName,std::string p_TextureNameActive,UINT &o_HUDIDObject)
 {
 
 }
-//void GraphicHandle::ChangeTexture(p_
+void GraphicHandle::ChangeTexture(UINT p_HUDIDObj)
+{
+	//byta texture tillgrabben
+}

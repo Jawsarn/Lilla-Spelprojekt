@@ -67,5 +67,5 @@ public:
 	void SetColourAndVehicle(std::vector<UINT> p_PlayerColour,std::vector<UINT> p_PlayerVehicle);
 	void CreateHUD(UINT &o_HUDID);
 	void CreateHUDObject(UINT p_HUDID,XMFLOAT2 p_LowerRight, XMFLOAT2 p_UpperLeft,std::string p_TextureName,std::string p_TextureNameActive,UINT &o_HUDIDObject);
-
+	void ChangeTexture(UINT p_HUDIDObj);
 };
