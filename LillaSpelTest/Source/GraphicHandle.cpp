@@ -28,7 +28,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 
 	//load a diffuse texture
 	UINT diffuseBollTestTexture;
-	m_GraphicEngine->LoadTexture(L"TubeTexture1.dds", diffuseBollTestTexture);
+	m_GraphicEngine->LoadTexture(L"LampColSpec.dds", diffuseBollTestTexture);
 
 
 
@@ -42,7 +42,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 
 	//testshppiie
 	t_ObjTemp.clear();
-	m_GraphicEngine->LoadMesh("spaceship.obj",t_ObjTemp);
+	m_GraphicEngine->LoadMesh("lamp.obj",t_ObjTemp);
 	m_MeshShips.push_back(t_ObjTemp);
 	m_MeshShips.push_back(t_ObjTemp);
 	m_MeshShips.push_back(t_ObjTemp);
@@ -69,7 +69,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 
 
 	//////////////////////////////////////////////////////////////TEST!!!!!!!!!!!!!!!!!!!///////////////////////////
-	XMMATRIX t_Mat = XMMatrixTranslation(0,0,0);
+	XMMATRIX t_Mat = XMMatrixTranslation(0,0,0)* XMMatrixScaling(5,5,5);
 	XMMATRIX t_World=t_Mat;
 	//XMMATRIX t_MajsMat=XMMatrixTranslation(100,100,100);
 	XMFLOAT3 t_Color = XMFLOAT3(0,1,0);
@@ -101,10 +101,10 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	VilkenVehicle.push_back(0);
 	VilkenVehicle.push_back(0);
 	VilkenVehicle.push_back(0);
-	//StartGame(0,VilkenVehicle,plajerwurld,plajercullur,t_World,t_Color);
+	StartGame(0,VilkenVehicle,plajerwurld,plajercullur,t_World,t_Color);
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	SelectVehicle();
+	//SelectVehicle();
 
 
 
@@ -156,7 +156,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	//m_GraphicEngine->SetCamera(m_CameraID[3], XMFLOAT3(0, 0, -120),XMFLOAT3(0, 0, 1),XMFLOAT3(0, 1, 0));
 
 	UINT t_LightID;
-	m_GraphicEngine->CreateStaticLight(XMFLOAT3(0,0,0), XMFLOAT3(1,0,0), 200, t_LightID);
+	m_GraphicEngine->CreateStaticLight(XMFLOAT3(0,0,100), XMFLOAT3(1,1,1), 50, t_LightID);
 
 	//for (int i = 0; i < 6; i++)
 	//{
@@ -170,7 +170,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	//			g = rand() % 2;
 	//			b = rand() % 2;
 
-	//			m_GraphicEngine->CreateStaticLight(XMFLOAT3(-100 + 80*i,80*j,-100 + 80*k), XMFLOAT3(r,g,b), 40, t_LightID);
+	//			m_GraphicEngine->CreateStaticLight(XMFLOAT3(-50 + 20*i,-50 + 20*j,-50 + 20*k), XMFLOAT3(r,g,b), 20, t_LightID);
 	//		}
 	//	}
 	//}
@@ -271,7 +271,7 @@ void GraphicHandle::CreatePlayer(std::vector<UINT> p_DrawPieceIDs, CXMMATRIX p_W
 	//object id o camera id kan vara samma
 	//m_GraphicEngine->CreateDrawObject(p_DrawPieceIDs, p_World,  addToDrawNow,  o_ObjectID);
 	m_GraphicEngine->CreateCamera(p_Pos, p_At, p_Up, p_FieldOfView, p_Width, p_Height, p_NearZ, p_FarZ, o_CameraID);
-	m_GraphicEngine->CreatehudObject();//itne klar i engine
+	//m_GraphicEngine->CreatehudObject();//itne klar i engine
 	//m_GraphicEngine->CreateParticleSystem();//ej klar
 }
 
