@@ -214,7 +214,7 @@ HRESULT InitializeWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow)
     wcex.hIcon = LoadIcon( hInstance, ( LPCTSTR )107 );
     wcex.hCursor = LoadCursor( nullptr, IDC_ARROW  ); //IDC_ARROW IDC_NO
 	//ShowCursor(false);
-    wcex.hbrBackground = ( HBRUSH )( COLOR_WINDOW + 1 );
+    wcex.hbrBackground = ( HBRUSH )( COLOR_WINDOW );
     wcex.lpszMenuName = nullptr;
     wcex.lpszClassName = L"Pipe Panic";
     wcex.hIconSm = LoadIcon( wcex.hInstance, ( LPCTSTR )107 );

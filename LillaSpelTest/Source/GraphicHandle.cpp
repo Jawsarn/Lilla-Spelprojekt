@@ -47,11 +47,11 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	m_MeshShips.push_back(t_ObjTemp);
 	m_MeshShips.push_back(t_ObjTemp);
 	m_MeshShips.push_back(t_ObjTemp);
-	//m_MeshShips.push_back(t_ObjTemp);
-	//m_MeshShips.push_back(t_ObjTemp);
-	//m_MeshShips.push_back(t_ObjTemp);
-	//m_MeshShips.push_back(t_ObjTemp);
-	//m_MeshShips.push_back(t_ObjTemp);
+	m_MeshShips.push_back(t_ObjTemp);
+	m_MeshShips.push_back(t_ObjTemp);
+	m_MeshShips.push_back(t_ObjTemp);
+	m_MeshShips.push_back(t_ObjTemp);
+	m_MeshShips.push_back(t_ObjTemp);
 	//m_MeshShips.push_back(t_ObjTemp);
 	//m_MeshShips.push_back(t_ObjTemp);
 	//m_MeshShips.push_back(t_ObjTemp);

@@ -22,6 +22,7 @@ JoinGameScreen::JoinGameScreen(GameInfo* p_gameInfo,GraphicHandle* p_graphicsHan
 		m_color[i] = 0;
 		m_playerStatus[i] = DISCONNECTED;
 		m_modellIncrease[i] = 0;
+		m_graphicHandle->SetCameraVehicleSelection(i);
 	}
 }
 
@@ -34,7 +35,7 @@ int JoinGameScreen::Update(std::vector<UserCMD>* userCMD, float p_dt)
 	MenuScreen::Update(userCMD,p_dt);
 	for (int i = 0; i < 4; i++)
 	{
-		if (timeSinceLastChange[i]>1)
+		if (timeSinceLastChange[i]>0.5)
 		{
 			if (userCMD->at(i).aButtonPressed)
 			{
@@ -75,6 +76,7 @@ int JoinGameScreen::Update(std::vector<UserCMD>* userCMD, float p_dt)
 				}
 				else if (m_playerStatus[i] == CHOOSE_MODELL)
 				{
+					m_graphicHandle->SetCameraVehicleSelection(i);
 					m_playerStatus[i] = DISCONNECTED;
 				}
 			}
@@ -138,15 +140,15 @@ void JoinGameScreen::SaveInfo()
 
 void JoinGameScreen::ModellChanger(int i, float p_dt, std::vector<UserCMD>* userCMD)
 {
-	if (timeSinceLastChange[i] < 1 && m_modellIncrease[i]!=0)
+	if (timeSinceLastChange[i] < 0.5 && m_modellIncrease[i]!=0)
 	{
 		if (m_modellIncrease[i] == 1)
 		{
-			m_graphicHandle->UpdateCameraVehicleSelection(i,(m_modell[i]-1)+timeSinceLastChange[i]);
+			m_graphicHandle->UpdateCameraVehicleSelection(i,(m_modell[i]-1)+timeSinceLastChange[i]*2);
 		}
 		else if (m_modellIncrease[i] == -1)
 		{
-			m_graphicHandle->UpdateCameraVehicleSelection(i,(m_modell[i]+1)-timeSinceLastChange[i]);
+			m_graphicHandle->UpdateCameraVehicleSelection(i,(m_modell[i]+1)-timeSinceLastChange[i]*2);
 		}			
 	}
 	else if (timeSinceLastChange[i] < 1.2)
