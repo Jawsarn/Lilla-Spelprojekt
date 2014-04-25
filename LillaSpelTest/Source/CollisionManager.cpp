@@ -10,23 +10,23 @@ CollisionManager::~CollisionManager(void)
 {
 }
 
-int CollisionManager::PlayerVsObj(BoundingOrientedBox* p_player, std::vector<StaticObj*> p_collisionBoxes)
+int CollisionManager::PlayerVsObj(BoundingOrientedBox* p_player, std::vector<StaticObj*>* p_collisionBoxes)
 {
-	for (int i = 0; i < p_collisionBoxes.size(); i++)
+	for (int i = 0; i < p_collisionBoxes->size(); i++)
 	{
-		if(p_player->Intersects(*p_collisionBoxes[i]->GetBox())==true) ///Kolla om det stämmer med pointern
+		if(p_player->Intersects(*p_collisionBoxes->at(i)->GetBox()))
 		{
-			return p_collisionBoxes[i]->GetType();    ///har john gjort getsen?
+			return p_collisionBoxes->at(i)->GetType();
 		}
+		return 1;
 	}
-	return 1;
 }
 
 bool CollisionManager::PlayerVsPlayerWall(BoundingOrientedBox* p_player, std::vector<PlayerWall*> p_collisionBoxes)
 {
 	for (int i = 0; i < p_collisionBoxes.size(); i++)
 	{
-		if(p_player->Intersects(*p_collisionBoxes[i]->GetBox())==true)
+		if(p_player->Intersects(*p_collisionBoxes[i]->GetBox()))
 		{
 			return true;
 		}

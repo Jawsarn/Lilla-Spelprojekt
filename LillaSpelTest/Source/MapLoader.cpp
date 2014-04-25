@@ -26,7 +26,7 @@ vector<MapNode*>* MapLoader::LoadMap(string p_mapName)
 	string t_centerSplineString = AddStrings(p_mapName, "CenterSpline.obj");
 	string t_edgeSplineString = AddStrings(p_mapName, "EdgeSpline.obj");
 	string t_holeBoxString = AddStrings(p_mapName, "HoleBoxes.obj");
-	string t_wallBoxString = AddStrings(p_mapName, "wallBoxes.obj");		///////////TO BE CHANGED. RATHER SILLY AS IT IS//////////////
+	string t_wallBoxString = AddStrings(p_mapName, "WallBoxes.obj");		///////////TO BE CHANGED. RATHER SILLY AS IT IS//////////////
 
 	//Load all information necessary for node creation
 	vector<vector<XMFLOAT3>> t_centerPositions = LoadLogicalObj(t_centerSplineString);
@@ -115,29 +115,28 @@ void MapLoader::LoadBoxes(vector<vector<XMFLOAT3>>* p_boxCornerPositions, Object
 
 void MapLoader::LoadNodes(vector<XMFLOAT3>* p_centerPositions, vector<XMFLOAT3>* p_edgePositions)
 {
-		for (int i = 0; i < p_centerPositions->size(); i++)
+	for (int i = 0; i < p_centerPositions->size(); i++)
 	{
-		m_logicalMap.push_back(new MapNode());
-		m_logicalMap[i]->m_position = p_centerPositions->at(i);
+			m_logicalMap.push_back(new MapNode());
+			m_logicalMap[i]->m_position = p_centerPositions->at(i);
 
-		if(i>0)
-		{
-			//fixes normal. Current position minus previous position. Previous' node normal points to current node's position
-			//INTENTIONALLY NOT NORMALIZED
-			XMFLOAT3 v = m_logicalMap[i-1]->m_position;
-			XMFLOAT3 s = m_logicalMap[i]->m_position;
-			m_logicalMap[i-1]->m_normal = XMFLOAT3(s.x-v.x, s.y-v.y, s.z-v.z);
+			if(i>0)
+			{
+				//fixes normal. Current position minus previous position. Previous' node normal points to current node's position
+				//INTENTIONALLY NOT NORMALIZED
+				XMFLOAT3 v = m_logicalMap[i-1]->m_position;
+				XMFLOAT3 s = m_logicalMap[i]->m_position;
+				m_logicalMap[i-1]->m_normal = XMFLOAT3(s.x-v.x, s.y-v.y, s.z-v.z);
 
-			//fixes previous and next node pointers for the nodes
-			m_logicalMap[i]->m_previousNode = m_logicalMap[i-1];
-			m_logicalMap[i-1]->m_nextNode = m_logicalMap[i];
-		}
-		
-		XMFLOAT3 s = p_centerPositions->at(i);		
-		XMFLOAT3 v = p_edgePositions->at(i);
-		XMFLOAT3 t_radiusVector = XMFLOAT3(s.x-v.x, s.y-v.y, s.z-v.z);
-		XMStoreFloat(&m_logicalMap[i]->m_radius, XMVector3Length(XMLoadFloat3(&t_radiusVector)));			//somehow gets the absolute value of the radius vector
+				//fixes previous and next node pointers for the nodes
+				m_logicalMap[i]->m_previousNode = m_logicalMap[i-1];
+				m_logicalMap[i-1]->m_nextNode = m_logicalMap[i];
+			}
 
+			XMFLOAT3 s = p_centerPositions->at(i);		
+			XMFLOAT3 v = p_edgePositions->at(i);
+			XMFLOAT3 t_radiusVector = XMFLOAT3(s.x-v.x, s.y-v.y, s.z-v.z);
+			XMStoreFloat(&m_logicalMap[i]->m_radius, XMVector3Length(XMLoadFloat3(&t_radiusVector)));			//somehow gets the absolute value of the radius vector
 	}
 }
 
@@ -176,7 +175,7 @@ vector<vector<XMFLOAT3>> MapLoader::LoadLogicalObj(string p_objName)
 			t_positions[t_objectCounter-1].push_back(XMFLOAT3(position.x,position.y,position.z));
 		}
 	}
-	
+
 	fclose(file);
 	return t_positions;
 }

@@ -16,12 +16,22 @@ GameSetupScreen setuptest;
 JoinGameScreen jointest;
 MysteriskTest::MysteriskTest(void)
 {
+	//setuptest = GameSetupScreen();
+	//jointest = JoinGameScreen();
+	//gameSetup = new GameSetupScreen(&gameInfo);
+	//joinGame = new JoinGameScreen(&gameInfo);
+	//mainMenu = new MainMenuScreen();
+	//state = JOIN_GAME_SCREEN;
+}
+
+MysteriskTest::MysteriskTest(GraphicHandle* grphandle)
+{
 	setuptest = GameSetupScreen();
 	jointest = JoinGameScreen();
-	gameSetup = new GameSetupScreen(&gameInfo);
-	joinGame = new JoinGameScreen(&gameInfo);
+	gameSetup = new GameSetupScreen(&gameInfo, grphandle);
+	joinGame = new JoinGameScreen(&gameInfo, grphandle);
 	mainMenu = new MainMenuScreen();
-	state = MAIN_MENU_SCREEN;
+	state = JOIN_GAME_SCREEN;
 }
 
 

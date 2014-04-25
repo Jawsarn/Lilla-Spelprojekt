@@ -34,15 +34,19 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 
 	//load a ship mesh 
 	std::vector<UINT> t_ObjTemp;
-	m_GraphicEngine->LoadMesh("Tube2.obj",t_ObjTemp);
+	m_GraphicEngine->LoadMesh("curveTest2.obj",t_ObjTemp);
 	m_MeshLevels.push_back(t_ObjTemp);
 
 	//add a texture to a ship mesh
-	m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[0],diffuseBollTestTexture,GraphicEngine::TextureType::DIFFUSE);
+	for (int i = 0; i < t_ObjTemp.size(); i++)
+	{
+		m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[i],diffuseBollTestTexture,GraphicEngine::TextureType::DIFFUSE);
+	}
+	
 
 	//testshppiie
 	t_ObjTemp.clear();
-	m_GraphicEngine->LoadMesh("lamp.obj",t_ObjTemp);
+	m_GraphicEngine->LoadMesh("spaceship.obj",t_ObjTemp);
 	m_MeshShips.push_back(t_ObjTemp);
 	m_MeshShips.push_back(t_ObjTemp);
 	m_MeshShips.push_back(t_ObjTemp);
@@ -62,7 +66,14 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 
 
 
-
+	///Laddar inte colours att välja på
+	m_Colours.push_back(XMFLOAT3(1,1,0));
+	m_Colours.push_back(XMFLOAT3(1,0,1));
+	m_Colours.push_back(XMFLOAT3(0,1,1));
+	m_Colours.push_back(XMFLOAT3(1,0,0));
+	m_Colours.push_back(XMFLOAT3(0,0,1));
+	m_Colours.push_back(XMFLOAT3(0,1,0));
+	m_Colours.push_back(XMFLOAT3(1,1,1));
 	//creating a ship that the player is going to use, move to other place when we've done testing
 
 
@@ -99,6 +110,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	VilkenVehicle.push_back(0);
 	VilkenVehicle.push_back(0);
 	VilkenVehicle.push_back(0);
+	SetAmountOfPlayers(4);
 	StartGame(0,VilkenVehicle,plajerwurld,plajercullur,t_World,t_Color);
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -120,6 +132,15 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	//second note, add light is in object space
 	//UINT playerLightOne; //add to a player light array maybe?
 	//m_GraphicEngine->AddObjectLight(objectID, XMFLOAT3(0,-2,0),XMFLOAT3(1,0,0),3, playerLightOne);
+
+	///init knappar för MainMenu startgame,options,quit
+		//m_Buttons.push_back(t_ObjTemp);
+		//m_Buttons.push_back(t_ObjTemp);
+		//m_Buttons.push_back(t_ObjTemp);
+	
+
+
+
 
 
 	//create a camera, just for testing and stuff, think you'll want to create it later with players tho, because the hud wont rely on camera at first
@@ -214,26 +235,29 @@ void GraphicHandle::UpdateCameraVehicleSelection(UINT p_CameraLogicID, float p_L
 		m_GraphicEngine->SetCamera(m_CameraID[p_CameraLogicID],t_Rot);
 		/////////////////////////////////////////////////////////////////////////////////
 
+	}
+}
+void GraphicHandle::SetCameraVehicleSelection(UINT p_CameraLogicID)
+{
+	if (p_CameraLogicID < 5)
+	{	
+		/////////////////////////////////fungerande
+		XMMATRIX t_Tempura = XMMatrixTranslation(0,1,25*m_MeshShips.size());
+		XMMATRIX t_Rot = XMMatrixRotationY(2*XM_PI/m_MeshShips.size());
+		XMMATRIX t_Rot2 = XMMatrixRotationX(-XM_PIDIV4/4);
+
+		t_Rot = XMMatrixMultiply(t_Rot,t_Rot2);//sätter ihop rotationerna
+		t_Rot = XMMatrixMultiply(t_Rot, t_Tempura);//roterar matrisen
+
+		t_Tempura = XMMatrixRotationY(XM_PI);//vänder med 180 grader
+
+		t_Rot = XMMatrixMultiply(t_Tempura,t_Rot);//lägger in den sista rotationen
 
 
+		//t_Rot = XMMatrixMultiply(t_Tempura,t_Rot);
 
-		// t_Tempura = XMMatrixTranslation(0,1,8*m_MeshShips.size());
-		//XMMATRIX t_Rot3 = XMMatrixRotationY(2*XM_PI/m_MeshShips.size()*(p_LookingAtWhatVehicle+1));
-		//XMMATRIX t_Rot2 = XMMatrixRotationX(-XM_PIDIV4/8);
-		//
-		//t_Rot3 = XMMatrixMultiply(t_Rot3,t_Rot2);//sätter ihop rotationerna
-		//t_Rot3 = XMMatrixMultiply(t_Rot3, t_Tempura);//roterar matrisen
-		//
-		//t_Tempura = XMMatrixRotationY(XM_PI);//vänder med 180 grader
-
-		//t_Rot3 = XMMatrixMultiply(t_Tempura,t_Rot3);//lägger in den sista rotationen
-
-
-		//t_Rot;//startposition
-		//t_Rot3;//slutpositionen
-
-
-
+		m_GraphicEngine->SetCamera(m_CameraID[p_CameraLogicID],t_Rot);
+		/////////////////////////////////////////////////////////////////////////////////
 
 	}
 }
@@ -279,8 +303,7 @@ void GraphicHandle::CreateLight(int p_PlayerIndex,XMFLOAT3 p_Color,UINT p_Object
 
 void GraphicHandle::StartGame(int p_WhatLevel,
 							  std::vector<int> p_WhatVehicle,
-							  std::vector
-							  <XMMATRIX> p_PlayerWorld,
+							  std::vector<XMMATRIX> p_PlayerWorld,
 							  std::vector<XMFLOAT3>p_Color,
 							  CXMMATRIX p_LevelWorld,
 							  XMFLOAT3 p_LevelColor)
@@ -291,7 +314,13 @@ void GraphicHandle::StartGame(int p_WhatLevel,
 			p_PlayerWorld[i],
 			p_Color[i],true, 
 			m_Player[i]);
+		//LightStruct t_LightStruct;
+		//t_LightStruct.m_Color=m_Colours[m_PlayerColour[i]];//vi skcikar in en färg men kräver att dne har färg i lightstruct
+		//t_LightStruct.m_LightID=m_PlayerLight[i];//samma här xD
+		//t_LightStruct.m_Position=XMFLOAT3(//ta varje startnissesposition o bajsa lite under dem
+		//CreateLight(m_Player[i],m_Colours[m_PlayerColour[i]],m_PlayerLight[i],);//
 	}
+
 	m_GraphicEngine->CreateDrawObject(m_MeshLevels[p_WhatLevel],p_LevelWorld,p_Color[0],true,m_CurrentLevel);
 	//StartGame(0,VilkenVehicle,plajerwurld,plajercullur,t_Mat,t_Color);
 }
@@ -343,6 +372,7 @@ int GraphicHandle::GetAmountOfVehicles()
 //	}
 //}
 
+
 void GraphicHandle::Cleanup()
 {
 	m_GraphicEngine->Cleanup();
@@ -352,3 +382,32 @@ void GraphicHandle::SetFullScreen(bool p_IsFullScreen)
 {
 	m_GraphicEngine->SetFullscreenState(p_IsFullScreen);
 }
+
+void GraphicHandle::SetColourAndVehicle(std::vector<UINT> p_PlayerColour,std::vector<UINT> p_PlayerVehicle)
+{
+	m_Player=p_PlayerVehicle;
+	m_PlayerColour=p_PlayerColour;
+}
+void GraphicHandle::CreateHUD(UINT &o_HUDID)
+{
+	
+}
+void GraphicHandle::CreateHUDObject(UINT p_HUDID,XMFLOAT2 p_LowerRight, XMFLOAT2 p_UpperLeft,std::string p_TextureName,std::string p_TextureNameActive,UINT &o_HUDIDObject)
+{
+
+}
+void GraphicHandle::ChangeTexture(UINT p_HUDIDObj)
+{
+	//byta texture tillgrabben
+}
+void GraphicHandle::SetAmountOfPlayers(int p_NrOfPlayers)
+{
+	if(m_Player.size()!=p_NrOfPlayers)
+	{
+		m_Player.clear();
+		m_Player.resize(p_NrOfPlayers,0);
+		m_PlayerColour.resize(p_NrOfPlayers,0);
+		m_PlayerLight.resize(p_NrOfPlayers,0);
+	}
+}
+

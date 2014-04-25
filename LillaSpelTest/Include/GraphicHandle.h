@@ -16,19 +16,26 @@ private:
 	~GraphicHandle();
 	struct LightStruct 
 	{
-	float m_Radius;
-	XMFLOAT3 m_Position;
-	XMFLOAT3 m_Color;
-	UINT m_LightID;
+		float m_Radius;
+		XMFLOAT3 m_Position;
+		XMFLOAT3 m_Color;
+		UINT m_LightID;
 	};
-	UINT m_Player[4];
+	std::vector<UINT> m_Player;
+	std::vector<UINT> m_PlayerColour;
+	std::vector<UINT> m_PlayerLight;
 	UINT m_CurrentLevel;
+	
+	
+	
 	UINT m_SelectionShips[4];
 
+	std::vector<UINT> m_Buttons;
 	std::vector <std::vector<UINT>> m_MeshLevels;
 	std::vector<std::vector<UINT>> m_MeshShips;
+	std::vector<XMFLOAT3> m_Colours;
 	GraphicEngine* m_GraphicEngine;
-	
+
 	UINT m_CameraID[4];
 
 	XMMATRIX t_Mats;
@@ -40,8 +47,8 @@ public:
 
 
 	static GraphicHandle* GetInstance();
-	
-	
+
+
 	void Initialize(UINT p_Width, UINT p_Height, HWND p_Handle);
 	void DrawGame();
 	void ChangeHUDObject(int p_hudID, int p_hudObjID, int change());
@@ -64,4 +71,10 @@ public:
 	void SetFullScreen(bool p_IsFullScreen);
 	void Cleanup();
 	//void TurnCameraSelection(float p_DeltaTime,CXMMATRIX p_Start, CXMMATRIX p_End)
+	void SetColourAndVehicle(std::vector<UINT> p_PlayerColour,std::vector<UINT> p_PlayerVehicle);
+	void CreateHUD(UINT &o_HUDID);
+	void CreateHUDObject(UINT p_HUDID,XMFLOAT2 p_LowerRight, XMFLOAT2 p_UpperLeft,std::string p_TextureName,std::string p_TextureNameActive,UINT &o_HUDIDObject);
+	void ChangeTexture(UINT p_HUDIDObj);
+	void SetAmountOfPlayers(int p_NrOfPlayers);
+	void SetCameraVehicleSelection(UINT p_CameraLogicID);
 };
