@@ -65,6 +65,18 @@ struct DrawObject
 
 
 
+struct HudObject
+{
+	int textureID1;
+	int textureID2;
+};
+
+struct Hud
+{
+	std::vector<HudObject> hudObjects;
+	XMFLOAT3 color;
+};
+
 struct ShaderProgram
 {
 	int inputLayout;
