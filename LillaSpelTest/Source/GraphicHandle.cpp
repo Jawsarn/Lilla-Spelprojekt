@@ -42,7 +42,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 
 	//testshppiie
 	t_ObjTemp.clear();
-	m_GraphicEngine->LoadMesh("lamp.obj",t_ObjTemp);
+	m_GraphicEngine->LoadMesh("spaceship.obj",t_ObjTemp);
 	m_MeshShips.push_back(t_ObjTemp);
 	m_MeshShips.push_back(t_ObjTemp);
 	m_MeshShips.push_back(t_ObjTemp);
@@ -101,10 +101,10 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	VilkenVehicle.push_back(0);
 	VilkenVehicle.push_back(0);
 	VilkenVehicle.push_back(0);
-	StartGame(0,VilkenVehicle,plajerwurld,plajercullur,t_World,t_Color);
+	//StartGame(0,VilkenVehicle,plajerwurld,plajercullur,t_World,t_Color);
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	//SelectVehicle();
+	SelectVehicle();
 
 
 
@@ -225,26 +225,29 @@ void GraphicHandle::UpdateCameraVehicleSelection(UINT p_CameraLogicID, float p_L
 		m_GraphicEngine->SetCamera(m_CameraID[p_CameraLogicID],t_Rot);
 		/////////////////////////////////////////////////////////////////////////////////
 
+	}
+}
+void GraphicHandle::SetCameraVehicleSelection(UINT p_CameraLogicID)
+{
+	if (p_CameraLogicID < 5)
+	{	
+		/////////////////////////////////fungerande
+		XMMATRIX t_Tempura = XMMatrixTranslation(0,1,25*m_MeshShips.size());
+		XMMATRIX t_Rot = XMMatrixRotationY(2*XM_PI/m_MeshShips.size());
+		XMMATRIX t_Rot2 = XMMatrixRotationX(-XM_PIDIV4/4);
+
+		t_Rot = XMMatrixMultiply(t_Rot,t_Rot2);//sätter ihop rotationerna
+		t_Rot = XMMatrixMultiply(t_Rot, t_Tempura);//roterar matrisen
+
+		t_Tempura = XMMatrixRotationY(XM_PI);//vänder med 180 grader
+
+		t_Rot = XMMatrixMultiply(t_Tempura,t_Rot);//lägger in den sista rotationen
 
 
+		//t_Rot = XMMatrixMultiply(t_Tempura,t_Rot);
 
-		// t_Tempura = XMMatrixTranslation(0,1,8*m_MeshShips.size());
-		//XMMATRIX t_Rot3 = XMMatrixRotationY(2*XM_PI/m_MeshShips.size()*(p_LookingAtWhatVehicle+1));
-		//XMMATRIX t_Rot2 = XMMatrixRotationX(-XM_PIDIV4/8);
-		//
-		//t_Rot3 = XMMatrixMultiply(t_Rot3,t_Rot2);//sätter ihop rotationerna
-		//t_Rot3 = XMMatrixMultiply(t_Rot3, t_Tempura);//roterar matrisen
-		//
-		//t_Tempura = XMMatrixRotationY(XM_PI);//vänder med 180 grader
-
-		//t_Rot3 = XMMatrixMultiply(t_Tempura,t_Rot3);//lägger in den sista rotationen
-
-
-		//t_Rot;//startposition
-		//t_Rot3;//slutpositionen
-
-
-
+		m_GraphicEngine->SetCamera(m_CameraID[p_CameraLogicID],t_Rot);
+		/////////////////////////////////////////////////////////////////////////////////
 
 	}
 }
@@ -369,4 +372,12 @@ void GraphicHandle::CreateHUDObject(UINT p_HUDID,XMFLOAT2 p_LowerRight, XMFLOAT2
 void GraphicHandle::ChangeTexture(UINT p_HUDIDObj)
 {
 	//byta texture tillgrabben
+}
+void GraphicHandle::SetAmountOfPlayers(int p_NrOfPlayers)
+{
+	if(m_Player.size()!=p_NrOfPlayers)
+	{
+		m_Player.clear();
+		m_Player.resize(p_NrOfPlayers,0);
+	}
 }
