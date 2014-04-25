@@ -62,3 +62,12 @@ float MathHelper::Abs(XMFLOAT3 p_fl3) //vectorlängd
 	XMStoreFloat3(&r_vec, XMVector3Length(t_vec));
 	return r_vec.x; //vetinteriktigtomdetfunkar varför vill den att jag sparar ner den som en vector? :(
 }
+
+XMFLOAT3 MathHelper::CrossProduct(XMFLOAT3 p_fl31, XMFLOAT3 p_fl32)
+{
+	XMVECTOR t_vec1 = XMLoadFloat3(&p_fl31);
+	XMVECTOR t_vec2 = XMLoadFloat3(&p_fl32);
+	XMFLOAT3 r_fl3;
+	XMStoreFloat3(&r_fl3, XMVector3Cross(t_vec1, t_vec2));
+	return r_fl3;
+}

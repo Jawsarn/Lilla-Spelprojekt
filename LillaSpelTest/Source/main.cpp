@@ -40,7 +40,7 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
 	m_GraphicHandle = m_GraphicHandle->GetInstance();
 	m_GraphicHandle->Initialize(1920, 1080, m_HandleWindow); //fix this input variables right
-
+	m_GraphicHandle->SetFullScreen(true);
 	Run();
 
 	return 0;
@@ -51,7 +51,7 @@ void Run()
 {
 	std::vector<UserCMD> *userCMDS = new std::vector<UserCMD>();
 	UserCMDHandler userCMDHandler = UserCMDHandler();
-	GameScreen gameScreen = GameScreen("testMap2", 4, m_GraphicHandle);
+	GameScreen gameScreen = GameScreen("curvetest2", 4, m_GraphicHandle);
 	for (int i = 0; i < 4; i++)
 	{
 		UserCMD t_userCMD = UserCMD(i);
@@ -121,8 +121,8 @@ void OnMouseMove(WPARAM btnStae, int x, int y)
 		
 		t_bajs+=m_DeltaTime;
 		m_GraphicHandle->UpdateCamera(m_ActiveCamera,0,0,0,dy,dx);
-		//m_GraphicHandle->UpdateCameraVehicleSelection(m_ActiveCamera,t_bajs);
-		m_GraphicHandle->SetCameraVehicleSelection(m_ActiveCamera);
+		m_GraphicHandle->UpdateCameraVehicleSelection(m_ActiveCamera,t_bajs);
+		//m_GraphicHandle->SetCameraVehicleSelection(m_ActiveCamera);
 	}
 
 	m_LastMousePos.x = x;
@@ -169,7 +169,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
 	PAINTSTRUCT ps;
     HDC hdc;
-	int a;
+
     switch( message )
     {
         case WM_PAINT:
@@ -178,8 +178,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
             break;
 
         case WM_DESTROY:
-			a = 3;
-			//cleanup
+			m_GraphicHandle->Cleanup();
+
             PostQuitMessage( 0 );
             break;
 		case WM_KEYDOWN:

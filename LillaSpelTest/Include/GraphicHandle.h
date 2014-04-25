@@ -22,13 +22,18 @@ private:
 		UINT m_LightID;
 	};
 	std::vector<UINT> m_Player;
-	std::vector<UINT> m_Colour;
+	std::vector<UINT> m_PlayerColour;
+	std::vector<UINT> m_PlayerLight;
 	UINT m_CurrentLevel;
+	
+	
+	
 	UINT m_SelectionShips[4];
 
 	std::vector<UINT> m_Buttons;
 	std::vector <std::vector<UINT>> m_MeshLevels;
 	std::vector<std::vector<UINT>> m_MeshShips;
+	std::vector<XMFLOAT3> m_Colours;
 	GraphicEngine* m_GraphicEngine;
 
 	UINT m_CameraID[4];
@@ -63,6 +68,8 @@ public:
 	void UpdateCameraVehicleSelection(UINT p_CameraLogicID,float p_LookingAtWhatVehicle);
 	void JohnSetCamera(CXMMATRIX p_World, UINT p_CameraLogicID);
 	int GetAmountOfVehicles();
+	void SetFullScreen(bool p_IsFullScreen);
+	void Cleanup();
 	//void TurnCameraSelection(float p_DeltaTime,CXMMATRIX p_Start, CXMMATRIX p_End)
 	void SetColourAndVehicle(std::vector<UINT> p_PlayerColour,std::vector<UINT> p_PlayerVehicle);
 	void CreateHUD(UINT &o_HUDID);

@@ -34,11 +34,15 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 
 	//load a ship mesh 
 	std::vector<UINT> t_ObjTemp;
-	m_GraphicEngine->LoadMesh("Tube2.obj",t_ObjTemp);
+	m_GraphicEngine->LoadMesh("curveTest2.obj",t_ObjTemp);
 	m_MeshLevels.push_back(t_ObjTemp);
 
 	//add a texture to a ship mesh
-	m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[0],diffuseBollTestTexture,GraphicEngine::TextureType::DIFFUSE);
+	for (int i = 0; i < t_ObjTemp.size(); i++)
+	{
+		m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[i],diffuseBollTestTexture,GraphicEngine::TextureType::DIFFUSE);
+	}
+	
 
 	//testshppiie
 	t_ObjTemp.clear();
@@ -62,9 +66,14 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 
 
 
-
-
-
+	///Laddar inte colours att välja på
+	m_Colours.push_back(XMFLOAT3(1,1,0));
+	m_Colours.push_back(XMFLOAT3(1,0,1));
+	m_Colours.push_back(XMFLOAT3(0,1,1));
+	m_Colours.push_back(XMFLOAT3(1,0,0));
+	m_Colours.push_back(XMFLOAT3(0,0,1));
+	m_Colours.push_back(XMFLOAT3(0,1,0));
+	m_Colours.push_back(XMFLOAT3(1,1,1));
 	//creating a ship that the player is going to use, move to other place when we've done testing
 
 
@@ -101,10 +110,11 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	VilkenVehicle.push_back(0);
 	VilkenVehicle.push_back(0);
 	VilkenVehicle.push_back(0);
-	//StartGame(0,VilkenVehicle,plajerwurld,plajercullur,t_World,t_Color);
+	SetAmountOfPlayers(4);
+	StartGame(0,VilkenVehicle,plajerwurld,plajercullur,t_World,t_Color);
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	SelectVehicle();
+	//SelectVehicle();
 
 
 
@@ -304,7 +314,13 @@ void GraphicHandle::StartGame(int p_WhatLevel,
 			p_PlayerWorld[i],
 			p_Color[i],true, 
 			m_Player[i]);
+		//LightStruct t_LightStruct;
+		//t_LightStruct.m_Color=m_Colours[m_PlayerColour[i]];//vi skcikar in en färg men kräver att dne har färg i lightstruct
+		//t_LightStruct.m_LightID=m_PlayerLight[i];//samma här xD
+		//t_LightStruct.m_Position=XMFLOAT3(//ta varje startnissesposition o bajsa lite under dem
+		//CreateLight(m_Player[i],m_Colours[m_PlayerColour[i]],m_PlayerLight[i],);//
 	}
+
 	m_GraphicEngine->CreateDrawObject(m_MeshLevels[p_WhatLevel],p_LevelWorld,p_Color[0],true,m_CurrentLevel);
 	//StartGame(0,VilkenVehicle,plajerwurld,plajercullur,t_Mat,t_Color);
 }
@@ -356,10 +372,21 @@ int GraphicHandle::GetAmountOfVehicles()
 //	}
 //}
 
+
+void GraphicHandle::Cleanup()
+{
+	m_GraphicEngine->Cleanup();
+}
+
+void GraphicHandle::SetFullScreen(bool p_IsFullScreen)
+{
+	m_GraphicEngine->SetFullscreenState(p_IsFullScreen);
+}
+
 void GraphicHandle::SetColourAndVehicle(std::vector<UINT> p_PlayerColour,std::vector<UINT> p_PlayerVehicle)
 {
 	m_Player=p_PlayerVehicle;
-	m_Colour=p_PlayerColour;
+	m_PlayerColour=p_PlayerColour;
 }
 void GraphicHandle::CreateHUD(UINT &o_HUDID)
 {
@@ -379,5 +406,8 @@ void GraphicHandle::SetAmountOfPlayers(int p_NrOfPlayers)
 	{
 		m_Player.clear();
 		m_Player.resize(p_NrOfPlayers,0);
+		m_PlayerColour.resize(p_NrOfPlayers,0);
+		m_PlayerLight.resize(p_NrOfPlayers,0);
 	}
 }
+
