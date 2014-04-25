@@ -56,7 +56,7 @@ void Run()
 {
 	std::vector<UserCMD> *userCMDS = new std::vector<UserCMD>();
 	UserCMDHandler userCMDHandler = UserCMDHandler();
-	GameScreen gameScreen = GameScreen("testMap2", 4, m_GraphicHandle);
+	GameScreen gameScreen = GameScreen("curvetest2", 4, m_GraphicHandle);
 	for (int i = 0; i < 4; i++)
 	{
 		UserCMD t_userCMD = UserCMD(i);

@@ -34,11 +34,15 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	
 	//load a ship mesh 
 	std::vector<UINT> t_ObjTemp;
-	m_GraphicEngine->LoadMesh("Tube2.obj",t_ObjTemp);
+	m_GraphicEngine->LoadMesh("curveTest2.obj",t_ObjTemp);
 	m_MeshLevels.push_back(t_ObjTemp);
 
 	//add a texture to a ship mesh
-	m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[0],diffuseBollTestTexture,GraphicEngine::TextureType::DIFFUSE);
+	for (int i = 0; i < t_ObjTemp.size(); i++)
+	{
+		m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[i],diffuseBollTestTexture,GraphicEngine::TextureType::DIFFUSE);
+	}
+	
 
 	//testshppiie
 	t_ObjTemp.clear();
@@ -93,10 +97,10 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	VilkenVehicle.push_back(0);
 	VilkenVehicle.push_back(0);
 	VilkenVehicle.push_back(0);
-	//StartGame(0,VilkenVehicle,plajerwurld,plajercullur,t_World,t_Color);
+	StartGame(0,VilkenVehicle,plajerwurld,plajercullur,t_World,t_Color);
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	SelectVehicle();
+	//SelectVehicle();
 
 
 

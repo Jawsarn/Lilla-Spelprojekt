@@ -36,11 +36,27 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 	//		m_graphicHandle->UpdateCamera(i,-100*p_dt,0,0,0,0);
 	//	}
 	//}
+	////////////////JOHNS TEST MÖS!!! kommentera bort så fungerar allt som en neger på en bomullsfarm
 	for (int i = 0; i < 1; i++)			//i<1 for test purposes. Make sure to change later
 	{
+		bool collision = false;
 		m_players[i]->ProperUpdatePosition(p_dt, p_userCMDS->at(i));
 		m_graphicHandle->JohnSetCamera(m_players[i]->GetWorldMatrix(), i);
+		vector<StaticObj*>* m_wallsToCheck = &m_players[i]->GetCurrentMapNode()->m_staticObjs;
+		for (int i = 0; i < m_wallsToCheck->size(); i++)
+		{
+			
+			if(m_collisionManager->PlayerVsObj(m_players[i]->GetCollisionBox(), m_wallsToCheck)!=1)
+			{
+				p_userCMDS->at(i).controller.Vibrate(64000,64000);
+				collision = true;
+			}
+		}
+		if (!collision)
+			p_userCMDS->at(i).controller.Vibrate(0,0);
+		
 	}
+	////////////////JOHNS TEST MÖS ENDS!!
 
 	
 

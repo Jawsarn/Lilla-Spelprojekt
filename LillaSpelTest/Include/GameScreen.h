@@ -3,6 +3,7 @@
 #include "MapNode.h"
 #include "Player.h"
 #include "MapLoader.h"
+#include "CollisionManager.h"
 #include <string>
 
 class GameScreen :
@@ -10,6 +11,7 @@ class GameScreen :
 {
 private:
 	MapLoader* m_mapLoader;
+	CollisionManager* m_collisionManager;
 	std::vector<MapNode*>* m_mapNodes;
 	std::vector<Player*> m_players;
 public:
