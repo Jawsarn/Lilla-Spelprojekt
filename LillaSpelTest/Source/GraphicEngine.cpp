@@ -25,6 +25,7 @@ GraphicEngine::GraphicEngine(void)
 	for (int i = 0; i < 4; i++)
 	{
 		m_ActiveCameras[i] = nullptr;
+		m_ViewportHud[i] = -1;
 	}
 }
 
@@ -125,6 +126,7 @@ HRESULT GraphicEngine::InitializeDriverAndVersion( HWND handleWindow)
     sd.SampleDesc.Count = 1;
     sd.SampleDesc.Quality = 0;
     sd.Windowed = TRUE;
+	sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
     for( UINT driverTypeIndex = 0; driverTypeIndex < numDriverTypes; driverTypeIndex++ )
     {
@@ -889,9 +891,8 @@ HRESULT GraphicEngine::CreateHudFromTemplate(UINT p_HudTemplateID, UINT o_HudID)
 
 void GraphicEngine::UseHud(UINT p_Viewport, UINT p_HudID)
 {
-
+	m_ViewportHud[p_Viewport] = p_HudID;
 }
-
 
 
 ///////////////////////////////////////////////
@@ -1099,6 +1100,8 @@ void GraphicEngine::DrawGame()
 	//compute tiled lighting
 	ComputeTileDeferredLightning();
 
+	//draw hud
+	DrawHud();
 
 	m_SwapChain->Present( 1, 0 );
 }
@@ -1245,12 +1248,46 @@ void GraphicEngine::ComputeTileDeferredLightning()
 	m_DeviceContext->CSSetShaderResources(1,3,temp);
 }
 
+void GraphicEngine::DrawMenu()
+{
+	//clear the render target
+	m_DeviceContext->ClearRenderTargetView(m_RenderTargetView, Colors::Black );
+	m_DeviceContext->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+	//
+	DrawMenu();
+
+	m_SwapChain->Present( 1, 0 );
+}
+
 void GraphicEngine::DrawHud()
 {
+	for (int i = 0; i < 4; i++)
+	{
+		if (m_ViewportHud[i] != -1)
+		{
+			//update the buffer for viewport
+			Hud *t_ActiveHud = m_Huds[m_ViewportHud[i]];
 
+			for (int i = 0; i < t_ActiveHud->hudObjects.size(); i++)
+			{
+				
+			}
+		}
+	}
 }
 
 UINT GraphicEngine::CheckProgram(DrawPiece p_Piece)
 {
 	return 0;
+}
+
+void GraphicEngine::SetFullscreenState(bool p_IsFullScreen)
+{
+	m_SwapChain->SetFullscreenState(p_IsFullScreen, NULL);
+}
+
+void GraphicEngine::Cleanup()
+{
+	SetFullscreenState(false);
 }

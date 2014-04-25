@@ -84,8 +84,13 @@ public:
 	//void RemoveFromDrawObjects();
 	//void AddToDrawObject();
 	void DrawGame();
-	void DrawHud();
+	void DrawMenu();
 	
+	//swap full screen
+	void SetFullscreenState(bool p_IsFullScreen);
+
+	//cleanup
+	void Cleanup();
 
 private:
 
@@ -109,6 +114,7 @@ private:
 	void SetTextures(DrawPiece p_DrawPiece);
 	void ComputeTileDeferredLightning();
 	void UpdateConstantBuffer(); //not written
+	void DrawHud();
 
 	UINT CheckProgram(DrawPiece p_Piece);
 
@@ -189,6 +195,7 @@ private:
 	//hudss
 	std::vector<Hud> m_HudTemplate;
 	std::map<UINT, Hud*> m_Huds;
+	int m_ViewportHud[4];
 
 	//number of viewports active
 	float m_NumberOfViewports;

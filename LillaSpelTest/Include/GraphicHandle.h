@@ -61,5 +61,7 @@ public:
 	void UpdateCameraVehicleSelection(UINT p_CameraLogicID,float p_LookingAtWhatVehicle);
 	void JohnSetCamera(CXMMATRIX p_World, UINT p_CameraLogicID);
 	int GetAmountOfVehicles();
+	void SetFullScreen(bool p_IsFullScreen);
+	void Cleanup();
 	//void TurnCameraSelection(float p_DeltaTime,CXMMATRIX p_Start, CXMMATRIX p_End)
 };

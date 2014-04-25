@@ -342,3 +342,13 @@ int GraphicHandle::GetAmountOfVehicles()
 //		
 //	}
 //}
+
+void GraphicHandle::Cleanup()
+{
+	m_GraphicEngine->Cleanup();
+}
+
+void GraphicHandle::SetFullScreen(bool p_IsFullScreen)
+{
+	m_GraphicEngine->SetFullscreenState(p_IsFullScreen);
+}
