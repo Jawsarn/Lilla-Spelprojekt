@@ -75,7 +75,7 @@ void Run()
 		else  //if there are no messages, update and draw
 		{
 			AzookaTest t_azookaTest = AzookaTest();
-			t_azookaTest.Run();
+			//t_azookaTest.Run();
 
 			
 			t_Mtest.Run(userCMDS,m_DeltaTime);
@@ -102,7 +102,6 @@ void Run()
 			gameScreen.Update(m_DeltaTime,userCMDS);
 			///UPDATE & DRAW TEMPDRAAWWWWW
 			m_GraphicHandle->UpdateSelectVehicle(m_DeltaTime);
-			
 			m_GraphicHandle->DrawGame();
 		}
 	}
@@ -122,9 +121,8 @@ void OnMouseMove(WPARAM btnStae, int x, int y)
 		
 		t_bajs+=m_DeltaTime;
 		m_GraphicHandle->UpdateCamera(m_ActiveCamera,0,0,0,dy,dx);
-		m_GraphicHandle->UpdateCameraVehicleSelection(m_ActiveCamera,t_bajs);
-
-		
+		//m_GraphicHandle->UpdateCameraVehicleSelection(m_ActiveCamera,t_bajs);
+		m_GraphicHandle->SetCameraVehicleSelection(m_ActiveCamera);
 	}
 
 	m_LastMousePos.x = x;

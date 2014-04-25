@@ -4,7 +4,7 @@ cbuffer PerFrameBuffer : register(c0)
 {
 	matrix View[4];
 	matrix Projection[4];
-	//float4 EyesPos[4];
+	/*float4 EyesPos[4];*/
 	float3 fillers;
 	float NumberOfViewports;
 }
@@ -29,7 +29,7 @@ StructuredBuffer<Light> lights	:register(t4);
 
 //input textures
 Texture2D<float4> Normal_Depth	:register(t1);
-Texture2D<float4> DiffuseColor_AO	:register(t2);
+Texture2D<float4> DiffuseColor_Spec	:register(t2);
 Texture2D<float4> Specular	:register(t3);
 
 //output texture
@@ -61,7 +61,7 @@ float4 CreateFrustrum(float4 F, float4 S)
 
 
 
-float3 DirectIllumination(float3 pos, float3 norm , Light light, int viewport)
+float3 DirectIllumination(float3 pos, float3 norm , Light light, float inSpec,int viewport)
 {
 	float3 lightPos = mul(float4(light.position,1),View[viewport]);
 
@@ -83,12 +83,16 @@ float3 DirectIllumination(float3 pos, float3 norm , Light light, int viewport)
 
 	float att = pow(max(0.1, 1.0 - (d / light.radius)), 2);
 
-	/*float3 toEye = eyePos-pos;
-
+	float3 toEye = -pos;
 	float3 v = reflect(-lightVec, norm);
-	float specFactor = pow(max(dot(v,toEye), 0.0f), 50);*/
+	float specFactor = pow(max(dot(v,toEye), 0.0f), inSpec);
 
-	return light.color * att * diffuseFactor;
+	if (specFactor < 0)
+	{
+		specFactor = 0;
+	}
+
+	return (light.color * att * (diffuseFactor + specFactor));
 }
 
 struct PixelData
@@ -371,8 +375,8 @@ void CS( uint3 threadID		: SV_DispatchThreadID,
 	////////////////////////////
 	uint numOfLights = visibleLightCount;
 
-	float3 finalColor = DiffuseColor_AO[threadID.xy].xyz*0.2;
-
+	float3 finalColor = DiffuseColor_Spec[threadID.xy].xyz;
+	float inSpec = DiffuseColor_Spec[threadID.xy].z;
 	//if(all(globalCord < screenDimensions)) //checks for all components if blow zero, uses this for checking if outside screendim
 	//{
 		for (uint i = 0; i < visibleLightCount; i++)
@@ -380,7 +384,7 @@ void CS( uint3 threadID		: SV_DispatchThreadID,
 			uint lightIndex = visibleLightIndices[i];
 			Light light = lights[lightIndex];
 	
-			finalColor += DirectIllumination(data.positionView, data.normalView , light, viewport);
+			finalColor += DirectIllumination(data.positionView, data.normalView , light, inSpec, viewport);
 		}
 	//}
 
