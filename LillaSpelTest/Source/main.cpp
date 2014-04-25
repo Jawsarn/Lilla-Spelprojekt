@@ -115,16 +115,18 @@ void Run()
 }
 
 //callback inte helt fixat då den inte får ligga som en medlemsfunktion, och måste därför vara static => vilket gör att den inte kan kalla på medlemsfunktioner, kan fixas med att lägga den i ett namespace och trixa med "this" , eller ha den i main där allt är static och kan skriva funktioner som inte behöver en klass
-
+float t_bajs=0;
 void OnMouseMove(WPARAM btnStae, int x, int y)
 {
 	if (btnStae & MK_LBUTTON != 0)
 	{
 		float dx = XMConvertToRadians(0.25f*static_cast<float>(x - m_LastMousePos.x));
 		float dy = XMConvertToRadians(0.25f*static_cast<float>(y - m_LastMousePos.y));
-
+		
+		
+		t_bajs+=m_DeltaTime;
 		m_GraphicHandle->UpdateCamera(m_ActiveCamera,0,0,0,dy,dx);
-		m_GraphicHandle->UpdateCameraVehicleSelection(m_ActiveCamera,0,m_DeltaTime);
+		m_GraphicHandle->UpdateCameraVehicleSelection(m_ActiveCamera,t_bajs);
 
 		
 	}

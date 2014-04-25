@@ -58,7 +58,7 @@ public:
 		CXMMATRIX p_LevelWorld,
 		XMFLOAT3 p_LevelColor);
 	void SelectVehicle();
-	void UpdateCameraVehicleSelection(UINT p_CameraLogicID,UINT p_LookingAtWhatVehicle,float p_DeltaTime);
+	void UpdateCameraVehicleSelection(UINT p_CameraLogicID,float p_LookingAtWhatVehicle);
 	void JohnSetCamera(CXMMATRIX p_World, UINT p_CameraLogicID);
 	int GetAmountOfVehicles();
 	//void TurnCameraSelection(float p_DeltaTime,CXMMATRIX p_Start, CXMMATRIX p_End)
