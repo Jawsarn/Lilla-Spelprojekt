@@ -15,8 +15,8 @@ GameSetupScreen::~GameSetupScreen(void)
 {
 }
 
-GameSetupScreen::GameSetupScreen(GameInfo* p_gameInfo)
-	:MenuScreen(p_gameInfo)
+GameSetupScreen::GameSetupScreen(GameInfo* p_gameInfo,GraphicHandle* p_graphicsHandle)
+	:MenuScreen(p_gameInfo, p_graphicsHandle)
 {
 	AddButton("Start", DirectX::XMFLOAT2(0,-0.7),0.1,0.1);
 

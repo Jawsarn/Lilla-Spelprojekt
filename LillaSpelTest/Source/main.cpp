@@ -11,7 +11,7 @@
 #include "GameScreen.h"
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam );
-HRESULT InitializeWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow, UINT width, UINT height);
+HRESULT InitializeWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow);
 void Run();
 
 HINSTANCE	handleInstance;
@@ -32,14 +32,9 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 {
 	UNREFERENCED_PARAMETER( hPrevInstance );
     UNREFERENCED_PARAMETER( lpCmdLine );
-	InitializeWindow(hInstance,nCmdShow,1920,1080);
+
+	InitializeWindow(hInstance,nCmdShow);
 	
-
-	RECT t_Rectangle;
-	GetClientRect( m_HandleWindow, &t_Rectangle );
-	UINT t_Width = t_Rectangle.right - t_Rectangle.left;
-	UINT t_Height = t_Rectangle.bottom - t_Rectangle.top;
-
 
 	m_LastMousePos = XMFLOAT2(0,0);
 
@@ -64,7 +59,7 @@ void Run()
 	}
 	
 
-	MysteriskTest t_Mtest = MysteriskTest();
+	MysteriskTest t_Mtest = MysteriskTest(m_GraphicHandle);
 
 
 	//message game loop
@@ -111,6 +106,7 @@ void Run()
 		}
 	}
 
+	//cleanup
 }
 
 //callback inte helt fixat då den inte får ligga som en medlemsfunktion, och måste därför vara static => vilket gör att den inte kan kalla på medlemsfunktioner, kan fixas med att lägga den i ett namespace och trixa med "this" , eller ha den i main där allt är static och kan skriva funktioner som inte behöver en klass
@@ -173,7 +169,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
 	PAINTSTRUCT ps;
     HDC hdc;
-
+	int a;
     switch( message )
     {
         case WM_PAINT:
@@ -182,9 +178,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
             break;
 
         case WM_DESTROY:
+			a = 3;
+			//cleanup
             PostQuitMessage( 0 );
             break;
-
 		case WM_KEYDOWN:
 			OnKeyMove();
 			switch(wParam)
@@ -205,7 +202,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
     return 0;
 }
 
-HRESULT InitializeWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow, UINT width, UINT height)
+HRESULT InitializeWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow)
 {
 	WNDCLASSEX wcex;
     wcex.cbSize = sizeof( WNDCLASSEX );
@@ -227,8 +224,8 @@ HRESULT InitializeWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow, UINT width
     // Create window
     handleInstance = hInstance;
 
-	RECT t_rc = { 0, 0, 1920, 1080 };
-	AdjustWindowRect(&t_rc, WS_OVERLAPPEDWINDOW, false);
+	RECT t_rc = { 0, 0, 600, 400};
+	AdjustWindowRect(&t_rc, WS_CAPTION, false);
 
 	
     //AdjustWindowRect( &t_rc, WS_OVERLAPPEDWINDOW, FALSE );
@@ -245,3 +242,7 @@ HRESULT InitializeWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow, UINT width
 }
 
 
+void CleanUpCrew()
+{
+	//m_GraphicHandle->Cleanup();
+}
