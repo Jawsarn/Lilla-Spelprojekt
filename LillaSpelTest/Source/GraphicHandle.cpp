@@ -63,6 +63,8 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 
 
 
+
+
 	//creating a ship that the player is going to use, move to other place when we've done testing
 
 
@@ -120,6 +122,15 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	//second note, add light is in object space
 	//UINT playerLightOne; //add to a player light array maybe?
 	//m_GraphicEngine->AddObjectLight(objectID, XMFLOAT3(0,-2,0),XMFLOAT3(1,0,0),3, playerLightOne);
+
+	///init knappar för MainMenu startgame,options,quit
+		//m_Buttons.push_back(t_ObjTemp);
+		//m_Buttons.push_back(t_ObjTemp);
+		//m_Buttons.push_back(t_ObjTemp);
+	
+
+
+
 
 
 	//create a camera, just for testing and stuff, think you'll want to create it later with players tho, because the hud wont rely on camera at first
@@ -279,8 +290,7 @@ void GraphicHandle::CreateLight(int p_PlayerIndex,XMFLOAT3 p_Color,UINT p_Object
 
 void GraphicHandle::StartGame(int p_WhatLevel,
 							  std::vector<int> p_WhatVehicle,
-							  std::vector
-							  <XMMATRIX> p_PlayerWorld,
+							  std::vector<XMMATRIX> p_PlayerWorld,
 							  std::vector<XMFLOAT3>p_Color,
 							  CXMMATRIX p_LevelWorld,
 							  XMFLOAT3 p_LevelColor)
@@ -342,3 +352,18 @@ int GraphicHandle::GetAmountOfVehicles()
 //		
 //	}
 //}
+
+void GraphicHandle::SetColourAndVehicle(std::vector<UINT> p_PlayerColour,std::vector<UINT> p_PlayerVehicle)
+{
+	m_Player=p_PlayerVehicle;
+	m_Colour=p_PlayerColour;
+}
+void GraphicHandle::CreateHUD(UINT &o_HUDID)
+{
+	//skapa hud via engine
+}
+void GraphicHandle::CreateHUDObject(UINT p_HUDID,XMFLOAT2 p_LowerRight, XMFLOAT2 p_UpperLeft,std::string p_TextureName,std::string p_TextureNameActive,UINT &o_HUDIDObject)
+{
+
+}
+//void GraphicHandle::ChangeTexture(p_
