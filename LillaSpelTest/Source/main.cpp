@@ -80,7 +80,7 @@ void Run()
 		else  //if there are no messages, update and draw
 		{
 			AzookaTest t_azookaTest = AzookaTest();
-			t_azookaTest.Run();
+			//t_azookaTest.Run();
 
 			
 			t_Mtest.Run(userCMDS,m_DeltaTime);

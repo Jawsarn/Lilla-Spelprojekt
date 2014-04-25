@@ -4,7 +4,7 @@ cbuffer PerFrameBuffer : register(c0)
 {
 	matrix View[4];
 	matrix Projection[4];
-	//float4 EyesPos[4];
+	/*float4 EyesPos[4];*/
 	float3 fillers;
 	float NumberOfViewports;
 }
@@ -83,12 +83,16 @@ float3 DirectIllumination(float3 pos, float3 norm , Light light, int viewport)
 
 	float att = pow(max(0.1, 1.0 - (d / light.radius)), 2);
 
-	/*float3 toEye = eyePos-pos;
-
+	float3 toEye = -pos;
 	float3 v = reflect(-lightVec, norm);
-	float specFactor = pow(max(dot(v,toEye), 0.0f), 50);*/
+	float specFactor = pow(max(dot(v,toEye), 0.0f), 1);
 
-	return light.color * att * diffuseFactor;
+	if (specFactor < 0)
+	{
+		specFactor = 0;
+	}
+
+	return (light.color * att * (/*diffuseFactor + */specFactor));
 }
 
 struct PixelData

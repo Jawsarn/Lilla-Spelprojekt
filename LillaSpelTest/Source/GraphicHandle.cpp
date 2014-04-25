@@ -156,24 +156,24 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	//m_GraphicEngine->SetCamera(m_CameraID[3], XMFLOAT3(0, 0, -120),XMFLOAT3(0, 0, 1),XMFLOAT3(0, 1, 0));
 
 	UINT t_LightID;
-	m_GraphicEngine->CreateStaticLight(XMFLOAT3(30,0,0), XMFLOAT3(1,0,0), 200, t_LightID);
+	m_GraphicEngine->CreateStaticLight(XMFLOAT3(0,0,0), XMFLOAT3(1,0,0), 200, t_LightID);
 
-	for (int i = 0; i < 6; i++)
-	{
-		for (int j = 0; j < 6; j++)
-		{
+	//for (int i = 0; i < 6; i++)
+	//{
+	//	for (int j = 0; j < 6; j++)
+	//	{
+	//		
+	//		for (int k = 0; k < 6; k++)
+	//		{
+	//			int r, g, b;
+	//			r = rand() % 2;
+	//			g = rand() % 2;
+	//			b = rand() % 2;
 
-			for (int k = 0; k < 6; k++)
-			{
-				int r, g, b;
-				r = rand() % 2;
-				g = rand() % 2;
-				b = rand() % 2;
-
-				m_GraphicEngine->CreateStaticLight(XMFLOAT3(-50 + 30*i,30*j,-50 + 30*k), XMFLOAT3(r,g,b), 40, t_LightID);
-			}
-		}
-	}
+	//			m_GraphicEngine->CreateStaticLight(XMFLOAT3(-100 + 80*i,80*j,-100 + 80*k), XMFLOAT3(r,g,b), 40, t_LightID);
+	//		}
+	//	}
+	//}
 }
 
 void GraphicHandle::UpdatePlayer(int p_playerID,CXMMATRIX p_matrix)
