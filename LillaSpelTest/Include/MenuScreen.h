@@ -18,7 +18,7 @@ protected:
 	float timeSinceLastChange[4];
 public:
 	MenuScreen(void);
-	MenuScreen(GameInfo* p_gameInfo);
+	MenuScreen(GameInfo* p_gameInfo, GraphicHandle* p_graphicsHandle);
 	~MenuScreen(void);
 	int virtual Update(std::vector<UserCMD>* p_userCMDs, float p_dt);
 	void virtual Draw();

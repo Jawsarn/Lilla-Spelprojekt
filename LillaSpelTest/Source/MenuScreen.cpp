@@ -14,7 +14,8 @@ MenuScreen::~MenuScreen(void)
 {
 }
 
-MenuScreen::MenuScreen(GameInfo* p_gameInfo)
+MenuScreen::MenuScreen(GameInfo* p_gameInfo, GraphicHandle* p_graphicsHandle)
+	:Screen(p_graphicsHandle)
 {
 	m_gameInfo = p_gameInfo;
 	for (int i = 0; i < 4; i++)

@@ -845,25 +845,54 @@ HRESULT GraphicEngine::UpdateDynamicLight(UINT p_LightID, XMFLOAT3 p_Position, X
 //==========HUD functions====================//
 ///////////////////////////////////////////////
 
-void GraphicEngine::AddHudObject()
+void GraphicEngine::CreateHudTemplate(XMFLOAT3 p_Color, UINT &o_HudID)
 {
+	Hud t_NewHud;
+	t_NewHud.color = p_Color;
+
+	m_HudTemplate.push_back(t_NewHud);
+
+	o_HudID = m_HudTemplate.size() -  1;
+}
+
+void GraphicEngine::AddHudObject(int p_TextureID1, int p_TextureID2,UINT p_HudTemplateID)
+{
+	HudObject t_NewHudObject;
 	
+	t_NewHudObject.textureID1 = p_TextureID1;
+	t_NewHudObject.textureID2 = p_TextureID2;
 }
 
-void GraphicEngine::CreatehudObject()
+HRESULT GraphicEngine::CreateHudFromTemplate(UINT p_HudTemplateID, UINT o_HudID)
+{
+	try
+	{
+		Hud* t_NewHud = new Hud(m_HudTemplate[p_HudTemplateID]);
+
+		std::hash<Hud*> t_Hashii;
+
+		o_HudID = t_Hashii(t_NewHud);
+
+		if (m_Huds[o_HudID] == nullptr)
+		{
+			m_Huds[o_HudID] = t_NewHud;
+		}
+		
+	}
+	catch( std::exception e )
+	{
+		MessageBox( nullptr, L"Catched exeption when attempting to hash and allocate new object", L"ErrorMessage", MB_OK );
+		return E_FAIL;
+	}
+	return S_OK;
+}
+
+void GraphicEngine::UseHud(UINT p_Viewport, UINT p_HudID)
 {
 
 }
 
-void GraphicEngine::UseHud()
-{
 
-}
-
-void GraphicEngine::LoadHud()
-{
-
-}
 
 ///////////////////////////////////////////////
 //==========Camera functions=================//
