@@ -25,6 +25,7 @@ GraphicEngine::GraphicEngine(void)
 	for (int i = 0; i < 4; i++)
 	{
 		m_ActiveCameras[i] = nullptr;
+		m_ViewportHud[i] = -1;
 	}
 }
 
@@ -125,6 +126,7 @@ HRESULT GraphicEngine::InitializeDriverAndVersion( HWND handleWindow)
     sd.SampleDesc.Count = 1;
     sd.SampleDesc.Quality = 0;
     sd.Windowed = TRUE;
+	sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
     for( UINT driverTypeIndex = 0; driverTypeIndex < numDriverTypes; driverTypeIndex++ )
     {
@@ -845,25 +847,53 @@ HRESULT GraphicEngine::UpdateDynamicLight(UINT p_LightID, XMFLOAT3 p_Position, X
 //==========HUD functions====================//
 ///////////////////////////////////////////////
 
-void GraphicEngine::AddHudObject()
+void GraphicEngine::CreateHudTemplate(XMFLOAT3 p_Color, UINT &o_HudID)
 {
+	Hud t_NewHud;
+	t_NewHud.color = p_Color;
+
+	m_HudTemplate.push_back(t_NewHud);
+
+	o_HudID = m_HudTemplate.size() -  1;
+}
+
+void GraphicEngine::AddHudObject(int p_TextureID1, int p_TextureID2,UINT p_HudTemplateID)
+{
+	HudObject t_NewHudObject;
 	
+	t_NewHudObject.textureID1 = p_TextureID1;
+	t_NewHudObject.textureID2 = p_TextureID2;
 }
 
-void GraphicEngine::CreatehudObject()
+HRESULT GraphicEngine::CreateHudFromTemplate(UINT p_HudTemplateID, UINT o_HudID)
 {
+	try
+	{
+		Hud* t_NewHud = new Hud(m_HudTemplate[p_HudTemplateID]);
 
+		std::hash<Hud*> t_Hashii;
+
+		o_HudID = t_Hashii(t_NewHud);
+
+		if (m_Huds[o_HudID] == nullptr)
+		{
+			m_Huds[o_HudID] = t_NewHud;
+		}
+		
+	}
+	catch( std::exception e )
+	{
+		MessageBox( nullptr, L"Catched exeption when attempting to hash and allocate new object", L"ErrorMessage", MB_OK );
+		return E_FAIL;
+	}
+	return S_OK;
 }
 
-void GraphicEngine::UseHud()
+void GraphicEngine::UseHud(UINT p_Viewport, UINT p_HudID)
 {
-
+	m_ViewportHud[p_Viewport] = p_HudID;
 }
 
-void GraphicEngine::LoadHud()
-{
-
-}
 
 ///////////////////////////////////////////////
 //==========Camera functions=================//
@@ -1069,8 +1099,9 @@ void GraphicEngine::DrawGame()
 
 	//compute tiled lighting
 	ComputeTileDeferredLightning();
-	
-	
+
+	//draw hud
+	DrawHud();
 
 	m_SwapChain->Present( 1, 0 );
 }
@@ -1217,12 +1248,46 @@ void GraphicEngine::ComputeTileDeferredLightning()
 	m_DeviceContext->CSSetShaderResources(1,3,temp);
 }
 
+void GraphicEngine::DrawMenu()
+{
+	//clear the render target
+	m_DeviceContext->ClearRenderTargetView(m_RenderTargetView, Colors::Black );
+	m_DeviceContext->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+	//
+	DrawMenu();
+
+	m_SwapChain->Present( 1, 0 );
+}
+
 void GraphicEngine::DrawHud()
 {
+	for (int i = 0; i < 4; i++)
+	{
+		if (m_ViewportHud[i] != -1)
+		{
+			//update the buffer for viewport
+			Hud *t_ActiveHud = m_Huds[m_ViewportHud[i]];
 
+			for (int i = 0; i < t_ActiveHud->hudObjects.size(); i++)
+			{
+				
+			}
+		}
+	}
 }
 
 UINT GraphicEngine::CheckProgram(DrawPiece p_Piece)
 {
 	return 0;
+}
+
+void GraphicEngine::SetFullscreenState(bool p_IsFullScreen)
+{
+	m_SwapChain->SetFullscreenState(p_IsFullScreen, NULL);
+}
+
+void GraphicEngine::Cleanup()
+{
+	SetFullscreenState(false);
 }

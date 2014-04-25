@@ -8,7 +8,7 @@ private:
 	int currentMap;
 public:
 	GameSetupScreen(void);
-	GameSetupScreen(GameInfo* p_gameInfo);
+	GameSetupScreen(GameInfo* p_gameInfo, GraphicHandle* p_graphicsHandle);
 	~GameSetupScreen(void);
 
 	int Update(std::vector<UserCMD>* userCMD, float p_dt);

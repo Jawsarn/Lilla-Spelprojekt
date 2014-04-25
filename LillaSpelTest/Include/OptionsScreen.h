@@ -5,6 +5,7 @@ class OptionsScreen :
 {
 public:
 	OptionsScreen(void);
+	OptionsScreen(GameInfo* p_gameInfo, GraphicHandle* p_graphicsHandle);
 	~OptionsScreen(void);
 };
 

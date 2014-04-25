@@ -57,10 +57,11 @@ public:
 	HRESULT UpdateDynamicLight(UINT p_LightID,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius);
 
 	//hud functions //not yet implemented
-	void AddHudObject();
-	void CreatehudObject();
-	void UseHud();
-	void LoadHud();
+	void CreateHudTemplate(XMFLOAT3 p_Color, UINT &o_HudID );
+	void AddHudObject(int p_TextureID1, int p_TextureID2,UINT p_HudID);
+	HRESULT CreateHudFromTemplate(UINT p_HudTemplateID, UINT o_HudID);
+	void UseHud(UINT p_Viewport, UINT p_HudI);
+	
 
 
 	//camera funcs
@@ -83,8 +84,13 @@ public:
 	//void RemoveFromDrawObjects();
 	//void AddToDrawObject();
 	void DrawGame();
-	void DrawHud();
+	void DrawMenu();
 	
+	//swap full screen
+	void SetFullscreenState(bool p_IsFullScreen);
+
+	//cleanup
+	void Cleanup();
 
 private:
 
@@ -108,6 +114,7 @@ private:
 	void SetTextures(DrawPiece p_DrawPiece);
 	void ComputeTileDeferredLightning();
 	void UpdateConstantBuffer(); //not written
+	void DrawHud();
 
 	UINT CheckProgram(DrawPiece p_Piece);
 
@@ -185,6 +192,12 @@ private:
 	ID3D11Buffer*				m_LightBuffer;
 	ID3D11ShaderResourceView*	m_LightBufferSRV;
 
+	//hudss
+	std::vector<Hud> m_HudTemplate;
+	std::map<UINT, Hud*> m_Huds;
+	int m_ViewportHud[4];
+
+	//number of viewports active
 	float m_NumberOfViewports;
 };
 

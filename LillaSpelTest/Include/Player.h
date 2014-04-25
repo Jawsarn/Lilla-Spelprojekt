@@ -30,9 +30,9 @@ private:
 	float m_immortalTimer;
 
 	XMFLOAT3 m_logicalPosition;
-	DirectX::XMFLOAT3 m_acceleration;
-	DirectX::XMFLOAT3 m_color;
-	DirectX::XMFLOAT3 m_upVector;
+	XMFLOAT3 m_acceleration;
+	XMFLOAT3 m_color;
+	XMFLOAT3 m_upVector;
 
 	PlayerState m_state;
 
@@ -56,10 +56,17 @@ public:
 	XMFLOAT3 GetPos();
 	XMFLOAT3 GetDirection();
 	XMMATRIX GetWorldMatrix();		//game screen grabs and sends off to graphichandle
+	MapNode* GetCurrentMapNode();
+	BoundingOrientedBox* GetCollisionBox();
 
 private:
+	//rotates the up vector to the proper angle
+	void FixUpVectorRotation(float p_angle);
+	//translates the position along the new upvector
+	void FixOffsetFromCenterSpline();
 	void PlaceWall();
 	void UpdateCollisionBox();
 	void UpdateMapNode();
+	void BumpedIntoPlayer(XMFLOAT3 p_force);
 };
 
