@@ -31,7 +31,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	m_GraphicEngine->LoadTexture(L"TubeTexture1.dds", diffuseBollTestTexture);
 
 
-	
+
 	//load a ship mesh 
 	std::vector<UINT> t_ObjTemp;
 	m_GraphicEngine->LoadMesh("Tube2.obj",t_ObjTemp);
@@ -55,22 +55,25 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	//m_MeshShips.push_back(t_ObjTemp);
 	//m_MeshShips.push_back(t_ObjTemp);
 	//m_MeshShips.push_back(t_ObjTemp);
+	//m_MeshShips.push_back(t_ObjTemp);
+	//m_MeshShips.push_back(t_ObjTemp);
+	//m_MeshShips.push_back(t_ObjTemp);
 	m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[0],diffuseBollTestTexture,GraphicEngine::TextureType::DIFFUSE);
-	
-	
+
+
 
 
 	//creating a ship that the player is going to use, move to other place when we've done testing
 
 
-//////////////////////////////////////////////////////////////TEST!!!!!!!!!!!!!!!!!!!///////////////////////////
+	//////////////////////////////////////////////////////////////TEST!!!!!!!!!!!!!!!!!!!///////////////////////////
 	XMMATRIX t_Mat = XMMatrixTranslation(0,0,0);
 	XMMATRIX t_World=t_Mat;
 	//XMMATRIX t_MajsMat=XMMatrixTranslation(100,100,100);
 	XMFLOAT3 t_Color = XMFLOAT3(0,1,0);
 	std::vector<int>VilkenVehicle;
 	std::vector <XMMATRIX> plajerwurld;
-	
+
 	std::vector <XMFLOAT3> plajercullur;
 	plajercullur.push_back(t_Color);
 	t_Color = XMFLOAT3(1,1,0);
@@ -79,15 +82,18 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	plajercullur.push_back(t_Color);
 	t_Color = XMFLOAT3(0,0,1);
 	plajercullur.push_back(t_Color);
+	//t_Color = XMFLOAT3(1,0,1);
+	//plajercullur.push_back(t_Color);
 	plajerwurld.push_back(t_Mat);
-	
+
 	t_Mat = XMMatrixTranslation(10,10,10);
 	plajerwurld.push_back(t_Mat);
 	t_Mat = XMMatrixTranslation(20,20,20);
 	plajerwurld.push_back(t_Mat);
 	t_Mat = XMMatrixTranslation(30,30,30);
 	plajerwurld.push_back(t_Mat);
-	t_Mat = XMMatrixTranslation(100,10,10);
+	//t_Mat = XMMatrixTranslation(40,40,40);
+	//plajerwurld.push_back(t_Mat);
 
 	VilkenVehicle.push_back(0);
 	VilkenVehicle.push_back(0);
@@ -117,19 +123,19 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 
 
 	//create a camera, just for testing and stuff, think you'll want to create it later with players tho, because the hud wont rely on camera at first
-	
+
 	for (int i = 0; i < 4; i++)
 	{
 		m_GraphicEngine->CreateCamera(XMFLOAT3(250,0,-100),XMFLOAT3(0,0,1),XMFLOAT3(0,1,0),XM_PIDIV4,p_Width/2,p_Height/2,1.0f,10000, m_CameraID[i]);
 	}
-	
+
 	//set cameras
 	for (int i = 0; i < 4; i++)
 	{
 		m_GraphicEngine->UseCamera(i,m_CameraID[i]);
 	}
 
-	 //not fixed yet, just for testing
+	//not fixed yet, just for testing
 	m_GraphicEngine->SetViewportAmount(4);
 
 
@@ -186,7 +192,7 @@ void GraphicHandle::UpdateCamera(UINT p_CameraLogicID,float p_Walk, float p_Stra
 		m_GraphicEngine->MoveCamera(m_CameraID[p_CameraLogicID],p_Walk,p_Strafe,p_Hover,p_Pitch,p_RotateY);
 	}
 }
-void GraphicHandle::UpdateCameraVehicleSelection(UINT p_CameraLogicID, UINT p_LookingAtWhatVehicle,float p_DeltaTime)
+void GraphicHandle::UpdateCameraVehicleSelection(UINT p_CameraLogicID, float p_LookingAtWhatVehicle)
 {
 	if (p_CameraLogicID < 5)
 	{	
@@ -194,22 +200,22 @@ void GraphicHandle::UpdateCameraVehicleSelection(UINT p_CameraLogicID, UINT p_Lo
 		XMMATRIX t_Tempura = XMMatrixTranslation(0,1,8*m_MeshShips.size());
 		XMMATRIX t_Rot = XMMatrixRotationY(2*XM_PI/m_MeshShips.size()*p_LookingAtWhatVehicle);
 		XMMATRIX t_Rot2 = XMMatrixRotationX(-XM_PIDIV4/8);
-		
+
 		t_Rot = XMMatrixMultiply(t_Rot,t_Rot2);//sätter ihop rotationerna
 		t_Rot = XMMatrixMultiply(t_Rot, t_Tempura);//roterar matrisen
-		
+
 		t_Tempura = XMMatrixRotationY(XM_PI);//vänder med 180 grader
 
 		t_Rot = XMMatrixMultiply(t_Tempura,t_Rot);//lägger in den sista rotationen
 
-		
+
 		//t_Rot = XMMatrixMultiply(t_Tempura,t_Rot);
 
 		m_GraphicEngine->SetCamera(m_CameraID[p_CameraLogicID],t_Rot);
 		/////////////////////////////////////////////////////////////////////////////////
 
 
-		
+
 
 		// t_Tempura = XMMatrixTranslation(0,1,8*m_MeshShips.size());
 		//XMMATRIX t_Rot3 = XMMatrixRotationY(2*XM_PI/m_MeshShips.size()*(p_LookingAtWhatVehicle+1));
@@ -264,7 +270,7 @@ void GraphicHandle::DrawGame() //test
 }
 //void GraphicHandle::CreateShip(int p_PlayerIndex, XMFLOAT3 p_Color, CXMMATRIX p_PlayerWorld,int p_ShipIndex)
 //{
-	//m_GraphicEngine->CreateDrawObject(m_Ships[p_ShipIndex],p_PlayerWorld, p_Color,true, m_Player[p_PlayerIndex]);
+//m_GraphicEngine->CreateDrawObject(m_Ships[p_ShipIndex],p_PlayerWorld, p_Color,true, m_Player[p_PlayerIndex]);
 //}
 void GraphicHandle::CreateLight(int p_PlayerIndex,XMFLOAT3 p_Color,UINT p_ObjectId, LightStruct &p_LightStruct)
 {
