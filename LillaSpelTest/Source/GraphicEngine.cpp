@@ -1069,7 +1069,8 @@ void GraphicEngine::DrawGame()
 
 	//compute tiled lighting
 	ComputeTileDeferredLightning();
-
+	
+	
 
 	m_SwapChain->Present( 1, 0 );
 }

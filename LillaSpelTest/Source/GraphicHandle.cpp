@@ -34,7 +34,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	
 	//load a ship mesh 
 	std::vector<UINT> t_ObjTemp;
-	m_GraphicEngine->LoadMesh("Tube2.obj",t_ObjTemp);
+	m_GraphicEngine->LoadMesh("Tube.obj",t_ObjTemp);
 	m_MeshLevels.push_back(t_ObjTemp);
 
 	//add a texture to a ship mesh
