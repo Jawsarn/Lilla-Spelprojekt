@@ -48,7 +48,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 
 	//testshppiie
 	t_ObjTemp.clear();
-	m_GraphicEngine->LoadMesh("spaceship.obj",t_ObjTemp);
+	m_GraphicEngine->LoadMesh("lamp.obj",t_ObjTemp);
 	m_MeshShips.push_back(t_ObjTemp);
 	m_MeshShips.push_back(t_ObjTemp);
 	m_MeshShips.push_back(t_ObjTemp);

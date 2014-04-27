@@ -57,11 +57,13 @@ public:
 	HRESULT UpdateDynamicLight(UINT p_LightID,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius);
 
 	//hud functions //not yet implemented
-	void CreateHudTemplate(std::vector<UINT> p_ObjectIDs, XMFLOAT3 p_Color, UINT &o_HudID);
-	void AddHudObject(int p_TextureID1, int p_TextureID2,UINT p_HudID);
-	HRESULT CreateHudFromTemplate(UINT p_HudTemplateID, UINT o_HudID);
+	void GraphicEngine::CreateHudTemplate(std::vector<UINT> p_ObjectIDs, UINT &o_HudID);
+	HRESULT CreateHudObject(XMFLOAT2 p_Position, XMFLOAT2 p_Offset, int p_TextureID1, int p_TextureID2, UINT o_HudObjectID);
+	void AddHudObjectToTemplate(UINT p_HudID, UINT p_HudObjectID);
+
+	HRESULT CreateHudFromTemplate(UINT p_HudTemplateID,  XMFLOAT3 p_Color, std::vector<XMFLOAT2> barOffsets ,UINT o_HudID);
 	void UseHud(UINT p_Viewport, UINT p_HudI);
-	
+	void ChangeTextureOnHudObject(UINT p_HudID, UINT p_HudObjectID, bool useFrontTexture);
 
 
 	//camera funcs
@@ -193,7 +195,9 @@ private:
 	ID3D11ShaderResourceView*	m_LightBufferSRV;
 
 	//hudss
-	std::vector<Hud> m_HudTemplate;
+	std::vector<HudObject> m_HudObjects;
+
+	std::vector<HudTemplate> m_HudTemplates;
 	std::map<UINT, Hud*> m_Huds;
 	int m_ViewportHud[4];
 

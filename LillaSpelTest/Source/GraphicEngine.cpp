@@ -395,6 +395,7 @@ HRESULT GraphicEngine::InitializeShaders()
 {
 	HRESULT hr = S_OK;
 
+	//SHADER PROGRAM 0
 	/*ID3D11ComputeShader* t_TileDeferredCS;
 	hr = m_ShaderLoader->CreateComputeShader(L"GraphicDeferredLightingCS.hlsl", "TileDeferredCS", "cs_5_0" , m_Device, &t_TileDeferredCS);
 	if( FAILED( hr ) )
@@ -403,47 +404,91 @@ HRESULT GraphicEngine::InitializeShaders()
 	m_ComputeShaders.push_back(t_TileDeferredCS);
 
 	m_DeviceContext->CSSetShader(m_ComputeShaders[0],nullptr,0);*/
+	{
+		ID3D11VertexShader* t_VertexShader;
+		ID3D11InputLayout* t_InputLayout;
+		D3D11_INPUT_ELEMENT_DESC t_Layout[] =
+		{
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 
-	ID3D11VertexShader* t_VertexShader;
-	ID3D11InputLayout* t_InputLayout;
-	D3D11_INPUT_ELEMENT_DESC t_Layout[] =
-    {
-        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		};
+		UINT t_NumElements = ARRAYSIZE(t_Layout);
 
-	};
-	UINT t_NumElements = ARRAYSIZE(t_Layout);
+		hr = m_ShaderLoader->CreateVertexShaderWithInputLayout(L"GraphicNormalVS.hlsl","VS","vs_5_0",m_Device,&t_VertexShader,t_Layout,t_NumElements,&t_InputLayout);
+		if( FAILED( hr ) )
+			return hr;
 
-	hr = m_ShaderLoader->CreateVertexShaderWithInputLayout(L"GraphicNormalVS.hlsl","VS","vs_5_0",m_Device,&t_VertexShader,t_Layout,t_NumElements,&t_InputLayout);
-	if( FAILED( hr ) )
-		return hr;
-
-	m_VertexShaders.push_back(t_VertexShader);
-	m_InputLayouts.push_back(t_InputLayout);
+		m_VertexShaders.push_back(t_VertexShader);
+		m_InputLayouts.push_back(t_InputLayout);
 	
-	///GEOMETRY SHADER
-	ID3D11GeometryShader* t_GeometryShader;
-	hr = m_ShaderLoader->CreateGeometryShader(L"GraphicNormalGS.hlsl","GS","gs_5_0",m_Device,&t_GeometryShader);
-	if( FAILED( hr ))
-		return hr;
-	m_GeometryShaders.push_back(t_GeometryShader);
+		///GEOMETRY SHADER
+		ID3D11GeometryShader* t_GeometryShader;
+		hr = m_ShaderLoader->CreateGeometryShader(L"GraphicNormalGS.hlsl","GS","gs_5_0",m_Device,&t_GeometryShader);
+		if( FAILED( hr ))
+			return hr;
+		m_GeometryShaders.push_back(t_GeometryShader);
 
-	//PIXEL SHADER
-	ID3D11PixelShader* t_PixelShader;
-	hr = m_ShaderLoader->CreatePixelShader(L"GraphicNormalPS.hlsl","PS","ps_5_0",m_Device,&t_PixelShader);
-	if( FAILED( hr ))
-		return hr;
-	m_PixelShaders.push_back(t_PixelShader);
+		//PIXEL SHADER
+		ID3D11PixelShader* t_PixelShader;
+		hr = m_ShaderLoader->CreatePixelShader(L"GraphicNormalPS.hlsl","PS","ps_5_0",m_Device,&t_PixelShader);
+		if( FAILED( hr ))
+			return hr;
+		m_PixelShaders.push_back(t_PixelShader);
 
-	ShaderProgram t_NewProgram;
-	t_NewProgram.vertexShader = m_VertexShaders.size() - 1;
-	t_NewProgram.domainShader = -1;
-	t_NewProgram.hullShader = -1;
-	t_NewProgram.geometryShader = m_GeometryShaders.size() -1;
-	t_NewProgram.pixelShader = m_PixelShaders.size() - 1;
-	t_NewProgram.inputLayout = m_InputLayouts.size() - 1;
-	m_ShaderPrograms.push_back(t_NewProgram);
+		ShaderProgram t_NewProgram;
+		t_NewProgram.vertexShader = m_VertexShaders.size() - 1;
+		t_NewProgram.domainShader = -1;
+		t_NewProgram.hullShader = -1;
+		t_NewProgram.geometryShader = m_GeometryShaders.size() -1;
+		t_NewProgram.pixelShader = m_PixelShaders.size() - 1;
+		t_NewProgram.inputLayout = m_InputLayouts.size() - 1;
+		m_ShaderPrograms.push_back(t_NewProgram);
+	}
+
+	{
+		///SHADER PROGRAM 1
+		ID3D11VertexShader* t_VertexShader;
+		ID3D11InputLayout* t_InputLayout;
+
+		D3D11_INPUT_ELEMENT_DESC t_Layout[] =
+		{
+			{ "POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "SIZE", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		};
+		UINT t_NumElements = ARRAYSIZE(t_Layout);
+
+		hr = m_ShaderLoader->CreateVertexShaderWithInputLayout(L"GraphicHudVS.hlsl","VS","vs_5_0",m_Device,&t_VertexShader,t_Layout,t_NumElements,&t_InputLayout);
+		if( FAILED( hr ) )
+			return hr;
+
+		m_VertexShaders.push_back(t_VertexShader);
+		m_InputLayouts.push_back(t_InputLayout);
+	
+		///GEOMETRY SHADER
+		ID3D11GeometryShader* t_GeometryShader;
+		hr = m_ShaderLoader->CreateGeometryShader(L"GraphicHudGS.hlsl","GS","gs_5_0",m_Device,&t_GeometryShader);
+		if( FAILED( hr ))
+			return hr;
+		m_GeometryShaders.push_back(t_GeometryShader);
+
+		//PIXEL SHADER
+		ID3D11PixelShader* t_PixelShader;
+		hr = m_ShaderLoader->CreatePixelShader(L"GraphicHudPS.hlsl","PS","ps_5_0",m_Device,&t_PixelShader);
+		if( FAILED( hr ))
+			return hr;
+		m_PixelShaders.push_back(t_PixelShader);
+
+		ShaderProgram t_NewProgram;
+		t_NewProgram.vertexShader = m_VertexShaders.size() - 1;
+		t_NewProgram.domainShader = -1;
+		t_NewProgram.hullShader = -1;
+		t_NewProgram.geometryShader = m_GeometryShaders.size() -1;
+		t_NewProgram.pixelShader = m_PixelShaders.size() - 1;
+		t_NewProgram.inputLayout = m_InputLayouts.size() - 1;
+		m_ShaderPrograms.push_back(t_NewProgram);
+	}
 
 
 	//COMPUTE SHADER
@@ -847,29 +892,67 @@ HRESULT GraphicEngine::UpdateDynamicLight(UINT p_LightID, XMFLOAT3 p_Position, X
 //==========HUD functions====================//
 ///////////////////////////////////////////////
 
-void GraphicEngine::CreateHudTemplate(std::vector<UINT> p_ObjectIDs, XMFLOAT3 p_Color, UINT &o_HudID)
+void GraphicEngine::CreateHudTemplate(std::vector<UINT> p_ObjectIDs, UINT &o_HudID)
 {
-	Hud t_NewHud;
-	t_NewHud.color = p_Color;
+	HudTemplate t_NewHud;
+	t_NewHud.hudObjects = p_ObjectIDs;
+	m_HudTemplates.push_back(t_NewHud);
+	
 
-	m_HudTemplate.push_back(t_NewHud);
-
-	o_HudID = m_HudTemplate.size() -  1;
+	o_HudID = m_HudTemplates.size() -  1;
 }
 
-void GraphicEngine::AddHudObject(int p_TextureID1, int p_TextureID2,UINT p_HudTemplateID)
+HRESULT GraphicEngine::CreateHudObject(XMFLOAT2 p_Position, XMFLOAT2 p_Offset, int p_TextureID1, int p_TextureID2, UINT o_HudObjectID)
 {
+	HRESULT hr = S_OK;
+
 	HudObject t_NewHudObject;
 	
 	t_NewHudObject.textureID1 = p_TextureID1;
 	t_NewHudObject.textureID2 = p_TextureID2;
+
+	HudVertex t_newHudVert;
+	t_newHudVert.position = p_Position;
+	t_newHudVert.offset = p_Offset;
+
+	D3D11_BUFFER_DESC vbd;
+	ZeroMemory( &vbd, sizeof(vbd));
+	vbd.Usage = D3D11_USAGE_IMMUTABLE;
+	vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vbd.CPUAccessFlags = 0;
+	vbd.MiscFlags = 0;
+	vbd.StructureByteStride = 0;
+
+	D3D11_SUBRESOURCE_DATA t_VinitData;
+	ZeroMemory( &t_VinitData, sizeof(t_VinitData));
+
+	ID3D11Buffer* t_NewVertexBuffer;
+	vbd.ByteWidth = sizeof(HudVertex) * 1;
+	t_VinitData.pSysMem = &t_newHudVert;
+	hr = (m_Device->CreateBuffer(&vbd, &t_VinitData, &t_NewVertexBuffer));
+	if( FAILED( hr ))
+		return hr;
+
+	VertexBufferWithNOV t_NewVert;
+	t_NewVert.vertexBuffer = t_NewVertexBuffer;
+	t_NewVert.numberOfVertices = 1;
+	m_VertexBuffers.push_back(t_NewVert);
+
+	t_newHudVert.vertexBufferID = m_VertexBuffers.size() - 1;
+
+	return hr;
 }
 
-HRESULT GraphicEngine::CreateHudFromTemplate(UINT p_HudTemplateID, UINT o_HudID)
+void GraphicEngine::AddHudObjectToTemplate(UINT p_HudID, UINT p_HudObjectID)
+{
+	m_HudTemplates[p_HudID].hudObjects.push_back(p_HudObjectID);
+}
+
+HRESULT GraphicEngine::CreateHudFromTemplate(UINT p_HudTemplateID,  XMFLOAT3 p_Color, std::vector<XMFLOAT2> barOffsets ,UINT o_HudID)
 {
 	try
 	{
-		Hud* t_NewHud = new Hud(m_HudTemplate[p_HudTemplateID]);
+		Hud* t_NewHud = new Hud();
 
 		std::hash<Hud*> t_Hashii;
 
@@ -886,12 +969,23 @@ HRESULT GraphicEngine::CreateHudFromTemplate(UINT p_HudTemplateID, UINT o_HudID)
 		MessageBox( nullptr, L"Catched exeption when attempting to hash and allocate new object", L"ErrorMessage", MB_OK );
 		return E_FAIL;
 	}
+
+	m_Huds[o_HudID]->templateID = p_HudTemplateID;
+
+	m_Huds[o_HudID]->firstTextureActive = std::vector<bool>(barOffsets.size(), true); //not sure if this is correct
+	m_Huds[o_HudID]->barOffsets = barOffsets;
+
 	return S_OK;
 }
 
 void GraphicEngine::UseHud(UINT p_Viewport, UINT p_HudID)
 {
 	m_ViewportHud[p_Viewport] = p_HudID;
+}
+
+void GraphicEngine::ChangeTextureOnHudObject(UINT p_HudID, UINT p_HudObjectID, bool useFrontTexture)
+{
+
 }
 
 
@@ -1101,7 +1195,7 @@ void GraphicEngine::DrawGame()
 	ComputeTileDeferredLightning();
 
 	//draw hud
-	DrawHud();
+	//DrawHud();
 
 	m_SwapChain->Present( 1, 0 );
 }
@@ -1143,6 +1237,9 @@ void GraphicEngine::DrawOpaqueObjects()
 	//need to set the render target here if changing elsewhere
 	//m_DeviceContext->OMSetRenderTargets(1, &m_RenderTargetView, m_DepthStencilView);
 	
+	//set depth state on
+	m_DeviceContext->OMSetDepthStencilState(m_DepthStateOn,0);
+
 	m_DeviceContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	UINT strides = sizeof(SimpleVertex);
 	UINT offsets = 0;
@@ -1255,25 +1352,52 @@ void GraphicEngine::DrawMenu()
 	m_DeviceContext->ClearDepthStencilView(m_DepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
 	//
-	DrawMenu();
+	DrawHud();
 
 	m_SwapChain->Present( 1, 0 );
 }
 
 void GraphicEngine::DrawHud()
 {
+	UINT strides = sizeof(HudVertex);
+	UINT offsets = 0;
+	
 	//turn off depth checks
+	m_DeviceContext->OMSetDepthStencilState(m_DepthStateOff,0);
+
+	//use right program
+	SetShaderProgram(m_ShaderPrograms[1]);
 
 	for (int i = 0; i < 4; i++)
 	{
 		if (m_ViewportHud[i] != -1)
 		{
 			//update the buffer for viewport
-			Hud *t_ActiveHud = m_Huds[m_ViewportHud[i]];
+			HudTemplate t_ActiveHudTemplate = m_HudTemplates[m_Huds[m_ViewportHud[i]]->templateID];
 
-			for (int i = 0; i < t_ActiveHud->hudObjects.size(); i++)
+			for (int i = 0; i < t_ActiveHudTemplate.hudObjects.size(); i++)
 			{
-				//maybe add a list of hudObjects into the CreateHudTemplate function, to create the buffer there which you can use later then? speak with others how they want it
+				HudObject t_CurHudObject = m_HudObjects[t_ActiveHudTemplate.hudObjects[i]];
+
+				//update texture and buffer and other stuff to constant buffer
+				int textureID;
+				if (m_Huds[0]->firstTextureActive[i])
+				{
+					textureID = t_CurHudObject.textureID1;
+				}
+				else
+				{
+					textureID = t_CurHudObject.textureID2;
+				}
+
+				//set texture
+				m_DeviceContext->PSSetShaderResources(0, 1, &m_Textures[textureID]);
+				
+				//set vertex buffer
+				m_DeviceContext->IASetVertexBuffers(0,1, &m_VertexBuffers[t_CurHudObject.vertexBufferID ].vertexBuffer , &strides, &offsets);
+
+				//draw
+				m_DeviceContext->Draw(1,0);
 			}
 		}
 	}

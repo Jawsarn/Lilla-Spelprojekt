@@ -63,22 +63,6 @@ struct DrawObject
 	XMFLOAT4X4 worldMatrix;
 };
 
-
-
-struct HudObject
-{
-	UINT vertexBufferID;
-	int textureID1;
-	int textureID2;
-	XMFLOAT2 barOffset;
-};
-
-struct Hud
-{
-	std::vector<HudObject> hudObjects;
-	XMFLOAT3 color;
-};
-
 struct ShaderProgram
 {
 	int inputLayout;
@@ -109,4 +93,46 @@ struct PerComputeBuffer
 {
 	XMFLOAT2 screenDimensions;
 	XMFLOAT2 camNearFar;
+};
+
+
+
+
+///HUD
+
+struct HudVertex
+{
+	UINT vertexBufferID;
+	XMFLOAT2 position;
+	XMFLOAT2 offset;
+};
+
+struct HudObject
+{
+	UINT vertexBufferID;
+	int textureID1;
+	int textureID2;
+	XMFLOAT2 barOffset;
+};
+
+struct HudTemplate
+{
+	std::vector<UINT> hudObjects;
+};
+
+struct Hud
+{
+	UINT templateID;
+	XMFLOAT3 color;
+	std::vector<bool> firstTextureActive;
+	std::vector<XMFLOAT2> barOffsets;
+};
+
+struct HudBuffer
+{
+	XMFLOAT3 color;
+	float filler;
+	XMFLOAT2 barOffset; 
+	float viewport;
+
 };

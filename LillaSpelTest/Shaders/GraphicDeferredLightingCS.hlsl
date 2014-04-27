@@ -376,7 +376,7 @@ void CS( uint3 threadID		: SV_DispatchThreadID,
 	uint numOfLights = visibleLightCount;
 
 	float3 finalColor = DiffuseColor_Spec[threadID.xy].xyz;
-	float inSpec = DiffuseColor_Spec[threadID.xy].z;
+	float inSpec = DiffuseColor_Spec[threadID.xy].z/256;
 	//if(all(globalCord < screenDimensions)) //checks for all components if blow zero, uses this for checking if outside screendim
 	//{
 		for (uint i = 0; i < visibleLightCount; i++)
