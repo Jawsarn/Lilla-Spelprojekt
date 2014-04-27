@@ -40,7 +40,7 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
 	m_GraphicHandle = m_GraphicHandle->GetInstance();
 	m_GraphicHandle->Initialize(1920, 1080, m_HandleWindow); //fix this input variables right
-	m_GraphicHandle->SetFullScreen(true);
+	m_GraphicHandle->SetFullScreen(false);
 	Run();
 
 	return 0;
@@ -99,7 +99,7 @@ void Run()
 			m_DeltaTime = ( timeCur - m_PrevTime ) / 1000.0f;
 			m_GameTime += m_DeltaTime;
 			m_PrevTime = timeCur;
-			gameScreen.Update(m_DeltaTime,userCMDS);
+			//gameScreen.Update(m_DeltaTime,userCMDS);
 			///UPDATE & DRAW TEMPDRAAWWWWW
 			m_GraphicHandle->UpdateSelectVehicle(m_DeltaTime);
 			m_GraphicHandle->DrawGame();
@@ -224,7 +224,7 @@ HRESULT InitializeWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow)
     // Create window
     handleInstance = hInstance;
 
-	RECT t_rc = { 0, 0, 600, 400};
+	RECT t_rc = { 0, 0, 1920, 1080};
 	AdjustWindowRect(&t_rc, WS_CAPTION, false);
 
 	
