@@ -1,3 +1,5 @@
+#include "GraphicHudShaderHelper.fx"
+
 struct VS_OUTPUT
 {
 	float2 position : POSITION;

@@ -1,5 +1,5 @@
 
-cbuffer HudBuffer : register(c3)
+cbuffer HudConstantBuffer : register(c2)
 {
 	float3 color;
 	float filler;

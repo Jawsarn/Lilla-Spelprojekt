@@ -85,7 +85,7 @@ float3 DirectIllumination(float3 pos, float3 norm , Light light, float inSpec,in
 
 	float3 toEye = -pos;
 	float3 v = reflect(-lightVec, norm);
-	float specFactor = pow(max(dot(v,toEye), 0.0f), inSpec);
+	float specFactor = pow(max(dot(v,toEye), 0.0f), 100)*inSpec;
 
 	if (specFactor < 0)
 	{
@@ -376,7 +376,7 @@ void CS( uint3 threadID		: SV_DispatchThreadID,
 	uint numOfLights = visibleLightCount;
 
 	float3 finalColor = DiffuseColor_Spec[threadID.xy].xyz;
-	float inSpec = DiffuseColor_Spec[threadID.xy].z/256;
+	float inSpec = DiffuseColor_Spec[threadID.xy].z/255;
 	//if(all(globalCord < screenDimensions)) //checks for all components if blow zero, uses this for checking if outside screendim
 	//{
 		for (uint i = 0; i < visibleLightCount; i++)

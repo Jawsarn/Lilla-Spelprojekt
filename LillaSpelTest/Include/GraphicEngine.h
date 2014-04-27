@@ -57,11 +57,10 @@ public:
 	HRESULT UpdateDynamicLight(UINT p_LightID,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius);
 
 	//hud functions //not yet implemented
-	void GraphicEngine::CreateHudTemplate(std::vector<UINT> p_ObjectIDs, UINT &o_HudID);
-	HRESULT CreateHudObject(XMFLOAT2 p_Position, XMFLOAT2 p_Offset, int p_TextureID1, int p_TextureID2, UINT o_HudObjectID);
-	void AddHudObjectToTemplate(UINT p_HudID, UINT p_HudObjectID);
+	void CreateHudTemplate(std::vector<UINT> p_ObjectIDs, UINT &o_HudID);
+	HRESULT CreateHudObject(XMFLOAT2 p_Position, XMFLOAT2 p_Offset, int p_TextureID1, int p_TextureID2, UINT &o_HudObjectID);
 
-	HRESULT CreateHudFromTemplate(UINT p_HudTemplateID,  XMFLOAT3 p_Color, std::vector<XMFLOAT2> barOffsets ,UINT o_HudID);
+	HRESULT CreateHudFromTemplate(UINT p_HudTemplateID,  XMFLOAT3 p_Color, std::vector<XMFLOAT2> barOffsets ,UINT &o_HudID);
 	void UseHud(UINT p_Viewport, UINT p_HudI);
 	void ChangeTextureOnHudObject(UINT p_HudID, UINT p_HudObjectID, bool useFrontTexture);
 
@@ -189,6 +188,7 @@ private:
 	ID3D11Buffer* m_PerFrameBuffer;
 	ID3D11Buffer* m_PerObjectBuffer;
 	ID3D11Buffer* m_PerComputeBuffer;
+	ID3D11Buffer* m_HudConstantBuffer;
 
 	//light bufferu
 	ID3D11Buffer*				m_LightBuffer;

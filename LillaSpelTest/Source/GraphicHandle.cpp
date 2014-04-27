@@ -166,9 +166,27 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	//m_GraphicEngine->MoveCamera(m_CameraID[1], 50,0,0,0,0);
 	//m_GraphicEngine->MoveCamera(m_CameraID[2], 100,0,0,0,0);
 	//m_GraphicEngine->SetCamera(m_CameraID[3], XMFLOAT3(0, 0, -120),XMFLOAT3(0, 0, 1),XMFLOAT3(0, 1, 0));
-
+	
+	////////////JAWS KOD////////////////
+	
 	UINT t_LightID;
-	m_GraphicEngine->CreateStaticLight(XMFLOAT3(0,0,100), XMFLOAT3(1,1,1), 50, t_LightID);
+	m_GraphicEngine->CreateStaticLight(XMFLOAT3(0,0,100), XMFLOAT3(1,1,1), 150, t_LightID);
+
+	UINT t_jawsObjTEMPID;
+	m_GraphicEngine->CreateHudObject(XMFLOAT2(0.5,0.5),XMFLOAT2(0.25,0.25),0,0,t_jawsObjTEMPID);
+	std::vector<UINT> t_Temptemplist;
+	t_Temptemplist.push_back(t_jawsObjTEMPID);
+
+	UINT t_jawsHUDTEMPTEMP;
+	m_GraphicEngine->CreateHudTemplate(t_Temptemplist, t_jawsHUDTEMPTEMP);
+
+	std::vector<XMFLOAT2> t_JawsBAROFFSETS;
+	t_JawsBAROFFSETS.push_back(XMFLOAT2(0,0));
+
+	UINT t_jawsREALHUD;
+	m_GraphicEngine->CreateHudFromTemplate(t_jawsHUDTEMPTEMP,XMFLOAT3(0,1,0), t_JawsBAROFFSETS, t_jawsREALHUD);
+
+	m_GraphicEngine->UseHud(0,t_jawsREALHUD);
 
 	//for (int i = 0; i < 6; i++)
 	//{
@@ -222,7 +240,7 @@ void GraphicHandle::UpdateCameraVehicleSelection(UINT p_CameraLogicID, float p_L
 		/////////////////////////////////fungerande
 		XMMATRIX t_Tempura = XMMatrixTranslation(0,1,8*m_MeshShips.size());
 		XMMATRIX t_Rot = XMMatrixRotationY(2*XM_PI/m_MeshShips.size()*p_LookingAtWhatVehicle);
-		XMMATRIX t_Rot2 = XMMatrixRotationX(-XM_PIDIV4/8);
+		XMMATRIX t_Rot2 = XMMatrixRotationX(-XM_PIDIV4/10);
 
 		t_Rot = XMMatrixMultiply(t_Rot,t_Rot2);//sätter ihop rotationerna
 		t_Rot = XMMatrixMultiply(t_Rot, t_Tempura);//roterar matrisen

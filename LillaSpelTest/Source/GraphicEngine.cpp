@@ -532,6 +532,12 @@ HRESULT GraphicEngine::InitializeConstantBuffers()
     if( FAILED( hr ) )
         return hr;
 
+	//hud buffer
+	t_BufferDesc.ByteWidth = sizeof(HudConstantBuffer);
+	hr = m_Device->CreateBuffer( &t_BufferDesc, nullptr, &m_HudConstantBuffer );
+	if ( FAILED( hr ) )
+		return hr;
+
 	m_StaticLights.resize(MAX_NUM_OF_LIGHTS);
 	/*bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	bd.Usage = D3D11_USAGE_DYNAMIC;*/
@@ -561,6 +567,7 @@ HRESULT GraphicEngine::InitializeConstantBuffers()
 
 	m_DeviceContext->GSSetConstantBuffers(0,1, &m_PerFrameBuffer);
 	m_DeviceContext->GSSetConstantBuffers(1,1,&m_PerObjectBuffer);
+	m_DeviceContext->GSSetConstantBuffers(2,1,&m_HudConstantBuffer);
 
 	m_DeviceContext->PSSetConstantBuffers(1,1,&m_PerObjectBuffer);
 
@@ -902,7 +909,7 @@ void GraphicEngine::CreateHudTemplate(std::vector<UINT> p_ObjectIDs, UINT &o_Hud
 	o_HudID = m_HudTemplates.size() -  1;
 }
 
-HRESULT GraphicEngine::CreateHudObject(XMFLOAT2 p_Position, XMFLOAT2 p_Offset, int p_TextureID1, int p_TextureID2, UINT o_HudObjectID)
+HRESULT GraphicEngine::CreateHudObject(XMFLOAT2 p_Position, XMFLOAT2 p_Offset, int p_TextureID1, int p_TextureID2, UINT &o_HudObjectID)
 {
 	HRESULT hr = S_OK;
 
@@ -938,17 +945,16 @@ HRESULT GraphicEngine::CreateHudObject(XMFLOAT2 p_Position, XMFLOAT2 p_Offset, i
 	t_NewVert.numberOfVertices = 1;
 	m_VertexBuffers.push_back(t_NewVert);
 
-	t_newHudVert.vertexBufferID = m_VertexBuffers.size() - 1;
+	t_NewHudObject.vertexBufferID = m_VertexBuffers.size() - 1;
+	
+	m_HudObjects.push_back(t_NewHudObject);
+
+	o_HudObjectID = m_HudObjects.size() - 1; 
 
 	return hr;
 }
 
-void GraphicEngine::AddHudObjectToTemplate(UINT p_HudID, UINT p_HudObjectID)
-{
-	m_HudTemplates[p_HudID].hudObjects.push_back(p_HudObjectID);
-}
-
-HRESULT GraphicEngine::CreateHudFromTemplate(UINT p_HudTemplateID,  XMFLOAT3 p_Color, std::vector<XMFLOAT2> barOffsets ,UINT o_HudID)
+HRESULT GraphicEngine::CreateHudFromTemplate(UINT p_HudTemplateID,  XMFLOAT3 p_Color, std::vector<XMFLOAT2> barOffsets ,UINT &o_HudID)
 {
 	try
 	{
@@ -1195,7 +1201,7 @@ void GraphicEngine::DrawGame()
 	ComputeTileDeferredLightning();
 
 	//draw hud
-	//DrawHud();
+	DrawHud();
 
 	m_SwapChain->Present( 1, 0 );
 }
@@ -1343,6 +1349,8 @@ void GraphicEngine::ComputeTileDeferredLightning()
 
 	ID3D11ShaderResourceView* temp[3] = {0,0,0};
 	m_DeviceContext->CSSetShaderResources(1,3,temp);
+	ID3D11UnorderedAccessView* temp2 = {0};
+	m_DeviceContext->CSSetUnorderedAccessViews(0, 1, &temp2, nullptr);
 }
 
 void GraphicEngine::DrawMenu()
@@ -1362,26 +1370,43 @@ void GraphicEngine::DrawHud()
 	UINT strides = sizeof(HudVertex);
 	UINT offsets = 0;
 	
+	//typology
+	m_DeviceContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
+
 	//turn off depth checks
 	m_DeviceContext->OMSetDepthStencilState(m_DepthStateOff,0);
 
 	//use right program
 	SetShaderProgram(m_ShaderPrograms[1]);
 
-	for (int i = 0; i < 4; i++)
+	//set render target view
+	m_DeviceContext->OMSetRenderTargets(1, &m_RenderTargetView, m_DepthStencilView);
+
+	for (int j = 0; j < 4; j++)
 	{
-		if (m_ViewportHud[i] != -1)
-		{
+		if (m_ViewportHud[j] != -1)
+		{	
 			//update the buffer for viewport
-			HudTemplate t_ActiveHudTemplate = m_HudTemplates[m_Huds[m_ViewportHud[i]]->templateID];
+			
+			HudTemplate t_ActiveHudTemplate = m_HudTemplates[m_Huds[m_ViewportHud[j]]->templateID];
 
 			for (int i = 0; i < t_ActiveHudTemplate.hudObjects.size(); i++)
 			{
 				HudObject t_CurHudObject = m_HudObjects[t_ActiveHudTemplate.hudObjects[i]];
 
+				//update constant buffer
+				HudConstantBuffer t_Hcb;
+				t_Hcb.viewport = j;
+				t_Hcb.filler = 0;
+				t_Hcb.filler2 = 0;
+				t_Hcb.color = m_Huds[m_ViewportHud[j]]->color;
+				t_Hcb.barOffset = m_Huds[m_ViewportHud[j]]->barOffsets[i];
+
+				m_DeviceContext->UpdateSubresource(m_HudConstantBuffer, 0, nullptr, &t_Hcb, 0, 0 );
+
 				//update texture and buffer and other stuff to constant buffer
 				int textureID;
-				if (m_Huds[0]->firstTextureActive[i])
+				if (m_Huds[m_ViewportHud[j]]->firstTextureActive[i])
 				{
 					textureID = t_CurHudObject.textureID1;
 				}

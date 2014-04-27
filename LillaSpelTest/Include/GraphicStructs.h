@@ -102,7 +102,6 @@ struct PerComputeBuffer
 
 struct HudVertex
 {
-	UINT vertexBufferID;
 	XMFLOAT2 position;
 	XMFLOAT2 offset;
 };
@@ -112,7 +111,6 @@ struct HudObject
 	UINT vertexBufferID;
 	int textureID1;
 	int textureID2;
-	XMFLOAT2 barOffset;
 };
 
 struct HudTemplate
@@ -128,11 +126,11 @@ struct Hud
 	std::vector<XMFLOAT2> barOffsets;
 };
 
-struct HudBuffer
+struct HudConstantBuffer
 {
 	XMFLOAT3 color;
 	float filler;
 	XMFLOAT2 barOffset; 
 	float viewport;
-
+	float filler2;
 };
