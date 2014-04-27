@@ -113,10 +113,10 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	VilkenVehicle.push_back(0);
 	VilkenVehicle.push_back(0);
 	SetAmountOfPlayers(4);
-	StartGame(0,VilkenVehicle,plajerwurld,plajercullur,t_World,t_Color);
+	//StartGame(0,VilkenVehicle,plajerwurld,plajercullur,t_World,t_Color);
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	//SelectVehicle();
+	SelectVehicle();
 
 
 
