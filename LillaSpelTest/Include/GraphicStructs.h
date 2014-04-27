@@ -67,8 +67,10 @@ struct DrawObject
 
 struct HudObject
 {
+	UINT vertexBufferID;
 	int textureID1;
 	int textureID2;
+	XMFLOAT2 barOffset;
 };
 
 struct Hud

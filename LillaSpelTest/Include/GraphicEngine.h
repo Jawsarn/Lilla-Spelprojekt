@@ -57,7 +57,7 @@ public:
 	HRESULT UpdateDynamicLight(UINT p_LightID,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius);
 
 	//hud functions //not yet implemented
-	void CreateHudTemplate(XMFLOAT3 p_Color, UINT &o_HudID );
+	void CreateHudTemplate(std::vector<UINT> p_ObjectIDs, XMFLOAT3 p_Color, UINT &o_HudID);
 	void AddHudObject(int p_TextureID1, int p_TextureID2,UINT p_HudID);
 	HRESULT CreateHudFromTemplate(UINT p_HudTemplateID, UINT o_HudID);
 	void UseHud(UINT p_Viewport, UINT p_HudI);

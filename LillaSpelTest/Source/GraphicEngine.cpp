@@ -847,7 +847,7 @@ HRESULT GraphicEngine::UpdateDynamicLight(UINT p_LightID, XMFLOAT3 p_Position, X
 //==========HUD functions====================//
 ///////////////////////////////////////////////
 
-void GraphicEngine::CreateHudTemplate(XMFLOAT3 p_Color, UINT &o_HudID)
+void GraphicEngine::CreateHudTemplate(std::vector<UINT> p_ObjectIDs, XMFLOAT3 p_Color, UINT &o_HudID)
 {
 	Hud t_NewHud;
 	t_NewHud.color = p_Color;

@@ -328,7 +328,6 @@ void GraphicHandle::StartGame(int p_WhatLevel,
 }
 void GraphicHandle::SelectVehicle()
 {
-
 	XMMATRIX t_WorldMat = XMMatrixTranslation(0,0,5*m_MeshShips.size());
 
 	XMFLOAT3 t_Color = XMFLOAT3(0,1,0);
