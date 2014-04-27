@@ -83,7 +83,7 @@ HRESULT GraphicEngine::Initialize( UINT p_Width, UINT p_Height, HWND handleWindo
 	hr = particleSystem->Initialize(device,deviceContext,depthStateOn,depthStateOff, blendStateOn, blendStateOff,perObjectBuffer);
 	if( FAILED( hr ) )
 		return hr;*/
-
+	
 	return hr;
 }
 
@@ -1262,6 +1262,8 @@ void GraphicEngine::DrawMenu()
 
 void GraphicEngine::DrawHud()
 {
+	//turn off depth checks
+
 	for (int i = 0; i < 4; i++)
 	{
 		if (m_ViewportHud[i] != -1)
@@ -1271,7 +1273,7 @@ void GraphicEngine::DrawHud()
 
 			for (int i = 0; i < t_ActiveHud->hudObjects.size(); i++)
 			{
-				
+				//maybe add a list of hudObjects into the CreateHudTemplate function, to create the buffer there which you can use later then? speak with others how they want it
 			}
 		}
 	}

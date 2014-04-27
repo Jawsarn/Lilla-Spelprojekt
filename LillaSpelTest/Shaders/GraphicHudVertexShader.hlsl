@@ -1,4 +1,11 @@
-float4 main( float4 pos : POSITION ) : SV_POSITION
+struct VS_INPUT
 {
-	return pos;
+	float2 position : POSITION;
+	float2 size		: SIZE;
+};
+
+
+VS_INPUT VS( VS_INPUT input )
+{
+	return input;
 }
