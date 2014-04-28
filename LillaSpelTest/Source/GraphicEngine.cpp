@@ -252,7 +252,7 @@ HRESULT GraphicEngine::CreateRasterizers()
 	desc.DepthBias = 0;
 	desc.SlopeScaledDepthBias = 0.0f;
 	desc.DepthBiasClamp = 0.0f;
-	desc.DepthClipEnable = true;
+	desc.DepthClipEnable = true; //changed
 	desc.ScissorEnable = false;
 	desc.MultisampleEnable = false;
 	desc.AntialiasedLineEnable = false;
@@ -567,7 +567,7 @@ HRESULT GraphicEngine::InitializeConstantBuffers()
 
 	m_DeviceContext->GSSetConstantBuffers(0,1, &m_PerFrameBuffer);
 	m_DeviceContext->GSSetConstantBuffers(1,1,&m_PerObjectBuffer);
-	m_DeviceContext->GSSetConstantBuffers(2,1,&m_HudConstantBuffer);
+	//m_DeviceContext->GSSetConstantBuffers(2,1,&m_HudConstantBuffer);
 
 	m_DeviceContext->PSSetConstantBuffers(1,1,&m_PerObjectBuffer);
 
@@ -977,7 +977,7 @@ HRESULT GraphicEngine::CreateHudFromTemplate(UINT p_HudTemplateID,  XMFLOAT3 p_C
 	}
 
 	m_Huds[o_HudID]->templateID = p_HudTemplateID;
-
+	m_Huds[o_HudID]->color = p_Color;
 	m_Huds[o_HudID]->firstTextureActive = std::vector<bool>(barOffsets.size(), true); //not sure if this is correct
 	m_Huds[o_HudID]->barOffsets = barOffsets;
 
@@ -1242,7 +1242,8 @@ void GraphicEngine::DrawOpaqueObjects()
 {
 	//need to set the render target here if changing elsewhere
 	//m_DeviceContext->OMSetRenderTargets(1, &m_RenderTargetView, m_DepthStencilView);
-	
+	m_DeviceContext->GSSetConstantBuffers(0,1, &m_PerFrameBuffer);
+
 	//set depth state on
 	m_DeviceContext->OMSetDepthStencilState(m_DepthStateOn,0);
 
@@ -1367,6 +1368,8 @@ void GraphicEngine::DrawMenu()
 
 void GraphicEngine::DrawHud()
 {
+	m_DeviceContext->GSSetConstantBuffers(0,1,&m_HudConstantBuffer);
+	
 	UINT strides = sizeof(HudVertex);
 	UINT offsets = 0;
 	
@@ -1397,8 +1400,7 @@ void GraphicEngine::DrawHud()
 				//update constant buffer
 				HudConstantBuffer t_Hcb;
 				t_Hcb.viewport = j;
-				t_Hcb.filler = 0;
-				t_Hcb.filler2 = 0;
+				t_Hcb.filler2 = XMFLOAT2(0, 0);
 				t_Hcb.color = m_Huds[m_ViewportHud[j]]->color;
 				t_Hcb.barOffset = m_Huds[m_ViewportHud[j]]->barOffsets[i];
 

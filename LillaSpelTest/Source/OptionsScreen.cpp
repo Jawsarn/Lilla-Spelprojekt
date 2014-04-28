@@ -56,3 +56,4 @@ void OptionsScreen::AlterVolume(UserCMD& p_userCMD)
 		}
 	}
 }
+
