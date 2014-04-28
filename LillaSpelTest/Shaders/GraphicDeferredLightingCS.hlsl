@@ -30,7 +30,7 @@ StructuredBuffer<Light> lights	:register(t4);
 //input textures
 Texture2D<float4> Normal_Depth	:register(t1);
 Texture2D<float4> DiffuseColor_Spec	:register(t2);
-Texture2D<float4> Specular	:register(t3);
+//Texture2D<float4> Specular	:register(t3);
 
 //output texture
 RWTexture2D<float4> output	:register(u0);
@@ -388,10 +388,10 @@ void CS( uint3 threadID		: SV_DispatchThreadID,
 		}
 	//}
 
-	if(Specular[globalCord].x == 1) 
-	{
+	/*if(Specular[globalCord].x == 1) 
+	{*/
 		output[threadID.xy] = float4(finalColor.x,finalColor.y,finalColor.z, 1);
-	}
+	//}
 
 
 	/*float4 lightPos = mul(float4(lights[1].position,1), View[viewport]);

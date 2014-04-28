@@ -37,7 +37,7 @@ public:
 
 	
 	
-	enum TextureType{DIFFUSE,NORMAL,GLOW,SPECULAR};
+	enum TextureType{DIFFUSE,NORMAL};
 
 	//object
 	HRESULT LoadMesh(std::string p_FileName, std::vector<UINT> &o_DrawPieceIDs);
@@ -117,6 +117,7 @@ private:
 	void ComputeTileDeferredLightning();
 	void UpdateConstantBuffer(); //not written
 	void DrawHud();
+	void ComputeGlow();
 
 	UINT CheckProgram(DrawPiece p_Piece);
 
@@ -145,10 +146,15 @@ private:
 	ID3D11DepthStencilState*	m_DepthStateNoWrite;
 	ID3D11SamplerState*			m_SamplerStateWrap;
 
+	//backbuffer uav
 	ID3D11UnorderedAccessView* m_BackBufferUAV;
+
+	//gbuffers diffuseSpec/normal + gloooowie
 	ID3D11ShaderResourceView* m_GbufferShaderResource[3];
 	ID3D11RenderTargetView* m_GbufferTargetViews[3];
 
+	//aaand the blur buffers/glow
+	ID3D11UnorderedAccessView* m_BlurBufferUAVs[2];
 
 	UINT m_Width;
 	UINT m_Height;

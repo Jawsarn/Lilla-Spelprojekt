@@ -229,8 +229,8 @@ void GraphicEngine::SetViewports()
 
 	D3D11_VIEWPORT vp;
 
-	vp.Width = m_Width;
-	vp.Height = m_Height;
+	vp.Width = (FLOAT)m_Width;
+	vp.Height = (FLOAT)m_Height;
 	vp.MinDepth = 0.0f;
 	vp.MaxDepth = 1.0f;
 	vp.TopLeftX = 0;
@@ -622,6 +622,23 @@ HRESULT GraphicEngine::InitializeGBuffers()
 
 	}
 
+
+
+	//for (int i = 0; i < 2; i++)
+	//{
+	//	ID3D11Texture2D* t_Texture = 0;
+
+	//	hr = m_Device->CreateTexture2D(&desc, 0, &t_Texture);
+	//	if( FAILED( hr ) )
+	//		return hr;
+
+	//	hr = m_Device->CreateUnorderedAccessView(t_Texture, nullptr, &m_BlurBufferUAVs[i]);
+	//	if( FAILED( hr) )
+	//		return hr;
+
+	//	t_Texture->Release();
+	//}
+
 	
 	// Views save a reference to the texture so we can release our reference.
 	
@@ -682,7 +699,7 @@ HRESULT GraphicEngine::LoadMesh(std::string p_FileName, std::vector<UINT> &o_Dra
 	D3D11_SUBRESOURCE_DATA t_VinitData;
 	ZeroMemory( &t_VinitData, sizeof(t_VinitData));
 
-	for (int i = 0; i < t_VertexGroupLists.size(); i++)
+	for (UINT i = 0; i < t_VertexGroupLists.size(); i++)
 	{
 		//create the buffer
 		ID3D11Buffer* t_NewVertexBuffer;
@@ -702,7 +719,8 @@ HRESULT GraphicEngine::LoadMesh(std::string p_FileName, std::vector<UINT> &o_Dra
 		//create a new draw piece and add to output
 		DrawPiece t_DrawPiece;
 		t_DrawPiece.vertexBufferID = (m_VertexBuffers.size() - 1);
-
+		t_DrawPiece.diffuseTID = -1;
+		t_DrawPiece.normalTID = -1;
 		m_DrawPieces.push_back(t_DrawPiece);
 
 		o_DrawPieceIDs.push_back(m_DrawPieces.size() -1);
@@ -725,12 +743,6 @@ HRESULT GraphicEngine::AddTextureToDrawPiece(UINT p_DrawPieceID,UINT p_TextureID
 		break;
 	case GraphicEngine::NORMAL:
 		m_DrawPieces[p_DrawPieceID].normalTID = p_TextureID;
-		break;
-	case GraphicEngine::GLOW:
-		m_DrawPieces[p_DrawPieceID].glowTID = p_TextureID;
-		break;
-	case GraphicEngine::SPECULAR:
-		m_DrawPieces[p_DrawPieceID].specularTID = p_TextureID;
 		break;
 	default:
 		break;
@@ -769,6 +781,7 @@ HRESULT GraphicEngine::CreateDrawObject(std::vector<UINT> p_DrawPieceIDs, CXMMAT
 	{
 		//add code
 	}
+	return S_OK;
 }
 
 HRESULT GraphicEngine::AddObjectLight(UINT p_ObjectID ,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius, UINT &o_LightID)
@@ -1097,8 +1110,8 @@ void GraphicEngine::SetViewportAmount(int p_NumOfViewports)
 	{
 		D3D11_VIEWPORT t_Vp;
 
-		t_Vp.Width = m_Width;
-		t_Vp.Height = m_Height;
+		t_Vp.Width = (FLOAT)m_Width;
+		t_Vp.Height = (FLOAT)m_Height;
 		t_Vp.MinDepth = 0.0f;
 		t_Vp.MaxDepth = 1.0f;
 		t_Vp.TopLeftX = 0;
@@ -1112,15 +1125,15 @@ void GraphicEngine::SetViewportAmount(int p_NumOfViewports)
 
 		for (int i = 0; i < 2; i++)
 		{
-			t_Vp[i].Width = m_Width/2;
-			t_Vp[i].Height = m_Height;
+			t_Vp[i].Width = (FLOAT)m_Width/2;
+			t_Vp[i].Height = (FLOAT)m_Height;
 			t_Vp[i].MinDepth = 0.0f;
 			t_Vp[i].MaxDepth = 1.0f;
 			t_Vp[i].TopLeftY = 0;
 		}
 		
 		t_Vp[0].TopLeftX = 0;
-		t_Vp[1].TopLeftX = m_Width/2;
+		t_Vp[1].TopLeftX = (FLOAT)m_Width/2;
 		
 
 		m_DeviceContext->RSSetViewports( 2, t_Vp );
@@ -1131,18 +1144,18 @@ void GraphicEngine::SetViewportAmount(int p_NumOfViewports)
 
 		for (int i = 0; i < 3; i++)
 		{
-			t_Vp[i].Width = m_Width/2;
-			t_Vp[i].Height = m_Height/2;
+			t_Vp[i].Width = (FLOAT)m_Width/2;
+			t_Vp[i].Height = (FLOAT)m_Height/2;
 			t_Vp[i].MinDepth = 0.0f;
 			t_Vp[i].MaxDepth = 1.0f;
 		}
 		
 		t_Vp[0].TopLeftX = 0;
 		t_Vp[0].TopLeftY = 0;
-		t_Vp[1].TopLeftX = m_Width/2;;
+		t_Vp[1].TopLeftX = (FLOAT)m_Width/2;;
 		t_Vp[1].TopLeftY = 0;
 		t_Vp[2].TopLeftX = 0;
-		t_Vp[2].TopLeftY = m_Height/2;
+		t_Vp[2].TopLeftY = (FLOAT)m_Height/2;
 
 		m_DeviceContext->RSSetViewports( 3, t_Vp );
 	}
@@ -1152,27 +1165,27 @@ void GraphicEngine::SetViewportAmount(int p_NumOfViewports)
 
 		for (int i = 0; i < 4; i++)
 		{
-			t_Vp[i].Width = m_Width/2;
-			t_Vp[i].Height = m_Height/2;
+			t_Vp[i].Width = (FLOAT)m_Width/2;
+			t_Vp[i].Height = (FLOAT)m_Height/2;
 			t_Vp[i].MinDepth = 0.0f;
 			t_Vp[i].MaxDepth = 1.0f;
 		}
 		
 		t_Vp[0].TopLeftX = 0;
 		t_Vp[0].TopLeftY = 0;
-		t_Vp[1].TopLeftX = m_Width/2;
+		t_Vp[1].TopLeftX = (FLOAT)m_Width/2;
 		t_Vp[1].TopLeftY = 0;
 		t_Vp[2].TopLeftX = 0;
-		t_Vp[2].TopLeftY = m_Height/2;
-		t_Vp[3].TopLeftX = m_Width/2;
-		t_Vp[3].TopLeftY = m_Height/2;
+		t_Vp[2].TopLeftY = (FLOAT)m_Height/2;
+		t_Vp[3].TopLeftX = (FLOAT)m_Width/2;
+		t_Vp[3].TopLeftY = (FLOAT)m_Height/2;
 
 		m_DeviceContext->RSSetViewports( 4, t_Vp );
 	}
 
-	if (0 < p_NumOfViewports < 5)
+	if (0 < p_NumOfViewports && p_NumOfViewports < 5)
 	{
-		m_NumberOfViewports = p_NumOfViewports;
+		m_NumberOfViewports = (FLOAT)p_NumOfViewports;
 	}
 	
 }
@@ -1318,6 +1331,10 @@ void GraphicEngine::SetTextures(DrawPiece p_DrawPiece)
 	{
 		m_DeviceContext->PSSetShaderResources(0, 1, &m_Textures[p_DrawPiece.diffuseTID]);
 	}
+	if (p_DrawPiece.normalTID != -1)
+	{
+		m_DeviceContext->PSSetShaderResources(1, 1, &m_Textures[p_DrawPiece.normalTID]);
+	}
 	//add the other textures
 }
 
@@ -1334,15 +1351,15 @@ void GraphicEngine::ComputeTileDeferredLightning()
 	t_Pcb.camNearFar = XMFLOAT2(1.0f,10000); //HÅRDKODNING DELUX
 	if (m_NumberOfViewports > 2)
 	{
-		t_Pcb.screenDimensions = XMFLOAT2(m_Width/2, m_Height/2);
+		t_Pcb.screenDimensions = XMFLOAT2((FLOAT)m_Width/2, (FLOAT)m_Height/2);
 	}
 	else if (m_NumberOfViewports == 2)
 	{
-		t_Pcb.screenDimensions = XMFLOAT2(m_Width/2, m_Height);
+		t_Pcb.screenDimensions = XMFLOAT2((FLOAT)m_Width/2, (FLOAT)m_Height);
 	}
 	else
 	{
-		t_Pcb.screenDimensions = XMFLOAT2(m_Width, m_Height);
+		t_Pcb.screenDimensions = XMFLOAT2((FLOAT)m_Width, (FLOAT)m_Height);
 	}
 	
 	m_DeviceContext->UpdateSubresource(m_PerComputeBuffer,0,nullptr, &t_Pcb,0,0);
@@ -1398,13 +1415,13 @@ void GraphicEngine::DrawHud()
 			
 			HudTemplate t_ActiveHudTemplate = m_HudTemplates[m_Huds[m_ViewportHud[j]]->templateID];
 
-			for (int i = 0; i < t_ActiveHudTemplate.hudObjects.size(); i++)
+			for (UINT i = 0; i < t_ActiveHudTemplate.hudObjects.size(); i++)
 			{
 				HudObject t_CurHudObject = m_HudObjects[t_ActiveHudTemplate.hudObjects[i]];
 
 				//update constant buffer
 				HudConstantBuffer t_Hcb;
-				t_Hcb.viewport = j;
+				t_Hcb.viewport = (FLOAT)j;
 				t_Hcb.filler2 = XMFLOAT2(0, 0);
 				t_Hcb.color = m_Huds[m_ViewportHud[j]]->color;
 				t_Hcb.barOffset = m_Huds[m_ViewportHud[j]]->barOffsets[i];
@@ -1433,6 +1450,11 @@ void GraphicEngine::DrawHud()
 			}
 		}
 	}
+}
+
+void GraphicEngine::ComputeGlow()
+{
+
 }
 
 UINT GraphicEngine::CheckProgram(DrawPiece p_Piece)

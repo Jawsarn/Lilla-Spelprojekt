@@ -48,8 +48,6 @@ struct DrawPiece
 	UINT vertexBufferID; //VertexBufferWithNOV
 	int diffuseTID;
 	int normalTID;
-	int glowTID;
-	int specularTID;
 	UINT shaderProgramID;
 };
 
