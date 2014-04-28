@@ -59,8 +59,17 @@ void Player::UpdatePosition(float p_dt, UserCMD p_userCMD)
 	m_position = t_mathHelper.FloatMultiVec(p_dt,t_mathHelper.FloatMultiVec(m_speed,m_direction));
 }
 
-void Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
+int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 {
+	
+	MathHelper t_mathHelper;
+	//m_position = m_mapNode->m_position;
+	//m_direction = t_mathHelper.Normalize(m_mapNode->m_normal);
+	//m_upVector = XMFLOAT3(0,1,0);
+	
+
+	m_direction = XMFLOAT3(0,0,1);
+
 	////silly boost thingy
 	if(p_userCMD.aButtonPressed)
 		m_speed = 200;
@@ -71,7 +80,7 @@ void Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 	else 
 		m_speed = 0;
 
-	MathHelper t_mathHelper;
+
 	//adds distance from the current node based on speed and time since last update
 	m_distance+=m_speed*p_dt;
 	//Checks of distance exceeds distance to new node. In other words, if the player "overshoots" the next node
@@ -86,9 +95,7 @@ void Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 	XMFLOAT3 t_vectorToMove = t_mathHelper.FloatMultiVec(m_distance, t_nodeNormalDirection);
 
 	m_position = t_mathHelper.VecAddVec(m_mapNode->m_position, t_vectorToMove);
-	
-	
-
+	//now following middle spline
 
 
 	//interpolate normals between current and previous
@@ -97,26 +104,45 @@ void Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 	XMFLOAT3 t_frontNormalComponent = t_mathHelper.FloatMultiVec(t_interpolation, t_mathHelper.Normalize(m_mapNode->m_nextNode->m_normal));
 	XMFLOAT3 t_currentNormalComponent = t_mathHelper.FloatMultiVec(1-t_interpolation,t_mathHelper.Normalize(m_mapNode->m_normal));
 	m_direction = t_mathHelper.Normalize( t_mathHelper.VecAddVec(t_frontNormalComponent, t_currentNormalComponent));
-	//m_direction = m_mapNode->m_normal;
+	//now looking along the interpolated normal between current node and next node 
 
-	
-	FixUpVectorRotation(p_userCMD.Joystick.x/20/*m_angle*/);
+	static float angle = 0;
+	angle += p_userCMD.Joystick.x/20;
+	FixUpVectorRotation(angle);
+	//now rotating around the normal. Not yet properly implemented
+
 	FixOffsetFromCenterSpline();
-	UpdateCollisionBox();
+	//now offset from the center, following the tube edge
 
+	UpdateWorldMatrix();
+	//Matrix now updates. Ready to be grabbed from the gamescreen
+
+	UpdateCollisionBox();
+	
+	static float cooldownTimer = 0;
+	cooldownTimer -= 0.1;
+	if(p_userCMD.rightTriggerPressed && cooldownTimer <=0)
+	{
+		PlaceWall();
+		cooldownTimer = 10;
+		return 1;
+	}
+	return 0;
 }
 
-XMMATRIX Player::GetWorldMatrix()
+void Player::UpdateWorldMatrix()
 {
 	XMFLOAT3 t_position = XMFLOAT3(m_position.x, m_position.y, m_position.z);
 	XMVECTOR t_eye = XMLoadFloat3(&t_position);
 	XMVECTOR t_target = XMLoadFloat3(&m_direction);
 	XMVECTOR t_up = XMLoadFloat3(&m_upVector);
 
-	XMMATRIX r_worldMatrix = XMMatrixLookToLH(t_eye, t_target, t_up);
+	m_worldMatrix = XMMatrixLookToLH(t_eye, t_target, t_up);
+}
 
-	return r_worldMatrix;
-
+XMMATRIX Player::GetWorldMatrix()
+{
+	return m_worldMatrix;
 }
 
 MapNode* Player::GetCurrentMapNode()
@@ -129,6 +155,10 @@ BoundingOrientedBox* Player::GetCollisionBox()
 	return &m_box;
 }
 
+PlayerWall* Player::GetLastPlacedWall()
+{
+	return m_lastPlacedWall;	
+}
 
 std::vector<BoundingOrientedBox*> Player::GetWallsToCheck()
 {
@@ -156,16 +186,21 @@ void Player::ChangeState(PlayerState p_state)
 
 void Player::PlaceWall()
 {
+	m_lastPlacedWall = new PlayerWall(XMFLOAT3(0,1,0), m_worldMatrix, m_position);
+	m_placedWalls.push_back(m_lastPlacedWall);
+	m_mapNode->m_playerWalls.push_back(m_lastPlacedWall);
 }
 
 void Player::FixUpVectorRotation(float p_angle)
 {
 	MathHelper t_mathHelper = MathHelper();
 
+	//Rotates the radius vector with angle around the normal/direction. Sets it to the up vector. Azooka made uber-hax.
 	XMMATRIX t_rotationmatrix = XMMatrixRotationAxis(XMLoadFloat3(&t_mathHelper.Normalize( m_mapNode->m_normal)), p_angle);
-	XMVECTOR t_upVector = XMLoadFloat3(&m_upVector);
+	XMVECTOR t_upVector = XMLoadFloat3(&m_mapNode->m_radiusVector);
 	t_upVector = XMVector3Transform(t_upVector, t_rotationmatrix);
 	XMStoreFloat3(&m_upVector, t_upVector);
+	m_upVector = t_mathHelper.Normalize(m_upVector);
 }
 
 void Player::FixOffsetFromCenterSpline()
@@ -187,7 +222,7 @@ void Player::UpdateCollisionBox()
 	XMStoreFloat4(&t_quarternion, t_boxOrientationVector);
 
 	m_box.Center = m_position;
-	m_box.Extents = XMFLOAT3(10,10,10); //////TEMPEXTENTSLOL
+	m_box.Extents = XMFLOAT3(1,1,1); //////TEMPEXTENTSLOL
 	m_box.Orientation = t_quarternion;
 
 

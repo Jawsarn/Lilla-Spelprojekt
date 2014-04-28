@@ -51,7 +51,7 @@ void Run()
 {
 	std::vector<UserCMD> *userCMDS = new std::vector<UserCMD>();
 	UserCMDHandler userCMDHandler = UserCMDHandler();
-	GameScreen gameScreen = GameScreen("curvetest2", 4, m_GraphicHandle);
+	GameScreen gameScreen = GameScreen("highway", 4, m_GraphicHandle);
 	for (int i = 0; i < 4; i++)
 	{
 		UserCMD t_userCMD = UserCMD(i);
@@ -59,7 +59,7 @@ void Run()
 	}
 	
 
-	MysteriskTest t_Mtest = MysteriskTest(m_GraphicHandle);
+	//MysteriskTest t_Mtest = MysteriskTest(m_GraphicHandle);
 
 
 	//message game loop
@@ -74,11 +74,11 @@ void Run()
 		}
 		else  //if there are no messages, update and draw
 		{
-			AzookaTest t_azookaTest = AzookaTest();
+			//AzookaTest t_azookaTest = AzookaTest();
 			//t_azookaTest.Run();
 
 			
-			t_Mtest.Run(userCMDS,m_DeltaTime);
+			//t_Mtest.Run(userCMDS,m_DeltaTime);
 
 
 			for (int i = 0; i < 4; i++) ///Fixes UserCMDs for all connected players

@@ -27,7 +27,7 @@ MainMenuScreen::MainMenuScreen(GraphicHandle* p_graphicsHandle)
 	m_graphicHandle->CreateHudTemplate(t_buttonHandles,t_templateHandle);
 	m_graphicHandle->CreateHudFromTemplate(t_templateHandle,DirectX::XMFLOAT3(0,1,0),t_barOffsets,m_hudHandle);
 	//m_graphicHandle->SetViewportAmount(2);
-	m_graphicHandle->UseHud(0,m_hudHandle);
+	//m_graphicHandle->UseHud(0,m_hudHandle);
 }
 
 MainMenuScreen::~MainMenuScreen(void)
