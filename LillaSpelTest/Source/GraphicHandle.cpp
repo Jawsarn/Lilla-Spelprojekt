@@ -28,7 +28,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 
 	//load a diffuse texture
 	UINT diffuseBollTestTexture;
-	m_GraphicEngine->LoadTexture(L"LampColSpec.dds", diffuseBollTestTexture);
+	m_GraphicEngine->LoadTexture(L"tubetexture1.dds", diffuseBollTestTexture);
 
 
 
@@ -76,7 +76,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	//load a tube texture mesh 
 
 
-	m_GraphicEngine->LoadMesh("curveTest2.obj",t_ObjTemp);
+	m_GraphicEngine->LoadMesh("highway.obj",t_ObjTemp);
 
 	m_MeshLevels.push_back(t_ObjTemp);
 
@@ -116,7 +116,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 
 
 	//////////////////////////////////////////////////////////////TEST!!!!!!!!!!!!!!!!!!!///////////////////////////
-	XMMATRIX t_Mat = XMMatrixTranslation(0,0,0)* XMMatrixScaling(5,5,5);
+	XMMATRIX t_Mat = XMMatrixTranslation(0,0,0)* XMMatrixScaling(1,1,1);
 	XMMATRIX t_World=t_Mat;
 	//XMMATRIX t_MajsMat=XMMatrixTranslation(100,100,100);
 	XMFLOAT3 t_Color = XMFLOAT3(0,1,0);

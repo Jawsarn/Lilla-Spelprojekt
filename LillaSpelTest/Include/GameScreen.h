@@ -1,6 +1,6 @@
 #pragma once
 #include "screen.h"
-#include "MapNode.h"
+#include "Struct_MapNode.h"
 #include "Player.h"
 #include "MapLoader.h"
 #include "CollisionManager.h"
