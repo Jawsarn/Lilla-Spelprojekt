@@ -155,7 +155,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	//UINT t_temptest;
 	//CreateWall(0,plajerwurld[0],t_temptest,0);
 	//RemoveObject(t_temptest);
-	//SelectVehicle();
+	SelectVehicle();
 
 
 
@@ -502,6 +502,29 @@ void GraphicHandle::InitializeWall(std::string p_PlayerWallStringName, UINT p_Te
 		m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[0],p_Texture,GraphicEngine::TextureType::DIFFUSE);
 	}
 }
+
+
+void GraphicHandle::LoadTexture(const wchar_t* p_FileName, UINT &o_TextureID)
+{
+	m_GraphicEngine->LoadTexture(p_FileName, o_TextureID);
+}
+
+void GraphicHandle::SetViewportAmount(UINT p_ViewportAmount)
+{
+	m_GraphicEngine->SetViewportAmount(p_ViewportAmount);
+}
+
+//hud functions
+//
+//void GraphicHandle::CreateHUD(UINT &o_HUDID)
+//{
+//
+//}
+
+//void GraphicHandle::CreateHUD(UINT &o_HUDID)
+//{
+//
+//}
 void GraphicHandle::RemoveObject(UINT p_RemoveAt)
 {
 	m_GraphicEngine->RemoveObject(p_RemoveAt);
@@ -509,10 +532,6 @@ void GraphicHandle::RemoveObject(UINT p_RemoveAt)
 
 //hud functions
 
-//void GraphicHandle::CreateHUD(UINT &o_HUDID)
-//{
-//
-//}
 
 void GraphicHandle::CreateHUDObject(XMFLOAT2 p_Position, XMFLOAT2 p_Offset, int p_TextureID1, int p_TextureID2, UINT &o_HudObjectID)
 {
@@ -533,3 +552,4 @@ void GraphicHandle::UseHud(UINT p_ViewportID, UINT p_HudID)
 {
 	m_GraphicEngine->UseHud(p_ViewportID, p_HudID);
 }
+

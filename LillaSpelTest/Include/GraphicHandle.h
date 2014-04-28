@@ -91,9 +91,15 @@ public:
 	
 	UINT CreateWall(int p_WhatWall,CXMMATRIX p_PlayerWallWorld,int p_WhatPlayer);
 	void InitializeWall(std::string p_PlayerWallStringName, UINT p_Texture);
+
+
+	void SetViewportAmount(UINT p_ViewportAmount);
+	void LoadTexture(const wchar_t* p_FileName, UINT &o_TextureID);
+
 	
 	
 	void RemoveObject(UINT p_RemoveAt);
+
 
 	//hud functions
 	void CreateHUD(UINT &o_HUDID);

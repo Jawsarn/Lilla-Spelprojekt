@@ -3,11 +3,6 @@
 
 GameSetupScreen::GameSetupScreen(void)
 {
-	AddButton("Start", DirectX::XMFLOAT2(0,-0.7),0.1,0.1);
-
-	FixButtonPointers();
-	currentButton = buttonList[0];
-	currentMap = 0;
 }
 
 
@@ -18,7 +13,7 @@ GameSetupScreen::~GameSetupScreen(void)
 GameSetupScreen::GameSetupScreen(GameInfo* p_gameInfo,GraphicHandle* p_graphicsHandle)
 	:MenuScreen(p_gameInfo, p_graphicsHandle)
 {
-	AddButton("Start", DirectX::XMFLOAT2(0,-0.7),0.1,0.1);
+	AddButton("Start", DirectX::XMFLOAT2(0,-0.7),0.1,0.1, L"Start1.jpg",L"Start2.jpg");
 
 	FixButtonPointers();
 	currentButton = buttonList[0];

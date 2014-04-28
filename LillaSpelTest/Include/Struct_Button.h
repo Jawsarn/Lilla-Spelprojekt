@@ -11,10 +11,10 @@ struct Button
 	Button* leftButton;
 	Button* rightButton;
 
-	DirectX::XMFLOAT2 upperLeftCorner;
-	DirectX::XMFLOAT2 lowerRightCorner;
+	DirectX::XMFLOAT2 offset;
 	DirectX::XMFLOAT2 centerPoint;
 
+	unsigned int buttonHandle;
 	Button()
 	{
 		upButton = nullptr;

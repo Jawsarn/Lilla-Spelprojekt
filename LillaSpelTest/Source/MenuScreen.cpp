@@ -76,14 +76,19 @@ std::string MenuScreen::NavigateMenu(UserCMD& p_userCMD)
 	return ""; 
 }
 
-void MenuScreen::AddButton(std::string p_buttonName, DirectX::XMFLOAT2 p_centerPoint, float offsetX, float offsetY)
+void MenuScreen::AddButton(std::string p_buttonName, DirectX::XMFLOAT2 p_centerPoint, float offsetX, float offsetY,const wchar_t* texture1, const wchar_t* texture2)
 {
 	Button t_button;
 	t_button.centerPoint = p_centerPoint;
-	t_button.upperLeftCorner = DirectX::XMFLOAT2(p_centerPoint.x-offsetX, p_centerPoint.y + offsetY);
-	t_button.lowerRightCorner = DirectX::XMFLOAT2(p_centerPoint.x+offsetX, p_centerPoint.y - offsetY);
+	t_button.offset = DirectX::XMFLOAT2(offsetX,offsetY);
 	t_button.buttonName = p_buttonName;
 	buttonList.push_back(new Button(t_button));
+
+	unsigned int t_t1 = 35;
+	unsigned int t_t2 = 35;
+	m_graphicHandle->LoadTexture(texture1,t_t1);
+	m_graphicHandle->LoadTexture(texture2,t_t2);
+	m_graphicHandle->CreateHUDObject(buttonList[0]->centerPoint,buttonList[0]->offset,t_t1,t_t2,buttonList[0]->buttonHandle);
 }
 
 void MenuScreen::FixButtonPointers()
