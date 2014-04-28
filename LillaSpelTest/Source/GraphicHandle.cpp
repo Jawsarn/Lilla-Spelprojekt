@@ -195,29 +195,29 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	//m_GraphicEngine->MoveCamera(m_CameraID[2], 100,0,0,0,0);
 	//m_GraphicEngine->SetCamera(m_CameraID[3], XMFLOAT3(0, 0, -120),XMFLOAT3(0, 0, 1),XMFLOAT3(0, 1, 0));
 
-	////////////JAWS KOD////////////////
+	//////////////JAWS KOD////////////////
 
-	UINT t_LightID;
-	m_GraphicEngine->CreateStaticLight(XMFLOAT3(0,0,100), XMFLOAT3(1,1,1), 150, t_LightID);
+	//UINT t_LightID;
+	//m_GraphicEngine->CreateStaticLight(XMFLOAT3(0,0,100), XMFLOAT3(1,1,1), 150, t_LightID);
 
-	UINT t_jawsObjTEMPID;
-	m_GraphicEngine->CreateHudObject(XMFLOAT2(0, 0),XMFLOAT2(0.5, 0.5), 0, 0, t_jawsObjTEMPID);
-	std::vector<UINT> t_Temptemplist;
-	t_Temptemplist.push_back(t_jawsObjTEMPID);
+	//UINT t_jawsObjTEMPID;
+	//m_GraphicEngine->CreateHudObject(XMFLOAT2(0, 0),XMFLOAT2(0.5, 0.5), 0, 0, t_jawsObjTEMPID);
+	//std::vector<UINT> t_Temptemplist;
+	//t_Temptemplist.push_back(t_jawsObjTEMPID);
 
-	UINT t_jawsHUDTEMPTEMP;
-	m_GraphicEngine->CreateHudTemplate(t_Temptemplist, t_jawsHUDTEMPTEMP);
+	//UINT t_jawsHUDTEMPTEMP;
+	//m_GraphicEngine->CreateHudTemplate(t_Temptemplist, t_jawsHUDTEMPTEMP);
 
-	std::vector<XMFLOAT2> t_JawsBAROFFSETS;
-	t_JawsBAROFFSETS.push_back(XMFLOAT2(0,0));
+	//std::vector<XMFLOAT2> t_JawsBAROFFSETS;
+	//t_JawsBAROFFSETS.push_back(XMFLOAT2(0,0));
 
-	UINT t_jawsREALHUD;
-	m_GraphicEngine->CreateHudFromTemplate(t_jawsHUDTEMPTEMP,XMFLOAT3(0,1,0), t_JawsBAROFFSETS, t_jawsREALHUD);
+	//UINT t_jawsREALHUD;
+	//m_GraphicEngine->CreateHudFromTemplate(t_jawsHUDTEMPTEMP,XMFLOAT3(0,1,0), t_JawsBAROFFSETS, t_jawsREALHUD);
 
-	m_GraphicEngine->UseHud(0, t_jawsREALHUD);
-	m_GraphicEngine->UseHud(1, t_jawsREALHUD);
-	m_GraphicEngine->UseHud(2, t_jawsREALHUD);
-	m_GraphicEngine->UseHud(3, t_jawsREALHUD);
+	//m_GraphicEngine->UseHud(0, t_jawsREALHUD);
+	//m_GraphicEngine->UseHud(1, t_jawsREALHUD);
+	//m_GraphicEngine->UseHud(2, t_jawsREALHUD);
+	//m_GraphicEngine->UseHud(3, t_jawsREALHUD);
 
 	//for (int i = 0; i < 6; i++)
 	//{
@@ -434,14 +434,7 @@ void GraphicHandle::SetColourAndVehicle(std::vector<UINT> p_PlayerColour,std::ve
 	m_Player=p_PlayerVehicle;
 	m_PlayerColour=p_PlayerColour;
 }
-void GraphicHandle::CreateHUD(UINT &o_HUDID)
-{
 
-}
-void GraphicHandle::CreateHUDObject(UINT p_HUDID,XMFLOAT2 p_LowerRight, XMFLOAT2 p_UpperLeft,std::string p_TextureName,std::string p_TextureNameActive,UINT &o_HUDIDObject)
-{
-
-}
 void GraphicHandle::ChangeTexture(UINT p_HUDIDObj)
 {
 	//byta texture tillgrabben
@@ -501,3 +494,29 @@ void GraphicHandle::InitializeWall(std::string p_PlayerWallStringName, UINT p_Te
 }
 
 
+//hud functions
+
+void GraphicHandle::CreateHUD(UINT &o_HUDID)
+{
+
+}
+
+void GraphicHandle::CreateHUDObject(XMFLOAT2 p_Position, XMFLOAT2 p_Offset, int p_TextureID1, int p_TextureID2, UINT &o_HudObjectID)
+{
+	m_GraphicEngine->CreateHudObject(p_Position, p_Offset, p_TextureID1 , p_TextureID2, o_HudObjectID);
+}
+
+void GraphicHandle::CreateHudTemplate(std::vector<UINT> p_HudObjects, UINT& o_TemplateID)
+{
+	m_GraphicEngine->CreateHudTemplate(p_HudObjects, o_TemplateID);
+}
+
+void GraphicHandle::CreateHudFromTemplate(UINT p_HudTemplate, XMFLOAT3 p_Color, std::vector<XMFLOAT2> p_BarOffsets, UINT &o_HudID)
+{
+	m_GraphicEngine->CreateHudFromTemplate(p_HudTemplate, p_Color, p_BarOffsets, o_HudID);
+}
+
+void GraphicHandle::UseHud(UINT p_ViewportID, UINT p_HudID)
+{
+	m_GraphicEngine->UseHud(p_ViewportID, p_HudID);
+}
