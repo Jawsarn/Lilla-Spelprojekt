@@ -53,7 +53,12 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 
 	////initWallTextures
 	m_GraphicEngine->LoadTexture(L"Wall.dds",t_TempurTextur);
-	m_LevelTexture.push_back(t_TempurTextur);
+	m_PlayerWallTexture.push_back(t_TempurTextur);
+
+
+
+
+
 
 	/////////////////////////////InitLevelMesh 
 	//detta borde vara the shizzleeeeee
@@ -69,7 +74,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 
 
 	//load a tube texture mesh 
-	
+
 
 	m_GraphicEngine->LoadMesh("curveTest2.obj",t_ObjTemp);
 
@@ -91,6 +96,9 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	InitializeShip("spaceship2.obj",m_ShipTexture[2]);
 
 	////init walls
+	InitializeWall("Wall.obj",m_PlayerWallTexture[0]);
+
+
 
 
 
@@ -144,7 +152,11 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	//StartGame(0,VilkenVehicle,plajerwurld,plajercullur,t_World,t_Color);
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	SelectVehicle();
+		//test 
+	UINT t_temptest;
+	CreateWall(0,plajerwurld[0],t_temptest,0);
+
+	//SelectVehicle();
 
 
 
@@ -464,24 +476,24 @@ void GraphicHandle::InitializeShip(std::string p_ShipStringName, UINT p_Texture)
 		m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[0],p_Texture,GraphicEngine::TextureType::DIFFUSE);
 	}
 }
-
-	void GraphicHandle::CreateWalls(int p_WhatWall,
-							  std::vector<XMMATRIX> p_PlayerWallWorld,
-							  int p_WhatPlayer)
+void GraphicHandle::CreateWall(int p_WhatWall,
+								CXMMATRIX p_PlayerWallWorld,
+								UINT & o_WhatWall,
+								int p_WhatPlayer)
 {
-	for (int i = 0; i < p_PlayerWallWorld.size(); i++)
-	{
+
 		m_GraphicEngine->CreateDrawObject(
 			m_MeshPlayerWall[p_WhatWall],
-			p_PlayerWallWorld[i],
+			p_PlayerWallWorld,
 			m_Colours[m_PlayerColour[p_WhatPlayer]],true, 
-			m_PlayerWalls[p_WhatPlayer]);
+		o_WhatWall);
 		//LightStruct t_LightStruct;
 		//t_LightStruct.m_Color=m_Colours[m_PlayerColour[i]];//vi skcikar in en färg men kräver att dne har färg i lightstruct
 		//t_LightStruct.m_LightID=m_PlayerLight[i];//samma här xD
 		//t_LightStruct.m_Position=XMFLOAT3(//ta varje startnissesposition o bajsa lite under dem
 		//CreateLight(m_Player[i],m_Colours[m_PlayerColour[i]],m_PlayerLight[i],);//
-	}
+	
+
 }
 
 void GraphicHandle::InitializeWall(std::string p_PlayerWallStringName, UINT p_Texture)

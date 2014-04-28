@@ -24,7 +24,7 @@ private:
 
 	
 	std::vector<UINT> m_Player;
-	std::vector<UINT> m_PlayerWalls;
+	//std::vector<UINT> m_PlayerWalls;
 	std::vector<UINT> m_PlayerColour;
 	std::vector<UINT> m_PlayerLight;
 	UINT m_CurrentLevel;
@@ -89,7 +89,7 @@ public:
 	void SetAmountOfPlayers(int p_NrOfPlayers);
 	void SetCameraVehicleSelection(UINT p_CameraLogicID);
 	void InitializeShip(std::string p_ShipStringName, UINT p_Texture);
-	void CreateWalls(int p_WhatWall,std::vector<XMMATRIX> p_PlayerWallWorld,int p_WhatPlayer);
+	void CreateWall(int p_WhatWall,CXMMATRIX p_PlayerWallWorld,UINT & o_WhatWall,int p_WhatPlayer);
 	void InitializeWall(std::string p_PlayerWallStringName, UINT p_Texture);
 
 };
