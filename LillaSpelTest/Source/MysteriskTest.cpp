@@ -31,11 +31,9 @@ MysteriskTest::MysteriskTest(void)
 
 MysteriskTest::MysteriskTest(GraphicHandle* grphandle)
 {
-	setuptest = GameSetupScreen();
-	jointest = JoinGameScreen();
 	gameSetup = new GameSetupScreen(&gameInfo, grphandle);
 	joinGame = new JoinGameScreen(&gameInfo, grphandle);
-	mainMenu = new MainMenuScreen();
+	mainMenu = new MainMenuScreen(grphandle);
 	state = JOIN_GAME_SCREEN;
 }
 

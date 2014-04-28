@@ -90,6 +90,8 @@ public:
 	void CreateWalls(int p_WhatWall,std::vector<XMMATRIX> p_PlayerWallWorld,int p_WhatPlayer);
 	void InitializeWall(std::string p_PlayerWallStringName, UINT p_Texture);
 
+	void SetViewportAmount(UINT p_ViewportAmount);
+	void LoadTexture(const wchar_t* p_FileName, UINT &o_TextureID);
 
 	//hud functions
 	void CreateHUDObject(XMFLOAT2 p_Position, XMFLOAT2 p_Offset, int p_TextureID1, int p_TextureID2, UINT &o_HudObjectID);

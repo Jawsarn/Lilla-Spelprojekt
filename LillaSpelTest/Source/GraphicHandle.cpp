@@ -492,13 +492,22 @@ void GraphicHandle::InitializeWall(std::string p_PlayerWallStringName, UINT p_Te
 	}
 }
 
+void GraphicHandle::LoadTexture(const wchar_t* p_FileName, UINT &o_TextureID)
+{
+	m_GraphicEngine->LoadTexture(p_FileName, o_TextureID);
+}
+
+void GraphicHandle::SetViewportAmount(UINT p_ViewportAmount)
+{
+	m_GraphicEngine->SetViewportAmount(p_ViewportAmount);
+}
 
 //hud functions
-
-void GraphicHandle::CreateHUD(UINT &o_HUDID)
-{
-
-}
+//
+//void GraphicHandle::CreateHUD(UINT &o_HUDID)
+//{
+//
+//}
 
 void GraphicHandle::CreateHUDObject(XMFLOAT2 p_Position, XMFLOAT2 p_Offset, int p_TextureID1, int p_TextureID2, UINT &o_HudObjectID)
 {
@@ -519,3 +528,4 @@ void GraphicHandle::UseHud(UINT p_ViewportID, UINT p_HudID)
 {
 	m_GraphicEngine->UseHud(p_ViewportID, p_HudID);
 }
+
