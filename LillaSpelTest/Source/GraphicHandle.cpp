@@ -173,7 +173,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	m_GraphicEngine->CreateStaticLight(XMFLOAT3(0,0,100), XMFLOAT3(1,1,1), 150, t_LightID);
 
 	UINT t_jawsObjTEMPID;
-	m_GraphicEngine->CreateHudObject(XMFLOAT2(0.5,0.5),XMFLOAT2(0.25,0.25),0,0,t_jawsObjTEMPID);
+	m_GraphicEngine->CreateHudObject(XMFLOAT2(0, 0),XMFLOAT2(0.5, 0.5), 0, 0, t_jawsObjTEMPID);
 	std::vector<UINT> t_Temptemplist;
 	t_Temptemplist.push_back(t_jawsObjTEMPID);
 
@@ -186,7 +186,10 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	UINT t_jawsREALHUD;
 	m_GraphicEngine->CreateHudFromTemplate(t_jawsHUDTEMPTEMP,XMFLOAT3(0,1,0), t_JawsBAROFFSETS, t_jawsREALHUD);
 
-	m_GraphicEngine->UseHud(0,t_jawsREALHUD);
+	m_GraphicEngine->UseHud(0, t_jawsREALHUD);
+	m_GraphicEngine->UseHud(1, t_jawsREALHUD);
+	m_GraphicEngine->UseHud(2, t_jawsREALHUD);
+	m_GraphicEngine->UseHud(3, t_jawsREALHUD);
 
 	//for (int i = 0; i < 6; i++)
 	//{

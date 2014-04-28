@@ -7,7 +7,12 @@ struct GS_OUTPUT
 };
 //add the sampler and the texture here
 
+SamplerState wrapSampler	: register(s0);
+Texture2D hudTexture	: register(t0);
+
 float4 PS(GS_OUTPUT input) : SV_TARGET
 {
-	return float4(1.0f, 1.0f, 1.0f, 1.0f);
+	float4 finalColor;
+	finalColor = hudTexture.Sample(wrapSampler, input.tex);
+	return finalColor;
 }

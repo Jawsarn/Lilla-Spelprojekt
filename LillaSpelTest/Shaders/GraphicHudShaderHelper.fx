@@ -1,11 +1,10 @@
 
-cbuffer HudConstantBuffer : register(c2)
+cbuffer HudConstantBuffer : register(c0)
 {
 	float3 color;
-	float filler;
+	float activeViewport;
 
 	float2 barOffset;
-	float NumberOfViewports;
-	float filler2;
+	float2 filler2;
 	//texture cord offset? so we can have bars??? might go to a different constantbuffer
 };

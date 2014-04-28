@@ -129,8 +129,8 @@ struct Hud
 struct HudConstantBuffer
 {
 	XMFLOAT3 color;
-	float filler;
-	XMFLOAT2 barOffset; 
 	float viewport;
-	float filler2;
+
+	XMFLOAT2 barOffset; 
+	XMFLOAT2 filler2;
 };
