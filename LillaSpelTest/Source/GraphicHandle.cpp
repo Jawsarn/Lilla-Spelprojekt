@@ -467,7 +467,6 @@ void GraphicHandle::InitializeShip(std::string p_ShipStringName, UINT p_Texture)
 
 	void GraphicHandle::CreateWalls(int p_WhatWall,
 							  std::vector<XMMATRIX> p_PlayerWallWorld,
-							  int p_WhatColour,
 							  int p_WhatPlayer)
 {
 	for (int i = 0; i < p_PlayerWallWorld.size(); i++)

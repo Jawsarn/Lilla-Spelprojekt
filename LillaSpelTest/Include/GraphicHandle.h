@@ -89,7 +89,7 @@ public:
 	void SetAmountOfPlayers(int p_NrOfPlayers);
 	void SetCameraVehicleSelection(UINT p_CameraLogicID);
 	void InitializeShip(std::string p_ShipStringName, UINT p_Texture);
-	void CreateWalls(int p_WhatWall,std::vector<XMMATRIX> p_PlayerWallWorld,int p_WhatColour,int p_WhatPlayer);
+	void CreateWalls(int p_WhatWall,std::vector<XMMATRIX> p_PlayerWallWorld,int p_WhatPlayer);
 	void InitializeWall(std::string p_PlayerWallStringName, UINT p_Texture);
 
 };
