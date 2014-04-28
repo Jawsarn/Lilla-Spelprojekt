@@ -92,6 +92,7 @@ public:
 
 
 	//hud functions
+	void CreateHUD(UINT &o_HUDID);
 	void CreateHUDObject(XMFLOAT2 p_Position, XMFLOAT2 p_Offset, int p_TextureID1, int p_TextureID2, UINT &o_HudObjectID);
 	void CreateHudTemplate(std::vector<UINT> p_HudObjects, UINT &o_TemplateID);
 	void CreateHudFromTemplate(UINT p_HudTemplate, XMFLOAT3 p_Color, std::vector<XMFLOAT2> p_BarOffsets, UINT &o_HudID);
