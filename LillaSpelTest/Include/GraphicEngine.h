@@ -46,7 +46,8 @@ public:
 	HRESULT AddObjectLight(UINT p_ObjectID ,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float radius, UINT &o_LightID);
 	HRESULT ChangeObjectsLight(UINT p_ObjectID, UINT p_LightID,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius);
 	HRESULT MoveObject(UINT p_ObjectID, CXMMATRIX p_Matrix);
-	
+	void RemoveObject(UINT p_ObjectID);
+
 	//texture functions
 	HRESULT LoadTexture(const wchar_t * p_FileName, UINT &o_TextureID);
 

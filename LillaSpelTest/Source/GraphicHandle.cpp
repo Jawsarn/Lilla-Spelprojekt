@@ -153,9 +153,9 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		//test 
-	UINT t_temptest;
-	CreateWall(0,plajerwurld[0],t_temptest,0);
-
+	//UINT t_temptest;
+	//CreateWall(0,plajerwurld[0],t_temptest,0);
+	//RemoveObject(t_temptest);
 	//SelectVehicle();
 
 
@@ -503,7 +503,10 @@ void GraphicHandle::InitializeWall(std::string p_PlayerWallStringName, UINT p_Te
 		m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[0],p_Texture,GraphicEngine::TextureType::DIFFUSE);
 	}
 }
-
+void GraphicHandle::RemoveObject(UINT p_RemoveAt)
+{
+	m_GraphicEngine->RemoveObject(p_RemoveAt);
+}
 
 //hud functions
 
