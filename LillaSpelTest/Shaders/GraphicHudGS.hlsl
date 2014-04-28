@@ -16,27 +16,42 @@ struct GS_OUTPUT
 [maxvertexcount(6)]
 void GS(point VS_OUTPUT input[1], inout TriangleStream <GS_OUTPUT> triangle_stream)
 {
-	GS_OUTPUT output;
+	GS_OUTPUT o1;
 
-	output.position = float4(input[0].position.x - input[0].size.x,		input[0].position.y - input[0].size.y, 1, 0);
-	output.tex = float2(0,0);
-	output.viewport = 0;
-	triangle_stream.Append(output);
+	o1.position = float4(input[0].position.x - input[0].size.x, input[0].position.y + input[0].size.y, 0.0f, 1.0f); //topleft
+	o1.tex = float2(0,0);
+	o1.viewport = activeViewport;
+	triangle_stream.Append(o1);
 
-	output.position = float4(input[0].position.x + input[0].size.x,		input[0].position.y - input[0].size.y, 1, 0);
-	triangle_stream.Append(output);
+	GS_OUTPUT o2;
+	o2.position = float4(input[0].position.x + input[0].size.x,		input[0].position.y + input[0].size.y, 0.0f, 1.0f); //topright
+	o2.tex = float2(1,0);
+	o2.viewport = activeViewport;
+	triangle_stream.Append(o2);
 
-	output.position = float4(input[0].position.x - input[0].size.x,		input[0].position.y + input[0].size.y, 1, 0);
-	triangle_stream.Append(output);
+	GS_OUTPUT o3;
+	o3.position = float4(input[0].position.x - input[0].size.x, input[0].position.y - input[0].size.y, 0.0f, 1.0f); //botleft
+	o3.tex = float2(0,1);
+	o3.viewport = activeViewport;
+	triangle_stream.Append(o3);
 	triangle_stream.RestartStrip();
 
-	output.position = float4(input[0].position.x + input[0].size.x,		input[0].position.y - input[0].size.y, 1, 0);
-	triangle_stream.Append(output);
+	GS_OUTPUT o4;
+	o4.position = float4(input[0].position.x - input[0].size.x, input[0].position.y - input[0].size.y, 0.0f, 1.0f); //botleft
+	o4.tex = float2(0,1);
+	o4.viewport = activeViewport;
+	triangle_stream.Append(o4);
 
-	output.position = float4(input[0].position.x + input[0].size.x,		input[0].position.y + input[0].size.y, 1, 0);
-	triangle_stream.Append(output);
+	GS_OUTPUT o5;
+	o5.position = float4(input[0].position.x + input[0].size.x,		input[0].position.y + input[0].size.y, 0.0f, 1.0f); //topright
+	o5.tex = float2(1,0);
+	o5.viewport = activeViewport;
+	triangle_stream.Append(o5);
 
-	output.position = float4(input[0].position.x - input[0].size.x,		input[0].position.y + input[0].size.y, 1, 0);
-	triangle_stream.Append(output);
+	GS_OUTPUT o6;
+	o6.position = float4(input[0].position.x + input[0].size.x,		input[0].position.y - input[0].size.y, 0.0f, 1.0f); //botright
+	o6.tex = float2(1,1);
+	o6.viewport = activeViewport;
+	triangle_stream.Append(o6);
 	triangle_stream.RestartStrip();
 }

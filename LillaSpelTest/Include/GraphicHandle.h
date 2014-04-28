@@ -83,8 +83,6 @@ public:
 	void Cleanup();
 	//void TurnCameraSelection(float p_DeltaTime,CXMMATRIX p_Start, CXMMATRIX p_End)
 	void SetColourAndVehicle(std::vector<UINT> p_PlayerColour,std::vector<UINT> p_PlayerVehicle);
-	void CreateHUD(UINT &o_HUDID);
-	void CreateHUDObject(UINT p_HUDID,XMFLOAT2 p_LowerRight, XMFLOAT2 p_UpperLeft,std::string p_TextureName,std::string p_TextureNameActive,UINT &o_HUDIDObject);
 	void ChangeTexture(UINT p_HUDIDObj);
 	void SetAmountOfPlayers(int p_NrOfPlayers);
 	void SetCameraVehicleSelection(UINT p_CameraLogicID);
@@ -92,4 +90,10 @@ public:
 	void CreateWall(int p_WhatWall,CXMMATRIX p_PlayerWallWorld,UINT & o_WhatWall,int p_WhatPlayer);
 	void InitializeWall(std::string p_PlayerWallStringName, UINT p_Texture);
 
+
+	//hud functions
+	void CreateHUDObject(XMFLOAT2 p_Position, XMFLOAT2 p_Offset, int p_TextureID1, int p_TextureID2, UINT &o_HudObjectID);
+	void CreateHudTemplate(std::vector<UINT> p_HudObjects, UINT &o_TemplateID);
+	void CreateHudFromTemplate(UINT p_HudTemplate, XMFLOAT3 p_Color, std::vector<XMFLOAT2> p_BarOffsets, UINT &o_HudID);
+	void UseHud(UINT p_ViewportID, UINT p_HudID);
 };
