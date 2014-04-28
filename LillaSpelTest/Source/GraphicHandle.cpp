@@ -495,11 +495,6 @@ void GraphicHandle::InitializeWall(std::string p_PlayerWallStringName, UINT p_Te
 
 //hud functions
 
-void GraphicHandle::CreateHUD(UINT &o_HUDID)
-{
-
-}
-
 void GraphicHandle::CreateHUDObject(XMFLOAT2 p_Position, XMFLOAT2 p_Offset, int p_TextureID1, int p_TextureID2, UINT &o_HudObjectID)
 {
 	m_GraphicEngine->CreateHudObject(p_Position, p_Offset, p_TextureID1 , p_TextureID2, o_HudObjectID);
