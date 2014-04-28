@@ -43,6 +43,9 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 		//fixes the position, direction, sets up world matrix, drops wall, etc.
 		if(m_players[i]->ProperUpdatePosition(p_dt, p_userCMDS->at(i)) == 1)
 		{
+			
+			PlayerWall* t_newWall = m_players[i]->GetLastPlacedWall();
+			t_newWall->m_wallIndex = m_graphicHandle->CreateWall(0, t_newWall->GetWorldMatrix(), i);			//PUBLIC VARIALBE!!! MAKE FIX BEFORE JAWS DISCOVERS!!!
 		}
 		//gets the world matrix
 		m_graphicHandle->JohnSetCamera(m_players[i]->GetWorldMatrix(), i);

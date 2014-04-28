@@ -121,10 +121,10 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 	
 	static float cooldownTimer = 0;
 	cooldownTimer -= 0.1;
-	if(p_userCMD.rightTriggerPressed && cooldownTimer <=0)
+	if(p_userCMD.rightTriggerPressed)// && cooldownTimer <=0)
 	{
 		PlaceWall();
-		cooldownTimer = 10;
+		cooldownTimer = 1;
 		p_userCMD.controller.Vibrate(64000,64000);
 		return 1;
 	}
