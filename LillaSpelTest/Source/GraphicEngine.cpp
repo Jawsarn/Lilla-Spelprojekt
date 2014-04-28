@@ -819,6 +819,11 @@ HRESULT GraphicEngine::MoveObject(UINT p_ObjectID, CXMMATRIX p_Matrix)
 	}
 }
 
+void GraphicEngine::RemoveObject(UINT p_ObjectID)
+{
+	m_DrawObjects.erase(p_ObjectID);
+}
+
 ///////////////////////////////////////////////
 //==========Texture functions=================//
 ///////////////////////////////////////////////

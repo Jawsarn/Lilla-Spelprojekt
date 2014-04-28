@@ -40,8 +40,11 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 	for (int i = 0; i < 1; i++)			//i<1 for test purposes. Make sure to change later
 	{
 		bool collision = false;
+		//fixes the position, direction, sets up world matrix, drops wall, etc.
 		m_players[i]->ProperUpdatePosition(p_dt, p_userCMDS->at(i));
+		//gets the world matrix
 		m_graphicHandle->JohnSetCamera(m_players[i]->GetWorldMatrix(), i);
+
 		vector<StaticObj*>* m_wallsToCheck = &m_players[i]->GetCurrentMapNode()->m_staticObjs;
 		for (int i = 0; i < m_wallsToCheck->size(); i++)
 		{

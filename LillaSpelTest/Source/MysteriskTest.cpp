@@ -5,11 +5,16 @@
 #include "MainMenuScreen.h"
 #include <string>
 
+
 ApplicationState state;
 
 MenuScreen* gameSetup;
 MenuScreen* joinGame;
 MenuScreen* mainMenu;
+
+
+int soundNumber1 = 0;
+int soundNumber2 = 0;
 
 GameInfo gameInfo;
 GameSetupScreen setuptest;

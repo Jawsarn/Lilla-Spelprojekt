@@ -24,7 +24,7 @@ private:
 
 	
 	std::vector<UINT> m_Player;
-	std::vector<UINT> m_PlayerWalls;
+	//std::vector<UINT> m_PlayerWalls;
 	std::vector<UINT> m_PlayerColour;
 	std::vector<UINT> m_PlayerLight;
 	UINT m_CurrentLevel;
@@ -87,11 +87,16 @@ public:
 	void SetAmountOfPlayers(int p_NrOfPlayers);
 	void SetCameraVehicleSelection(UINT p_CameraLogicID);
 	void InitializeShip(std::string p_ShipStringName, UINT p_Texture);
-	void CreateWalls(int p_WhatWall,std::vector<XMMATRIX> p_PlayerWallWorld,int p_WhatPlayer);
+	
+	
+	void CreateWall(int p_WhatWall,CXMMATRIX p_PlayerWallWorld,UINT & o_WhatWall,int p_WhatPlayer);
 	void InitializeWall(std::string p_PlayerWallStringName, UINT p_Texture);
-
+	
+	
+	void RemoveObject(UINT p_RemoveAt);
 
 	//hud functions
+	void CreateHUD(UINT &o_HUDID);
 	void CreateHUDObject(XMFLOAT2 p_Position, XMFLOAT2 p_Offset, int p_TextureID1, int p_TextureID2, UINT &o_HudObjectID);
 	void CreateHudTemplate(std::vector<UINT> p_HudObjects, UINT &o_TemplateID);
 	void CreateHudFromTemplate(UINT p_HudTemplate, XMFLOAT3 p_Color, std::vector<XMFLOAT2> p_BarOffsets, UINT &o_HudID);
