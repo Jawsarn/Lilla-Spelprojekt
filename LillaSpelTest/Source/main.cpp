@@ -99,9 +99,9 @@ void Run()
 			m_DeltaTime = ( timeCur - m_PrevTime ) / 1000.0f;
 			m_GameTime += m_DeltaTime;
 			m_PrevTime = timeCur;
-			//gameScreen.Update(m_DeltaTime,userCMDS);
+			gameScreen.Update(m_DeltaTime,userCMDS);
 			///UPDATE & DRAW TEMPDRAAWWWWW
-			m_GraphicHandle->UpdateSelectVehicle(m_DeltaTime);
+			//m_GraphicHandle->UpdateSelectVehicle(m_DeltaTime);
 			m_GraphicHandle->DrawGame();
 		}
 	}

@@ -35,7 +35,7 @@ private:
 	XMFLOAT3 m_upVector;
 
 	XMMATRIX m_worldMatrix;
-PlayerWall* m_lastPlacedWall;
+	PlayerWall* m_lastPlacedWall;
 	PlayerState m_state;
 
 	std::vector<PlayerWall*> m_placedWalls;

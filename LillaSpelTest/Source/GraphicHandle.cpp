@@ -141,10 +141,10 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	VilkenVehicle.push_back(0);
 	VilkenVehicle.push_back(0);
 	SetAmountOfPlayers(4);
-	//StartGame(0,VilkenVehicle,plajerwurld,plajercullur,t_World,t_Color);
+	StartGame(0,VilkenVehicle,plajerwurld,plajercullur,t_World,t_Color);
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	SelectVehicle();
+	//SelectVehicle();
 
 
 
@@ -495,10 +495,10 @@ void GraphicHandle::InitializeWall(std::string p_PlayerWallStringName, UINT p_Te
 
 //hud functions
 
-void GraphicHandle::CreateHUD(UINT &o_HUDID)
-{
-
-}
+//void GraphicHandle::CreateHUD(UINT &o_HUDID)
+//{
+//
+//}
 
 void GraphicHandle::CreateHUDObject(XMFLOAT2 p_Position, XMFLOAT2 p_Offset, int p_TextureID1, int p_TextureID2, UINT &o_HudObjectID)
 {

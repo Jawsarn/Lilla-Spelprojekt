@@ -6,8 +6,9 @@ PlayerWall::PlayerWall(void)
 
 }
 
-PlayerWall::PlayerWall(XMFLOAT3 p_color, const XMMATRIX &p_wallWorldMatrix, XMFLOAT3 p_playerPosition)
+PlayerWall::PlayerWall(XMFLOAT3 p_color, XMFLOAT4X4 p_wallWorldMatrix, XMFLOAT3 p_playerPosition)
 {
+	XMMATRIX t_matrix = XMLoadFloat4x4(&p_wallWorldMatrix);
 	m_worldMatrix = p_wallWorldMatrix;
 	MathHelper t_mathHelper = MathHelper();
 	m_color = p_color;
@@ -17,7 +18,7 @@ PlayerWall::PlayerWall(XMFLOAT3 p_color, const XMMATRIX &p_wallWorldMatrix, XMFL
 
 	XMFLOAT4 t_quarternion = XMFLOAT4(0,0,0,1);
 	XMVECTOR t_orientationVector = XMLoadFloat4(&t_quarternion);
-	t_orientationVector = XMVector4Transform(t_orientationVector,p_wallWorldMatrix);
+	t_orientationVector = XMVector4Transform(t_orientationVector, t_matrix);
 	t_orientationVector = XMVector4Normalize(t_orientationVector);
 	XMStoreFloat4(&t_quarternion, t_orientationVector);
 	
@@ -43,5 +44,6 @@ unsigned int PlayerWall::GetWallIndex()
 
 XMMATRIX PlayerWall::GetWorldMatrix()
 {
-	return m_worldMatrix;
+	XMMATRIX r_worldMatrix = XMLoadFloat4x4(&m_worldMatrix);
+	return r_worldMatrix;
 }
