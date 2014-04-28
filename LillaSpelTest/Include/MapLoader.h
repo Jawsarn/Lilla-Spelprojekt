@@ -3,7 +3,7 @@
 #include <vector>
 #include <d3d11_1.h>
 #include "MathHelper.h"
-#include "MapNode.h"
+#include "Struct_MapNode.h"
 
 using namespace std;
 using namespace DirectX;

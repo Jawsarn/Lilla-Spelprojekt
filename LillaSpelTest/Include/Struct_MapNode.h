@@ -13,5 +13,11 @@ struct MapNode
 	std::vector<PlayerWall*>m_playerWalls;
 	DirectX::XMFLOAT3 m_normal;
 	DirectX::XMFLOAT3 m_position;
+	XMFLOAT3 m_radiusVector;
 	float m_radius;
+	MapNode()
+	{
+		m_previousNode = nullptr;
+		m_nextNode = nullptr;
+	}
 };

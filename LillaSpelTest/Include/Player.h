@@ -1,7 +1,7 @@
 #pragma once
 #include "object.h"
 #include "PlayerWall.h"
-#include "MapNode.h"
+#include "Struct_MapNode.h"
 #include "PlayerWall.h"
 #include "UserCMD.h"
 #include <DirectXCollision.h>
@@ -34,6 +34,8 @@ private:
 	XMFLOAT3 m_color;
 	XMFLOAT3 m_upVector;
 
+	XMMATRIX m_worldMatrix;
+PlayerWall* m_lastPlacedWall;
 	PlayerState m_state;
 
 	std::vector<PlayerWall*> m_placedWalls;
@@ -47,7 +49,7 @@ public:
 
 	void Update(float p_dt,UserCMD p_userCMD); //Updates position and dropps walls
 	void UpdatePosition(float p_dt, UserCMD p_userCMD);
-	void ProperUpdatePosition(float p_dt, UserCMD p_userCMD);
+	int ProperUpdatePosition(float p_dt, UserCMD p_userCMD);
 	std::vector<BoundingOrientedBox*> GetWallsToCheck();
 	void ChangeState(PlayerState p_state);
 	
@@ -58,6 +60,7 @@ public:
 	XMMATRIX GetWorldMatrix();		//game screen grabs and sends off to graphichandle
 	MapNode* GetCurrentMapNode();
 	BoundingOrientedBox* GetCollisionBox();
+	PlayerWall* GetLastPlacedWall();
 
 private:
 	//rotates the up vector to the proper angle
@@ -68,5 +71,7 @@ private:
 	void UpdateCollisionBox();
 	void UpdateMapNode();
 	void BumpedIntoPlayer(XMFLOAT3 p_force);
+	void UpdateWorldMatrix();
+	
 };
 

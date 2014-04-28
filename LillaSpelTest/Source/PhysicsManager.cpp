@@ -14,17 +14,17 @@ PhysicsManager::~PhysicsManager(void)
 
 
 
-std::vector<DirectX::XMFLOAT3> PhysicsManager::GetForceInCollision(Player p_p1, Player p_p2)
+std::vector<DirectX::XMFLOAT3> PhysicsManager::GetForceInCollision(Player* p_p1, Player* p_p2)
 {
 	MathHelper t_mHelp = MathHelper();
 	std::vector<DirectX::XMFLOAT3> r_return;
 
-	XMFLOAT3 t_p1Pos = p_p1.GetPos();
-	XMFLOAT3 t_p2Pos = p_p2.GetPos();
+	XMFLOAT3 t_p1Pos = p_p1->GetPos();
+	XMFLOAT3 t_p2Pos = p_p2->GetPos();
 	XMFLOAT3 t_collisionVec;
 
-	float t_p1DirSkal = t_mHelp.DotProduct(p_p1.GetDirection(), t_collisionVec); //Första delen i projiceringsformeln (Skalären mellan den som ska projeceras och den som den ska projiceras på!)
-	float t_p2DirSkal = t_mHelp.DotProduct(p_p2.GetDirection(), t_collisionVec); //Första delen i projiceringsformeln 
+	float t_p1DirSkal = t_mHelp.DotProduct(p_p1->GetDirection(), t_collisionVec); //Första delen i projiceringsformeln (Skalären mellan den som ska projeceras och den som den ska projiceras på!)
+	float t_p2DirSkal = t_mHelp.DotProduct(p_p2->GetDirection(), t_collisionVec); //Första delen i projiceringsformeln 
 
 	t_collisionVec = t_mHelp.Normalize(t_mHelp.VecSubVec(t_p1Pos, t_p2Pos)); //Vi ska projecera på denna vector NORMALISERAD!!!!
 
