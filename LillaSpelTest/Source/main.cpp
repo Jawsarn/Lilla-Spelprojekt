@@ -49,9 +49,11 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
 void Run() 
 {
+	
+	AzookaTest t_azookaTest = AzookaTest();
 	std::vector<UserCMD> *userCMDS = new std::vector<UserCMD>();
 	UserCMDHandler userCMDHandler = UserCMDHandler();
-	GameScreen gameScreen = GameScreen("highway", 4, m_GraphicHandle);
+	GameScreen gameScreen = GameScreen("dust2", 4, m_GraphicHandle);
 	for (int i = 0; i < 4; i++)
 	{
 		UserCMD t_userCMD = UserCMD(i);
@@ -74,7 +76,6 @@ void Run()
 		}
 		else  //if there are no messages, update and draw
 		{
-			//AzookaTest t_azookaTest = AzookaTest();
 			//t_azookaTest.Run();
 
 			
@@ -100,6 +101,13 @@ void Run()
 			m_GameTime += m_DeltaTime;
 			m_PrevTime = timeCur;
 			gameScreen.Update(m_DeltaTime,userCMDS);
+					//m_graphicHandle->JohnSetCamera(m_players[i]->GetWorldMatrix(), i);
+			XMMATRIX t_debugCameraMatrix = t_azookaTest.GetDebugCameraWorldMatrix(&userCMDS->at(0), m_DeltaTime);
+			m_GraphicHandle->JohnSetCamera(t_debugCameraMatrix, 2);
+			if(userCMDS->at(0).rightTriggerPressed)
+			{
+				m_GraphicHandle->CreateWall(0, t_debugCameraMatrix, 0);
+			}
 			///UPDATE & DRAW TEMPDRAAWWWWW
 			//m_GraphicHandle->UpdateSelectVehicle(m_DeltaTime);
 			m_GraphicHandle->DrawGame();

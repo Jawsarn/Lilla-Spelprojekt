@@ -1,11 +1,13 @@
 #include "AzookaTest.h"
 #include "MapLoader.h"
+#include "DebugCamera.h"
 using namespace std;
 using namespace DirectX;
 
 
 AzookaTest::AzookaTest(void)
 {
+	
 }
 
 
@@ -55,6 +57,13 @@ void MapLoaderTest()
 	MapLoader t_mapLoader = MapLoader();
 	t_mapLoader.LoadMap("testMap2");
 	
+}
+
+
+
+XMMATRIX AzookaTest::GetDebugCameraWorldMatrix(UserCMD* p_userCMD, float p_dt)
+{
+	return m_debugCamera.GetWorldMatrix(p_userCMD, p_dt);
 }
 
 
