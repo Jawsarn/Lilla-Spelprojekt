@@ -63,7 +63,7 @@ float4 CreateFrustrum(float4 F, float4 S)
 
 float3 DirectIllumination(float3 pos, float3 norm , Light light, float inSpec,int viewport)
 {
-	float3 lightPos = mul(float4(light.position,1),View[viewport]);
+	float3 lightPos = mul(float4(light.position,1),View[viewport]).xyz;
 
 	float3 lightVec = lightPos - pos;
 

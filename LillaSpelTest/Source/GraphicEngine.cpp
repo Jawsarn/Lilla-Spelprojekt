@@ -490,6 +490,7 @@ HRESULT GraphicEngine::InitializeShaders()
 		m_ShaderPrograms.push_back(t_NewProgram);
 	}
 
+
 	{
 		//COMPUTE SHADER deferred tiled rendering
 		ID3D11ComputeShader* t_ComputeShader;
@@ -500,15 +501,15 @@ HRESULT GraphicEngine::InitializeShaders()
 		m_ComputeShaders.push_back(t_ComputeShader);
 	}
 
-	//{
-	//	//COMPUTE SHADER blurring glow
-	//	ID3D11ComputeShader* t_ComputeShader;
-	//	hr = m_ShaderLoader->CreateComputeShader( L"GraphicGlowVertBlurrCS.hlsl", "CS", "cs_5_0", m_Device, &t_ComputeShader);
-	//	if( FAILED( hr ))
-	//		return hr;
+	{
+		//COMPUTE SHADER blurring glow
+		ID3D11ComputeShader* t_ComputeShader;
+		hr = m_ShaderLoader->CreateComputeShader( L"GraphicGlowVertBlurrCS.hlsl", "CS", "cs_5_0", m_Device, &t_ComputeShader);
+		if( FAILED( hr ))
+			return hr;
 
-	//	m_ComputeShaders.push_back(t_ComputeShader);
-	//}
+		m_ComputeShaders.push_back(t_ComputeShader);
+	}
 
 
 	return hr;
@@ -616,6 +617,10 @@ HRESULT GraphicEngine::InitializeGBuffers()
 	for (int i = 0; i < 3; i++)
 	{
 		ID3D11Texture2D* t_Texture = 0;
+		if (i == 2)
+		{
+			desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
+		}
 
 		hr = m_Device->CreateTexture2D(&desc, 0, &t_Texture);
 		if( FAILED( hr ) )
@@ -629,26 +634,42 @@ HRESULT GraphicEngine::InitializeGBuffers()
 		if( FAILED( hr ) )
 			return hr;
 
+		//for glowmap to be a unorderd access view for the blurring
+		if (i == 2)
+		{
+			
+			hr = m_Device->CreateUnorderedAccessView( t_Texture, nullptr, &m_GbufferGlowmapUAV );
+			if( FAILED( hr ) )
+				return hr;
+		}
+
 		t_Texture->Release();
 
 	}
 
 
 
-	//for (int i = 0; i < 2; i++)
-	//{
-	//	ID3D11Texture2D* t_Texture = 0;
+	desc.Width = m_Width/2;
+	desc.Height = m_Height/2;
+	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
 
-	//	hr = m_Device->CreateTexture2D(&desc, 0, &t_Texture);
-	//	if( FAILED( hr ) )
-	//		return hr;
 
-	//	hr = m_Device->CreateUnorderedAccessView(t_Texture, nullptr, &m_BlurBufferUAVs[i]);
-	//	if( FAILED( hr) )
-	//		return hr;
+	ID3D11Texture2D* t_Texture = 0;
 
-	//	t_Texture->Release();
-	//}
+	hr = m_Device->CreateTexture2D(&desc, 0, &t_Texture);
+	if( FAILED( hr ) )
+		return hr;
+
+	hr = m_Device->CreateShaderResourceView(t_Texture, &t_SrvDesc, &m_BlurShaderResource);
+		if( FAILED( hr) )
+			return hr;
+
+	hr = m_Device->CreateUnorderedAccessView(t_Texture, nullptr, &m_BlurBufferUAV);
+	if( FAILED( hr) )
+		return hr;
+
+	t_Texture->Release();
+	
 
 	
 	// Views save a reference to the texture so we can release our reference.
@@ -1216,6 +1237,9 @@ void GraphicEngine::DrawGame()
 	{
 		m_DeviceContext->ClearRenderTargetView( m_GbufferTargetViews[i], Colors::Black );
 	}
+
+	float t_ClearFloats[4] = {0,0,0,0};
+	m_DeviceContext->ClearUnorderedAccessViewFloat(m_BlurBufferUAV, t_ClearFloats);
 	
 	//set render target, I guess for if swapping between hud etc
 	m_DeviceContext->OMSetRenderTargets( 3, m_GbufferTargetViews, m_DepthStencilView);
@@ -1377,9 +1401,9 @@ void GraphicEngine::ComputeTileDeferredLightning()
 	
 	m_DeviceContext->UpdateSubresource(m_PerComputeBuffer,0,nullptr, &t_Pcb,0,0);
 	
-
-	UINT x = (m_Width/ THREAD_BLOCK_DIMENSIONS);
-	UINT y = (m_Height/ THREAD_BLOCK_DIMENSIONS);
+	
+	UINT x = ceil(m_Width/ (FLOAT)THREAD_BLOCK_DIMENSIONS);
+	UINT y = ceil(m_Height/ (FLOAT)THREAD_BLOCK_DIMENSIONS);
 
 	m_DeviceContext->Dispatch(x,y,1);
 
@@ -1471,9 +1495,29 @@ void GraphicEngine::ComputeGlow()
 	m_DeviceContext->CSSetShader(m_ComputeShaders[1],nullptr,0);
 
 	//set the outputp and input
-	m_DeviceContext->CSSetUnorderedAccessViews(0, 1, &m_BlurBufferUAVs[0], nullptr);
+	m_DeviceContext->CSSetUnorderedAccessViews(0, 1, &m_BlurBufferUAV, nullptr);
 
-	
+	m_DeviceContext->CSSetShaderResources(1, 1, &m_GbufferShaderResource[2]);
+
+
+	//vert blur keep the x:es
+	UINT x = m_Width;
+	UINT y = ceil(m_Height/(FLOAT)THREAD_VERTBLURR_DIMENSION);
+
+	//very blurr first
+
+	//now set for the horizontal blurrrr
+
+	//vertical glow
+	//m_DeviceContext->CSSetShader(m_ComputeShaders[2],nullptr,0);
+
+	//set the outputp and input
+	ID3D11ShaderResourceView* t_EmptySRV = {0};
+	m_DeviceContext->CSSetShaderResources(1, 1, &t_EmptySRV);
+
+	m_DeviceContext->CSSetUnorderedAccessViews(0, 1, &m_GbufferGlowmapUAV, nullptr);
+
+	m_DeviceContext->CSSetShaderResources(1, 1, &m_BlurShaderResource);
 
 }
 

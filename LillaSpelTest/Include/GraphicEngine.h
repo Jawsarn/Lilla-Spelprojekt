@@ -24,6 +24,8 @@ requires saving of hwind and rc
 */
 
 #define THREAD_BLOCK_DIMENSIONS 16
+#define THREAD_VERTBLURR_DIMENSION 256
+
 #define MAX_NUM_OF_LIGHTS 1024
 
 class GraphicEngine
@@ -152,8 +154,11 @@ private:
 	ID3D11ShaderResourceView* m_GbufferShaderResource[3];
 	ID3D11RenderTargetView* m_GbufferTargetViews[3];
 
+	ID3D11UnorderedAccessView* m_GbufferGlowmapUAV;
+
 	//aaand the blur buffers/glow
-	ID3D11UnorderedAccessView* m_BlurBufferUAVs[2];
+	ID3D11ShaderResourceView*	m_BlurShaderResource;
+	ID3D11UnorderedAccessView* m_BlurBufferUAV;
 
 	UINT m_Width;
 	UINT m_Height;
