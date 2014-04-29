@@ -13,7 +13,7 @@ PlayerWall::PlayerWall(XMFLOAT3 p_color, XMFLOAT3* p_wallPos, XMFLOAT3* p_wallDi
 	XMVECTOR t_up = XMLoadFloat3(p_wallUp);
 	
 	
-	XMMATRIX t_matrix = XMMatrixLookToLH(t_eye, t_target, t_up);
+	XMMATRIX t_matrix = XMMatrixInverse(&XMMatrixDeterminant(XMMatrixLookToLH(t_eye,t_target , t_up)),XMMatrixLookToLH(t_eye,t_target , t_up));
 	m_worldMatrix = t_matrix;
 	
 	MathHelper t_mathHelper = MathHelper();

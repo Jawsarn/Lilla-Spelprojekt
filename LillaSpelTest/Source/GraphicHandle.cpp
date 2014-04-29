@@ -76,7 +76,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	//load a tube texture mesh 
 
 
-	m_GraphicEngine->LoadMesh("freeway.obj",t_ObjTemp);
+	m_GraphicEngine->LoadMesh("dust2.obj",t_ObjTemp);
 
 	m_MeshLevels.push_back(t_ObjTemp);
 
@@ -96,7 +96,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	InitializeShip("spaceship2.obj",m_ShipTexture[2]);
 
 	////init walls
-	InitializeWall("Sphere.obj",m_PlayerWallTexture[0]);
+	InitializeWall("wall.obj",m_PlayerWallTexture[0]);
 
 
 
