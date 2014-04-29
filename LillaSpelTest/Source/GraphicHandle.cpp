@@ -76,7 +76,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	//load a tube texture mesh 
 
 
-	m_GraphicEngine->LoadMesh("highway.obj",t_ObjTemp);
+	m_GraphicEngine->LoadMesh("freeway.obj",t_ObjTemp);
 
 	m_MeshLevels.push_back(t_ObjTemp);
 
