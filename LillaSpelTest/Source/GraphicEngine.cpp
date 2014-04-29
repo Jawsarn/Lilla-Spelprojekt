@@ -490,15 +490,26 @@ HRESULT GraphicEngine::InitializeShaders()
 		m_ShaderPrograms.push_back(t_NewProgram);
 	}
 
+	{
+		//COMPUTE SHADER deferred tiled rendering
+		ID3D11ComputeShader* t_ComputeShader;
+		hr = m_ShaderLoader->CreateComputeShader( L"GraphicDeferredLightingCS.hlsl", "CS", "cs_5_0", m_Device, &t_ComputeShader);
+		if( FAILED( hr ))
+			return hr;
 
-	//COMPUTE SHADER
-	ID3D11ComputeShader* t_ComputeShader;
-	hr = m_ShaderLoader->CreateComputeShader( L"GraphicDeferredLightingCS.hlsl", "CS", "cs_5_0", m_Device, &t_ComputeShader);
-	if( FAILED( hr ))
-		return hr;
+		m_ComputeShaders.push_back(t_ComputeShader);
+	}
 
-	m_ComputeShaders.push_back(t_ComputeShader);
-	m_DeviceContext->CSSetShader(m_ComputeShaders[0],nullptr,0); //HÅRDKODAT
+	{
+		//COMPUTE SHADER blurring glow
+		ID3D11ComputeShader* t_ComputeShader;
+		hr = m_ShaderLoader->CreateComputeShader( L"GraphicGlowVertBlurrCS.hlsl", "CS", "cs_5_0", m_Device, &t_ComputeShader);
+		if( FAILED( hr ))
+			return hr;
+
+		m_ComputeShaders.push_back(t_ComputeShader);
+	}
+
 
 	return hr;
 }
@@ -1340,6 +1351,8 @@ void GraphicEngine::SetTextures(DrawPiece p_DrawPiece)
 
 void GraphicEngine::ComputeTileDeferredLightning()
 {
+	m_DeviceContext->CSSetShader(m_ComputeShaders[0],nullptr,0); //HÅRDKODAT
+	
 	m_DeviceContext->OMSetRenderTargets(0,nullptr,nullptr);
 	
 	m_DeviceContext->CSSetUnorderedAccessViews(0, 1, &m_BackBufferUAV, nullptr);
@@ -1454,6 +1467,13 @@ void GraphicEngine::DrawHud()
 
 void GraphicEngine::ComputeGlow()
 {
+	//vertical glow
+	m_DeviceContext->CSSetShader(m_ComputeShaders[1],nullptr,0);
+
+	//set the outputp and input
+	m_DeviceContext->CSSetUnorderedAccessViews(0, 1, &m_BlurBufferUAVs[0], nullptr);
+
+	
 
 }
 
