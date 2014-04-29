@@ -7,6 +7,8 @@ struct UserCMD
 {
 	bool leftTriggerPressed;	
 	bool rightTriggerPressed;	
+	bool leftBumberPressed;
+	bool rightBumberPressed;
 	bool aButtonPressed;	
 	bool bButtonPressed;	
 	bool xButtonPressed ;
@@ -14,6 +16,7 @@ struct UserCMD
 	bool startButtonPressed;
 	bool backButtonPressed;
 	DirectX::XMFLOAT2 Joystick;
+	DirectX::XMFLOAT2 rightJoystick;
 
 	Controller controller;
 
@@ -21,6 +24,8 @@ struct UserCMD
 	{
 		leftTriggerPressed = false;	
 		rightTriggerPressed = false;	
+		leftBumberPressed = false;
+		rightBumberPressed = false;
 		aButtonPressed = false;	
 		bButtonPressed = false;	
 		xButtonPressed = false;
@@ -28,6 +33,7 @@ struct UserCMD
 		startButtonPressed = false;
 		backButtonPressed = false;
 		Joystick = DirectX::XMFLOAT2(0,0);
+		rightJoystick = DirectX::XMFLOAT2(0,0);
 		controller = Controller(p_controllerNumber);
 	}
 };
