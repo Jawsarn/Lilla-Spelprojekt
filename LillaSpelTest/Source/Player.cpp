@@ -189,7 +189,7 @@ void Player::PlaceWall()
 {
 	XMFLOAT4X4 t_worldMatrixFloat;
 	XMStoreFloat4x4(&t_worldMatrixFloat, m_worldMatrix);
-	m_lastPlacedWall = new PlayerWall(XMFLOAT3(0,1,0), t_worldMatrixFloat , m_position);
+	m_lastPlacedWall = new PlayerWall(XMFLOAT3(0,0,1),&m_position, &m_direction , &m_upVector);
 	m_placedWalls.push_back(m_lastPlacedWall);
 	m_mapNode->m_playerWalls.push_back(m_lastPlacedWall);
 }

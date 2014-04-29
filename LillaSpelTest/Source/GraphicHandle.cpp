@@ -96,7 +96,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	InitializeShip("spaceship2.obj",m_ShipTexture[2]);
 
 	////init walls
-	InitializeWall("Wall.obj",m_PlayerWallTexture[0]);
+	InitializeWall("Sphere.obj",m_PlayerWallTexture[0]);
 
 
 

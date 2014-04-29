@@ -45,7 +45,8 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 		{
 			
 			PlayerWall* t_newWall = m_players[i]->GetLastPlacedWall();
-			t_newWall->m_wallIndex = m_graphicHandle->CreateWall(0, t_newWall->GetWorldMatrix(), i);			//PUBLIC VARIALBE!!! MAKE FIX BEFORE JAWS DISCOVERS!!!
+			t_newWall->m_wallIndex = m_graphicHandle->CreateWall(0, t_newWall->GetWorldMatrix(), i);			//PUBLIC VARIALBE!!! MAKE FIX BEFORE JAWS DISCOVERS!!!t_newWall->GetWorldMatrix()
+			int k = 7;
 		}
 		//gets the world matrix
 		m_graphicHandle->JohnSetCamera(m_players[i]->GetWorldMatrix(), i);
