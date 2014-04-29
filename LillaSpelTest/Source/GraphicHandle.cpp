@@ -25,7 +25,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 {
 	m_GraphicEngine = m_GraphicEngine->GetInstance();
 	m_GraphicEngine->Initialize(p_Width, p_Height, p_Handle);
-
+	SetAmountOfPlayers(4);
 	//load a diffuse texture
 	UINT diffuseBollTestTexture;
 	m_GraphicEngine->LoadTexture(L"tubetexture1.dds", diffuseBollTestTexture);
@@ -34,6 +34,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 
 	/////////initshiptexture
 	UINT t_TempurTextur;
+	
 	m_GraphicEngine->LoadTexture(L"spaceship.dds", t_TempurTextur);
 	m_ShipTexture.push_back(t_TempurTextur);
 	m_GraphicEngine->LoadTexture(L"spaceship1.dds", t_TempurTextur);
@@ -133,24 +134,27 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	plajercullur.push_back(t_Color);
 	//t_Color = XMFLOAT3(1,0,1);
 	//plajercullur.push_back(t_Color);
+	t_Mat = XMMatrixTranslation(0,0,5); 
 	plajerwurld.push_back(t_Mat);
 
-	t_Mat = XMMatrixTranslation(10,10,10);
-	plajerwurld.push_back(t_Mat);
-	t_Mat = XMMatrixTranslation(20,20,20);
-	plajerwurld.push_back(t_Mat);
-	t_Mat = XMMatrixTranslation(30,30,30);
-	plajerwurld.push_back(t_Mat);
+	//t_Mat = XMMatrixTranslation(0,0,0);
+	//plajerwurld.push_back(t_Mat);
+	//t_Mat = XMMatrixTranslation(20,20,20);
+	//plajerwurld.push_back(t_Mat);
+	//t_Mat = XMMatrixTranslation(30,30,30);
+	//plajerwurld.push_back(t_Mat);
 	//t_Mat = XMMatrixTranslation(40,40,40);
 	//plajerwurld.push_back(t_Mat);
 
 	VilkenVehicle.push_back(0);
-	VilkenVehicle.push_back(0);
-	VilkenVehicle.push_back(0);
-	VilkenVehicle.push_back(0);
-	SetAmountOfPlayers(4);
-	//StartGame(0,VilkenVehicle,plajerwurld,plajercullur,t_World,t_Color);
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//VilkenVehicle.push_back(0);
+	//VilkenVehicle.push_back(0);
+	//VilkenVehicle.push_back(0);
+	//t_Mat = XMMatrixTranslation(10,10,10); 
+	StartGame(0,VilkenVehicle,plajerwurld,plajercullur,t_World,t_Color);
+	
+	
+	
 
 		//test 
 	//UINT t_temptest;
@@ -198,9 +202,8 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 		m_GraphicEngine->UseCamera(i,m_CameraID[i]);
 	}
 
-	//not fixed yet, just for testing
-	m_GraphicEngine->SetViewportAmount(4);
 
+	
 
 	//m_GraphicEngine->MoveCamera(m_CameraID[0], 20,0,0,0,0);
 	//m_GraphicEngine->MoveCamera(m_CameraID[1], 50,0,0,0,0);
@@ -247,11 +250,25 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	//		}
 	//	}
 	//}
+
+
+
+	UpdatePlayer(0,t_Mat);
 }
 
 void GraphicHandle::UpdatePlayer(int p_playerID,CXMMATRIX p_matrix)
 {
-	m_GraphicEngine->MoveObject(p_playerID, p_matrix);
+	m_GraphicEngine->MoveObject(m_Player[p_playerID], p_matrix);
+
+	//XMMATRIX t_Tempo = XMMatrixTranslation(0,0,-10);
+	//t_Tempo = XMMatrixMultiply(t_Tempo,p_matrix);
+	
+	
+	//p_matrix = XMMatrixTranslation(0,0,-10);
+	//t_Tempo = XMMatrixMultiply(t_Tempo,p_matrix);
+	
+	
+	JohnSetCamera(p_matrix,p_playerID);//ska vänta 180grader o backa lite med den!!!!
 	//uppdatera spelarens mätare cooldownbars(HUD)
 }
 void GraphicHandle::UpdateSelectVehicle(float p_DeltaTime)
@@ -333,13 +350,7 @@ void GraphicHandle::JohnSetCamera(CXMMATRIX p_World, UINT p_CameraLogicID)
 {
 	m_GraphicEngine->SetCamera(m_CameraID[p_CameraLogicID],p_World);
 }
-void GraphicHandle::SetCamera(UINT p_CameraLogicID, XMFLOAT3 p_Pos, XMFLOAT3 p_At, XMFLOAT3 p_Up)
-{
-	if (p_CameraLogicID < 5)
-	{
-		m_GraphicEngine->SetCamera(m_CameraID[p_CameraLogicID], p_Pos, p_At, p_Up);
-	}
-}
+
 
 void GraphicHandle::CreatePlayer(std::vector<UINT> p_DrawPieceIDs, CXMMATRIX p_World, bool addToDrawNow, UINT &o_ObjectID,XMFLOAT3 p_Pos, XMFLOAT3 p_At, XMFLOAT3 p_Up, float p_FieldOfView, float p_Width, float p_Height, float p_NearZ, float p_FarZ, UINT &o_CameraID)
 {
@@ -373,6 +384,7 @@ void GraphicHandle::StartGame(int p_WhatLevel,
 			p_PlayerWorld[i],
 			p_Color[i],true, 
 			m_Player[i]);
+		
 		//LightStruct t_LightStruct;
 		//t_LightStruct.m_Color=m_Colours[m_PlayerColour[i]];//vi skcikar in en färg men kräver att dne har färg i lightstruct
 		//t_LightStruct.m_LightID=m_PlayerLight[i];//samma här xD
@@ -380,7 +392,7 @@ void GraphicHandle::StartGame(int p_WhatLevel,
 		//CreateLight(m_Player[i],m_Colours[m_PlayerColour[i]],m_PlayerLight[i],);//
 	}
 
-	m_GraphicEngine->CreateDrawObject(m_MeshLevels[p_WhatLevel],p_LevelWorld,p_Color[0],true,m_CurrentLevel);
+	//m_GraphicEngine->CreateDrawObject(m_MeshLevels[p_WhatLevel],p_LevelWorld,p_Color[0],true,m_CurrentLevel);
 	//StartGame(0,VilkenVehicle,plajerwurld,plajercullur,t_Mat,t_Color);
 }
 void GraphicHandle::SelectVehicle()
@@ -394,12 +406,16 @@ void GraphicHandle::SelectVehicle()
 		XMMATRIX t_Rot = XMMatrixRotationY(2*XM_PI/m_MeshShips.size()*i);
 
 		t_Rot = XMMatrixMultiply(t_WorldMat, t_Rot);
-
-		m_GraphicEngine->CreateDrawObject(m_MeshShips[i],
+		CreateDrawObject(m_MeshShips[i],
 			t_Rot,
-			t_Color,
-			true, 
+			t_Color, 
 			m_SelectionShips[i]);
+
+		//m_GraphicEngine->CreateDrawObject(m_MeshShips[i],
+			//t_Rot,
+			//t_Color,
+			//true, 
+			//m_SelectionShips[i]);
 
 		XMFLOAT4X4 t_Tempus;
 		XMStoreFloat4x4(&t_Tempus, t_Rot);
@@ -455,7 +471,8 @@ void GraphicHandle::SetAmountOfPlayers(int p_NrOfPlayers)
 {
 	if(m_Player.size()!=p_NrOfPlayers)
 	{
-		m_Player.clear();
+		m_Player.clear();	
+		m_GraphicEngine->SetViewportAmount(p_NrOfPlayers);//not fixed yet, just for testing
 		m_Player.resize(p_NrOfPlayers,0);
 		m_PlayerColour.resize(p_NrOfPlayers,0);
 		m_PlayerLight.resize(p_NrOfPlayers,0);
@@ -472,17 +489,21 @@ void GraphicHandle::InitializeShip(std::string p_ShipStringName, UINT p_Texture)
 		m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[0],p_Texture,GraphicEngine::TextureType::DIFFUSE);
 	}
 }
-void GraphicHandle::CreateWall(int p_WhatWall,
-								CXMMATRIX p_PlayerWallWorld,
-								UINT & o_WhatWall,
-								int p_WhatPlayer)
+void GraphicHandle::CreateWall(int p_WhatWall,CXMMATRIX p_PlayerWallWorld,UINT & o_WhatWall,int p_WhatPlayer)
 {
-
-		m_GraphicEngine->CreateDrawObject(
+	CreateDrawObject(m_MeshPlayerWall[p_WhatWall],
+			p_PlayerWallWorld,
+			m_Colours[m_PlayerColour[p_WhatPlayer]], 
+		o_WhatWall);
+		
+	// ta tillbaka detta AZOOKA/LOOCHIE
+	/*m_GraphicEngine->CreateDrawObject(
 			m_MeshPlayerWall[p_WhatWall],
 			p_PlayerWallWorld,
 			m_Colours[m_PlayerColour[p_WhatPlayer]],true, 
-		o_WhatWall);
+			o_WhatWall);*/
+
+
 		//LightStruct t_LightStruct;
 		//t_LightStruct.m_Color=m_Colours[m_PlayerColour[i]];//vi skcikar in en färg men kräver att dne har färg i lightstruct
 		//t_LightStruct.m_LightID=m_PlayerLight[i];//samma här xD
@@ -502,6 +523,10 @@ void GraphicHandle::InitializeWall(std::string p_PlayerWallStringName, UINT p_Te
 	{
 		m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[0],p_Texture,GraphicEngine::TextureType::DIFFUSE);
 	}
+}
+void GraphicHandle::CreateDrawObject(std::vector <UINT> p_UINTMeshLista, CXMMATRIX p_World,XMFLOAT3 p_Colour,UINT & o_ObjectID )
+{
+	m_GraphicEngine->CreateDrawObject(p_UINTMeshLista,p_World,p_Colour,true, o_ObjectID);
 }
 void GraphicHandle::RemoveObject(UINT p_RemoveAt)
 {
