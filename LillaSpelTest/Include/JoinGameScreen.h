@@ -19,6 +19,7 @@ public:
 
 	int Update(std::vector<UserCMD>* userCMD, float p_dt);
 	void Draw();
+	void Initialize();
 
 private:
 	void SaveInfo();

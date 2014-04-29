@@ -11,5 +11,6 @@ public:
 	~MainMenuScreen(void);
 	int Update(std::vector<UserCMD>* p_userCMD, float p_dt);
 	void Draw();
+	void Initialize();
 };
 

@@ -125,6 +125,11 @@ void JoinGameScreen::Draw()
 {
 }
 
+void JoinGameScreen::Initialize()
+{
+	m_graphicHandle ->SetViewportAmount(4);
+}
+
 void JoinGameScreen::SaveInfo()
 {
 	for (int i = 0; i < 4; i++)

@@ -59,7 +59,7 @@ void Run()
 	}
 	
 
-	//MysteriskTest t_Mtest = MysteriskTest(m_GraphicHandle);
+	MysteriskTest t_Mtest = MysteriskTest(m_GraphicHandle);
 
 
 	//message game loop
@@ -78,7 +78,7 @@ void Run()
 			//t_azookaTest.Run();
 
 			
-			//t_Mtest.Run(userCMDS,m_DeltaTime);
+			t_Mtest.Run(userCMDS,m_DeltaTime);
 
 
 			for (int i = 0; i < 4; i++) ///Fixes UserCMDs for all connected players

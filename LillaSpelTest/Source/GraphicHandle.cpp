@@ -553,3 +553,8 @@ void GraphicHandle::UseHud(UINT p_ViewportID, UINT p_HudID)
 	m_GraphicEngine->UseHud(p_ViewportID, p_HudID);
 }
 
+void GraphicHandle::ChangeHudObjectTexture(UINT p_hudID, UINT p_objectID, bool p_useFrontTexture)
+{
+	m_GraphicEngine->ChangeTextureOnHudObject(p_hudID,p_objectID,p_useFrontTexture);
+}
+

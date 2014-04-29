@@ -22,9 +22,11 @@ public:
 	~MenuScreen(void);
 	int virtual Update(std::vector<UserCMD>* p_userCMDs, float p_dt);
 	void virtual Draw();
+	void virtual Initialize() = 0;
 protected:
-	std::string virtual NavigateMenu(UserCMD& p_userCMD);
+	std::string virtual NavigateMenu(UserCMD& p_userCMD,unsigned int p_hudHandle);
 	void AddButton(std::string p_buttonName, DirectX::XMFLOAT2 p_centerPoint, float offsetX, float offsetY, const wchar_t* texture1, const wchar_t* texture2);
+	void MakeHud(unsigned int & o_hudID);
 	void FixButtonPointers();
 private:
 	bool FloatBetweenValues(float floatToCheck, float min, float max); 

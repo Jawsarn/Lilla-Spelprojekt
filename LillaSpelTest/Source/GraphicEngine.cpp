@@ -1009,7 +1009,7 @@ void GraphicEngine::UseHud(UINT p_Viewport, UINT p_HudID)
 
 void GraphicEngine::ChangeTextureOnHudObject(UINT p_HudID, UINT p_HudObjectID, bool useFrontTexture)
 {
-	m_Huds[p_HudID]->firstTextureActive[p_HudObjectID] == useFrontTexture;
+	m_Huds[p_HudID]->firstTextureActive[p_HudObjectID] = useFrontTexture;
 }
 
 

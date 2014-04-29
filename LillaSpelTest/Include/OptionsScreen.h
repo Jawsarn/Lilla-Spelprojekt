@@ -10,6 +10,7 @@ private:
 	/////////////VARIABLES/////////////
 	float m_volume;
 	DirectX::XMFLOAT2 m_resolution;
+	unsigned int m_hudHandle;
 private:
 	////////////FUNCTIONS/////////////
 	void AlterVolume(UserCMD& p_userCMD);
@@ -18,5 +19,7 @@ public:
 	OptionsScreen(GameInfo* p_gameInfo, GraphicHandle* p_graphicsHandle);
 	~OptionsScreen(void);
 	int Update(std::vector<UserCMD>* userCMD, float p_dt);
+	void Draw();
+	void Initialize();
 };
 

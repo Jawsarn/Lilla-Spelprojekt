@@ -13,9 +13,10 @@ GameSetupScreen::~GameSetupScreen(void)
 GameSetupScreen::GameSetupScreen(GameInfo* p_gameInfo,GraphicHandle* p_graphicsHandle)
 	:MenuScreen(p_gameInfo, p_graphicsHandle)
 {
-	AddButton("Start", DirectX::XMFLOAT2(0,-0.7),0.1,0.1, L"Start1.jpg",L"Start2.jpg");
+	AddButton("Start", DirectX::XMFLOAT2(0,-0.7),0.1,0.1, L"Start1.dds",nullptr);
 
 	FixButtonPointers();
+	MakeHud(m_hudHandle);
 	currentButton = buttonList[0];
 	currentMap = 0;
 
@@ -28,29 +29,35 @@ GameSetupScreen::GameSetupScreen(GameInfo* p_gameInfo,GraphicHandle* p_graphicsH
 int GameSetupScreen::Update(std::vector<UserCMD>* userCMD, float p_dt)
 {
 	MenuScreen::Update(userCMD,p_dt);
-	std::string t_menuChoice = NavigateMenu(userCMD->at(0));
-	if (t_menuChoice == "Start" || userCMD->at(0).startButtonPressed)
+	if (timeSinceLastChange[0]>0.5)
 	{
-		SaveInfo();
-		return JOIN_GAME_SCREEN;
-	}
-	else if (userCMD->at(0).Joystick.x>0.8)
-	{
-		if (mapList.size() - 1 > currentMap)
+		std::string t_menuChoice = NavigateMenu(userCMD->at(0),m_hudHandle);
+		if (t_menuChoice == "Start" || userCMD->at(0).startButtonPressed)
 		{
-			currentMap++;
+			SaveInfo();
+			return JOIN_GAME_SCREEN;
 		}
-	}
-	else if (userCMD->at(0).Joystick.x<-0.8)
-	{
-		if (0 < currentMap)
+		else if (userCMD->at(0).Joystick.x>0.8)
 		{
-			currentMap--;
+			timeSinceLastChange[0] = 0;
+			if (mapList.size() - 1 > currentMap)
+			{
+				currentMap++;
+			}
 		}
-	}
-	if (userCMD->at(0).backButtonPressed)
-	{
-		return MAIN_MENU_SCREEN;
+		else if (userCMD->at(0).Joystick.x<-0.8)
+		{
+			timeSinceLastChange[0] = 0;
+			if (0 < currentMap)
+			{
+				currentMap--;
+			}
+		}
+		if (userCMD->at(0).backButtonPressed)
+		{
+			timeSinceLastChange[0] = 0;
+			return MAIN_MENU_SCREEN;
+		} 
 	}
 	return GAME_SETUP_SCREEN;
 }
@@ -58,6 +65,12 @@ int GameSetupScreen::Update(std::vector<UserCMD>* userCMD, float p_dt)
 void GameSetupScreen::Draw()
 {
 
+}
+
+void GameSetupScreen::Initialize()
+{
+	m_graphicHandle->SetViewportAmount(1);
+	m_graphicHandle->UseHud(0,m_hudHandle);
 }
 
 void GameSetupScreen::SaveInfo()
