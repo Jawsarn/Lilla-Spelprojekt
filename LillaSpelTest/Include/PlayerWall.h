@@ -6,11 +6,11 @@ class PlayerWall :
 {
 private:
 	DirectX::XMFLOAT3 m_color;
+	XMMATRIX m_worldMatrix;
 public:
 	PlayerWall(void);
-	PlayerWall(XMFLOAT3 p_color, const XMMATRIX &p_wallWorldMatrix, XMFLOAT3 p_playerPosition);
+	PlayerWall(XMFLOAT3 p_color, XMFLOAT3* p_wallPos, XMFLOAT3* p_wallDir, XMFLOAT3* p_wallUp);
 	BoundingOrientedBox* GetBox();
-	XMMATRIX m_worldMatrix;
 	~PlayerWall(void);
 	unsigned int m_wallIndex;
 	void Update(float p_dt);

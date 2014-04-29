@@ -24,7 +24,7 @@ public:
 	void virtual Draw();
 protected:
 	std::string virtual NavigateMenu(UserCMD& p_userCMD);
-	void AddButton(std::string p_buttonName, DirectX::XMFLOAT2 p_centerPoint, float offsetX, float offsetY);
+	void AddButton(std::string p_buttonName, DirectX::XMFLOAT2 p_centerPoint, float offsetX, float offsetY, const wchar_t* texture1, const wchar_t* texture2);
 	void FixButtonPointers();
 private:
 	bool FloatBetweenValues(float floatToCheck, float min, float max); 

@@ -77,7 +77,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	//load a tube texture mesh 
 
 
-	m_GraphicEngine->LoadMesh("highway.obj",t_ObjTemp);
+	m_GraphicEngine->LoadMesh("dust2.obj",t_ObjTemp);
 
 	m_MeshLevels.push_back(t_ObjTemp);
 
@@ -97,7 +97,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	InitializeShip("spaceship2.obj",m_ShipTexture[2]);
 
 	////init walls
-	InitializeWall("Wall.obj",m_PlayerWallTexture[0]);
+	InitializeWall("wall.obj",m_PlayerWallTexture[0]);
 
 
 
@@ -147,6 +147,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	//plajerwurld.push_back(t_Mat);
 
 	VilkenVehicle.push_back(0);
+
 	//VilkenVehicle.push_back(0);
 	//VilkenVehicle.push_back(0);
 	//VilkenVehicle.push_back(0);
@@ -160,7 +161,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	//UINT t_temptest;
 	//CreateWall(0,plajerwurld[0],t_temptest,0);
 	//RemoveObject(t_temptest);
-	//SelectVehicle();
+	SelectVehicle();
 
 
 
@@ -489,20 +490,15 @@ void GraphicHandle::InitializeShip(std::string p_ShipStringName, UINT p_Texture)
 		m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[0],p_Texture,GraphicEngine::TextureType::DIFFUSE);
 	}
 }
-void GraphicHandle::CreateWall(int p_WhatWall,CXMMATRIX p_PlayerWallWorld,UINT & o_WhatWall,int p_WhatPlayer)
+UINT GraphicHandle::CreateWall(int p_WhatWall,CXMMATRIX p_PlayerWallWorld,int p_WhatPlayer)
 {
-	CreateDrawObject(m_MeshPlayerWall[p_WhatWall],
+	UINT r_WhatWall;
+
+
+			CreateDrawObject(m_MeshPlayerWall[p_WhatWall],
 			p_PlayerWallWorld,
 			m_Colours[m_PlayerColour[p_WhatPlayer]], 
-		o_WhatWall);
-		
-	// ta tillbaka detta AZOOKA/LOOCHIE
-	/*m_GraphicEngine->CreateDrawObject(
-			m_MeshPlayerWall[p_WhatWall],
-			p_PlayerWallWorld,
-			m_Colours[m_PlayerColour[p_WhatPlayer]],true, 
-			o_WhatWall);*/
-
+		r_WhatWall);
 
 		//LightStruct t_LightStruct;
 		//t_LightStruct.m_Color=m_Colours[m_PlayerColour[i]];//vi skcikar in en färg men kräver att dne har färg i lightstruct
@@ -510,6 +506,7 @@ void GraphicHandle::CreateWall(int p_WhatWall,CXMMATRIX p_PlayerWallWorld,UINT &
 		//t_LightStruct.m_Position=XMFLOAT3(//ta varje startnissesposition o bajsa lite under dem
 		//CreateLight(m_Player[i],m_Colours[m_PlayerColour[i]],m_PlayerLight[i],);//
 	
+	return r_WhatWall;
 
 }
 
@@ -524,16 +521,31 @@ void GraphicHandle::InitializeWall(std::string p_PlayerWallStringName, UINT p_Te
 		m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[0],p_Texture,GraphicEngine::TextureType::DIFFUSE);
 	}
 }
+
 void GraphicHandle::CreateDrawObject(std::vector <UINT> p_UINTMeshLista, CXMMATRIX p_World,XMFLOAT3 p_Colour,UINT & o_ObjectID )
 {
 	m_GraphicEngine->CreateDrawObject(p_UINTMeshLista,p_World,p_Colour,true, o_ObjectID);
 }
+
+
+
+void GraphicHandle::LoadTexture(const wchar_t* p_FileName, UINT &o_TextureID)
+{
+	m_GraphicEngine->LoadTexture(p_FileName, o_TextureID);
+}
+
+void GraphicHandle::SetViewportAmount(UINT p_ViewportAmount)
+{
+	m_GraphicEngine->SetViewportAmount(p_ViewportAmount);
+}
+
 void GraphicHandle::RemoveObject(UINT p_RemoveAt)
 {
 	m_GraphicEngine->RemoveObject(p_RemoveAt);
 }
 
 //hud functions
+
 
 void GraphicHandle::CreateHUDObject(XMFLOAT2 p_Position, XMFLOAT2 p_Offset, int p_TextureID1, int p_TextureID2, UINT &o_HudObjectID)
 {
@@ -554,3 +566,4 @@ void GraphicHandle::UseHud(UINT p_ViewportID, UINT p_HudID)
 {
 	m_GraphicEngine->UseHud(p_ViewportID, p_HudID);
 }
+

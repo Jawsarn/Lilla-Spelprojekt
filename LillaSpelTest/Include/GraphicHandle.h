@@ -83,11 +83,17 @@ public:
 	void InitializeShip(std::string p_ShipStringName, UINT p_Texture);
 	
 	
-	void CreateWall(int p_WhatWall,CXMMATRIX p_PlayerWallWorld,UINT & o_WhatWall,int p_WhatPlayer);
+	UINT CreateWall(int p_WhatWall,CXMMATRIX p_PlayerWallWorld,int p_WhatPlayer);
 	void InitializeWall(std::string p_PlayerWallStringName, UINT p_Texture);
+
+
+	void SetViewportAmount(UINT p_ViewportAmount);
+	void LoadTexture(const wchar_t* p_FileName, UINT &o_TextureID);
+
 	
 	void CreateDrawObject(std::vector <UINT> p_UINTMeshLista, CXMMATRIX p_World,XMFLOAT3 p_Colour,UINT & o_ObjectID);
 	void RemoveObject(UINT p_RemoveAt);
+
 
 	//hud functions
 	void CreateHUD(UINT &o_HUDID);

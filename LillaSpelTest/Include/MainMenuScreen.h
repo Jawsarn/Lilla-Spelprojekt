@@ -3,6 +3,8 @@
 class MainMenuScreen :
 	public MenuScreen
 {
+private:
+	unsigned int m_hudHandle;
 public:
 	MainMenuScreen(void);
 	MainMenuScreen(GraphicHandle* p_graphicsHandle);

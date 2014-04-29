@@ -15,7 +15,7 @@ struct PS_OUTPUT
 	// example like 
 	float4 Normal_Depth			:SV_TARGET0;
 	float4 DiffuseColor_Spec	:SV_TARGET1;
-	float4 Specular				:SV_TARGET2;
+	float4 Glowmap				:SV_TARGET2;
 };
 
 
@@ -28,8 +28,10 @@ PS_OUTPUT PS(GS_OUTPUT input) : SV_TARGET
 	float depth = input.Depth.x / input.Depth.y;
 
 	output.Normal_Depth = float4(input.Normal, depth);
+
 	output.DiffuseColor_Spec = diffuseColorSpecFac;
-	output.Specular = float4(1,1,1,1);
+
+	output.Glowmap = float4(0.25,0.25,0.25,1);
 
 	return output;
 }

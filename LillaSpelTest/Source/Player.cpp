@@ -16,7 +16,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle)
 	m_distance = 0.0f;
 	m_speed = 30;
 	m_position = m_mapNode->m_position;
-	m_direction = DirectX::XMFLOAT3(0,0,0);
+	m_direction = DirectX::XMFLOAT3(0,0,1);
 }
 
 
@@ -121,10 +121,11 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 	
 	static float cooldownTimer = 0;
 	cooldownTimer -= 0.1;
-	if(p_userCMD.rightTriggerPressed && cooldownTimer <=0)
+	if(p_userCMD.rightTriggerPressed)// && cooldownTimer <=0)
 	{
 		PlaceWall();
-		cooldownTimer = 10;
+		cooldownTimer = 1;
+		p_userCMD.controller.Vibrate(64000,64000);
 		return 1;
 	}
 	return 0;
@@ -186,7 +187,9 @@ void Player::ChangeState(PlayerState p_state)
 
 void Player::PlaceWall()
 {
-	m_lastPlacedWall = new PlayerWall(XMFLOAT3(0,1,0), m_worldMatrix, m_position);
+	XMFLOAT4X4 t_worldMatrixFloat;
+	XMStoreFloat4x4(&t_worldMatrixFloat, m_worldMatrix);
+	m_lastPlacedWall = new PlayerWall(XMFLOAT3(0,0,1), &m_position, &m_direction , &m_upVector);
 	m_placedWalls.push_back(m_lastPlacedWall);
 	m_mapNode->m_playerWalls.push_back(m_lastPlacedWall);
 }

@@ -8,9 +8,9 @@ OptionsScreen::OptionsScreen(void)
 OptionsScreen::OptionsScreen(GameInfo* p_gameInfo, GraphicHandle* p_graphicsHandle)
 	:MenuScreen(p_gameInfo,p_graphicsHandle)
 {
-	AddButton("Volume", DirectX::XMFLOAT2(0,0.8),0.7,0.1);
-	AddButton("Resolution", DirectX::XMFLOAT2(0,0.8),0.5,0.1);
-	AddButton("Back", DirectX::XMFLOAT2(0,0.8),0.7,0.1);
+	AddButton("Volume", DirectX::XMFLOAT2(0,0.8),0.7,0.1, L"Volume1.jpg",L"Volume2.jpg");
+	AddButton("Resolution", DirectX::XMFLOAT2(0,0.8),0.5,0.1,L"Resolution1.jpg",L"Resolution2.jpg");
+	AddButton("Back", DirectX::XMFLOAT2(0,0.8),0.7,0.1,L"Back1.jpg",L"Back2.jpg");
 	FixButtonPointers();
 }
 

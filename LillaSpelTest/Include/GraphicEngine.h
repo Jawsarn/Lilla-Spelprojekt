@@ -37,7 +37,7 @@ public:
 
 	
 	
-	enum TextureType{DIFFUSE,NORMAL,GLOW,SPECULAR};
+	enum TextureType{DIFFUSE,NORMAL};
 
 	//object
 	HRESULT LoadMesh(std::string p_FileName, std::vector<UINT> &o_DrawPieceIDs);
@@ -64,7 +64,6 @@ public:
 	HRESULT CreateHudFromTemplate(UINT p_HudTemplateID,  XMFLOAT3 p_Color, std::vector<XMFLOAT2> barOffsets ,UINT &o_HudID);
 	void UseHud(UINT p_Viewport, UINT p_HudI);
 	void ChangeTextureOnHudObject(UINT p_HudID, UINT p_HudObjectID, bool useFrontTexture);
-
 
 	//camera funcs
 	HRESULT CreateCamera( XMFLOAT3 p_Pos, XMFLOAT3 p_At, XMFLOAT3 p_Up, float p_FieldOfView, float p_Width, float p_Height, float p_NearZ, float p_FarZ, UINT &o_CameraID);
@@ -117,6 +116,7 @@ private:
 	void ComputeTileDeferredLightning();
 	void UpdateConstantBuffer(); //not written
 	void DrawHud();
+	void ComputeGlow();
 
 	UINT CheckProgram(DrawPiece p_Piece);
 
@@ -145,10 +145,15 @@ private:
 	ID3D11DepthStencilState*	m_DepthStateNoWrite;
 	ID3D11SamplerState*			m_SamplerStateWrap;
 
+	//backbuffer uav
 	ID3D11UnorderedAccessView* m_BackBufferUAV;
+
+	//gbuffers diffuseSpec/normal + gloooowie
 	ID3D11ShaderResourceView* m_GbufferShaderResource[3];
 	ID3D11RenderTargetView* m_GbufferTargetViews[3];
 
+	//aaand the blur buffers/glow
+	ID3D11UnorderedAccessView* m_BlurBufferUAVs[2];
 
 	UINT m_Width;
 	UINT m_Height;

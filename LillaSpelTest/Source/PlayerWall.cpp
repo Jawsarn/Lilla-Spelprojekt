@@ -6,9 +6,16 @@ PlayerWall::PlayerWall(void)
 
 }
 
-PlayerWall::PlayerWall(XMFLOAT3 p_color, const XMMATRIX &p_wallWorldMatrix, XMFLOAT3 p_playerPosition)
+PlayerWall::PlayerWall(XMFLOAT3 p_color, XMFLOAT3* p_wallPos, XMFLOAT3* p_wallDir, XMFLOAT3* p_wallUp)
 {
-	m_worldMatrix = p_wallWorldMatrix;
+	XMVECTOR t_eye = XMLoadFloat3(p_wallPos);
+	XMVECTOR t_target = XMLoadFloat3(p_wallDir);
+	XMVECTOR t_up = XMLoadFloat3(p_wallUp);
+	
+	
+	XMMATRIX t_matrix = XMMatrixInverse(&XMMatrixDeterminant(XMMatrixLookToLH(t_eye,t_target , t_up)),XMMatrixLookToLH(t_eye,t_target , t_up));
+	m_worldMatrix = t_matrix;
+	
 	MathHelper t_mathHelper = MathHelper();
 	m_color = p_color;
 
@@ -17,11 +24,12 @@ PlayerWall::PlayerWall(XMFLOAT3 p_color, const XMMATRIX &p_wallWorldMatrix, XMFL
 
 	XMFLOAT4 t_quarternion = XMFLOAT4(0,0,0,1);
 	XMVECTOR t_orientationVector = XMLoadFloat4(&t_quarternion);
-	t_orientationVector = XMVector4Transform(t_orientationVector,p_wallWorldMatrix);
+	t_orientationVector = XMVector4Transform(t_orientationVector, t_matrix);
 	t_orientationVector = XMVector4Normalize(t_orientationVector);
 	XMStoreFloat4(&t_quarternion, t_orientationVector);
 	
-	m_box = BoundingOrientedBox(p_playerPosition, t_boxExtents, t_quarternion);
+	
+	m_box = BoundingOrientedBox(*p_wallPos, t_boxExtents, t_quarternion);
 	
 
 
@@ -43,5 +51,6 @@ unsigned int PlayerWall::GetWallIndex()
 
 XMMATRIX PlayerWall::GetWorldMatrix()
 {
+	
 	return m_worldMatrix;
 }
