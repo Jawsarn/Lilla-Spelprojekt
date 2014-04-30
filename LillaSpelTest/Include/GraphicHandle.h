@@ -27,7 +27,8 @@ private:
 	//std::vector<UINT> m_PlayerWalls;
 	std::vector<UINT> m_PlayerColour;
 	std::vector<UINT> m_PlayerLight;
-	UINT m_CurrentLevel;
+	UINT m_WhatLevelBefore;
+	std::vector <UINT> m_Levels;
 	
 	
 	
@@ -64,17 +65,18 @@ public:
 	void DrawGame();
 	void ChangeHUDObject(int p_hudID, int p_hudObjID, int change());
 	void UpdateDynamicLight(UINT p_LightID,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius);
-	void UpdatePlayer(int p_playerID, CXMMATRIX p_matrix);
+	void UpdatePlayer(int p_playerID,CXMMATRIX p_PlayerMatrix,CXMMATRIX p_CameraMatrix);
 	void UpdateCamera(UINT p_CameraID,float p_Walk, float p_Strafe, float p_Hover, float p_Pitch, float p_RotateY); //for change if we are to use quaternions, else just need to add the "jaw"s =D=D
 	void UpdateSelectVehicle(float p_DeltaTime);
 	void CreatePlayer(std::vector<UINT> p_DrawPieceIDs, CXMMATRIX p_World, bool addToDrawNow, UINT &o_ObjectID,XMFLOAT3 p_Pos, XMFLOAT3 p_At, XMFLOAT3 p_Up, float p_FieldOfView, float p_Width, float p_Height, float p_NearZ, float p_FarZ, UINT &o_CameraID); //inte klar alls
 	void StartGame(int p_WhatLevel,std::vector<int> p_WhatVehicle,std::vector<XMMATRIX> p_PlayerWorld,std::vector<XMFLOAT3>p_PlayerColor,CXMMATRIX p_LevelWorld,XMFLOAT3 p_LevelColor);
 	void SelectVehicle();
 	void ChangeLevelSelection(int p_WhatLevel);
-	void UpdateCameraSelectLevel(int p_WhatLevel);
+	void UpdateCameraSelectLevel(int p_WhatLevel,int p_TheRotation);
 	void UpdateCameraVehicleSelection(UINT p_CameraLogicID,float p_LookingAtWhatVehicle);
 	void JohnSetCamera(CXMMATRIX p_World, UINT p_CameraLogicID);
 	int GetAmountOfVehicles();
+	int GetAmountOfLevels();
 	void SetFullScreen(bool p_IsFullScreen);
 	void Cleanup();
 	//void TurnCameraSelection(float p_DeltaTime,CXMMATRIX p_Start, CXMMATRIX p_End)
@@ -83,6 +85,7 @@ public:
 	void SetAmountOfPlayers(int p_NrOfPlayers);
 	void SetCameraVehicleSelection(UINT p_CameraLogicID);
 	void InitializeShip(std::string p_ShipStringName, UINT p_Texture);
+	void InitializeLevel(std::string p_LevelStringName, UINT p_Texture);
 	
 	
 	UINT CreateWall(int p_WhatWall,CXMMATRIX p_PlayerWallWorld,int p_WhatPlayer);
@@ -93,7 +96,7 @@ public:
 	void LoadTexture(const wchar_t* p_FileName, UINT &o_TextureID);
 
 	
-	void CreateDrawObject(std::vector <UINT> p_UINTMeshLista, CXMMATRIX p_World,XMFLOAT3 p_Colour,UINT & o_ObjectID);
+	void CreateDrawObject(std::vector <UINT> p_UINTMeshLista, CXMMATRIX p_World,XMFLOAT3 p_Colour,UINT & o_ObjectID,bool p_ShouldItBeDrawn);
 	void RemoveObject(UINT p_RemoveAt);
 
 

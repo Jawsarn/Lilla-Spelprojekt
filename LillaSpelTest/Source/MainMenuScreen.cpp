@@ -13,6 +13,7 @@ MainMenuScreen::MainMenuScreen(GraphicHandle* p_graphicsHandle)
 	AddButton("Start Game", DirectX::XMFLOAT2(0,0.5),0.5,0.2,L"StartGame1.dds",L"StartGame2.dds");
 	AddButton("Options",DirectX::XMFLOAT2(0,0),0.5,0.2,L"Options1.dds",L"Options2.dds");
 	AddButton("Quit",DirectX::XMFLOAT2(0,-0.5),0.5,0.2,L"Quit1.dds",L"Quit2.dds");
+	AddButton("Debugg", DirectX::XMFLOAT2(-0.7,0),0.1,0.2,L"Debugg1.dds",L"Debugg2.dds");
 
 	FixButtonPointers();
 	MakeHud(m_hudHandle);
@@ -29,10 +30,10 @@ MainMenuScreen::~MainMenuScreen(void)
 
 }
 
-int MainMenuScreen::Update(std::vector<UserCMD>* p_userCMD, float p_dt)
+int MainMenuScreen::Update(float p_dt,std::vector<UserCMD>* userCMD )
 {
-	MenuScreen::Update(p_userCMD,p_dt);
-	std::string t_menuChoice = NavigateMenu(p_userCMD->at(0),m_hudHandle);
+	MenuScreen::Update(p_dt,userCMD);
+	std::string t_menuChoice = NavigateMenu(userCMD->at(0),m_hudHandle);
 	if (t_menuChoice == "Start Game")
 	{
 		return GAME_SETUP_SCREEN;
@@ -44,6 +45,10 @@ int MainMenuScreen::Update(std::vector<UserCMD>* p_userCMD, float p_dt)
 	else if (t_menuChoice == "Quit")
 	{
 		return SHUT_DOWN;
+	}
+	else if (t_menuChoice == "Debugg")
+	{
+		//return DEBUGG;
 	}
 
 	return MAIN_MENU_SCREEN;

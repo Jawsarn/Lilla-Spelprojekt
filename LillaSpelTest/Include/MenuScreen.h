@@ -20,7 +20,7 @@ public:
 	MenuScreen(void);
 	MenuScreen(GameInfo* p_gameInfo, GraphicHandle* p_graphicsHandle);
 	~MenuScreen(void);
-	int virtual Update(std::vector<UserCMD>* p_userCMDs, float p_dt);
+	int virtual Update( float p_dt, std::vector<UserCMD>* p_userCMDs);
 	void virtual Draw();
 	void virtual Initialize() = 0;
 protected:

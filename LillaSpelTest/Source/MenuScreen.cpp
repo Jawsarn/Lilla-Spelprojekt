@@ -24,7 +24,7 @@ MenuScreen::MenuScreen(GameInfo* p_gameInfo, GraphicHandle* p_graphicsHandle)
 	}
 }
 
-int MenuScreen::Update(std::vector<UserCMD>* p_userCMDs, float p_dt)
+int MenuScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDs)
 {
 	for (int i = 0; i < 4; i++)
 	{
@@ -43,7 +43,7 @@ std::string MenuScreen::NavigateMenu(UserCMD& p_userCMD, unsigned int p_hudHandl
 {
 
 
-	if (timeSinceLastChange[0] > 0.5)
+	if (timeSinceLastChange[0] > 0.1)
 	{
 		if (p_userCMD.aButtonPressed)
 		{
