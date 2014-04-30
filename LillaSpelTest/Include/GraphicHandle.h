@@ -70,6 +70,8 @@ public:
 	void CreatePlayer(std::vector<UINT> p_DrawPieceIDs, CXMMATRIX p_World, bool addToDrawNow, UINT &o_ObjectID,XMFLOAT3 p_Pos, XMFLOAT3 p_At, XMFLOAT3 p_Up, float p_FieldOfView, float p_Width, float p_Height, float p_NearZ, float p_FarZ, UINT &o_CameraID); //inte klar alls
 	void StartGame(int p_WhatLevel,std::vector<int> p_WhatVehicle,std::vector<XMMATRIX> p_PlayerWorld,std::vector<XMFLOAT3>p_PlayerColor,CXMMATRIX p_LevelWorld,XMFLOAT3 p_LevelColor);
 	void SelectVehicle();
+	void ChangeLevelSelection(int p_WhatLevel);
+	void UpdateCameraSelectLevel(int p_WhatLevel);
 	void UpdateCameraVehicleSelection(UINT p_CameraLogicID,float p_LookingAtWhatVehicle);
 	void JohnSetCamera(CXMMATRIX p_World, UINT p_CameraLogicID);
 	int GetAmountOfVehicles();

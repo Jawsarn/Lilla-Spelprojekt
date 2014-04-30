@@ -9,6 +9,11 @@
 #include "AzookaTest.h"
 #include "MysteriskTest.h"
 #include "GameScreen.h"
+#include "GameSetupScreen.h"
+#include "JoinGameScreen.h"
+#include "Struct_GameInfo.h"
+#include "MainMenuScreen.h"
+#include "OptionsScreen.h"
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam );
 HRESULT InitializeWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow);
@@ -16,7 +21,7 @@ void Run();
 
 HINSTANCE	handleInstance;
 HWND	m_HandleWindow;
-
+//ApplicationState state;
 
 #include "GraphicHandle.h"
 
