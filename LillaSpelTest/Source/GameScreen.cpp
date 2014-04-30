@@ -36,13 +36,14 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 		//fixes the position, direction, sets up world matrix, drops wall, etc.
 		if(m_players[i]->ProperUpdatePosition(p_dt, p_userCMDS->at(i)) == 1)
 		{
+			PlayerWall* t_newWall = m_players[i]->GetLastPlacedWall();
 			t_newWall->m_wallIndex = m_graphicHandle->CreateWall(0, t_newWall->GetWorldMatrix(), i);			//PUBLIC VARIALBE!!! MAKE FIX BEFORE JAWS DISCOVERS!!!t_newWall->GetWorldMatrix()
-			int k = 7;
 		}
 		//gets the world matrix
 		m_graphicHandle->JohnSetCamera(m_players[i]->GetWorldMatrix(), i);
 		MapNode* t_currMapNode = m_players[i]->GetCurrentMapNode();    //för att slippa getta flera gånger i denna forsats
 
+		//check collision for player i against all wall objects in his mapnode
 		vector<StaticObj*>* m_wallsToCheck = &t_currMapNode->m_staticObjs;			///Create list of all the static objs in the currmapNode
 		if(m_collisionManager->PlayerVsObj(m_players[i]->GetCollisionBox(), m_wallsToCheck)!=1)    ///PLAYER VS STATIC Collisionmanager checks for hit and returns int representing the object you collided with
 		{
@@ -51,6 +52,7 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 		}
 		///END OF PLAYER VS STATIC
 
+		//check collision for play i against all playerwall objects in his mapnode
 		vector<PlayerWall*>* t_playerWallsToCheck = &t_currMapNode->m_playerWalls;					//Create a new list of the PlayerWalls in currmapnode
 		if (t_playerWallsToCheck->size()>0)
 		{
