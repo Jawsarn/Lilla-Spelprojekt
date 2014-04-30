@@ -21,6 +21,7 @@ void Run();
 
 HINSTANCE	handleInstance;
 HWND	m_HandleWindow;
+
 ApplicationState m_state;
 
 //// The different screens ////

@@ -257,6 +257,21 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 //	UpdatePlayer(0,t_Mat);
 }
 
+void GraphicHandle::ChangeLevelSelection(int p_WhatLevel)
+{
+	if (m_CurrentLevel!=0)
+	{
+		XMMATRIX t_TempWorldMatrix=XMMatrixIdentity();
+		XMFLOAT3 t_TempColour = XMFLOAT3(1,1,1);
+		RemoveObject(m_CurrentLevel);
+		CreateDrawObject(m_MeshLevels[p_WhatLevel],t_TempWorldMatrix,t_TempColour,m_CurrentLevel);
+	}
+
+}
+void GraphicHandle::UpdateCameraSelectLevel(int p_WhatLevel)
+{
+
+}
 void GraphicHandle::UpdatePlayer(int p_playerID,CXMMATRIX p_matrix)
 {
 	m_GraphicEngine->MoveObject(m_Player[p_playerID], p_matrix);
