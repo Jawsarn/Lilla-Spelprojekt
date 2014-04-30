@@ -502,9 +502,19 @@ HRESULT GraphicEngine::InitializeShaders()
 	}
 
 	{
-		//COMPUTE SHADER blurring glow
+		//COMPUTE SHADER blurring glow vert
 		ID3D11ComputeShader* t_ComputeShader;
 		hr = m_ShaderLoader->CreateComputeShader( L"GraphicGlowVertBlurrCS.hlsl", "CS", "cs_5_0", m_Device, &t_ComputeShader);
+		if( FAILED( hr ))
+			return hr;
+
+		m_ComputeShaders.push_back(t_ComputeShader);
+	}
+
+	{
+		//COMPUTE SHADER blurring glow horr
+		ID3D11ComputeShader* t_ComputeShader;
+		hr = m_ShaderLoader->CreateComputeShader( L"GraphicGlowHorrBlurrCS.hlsl", "CS", "cs_5_0", m_Device, &t_ComputeShader);
 		if( FAILED( hr ))
 			return hr;
 
@@ -1266,6 +1276,11 @@ void GraphicEngine::DrawGame()
 	//draw opaque objects
 	DrawOpaqueObjects();
 
+	m_DeviceContext->OMSetRenderTargets(0,nullptr,nullptr);
+
+	//glowy glowy
+	ComputeGlow();
+
 	//compute tiled lighting
 	ComputeTileDeferredLightning();
 
@@ -1393,7 +1408,7 @@ void GraphicEngine::ComputeTileDeferredLightning()
 {
 	m_DeviceContext->CSSetShader(m_ComputeShaders[0],nullptr,0); //HÅRDKODAT
 	
-	m_DeviceContext->OMSetRenderTargets(0,nullptr,nullptr);
+	
 	
 	m_DeviceContext->CSSetUnorderedAccessViews(0, 1, &m_BackBufferUAV, nullptr);
 	m_DeviceContext->CSSetShaderResources(1, 3, m_GbufferShaderResource);
@@ -1511,9 +1526,9 @@ void GraphicEngine::ComputeGlow()
 	m_DeviceContext->CSSetShader(m_ComputeShaders[1],nullptr,0);
 
 	//set the outputp and input
-	m_DeviceContext->CSSetUnorderedAccessViews(0, 1, &m_BlurBufferUAV, nullptr);
+	m_DeviceContext->CSSetUnorderedAccessViews( 0, 1, &m_BlurBufferUAV, nullptr );
 
-	m_DeviceContext->CSSetShaderResources(1, 1, &m_GbufferShaderResource[2]);
+	m_DeviceContext->CSSetShaderResources( 1, 1, &m_GbufferShaderResource[2] );
 
 
 	//vert blur keep the x:es
@@ -1521,11 +1536,12 @@ void GraphicEngine::ComputeGlow()
 	UINT y = ceil(m_Height/(FLOAT)THREAD_VERTBLURR_DIMENSION);
 
 	//very blurr first
+	m_DeviceContext->Dispatch(x, y, 1);
 
 	//now set for the horizontal blurrrr
 
 	//vertical glow
-	//m_DeviceContext->CSSetShader(m_ComputeShaders[2],nullptr,0);
+	m_DeviceContext->CSSetShader(m_ComputeShaders[2],nullptr,0);
 
 	//set the outputp and input
 	ID3D11ShaderResourceView* t_EmptySRV = {0};
@@ -1534,6 +1550,11 @@ void GraphicEngine::ComputeGlow()
 	m_DeviceContext->CSSetUnorderedAccessViews(0, 1, &m_GbufferGlowmapUAV, nullptr);
 
 	m_DeviceContext->CSSetShaderResources(1, 1, &m_BlurShaderResource);
+
+	x = ceil( m_Width/ (FLOAT)THREAD_HORBLURR_DIMENSION);
+	y = m_Height;
+
+	m_DeviceContext->Dispatch(x, y, 1);
 
 }
 
