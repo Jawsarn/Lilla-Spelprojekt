@@ -18,8 +18,8 @@ int CollisionManager::PlayerVsObj(BoundingOrientedBox* p_player, std::vector<Sta
 		{
 			return p_collisionBoxes->at(i)->GetType();
 		}
-		return 1;
 	}
+	return 1;
 }
 
 bool CollisionManager::PlayerVsPlayerWall(BoundingOrientedBox* p_player, std::vector<PlayerWall*>* p_collisionBoxes)

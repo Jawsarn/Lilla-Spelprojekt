@@ -121,8 +121,9 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 	UpdateCollisionBox();
 	
 	static float cooldownTimer = 0;
-	cooldownTimer -= 0.1;
-	if(p_userCMD.rightTriggerPressed)// && cooldownTimer <=0)
+
+	cooldownTimer -= 0.07; //lower means greater cooldown
+	if(p_userCMD.rightTriggerPressed && cooldownTimer <=0)
 	{
 		PlaceWall();
 		cooldownTimer = 1;

@@ -139,6 +139,7 @@ void MapLoader::LoadNodes(vector<XMFLOAT3>* p_centerPositions, vector<XMFLOAT3>*
 			m_logicalMap[i]->m_radiusVector = t_radiusVector;
 			XMStoreFloat(&m_logicalMap[i]->m_radius, XMVector3Length(XMLoadFloat3(&t_radiusVector)));			//somehow gets the absolute value of the radius vector
 	}
+	//last node's next pointer goes to the first node. Bit of a silly thing but it works
 	m_logicalMap[m_logicalMap.size()-1]->m_nextNode = m_logicalMap[0];
 	XMFLOAT3 v = m_logicalMap[m_logicalMap.size()-1]->m_position;
 	XMFLOAT3 s = m_logicalMap[0]->m_position;

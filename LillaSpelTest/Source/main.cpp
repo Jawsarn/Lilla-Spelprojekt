@@ -223,7 +223,7 @@ void OnMouseMove(WPARAM btnStae, int x, int y)
 		t_bajs+=m_DeltaTime;
 		m_GraphicHandle->UpdateCamera(m_ActiveCamera,0,0,0,dy,dx);
 		//m_GraphicHandle->UpdateCameraVehicleSelection(m_ActiveCamera,t_bajs);
-		m_GraphicHandle->ChangeLevelSelection(0);
+		//m_GraphicHandle->ChangeLevelSelection(0);
 		//m_GraphicHandle->SetCameraVehicleSelection(m_ActiveCamera);
 	}
 
