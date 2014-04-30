@@ -26,7 +26,7 @@ GameSetupScreen::GameSetupScreen(GameInfo* p_gameInfo,GraphicHandle* p_graphicsH
 }
 
 
-int GameSetupScreen::Update(std::vector<UserCMD>* userCMD, float p_dt)
+int GameSetupScreen::Update(float p_dt,std::vector<UserCMD>* userCMD )
 {
 	MenuScreen::Update(p_dt, userCMD);
 	if (timeSinceLastChange[0]>0.5)

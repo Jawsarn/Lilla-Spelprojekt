@@ -15,7 +15,7 @@ public:
 	Screen(GraphicHandle* p_graphicHandle);
 	~Screen(void);
 
-	int virtual Update(float p_dt, std::vector<UserCMD> p_userCMDS);
+	int virtual Update(float p_dt, std::vector<UserCMD>* p_userCMDS);
 	void virtual Initialize() = 0;
 	void virtual Draw();
 };

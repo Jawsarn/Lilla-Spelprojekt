@@ -17,6 +17,7 @@
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam );
 HRESULT InitializeWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow);
+void Update(std::vector<UserCMD>* p_userCMDs);
 void Run();
 
 HINSTANCE	handleInstance;
@@ -29,7 +30,8 @@ Screen* m_mainMenuScreen;
 Screen* m_gameSetupScreen;
 Screen* m_optionsScreen;
 Screen* m_joinGameScreen;
-
+Screen* m_gameScreen;
+GameInfo m_gameInfo;
 
 #include "GraphicHandle.h"
 
@@ -55,8 +57,12 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	m_GraphicHandle->Initialize(1920, 1080, m_HandleWindow); //fix this input variables right
 	m_GraphicHandle->SetFullScreen(false);
 
-	m_mainMenuScreen = new MainMenuScreen();
-	
+	m_mainMenuScreen = new MainMenuScreen(m_GraphicHandle);
+	m_gameSetupScreen = new GameSetupScreen(&m_gameInfo,m_GraphicHandle);
+	m_optionsScreen = new OptionsScreen(&m_gameInfo,m_GraphicHandle);
+	m_joinGameScreen = new JoinGameScreen(&m_gameInfo,m_GraphicHandle);
+	m_gameScreen = new GameScreen();
+	m_state = MAIN_MENU_SCREEN;
 	Run();
 
 	return 0;
@@ -92,12 +98,7 @@ void Run()
 		}
 		else  //if there are no messages, update and draw
 		{
-			//t_azookaTest.Run();
-
 			
-			t_Mtest.Run(userCMDS,m_DeltaTime);
-
-
 			for (int i = 0; i < 4; i++) ///Fixes UserCMDs for all connected players
 			{
 				if (userCMDS->at(i).controller.IsConnected())
@@ -109,13 +110,21 @@ void Run()
 					////Player i controller disconnected, plz connect again message
 				}
 			}
-		
 			ULONGLONG timeCur = GetTickCount64();
 			if( m_PrevTime == 0 )
 				m_PrevTime = timeCur;
 			m_DeltaTime = ( timeCur - m_PrevTime ) / 1000.0f;
 			m_GameTime += m_DeltaTime;
 			m_PrevTime = timeCur;
+			Update(userCMDS);
+			//t_azookaTest.Run();
+
+			
+			//t_Mtest.Run(userCMDS,m_DeltaTime);
+
+
+		
+		
 			gameScreen.Update(m_DeltaTime,userCMDS);
 					//m_graphicHandle->JohnSetCamera(m_players[i]->GetWorldMatrix(), i);
 			XMMATRIX t_debugCameraMatrix = t_azookaTest.GetDebugCameraWorldMatrix(&userCMDS->at(0), m_DeltaTime);
@@ -130,6 +139,77 @@ void Run()
 	//cleanup
 }
 
+void RunInitialization()
+{
+	switch (m_state)
+	{
+	case GAME_SETUP_SCREEN:
+		m_gameSetupScreen->Initialize();
+		break;
+	case PAUSE_SCREEN:
+		break;
+	case GAME_SCREEN:
+		break;
+	case JOIN_GAME_SCREEN:
+		m_joinGameScreen->Initialize();
+		break;
+	case OPTIONS_SCREEN:
+		m_optionsScreen->Initialize();
+		break;
+	case MAIN_MENU_SCREEN:
+		m_mainMenuScreen->Initialize();
+		break;
+	case SHUT_DOWN:
+		break;
+	default:
+		break;
+	}
+}
+
+void Update(std::vector<UserCMD>* p_userCMDs)
+{
+	switch (m_state)
+	{
+	case GAME_SETUP_SCREEN:
+		m_state = (ApplicationState)m_gameSetupScreen->Update(m_DeltaTime,p_userCMDs);
+		if (m_state != GAME_SETUP_SCREEN)
+		{
+			RunInitialization();
+		}
+		break;
+	case PAUSE_SCREEN:
+		break;
+	case GAME_SCREEN:
+		m_state = GAME_SCREEN;
+		break;
+	case JOIN_GAME_SCREEN:
+		m_state = (ApplicationState)m_joinGameScreen->Update(m_DeltaTime,p_userCMDs);
+		if (m_state != JOIN_GAME_SCREEN)
+		{
+			RunInitialization();
+		}
+		break;
+	case OPTIONS_SCREEN:
+		m_state = (ApplicationState)m_optionsScreen->Update(m_DeltaTime,p_userCMDs);
+		if (m_state != OPTIONS_SCREEN)
+		{
+			RunInitialization();
+		}
+		break;
+	case MAIN_MENU_SCREEN:
+		m_state = (ApplicationState)m_mainMenuScreen->Update(m_DeltaTime,p_userCMDs);
+		if (m_state != MAIN_MENU_SCREEN)
+		{
+			RunInitialization();
+		}
+		break;
+	case SHUT_DOWN:
+		exit(1337);
+		break;
+	default:
+		break;
+	}
+}
 //callback inte helt fixat då den inte får ligga som en medlemsfunktion, och måste därför vara static => vilket gör att den inte kan kalla på medlemsfunktioner, kan fixas med att lägga den i ett namespace och trixa med "this" , eller ha den i main där allt är static och kan skriva funktioner som inte behöver en klass
 float t_bajs=0;
 void OnMouseMove(WPARAM btnStae, int x, int y)
