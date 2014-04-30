@@ -811,7 +811,7 @@ HRESULT GraphicEngine::CreateDrawObject(std::vector<UINT> p_DrawPieceIDs, CXMMAT
 
 	if (addToDrawNow)
 	{
-		//add code
+		m_ObjectsOnDrawingScheme[o_ObjectID] = m_DrawObjects[o_ObjectID];
 	}
 	return S_OK;
 }
@@ -866,8 +866,22 @@ HRESULT GraphicEngine::MoveObject(UINT p_ObjectID, CXMMATRIX p_Matrix)
 
 void GraphicEngine::RemoveObject(UINT p_ObjectID)
 {
+	delete m_DrawObjects[p_ObjectID];
+	m_DrawObjects[p_ObjectID] = nullptr;
+
 	m_DrawObjects.erase(p_ObjectID);
 }
+
+void GraphicEngine::RemoveObjectFromDrawing(UINT p_ObjectID)
+{
+	m_ObjectsOnDrawingScheme.erase(p_ObjectID);
+}
+
+void GraphicEngine::AddObjectToDrawing(UINT p_ObjectID)
+{
+	m_ObjectsOnDrawingScheme[p_ObjectID] = m_DrawObjects[p_ObjectID];
+}
+
 
 ///////////////////////////////////////////////
 //==========Texture functions=================//
@@ -1114,6 +1128,7 @@ HRESULT GraphicEngine::SetCamera(UINT p_CameraID, XMFLOAT3 p_Pos, XMFLOAT3 p_At,
 	}
 	return S_OK;
 }
+
 HRESULT GraphicEngine::SetCamera(UINT p_CameraID, CXMMATRIX p_Matrix)
 {
 	if (m_Cameras[p_CameraID] != nullptr)
@@ -1127,6 +1142,7 @@ HRESULT GraphicEngine::SetCamera(UINT p_CameraID, CXMMATRIX p_Matrix)
 	}
 	return S_OK;
 }
+
 void GraphicEngine::UseCamera(UINT p_ViewPortID, UINT p_CameraID)
 {
 	m_ActiveCameras[p_ViewPortID] = m_Cameras[p_CameraID];
@@ -1305,7 +1321,7 @@ void GraphicEngine::DrawOpaqueObjects()
 	UINT offsets = 0;
 
 	//std::map<UINT, DrawObject*>::iterator it;
-	for (std::map<UINT, DrawObject*>::iterator it = m_DrawObjects.begin(); it != m_DrawObjects.end(); ++it)
+	for (std::map<UINT, DrawObject*>::iterator it = m_ObjectsOnDrawingScheme.begin(); it != m_ObjectsOnDrawingScheme.end(); ++it)
 	{
 		//update the object buffer
 		PerObjectBuffer t_PerObjBuff;

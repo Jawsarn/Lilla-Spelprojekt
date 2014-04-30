@@ -49,6 +49,8 @@ public:
 	HRESULT ChangeObjectsLight(UINT p_ObjectID, UINT p_LightID,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius);
 	HRESULT MoveObject(UINT p_ObjectID, CXMMATRIX p_Matrix);
 	void RemoveObject(UINT p_ObjectID);
+	void RemoveObjectFromDrawing(UINT p_ObjectID);
+	void AddObjectToDrawing(UINT p_ObjectID);
 
 	//texture functions
 	HRESULT LoadTexture(const wchar_t * p_FileName, UINT &o_TextureID);
@@ -126,7 +128,7 @@ private:
 	static GraphicEngine* singleton;
 
 	MeshLoader* m_MeshLoader;
-
+	//initialize and handles
 	ID3D11Device*			m_Device;
 	ID3D11DeviceContext*	m_DeviceContext;
 	ID3D11Device1*			m_Device1;
@@ -135,6 +137,7 @@ private:
 	D3D_DRIVER_TYPE			m_DriverType;
 	D3D_FEATURE_LEVEL		m_FeatureLevel;
 
+	//basic rendering stuff
 	ID3D11RenderTargetView*		m_RenderTargetView;
 	ID3D11Texture2D*			m_DepthStencil;
 	ID3D11DepthStencilView*		m_DepthStencilView;
@@ -165,8 +168,10 @@ private:
 
 	ShaderLoader* m_ShaderLoader;
 
-	
+	//objects lights camarsas
 	std::map<UINT, DrawObject*> m_DrawObjects;
+	std::map<UINT, DrawObject*> m_ObjectsOnDrawingScheme;
+
 	std::map<UINT, Light*> m_DynamicLights;
 	//std::vector<Camera*> m_Cameras;
 	std::map<UINT, Camera*> m_Cameras;
