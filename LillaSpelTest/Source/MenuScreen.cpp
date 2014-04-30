@@ -43,7 +43,7 @@ std::string MenuScreen::NavigateMenu(UserCMD& p_userCMD, unsigned int p_hudHandl
 {
 
 
-	if (timeSinceLastChange[0] > 0.5)
+	if (timeSinceLastChange[0] > 0.1)
 	{
 		if (p_userCMD.aButtonPressed)
 		{

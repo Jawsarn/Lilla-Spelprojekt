@@ -61,7 +61,7 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	m_gameSetupScreen = new GameSetupScreen(&m_gameInfo,m_GraphicHandle);
 	m_optionsScreen = new OptionsScreen(&m_gameInfo,m_GraphicHandle);
 	m_joinGameScreen = new JoinGameScreen(&m_gameInfo,m_GraphicHandle);
-	m_gameScreen = new GameScreen();
+	m_gameScreen = new GameScreen("dust2", 4, m_GraphicHandle);
 	m_state = MAIN_MENU_SCREEN;
 	Run();
 
@@ -125,7 +125,7 @@ void Run()
 
 		
 		
-			gameScreen.Update(m_DeltaTime,userCMDS);
+			//gameScreen.Update(m_DeltaTime,userCMDS);
 					//m_graphicHandle->JohnSetCamera(m_players[i]->GetWorldMatrix(), i);
 			XMMATRIX t_debugCameraMatrix = t_azookaTest.GetDebugCameraWorldMatrix(&userCMDS->at(0), m_DeltaTime);
 			m_GraphicHandle->JohnSetCamera(t_debugCameraMatrix, 2);
@@ -180,7 +180,11 @@ void Update(std::vector<UserCMD>* p_userCMDs)
 	case PAUSE_SCREEN:
 		break;
 	case GAME_SCREEN:
-		m_state = GAME_SCREEN;
+		m_state = (ApplicationState)m_gameScreen->Update(m_DeltaTime,p_userCMDs);
+		if (m_state != GAME_SCREEN)
+		{
+			RunInitialization();
+		}
 		break;
 	case JOIN_GAME_SCREEN:
 		m_state = (ApplicationState)m_joinGameScreen->Update(m_DeltaTime,p_userCMDs);
