@@ -83,7 +83,7 @@ void Run()
 	}
 	
 
-	MysteriskTest t_Mtest = MysteriskTest(m_GraphicHandle);
+	//MysteriskTest t_Mtest = MysteriskTest(m_GraphicHandle);
 
 
 	//message game loop
