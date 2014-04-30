@@ -27,7 +27,7 @@ OptionsScreen::~OptionsScreen(void)
 
 int OptionsScreen::Update(std::vector<UserCMD>* userCMD, float p_dt)
 {
-	MenuScreen::Update( userCMD, p_dt);
+	MenuScreen::Update( p_dt,userCMD );
 	std::string t_menuChoice = NavigateMenu(userCMD->at(0),m_hudHandle);
 
 	if (currentButton->buttonName == "Volume")

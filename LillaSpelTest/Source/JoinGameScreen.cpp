@@ -32,7 +32,7 @@ JoinGameScreen::~JoinGameScreen(void)
 
 int JoinGameScreen::Update(std::vector<UserCMD>* userCMD, float p_dt)
 {
-	MenuScreen::Update(userCMD,p_dt);
+	MenuScreen::Update(p_dt,userCMD);
 	for (int i = 0; i < 4; i++)
 	{
 		if (timeSinceLastChange[i]>0.5)
