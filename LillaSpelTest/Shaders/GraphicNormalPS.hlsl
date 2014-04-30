@@ -31,7 +31,7 @@ PS_OUTPUT PS(GS_OUTPUT input) : SV_TARGET
 
 	output.DiffuseColor_Spec = diffuseColorSpecFac;
 
-	output.Glowmap = float4(0.25,0.25,0.25,1);
+	output.Glowmap = float4(0.25, 0.25, 0.25, 1);
 
 	return output;
 }
