@@ -25,6 +25,7 @@ requires saving of hwind and rc
 
 #define THREAD_BLOCK_DIMENSIONS 16
 #define THREAD_VERTBLURR_DIMENSION 256
+#define THREAD_HORBLURR_DIMENSION 256
 
 #define MAX_NUM_OF_LIGHTS 1024
 

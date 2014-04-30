@@ -10,7 +10,7 @@ it wont be sampled on a big area instead just taking the pixel at the point I'm 
 
 cbuffer cbSettings
 {
-	float gWeights[11] =
+	float g_Weights[11] =
 	{
 		0.05f, 0.05f, 0.1f, 0.1f, 0.1f, 0.2f, 0.1f, 0.1f, 0.1f, 0.05f, 0.05f,
 	};
@@ -21,9 +21,10 @@ cbuffer cbFixed
 	static const int g_BlurRadius = 5;
 }
 
-Texture2D g_Input;
 RWTexture2D<float4> g_Output : register(u0);
-SamplerState g_BlurrSampler : register(t1);
+Texture2D g_Input : register(t1);
+
+SamplerState g_BlurrSampler;
 
 #define N 256
 #define CacheSize (N + 2*g_BlurRadius)
@@ -67,12 +68,13 @@ void CS(int3 groupThreadID : SV_GroupThreadID, int3 threadID : SV_DispatchThread
 	//	blurColor += gWeights[i+g_BlurRadius]*g_Cache[k];
 	//}
 	
-	if ( all(groupThreadID < float2( 960,540) ) )
+	if ( all(threadID.xy < float2( 960,540) ) )
 	{
 		float4 blurColor = g_Input[topLeftBoxID]*0.25 + 
 							g_Input[float2(topLeftBoxID.x + 1, topLeftBoxID.y)]*0.25 + 
 							g_Input[float2(topLeftBoxID.x, topLeftBoxID.y + 1)]*0.25 + 
 							g_Input[float2(topLeftBoxID.x + 1, topLeftBoxID.y + 1)]*0.25;
+		//float4 blurColor = float4(0,1,0,0);
 
 		g_Output[threadID.xy] = blurColor;
 	}

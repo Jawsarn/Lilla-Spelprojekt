@@ -2,41 +2,47 @@
 
 cbuffer cbSettings
 {
-	float gWeights[11];
-	float filler;
+	float g_Weights[11] =
+	{
+		0.05f, 0.05f, 0.1f, 0.1f, 0.1f, 0.2f, 0.1f, 0.1f, 0.1f, 0.05f, 0.05f,
+	};
 }
 
 cbuffer cbFixed
 {
-	static const int g_BlurRadius ;
+	static const int g_BlurRadius = 5;
 }
 
-Texture2D input;
-RWTexture2D<float4> output;
+RWTexture2D<float4> g_Output : register(u0);
+Texture2D g_Input : register(t1);
+
+SamplerState g_BlurrSampler;
 
 #define N 256
 #define CacheSize (N + 2*g_BlurRadius)
+
 groupshared float4 g_Cache[CacheSize];
 
 [numthreads(N, 1, 1)]
-void HorzBlurCS(int3 groupThreadID : SV_GroupThreadID, int3 dispatchThreadID : SV_DispatchThreadID)
+void CS(int3 groupThreadID : SV_GroupThreadID, int3 threadID : SV_DispatchThreadID)
 {
+	float2 topLeftBoxID = threadID.xy*2;
 	//the threads that overlap the radius set the outscope values of the cached memory (the end values get duplicate)
 	if(groupThreadID.x < g_BlurRadius)
 	{
 		// Clamp out of bound samples that occur at image borders.
-		int x = max(dispatchThreadID.x - gBlurRadius, 0);
-		gCache[groupThreadID.x] = gInput[int2(x, dispatchThreadID.y)];
+		int x = max(threadID.x - g_BlurRadius, 0);
+		g_Cache[groupThreadID.x] = g_Input[int2(x, threadID.y)];
 	}
-	if(groupThreadID.x >= N - gBlurRadius)
+	if(groupThreadID.x >= N - g_BlurRadius)
 	{
 		// Clamp out of bound samples that occur at image borders.
-		int x = min(dispatchThreadID.x + gBlurRadius, gInput.Length.x - 1);
-		gCache[groupThreadID.x+2*gBlurRadius] =	gInput[int2(x, dispatchThreadID.y)];
+		int x = min(threadID.x + g_BlurRadius, g_Input.Length.x - 1);
+		g_Cache[groupThreadID.x+2*g_BlurRadius] =	g_Input[int2(x, threadID.y)];
 	}
 
 	// Clamp out of bound samples that occur at image borders.
-	gCache[groupThreadID.x+gBlurRadius] = gInput[min(dispatchThreadID.xy, gInput.Length.xy-1)];
+	g_Cache[groupThreadID.x+g_BlurRadius] = g_Input[min(threadID.xy, g_Input.Length.xy-1)];
 
 	// Wait for all threads to finish.
 	GroupMemoryBarrierWithGroupSync();
@@ -47,11 +53,17 @@ void HorzBlurCS(int3 groupThreadID : SV_GroupThreadID, int3 dispatchThreadID : S
 	float4 blurColor = float4(0, 0, 0, 0);
 
 	[unroll]
-	for(int i = -gBlurRadius; i <= gBlurRadius; ++i)
+	for(int i = -g_BlurRadius; i <= g_BlurRadius; ++i)
 	{
-		int k = groupThreadID.x + gBlurRadius + i;
-		blurColor += gWeights[i+gBlurRadius]*gCache[k];
+		int k = groupThreadID.x + g_BlurRadius + i;
+		blurColor += g_Weights[i+g_BlurRadius]*g_Cache[k];
 	}
 
-	gOutput[dispatchThreadID.xy] = blurColor;
+	if ( all(threadID.xy < float2( 960,540) ) )
+	{
+		g_Output[topLeftBoxID.xy] = blurColor;
+		g_Output[float2(topLeftBoxID.x + 1, topLeftBoxID.y)] = blurColor;
+		g_Output[float2(topLeftBoxID.x, topLeftBoxID.y + 1)] = blurColor;
+		g_Output[float2(topLeftBoxID.x + 1, topLeftBoxID.y + 1)] = blurColor;
+	}
 }
