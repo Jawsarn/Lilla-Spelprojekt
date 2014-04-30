@@ -77,16 +77,16 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	//load a tube texture mesh 
 
 
-	m_GraphicEngine->LoadMesh("dust2.obj",t_ObjTemp);
+	//m_GraphicEngine->LoadMesh("dust2.obj",t_ObjTemp);
 
-	m_MeshLevels.push_back(t_ObjTemp);
+	//m_MeshLevels.push_back(t_ObjTemp);
 
 	//add a texture to a ship mesh
-	for (int i = 0; i < t_ObjTemp.size(); i++)
-	{
-		m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[i],diffuseBollTestTexture,GraphicEngine::TextureType::DIFFUSE);
-	}
-	t_ObjTemp.clear();
+	//for (int i = 0; i < t_ObjTemp.size(); i++)
+	//{
+	//	m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[i],diffuseBollTestTexture,GraphicEngine::TextureType::DIFFUSE);
+	//}
+	//t_ObjTemp.clear();
 
 
 
@@ -98,14 +98,16 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 
 
 	///init Levels
-	InitializeLevel("Level",m_LevelTexture[0]);
-	InitializeLevel("Level2",m_LevelTexture[1]);
-	InitializeLevel("Level3",m_LevelTexture[2]);
+	m_Levels.resize(3,0);
+	InitializeLevel("Level.obj",m_LevelTexture[0]);
+	InitializeLevel("Level1.obj",m_LevelTexture[1]);
+	InitializeLevel("Level2.obj",m_LevelTexture[2]);
 	//XMMATRIX t_TempWorld = XMMatrixIdentity();
-	m_Levels.resize(m_MeshLevels.size(),0);
+	
 	for (int i = 0; i < m_MeshLevels.size(); i++)
 	{
 	CreateDrawObject(m_MeshLevels[i],XMMatrixIdentity(),XMFLOAT3(1,1,1),m_Levels[i],false);
+	//CreateDrawObject(
 	
 	}
 	
