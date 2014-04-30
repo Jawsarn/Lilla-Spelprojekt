@@ -18,7 +18,7 @@ public:
 	OptionsScreen(void);
 	OptionsScreen(GameInfo* p_gameInfo, GraphicHandle* p_graphicsHandle);
 	~OptionsScreen(void);
-	int Update(std::vector<UserCMD>* userCMD, float p_dt);
+	int Update(float p_dt,std::vector<UserCMD>* userCMD );
 	void Draw();
 	void Initialize();
 };

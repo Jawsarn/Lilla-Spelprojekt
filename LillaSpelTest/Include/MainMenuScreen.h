@@ -9,7 +9,7 @@ public:
 	MainMenuScreen(void);
 	MainMenuScreen(GraphicHandle* p_graphicsHandle);
 	~MainMenuScreen(void);
-	int Update(std::vector<UserCMD>* p_userCMD, float p_dt);
+	int Update(float p_dt,std::vector<UserCMD>* userCMD );
 	void Draw();
 	void Initialize();
 };

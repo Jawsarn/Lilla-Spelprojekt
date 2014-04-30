@@ -46,36 +46,36 @@ MysteriskTest::~MysteriskTest(void)
 {
 }
 
-void RunInitialization()
-{
-	switch (state)
-	{
-	case GAME_SETUP_SCREEN:
-		gameSetup->Initialize();
-		break;
-	case PAUSE_SCREEN:
-		break;
-	case GAME_SCREEN:
-		break;
-	case JOIN_GAME_SCREEN:
-		joinGame->Initialize();
-		break;
-	case OPTIONS_SCREEN:
-		options->Initialize();
-		break;
-	case MAIN_MENU_SCREEN:
-		mainMenu->Initialize();
-		break;
-	case SHUT_DOWN:
-		break;
-	default:
-		break;
-	}
-}
+//void RunInitialization()
+//{
+//	switch (state)
+//	{
+//	case GAME_SETUP_SCREEN:
+//		gameSetup->Initialize();
+//		break;
+//	case PAUSE_SCREEN:
+//		break;
+//	case GAME_SCREEN:
+//		break;
+//	case JOIN_GAME_SCREEN:
+//		joinGame->Initialize();
+//		break;
+//	case OPTIONS_SCREEN:
+//		options->Initialize();
+//		break;
+//	case MAIN_MENU_SCREEN:
+//		mainMenu->Initialize();
+//		break;
+//	case SHUT_DOWN:
+//		break;
+//	default:
+//		break;
+//	}
+//}
 
 void MysteriskTest::Run(std::vector<UserCMD>* players, float dt)
 {
-	switch (state)
+	/*switch (state)
 	{
 	case GAME_SETUP_SCREEN:
 		state = (ApplicationState)gameSetup->Update(dt,players);
@@ -115,5 +115,5 @@ void MysteriskTest::Run(std::vector<UserCMD>* players, float dt)
 		break;
 	default:
 		break;
-	}
+	}*/
 }
