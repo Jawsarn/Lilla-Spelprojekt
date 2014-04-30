@@ -19,6 +19,10 @@ GameScreen::GameScreen(std::string p_mapName, int p_numberOfPlayers, GraphicHand
 GameScreen::~GameScreen(void)
 {
 }
+void GameScreen::Initialize()
+{
+
+}
 
 
 int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS) 
@@ -38,6 +42,8 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 		//gets the world matrix
 		m_graphicHandle->JohnSetCamera(m_players[i]->GetWorldMatrix(), i);
 
+
+		
 		vector<StaticObj*>* m_wallsToCheck = &m_players[i]->GetCurrentMapNode()->m_staticObjs;
 		for (int i = 0; i < m_wallsToCheck->size(); i++)
 		{
@@ -50,6 +56,7 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 		}
 		if (!collision)
 			p_userCMDS->at(i).controller.Vibrate(0,0);
+
 		
 	}
 	////////////////JOHNS TEST MÖS ENDS!!
