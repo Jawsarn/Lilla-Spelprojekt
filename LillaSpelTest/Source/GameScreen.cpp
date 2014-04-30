@@ -19,6 +19,10 @@ GameScreen::GameScreen(std::string p_mapName, int p_numberOfPlayers, GraphicHand
 GameScreen::~GameScreen(void)
 {
 }
+void GameScreen::Initialize()
+{
+
+}
 
 
 int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS) 
@@ -27,13 +31,11 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 	for (int i = 0; i < 1; i++)			//i<1 for test purposes. Make sure to change later
 	{
 		bool collision = false;
-		PlayerWall* t_newWall;  //
-		
+		PlayerWall* t_newWall = m_players[i]->GetLastPlacedWall(); //
+
 		//fixes the position, direction, sets up world matrix, drops wall, etc.
 		if(m_players[i]->ProperUpdatePosition(p_dt, p_userCMDS->at(i)) == 1)
 		{
-			
-			t_newWall = m_players[i]->GetLastPlacedWall();
 			t_newWall->m_wallIndex = m_graphicHandle->CreateWall(0, t_newWall->GetWorldMatrix(), i);			//PUBLIC VARIALBE!!! MAKE FIX BEFORE JAWS DISCOVERS!!!t_newWall->GetWorldMatrix()
 			int k = 7;
 		}
@@ -47,11 +49,15 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 			p_userCMDS->at(i).controller.Vibrate(64000,64000);										///PLAYER VS STATIC
 			collision = true;
 		}
-																									///END OF PLAYER VS STATIC
+		///END OF PLAYER VS STATIC
+
 		vector<PlayerWall*>* t_playerWallsToCheck = &t_currMapNode->m_playerWalls;					//Create a new list of the PlayerWalls in currmapnode
-		if(t_newWall == t_currMapNode->m_playerWalls.at(t_currMapNode->m_playerWalls.size()-1))		///PLAYER VS PLAYERWALL  Checks if the wall you placed this frame is in the list and removes it
+		if (t_playerWallsToCheck->size()>0)
 		{
-			t_playerWallsToCheck->pop_back();														///PLAYER VS PLAYERWALL
+			if(t_newWall == t_currMapNode->m_playerWalls.at(t_currMapNode->m_playerWalls.size()-1))		///PLAYER VS PLAYERWALL  Checks if the wall you placed this frame is in the list and removes it
+			{
+				t_playerWallsToCheck->pop_back();														///PLAYER VS PLAYERWALL
+			}
 		}
 		if(m_collisionManager->PlayerVsPlayerWall(m_players[i]->GetCollisionBox(), t_playerWallsToCheck))		///PLAYER VS PLAYERWALL Collisionmanager returns true if hit
 		{
@@ -60,20 +66,21 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 		}
 		if (!collision)
 			p_userCMDS->at(i).controller.Vibrate(0,0);
-		
+
+
 	}
 	////////////////JOHNS TEST MÖS ENDS!!
 	/*for (int i = 0; i < 4; i++)
 	{	
-		m_graphicHandle->UpdateCamera(i,0,0,0,p_userCMDS->at(i).Joystick.y*p_dt,p_userCMDS->at(i).Joystick.x*p_dt); freelokshits
-		if (p_userCMDS->at(i).leftTriggerPressed)
-		{
-			m_graphicHandle->UpdateCamera(i,100*p_dt,0,0,0,0);
-		}
-		if (p_userCMDS->at(i).rightTriggerPressed)
-		{
-			m_graphicHandle->UpdateCamera(i,-100*p_dt,0,0,0,0);
-		}
+	m_graphicHandle->UpdateCamera(i,0,0,0,p_userCMDS->at(i).Joystick.y*p_dt,p_userCMDS->at(i).Joystick.x*p_dt); freelokshits
+	if (p_userCMDS->at(i).leftTriggerPressed)
+	{
+	m_graphicHandle->UpdateCamera(i,100*p_dt,0,0,0,0);
+	}
+	if (p_userCMDS->at(i).rightTriggerPressed)
+	{
+	m_graphicHandle->UpdateCamera(i,-100*p_dt,0,0,0,0);
+	}
 	}*/
 	//for (int i = 0; i < 1; i++)			//i<1 for test purposes. Make sure to change later
 	//{
@@ -81,7 +88,7 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 	//	m_graphicHandle->JohnSetCamera(m_players[i]->GetWorldMatrix(), i);
 	//}
 
-	
+
 
 
 

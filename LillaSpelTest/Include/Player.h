@@ -34,6 +34,7 @@ private:
 	XMFLOAT3 m_color;
 	XMFLOAT3 m_upVector;
 
+	XMMATRIX m_cameraMatrix;
 	XMMATRIX m_worldMatrix;
 	PlayerWall* m_lastPlacedWall;
 	PlayerState m_state;
@@ -55,6 +56,7 @@ public:
 	
 
 	//Gets yo
+	XMMATRIX GetCamMatrix();
 	XMFLOAT3 GetPos();
 	XMFLOAT3 GetDirection();
 	XMMATRIX GetWorldMatrix();		//game screen grabs and sends off to graphichandle

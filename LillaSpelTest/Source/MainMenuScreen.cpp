@@ -31,7 +31,7 @@ MainMenuScreen::~MainMenuScreen(void)
 
 int MainMenuScreen::Update(std::vector<UserCMD>* p_userCMD, float p_dt)
 {
-	MenuScreen::Update(p_userCMD,p_dt);
+	MenuScreen::Update(p_dt,p_userCMD);
 	std::string t_menuChoice = NavigateMenu(p_userCMD->at(0),m_hudHandle);
 	if (t_menuChoice == "Start Game")
 	{

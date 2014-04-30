@@ -21,7 +21,15 @@ void Run();
 
 HINSTANCE	handleInstance;
 HWND	m_HandleWindow;
-//ApplicationState state;
+
+ApplicationState m_state;
+
+//// The different screens ////
+Screen* m_mainMenuScreen;
+Screen* m_gameSetupScreen;
+Screen* m_optionsScreen;
+Screen* m_joinGameScreen;
+
 
 #include "GraphicHandle.h"
 
@@ -46,6 +54,9 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	m_GraphicHandle = m_GraphicHandle->GetInstance();
 	m_GraphicHandle->Initialize(1920, 1080, m_HandleWindow); //fix this input variables right
 	m_GraphicHandle->SetFullScreen(false);
+
+	m_mainMenuScreen = new MainMenuScreen();
+	
 	Run();
 
 	return 0;
@@ -109,10 +120,7 @@ void Run()
 					//m_graphicHandle->JohnSetCamera(m_players[i]->GetWorldMatrix(), i);
 			XMMATRIX t_debugCameraMatrix = t_azookaTest.GetDebugCameraWorldMatrix(&userCMDS->at(0), m_DeltaTime);
 			m_GraphicHandle->JohnSetCamera(t_debugCameraMatrix, 2);
-			if(userCMDS->at(0).rightTriggerPressed)
-			{
-				m_GraphicHandle->CreateWall(0, t_debugCameraMatrix, 0);
-			}
+
 			///UPDATE & DRAW TEMPDRAAWWWWW
 			//m_GraphicHandle->UpdateSelectVehicle(m_DeltaTime);
 			m_GraphicHandle->DrawGame();

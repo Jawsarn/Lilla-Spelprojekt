@@ -16,6 +16,7 @@ private:
 	std::vector<Player*> m_players;
 public:
 	GameScreen(void);
+	void Initialize();
 	GameScreen(std::string p_mapName, int p_numberOfPlayers, GraphicHandle* p_graphicHandle);
 	~GameScreen(void);
 	int Update(float p_dt, std::vector<UserCMD>* p_userCMDS); //shouldnt be here

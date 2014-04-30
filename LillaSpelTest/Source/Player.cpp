@@ -17,6 +17,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle)
 	m_speed = 30;
 	m_position = m_mapNode->m_position;
 	m_direction = DirectX::XMFLOAT3(0,0,1);
+	m_lastPlacedWall = nullptr;
 }
 
 
@@ -133,12 +134,18 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 
 void Player::UpdateWorldMatrix()
 {
+	float t_cameraUpTrailDistance = 5;
+	float t_cameraTargetTrailDistance = 5;
 	XMFLOAT3 t_position = XMFLOAT3(m_position.x, m_position.y, m_position.z);
-	XMVECTOR t_eye = XMLoadFloat3(&t_position);
-	XMVECTOR t_target = XMLoadFloat3(&m_direction);
-	XMVECTOR t_up = XMLoadFloat3(&m_upVector);
+	XMVECTOR t_eyeVector = XMLoadFloat3(&t_position);
+	XMVECTOR t_targetVector = XMLoadFloat3(&m_direction);
+	XMVECTOR t_upVector = XMLoadFloat3(&m_upVector);
 
-	m_worldMatrix = XMMatrixLookToLH(t_eye, t_target, t_up);
+	m_worldMatrix = XMMatrixLookToLH(t_eyeVector, t_targetVector, t_upVector);
+	//offsets the camera position along the local y and z axes
+	XMVECTOR t_cameraPositionVector = t_eyeVector+t_upVector*t_cameraUpTrailDistance+t_cameraTargetTrailDistance*t_targetVector;
+	m_cameraMatrix = XMMatrixLookToLH(t_cameraPositionVector, t_targetVector, t_upVector);
+
 }
 
 XMMATRIX Player::GetWorldMatrix()
@@ -146,6 +153,10 @@ XMMATRIX Player::GetWorldMatrix()
 	return m_worldMatrix;
 }
 
+XMMATRIX Player::GetCamMatrix()
+{
+	return m_cameraMatrix;
+}
 MapNode* Player::GetCurrentMapNode()
 {
 	return m_mapNode;
@@ -260,7 +271,7 @@ void Player::UpdateMapNode() //Uppdaterar logisk playerpos(m_logicalPosition) oc
 void Player::BumpedIntoPlayer(XMFLOAT3 p_force)
 {
 	MathHelper t_mathHelper = MathHelper();
-	m_speed -= t_mathHelper.Abs(t_mathHelper.FloatMultiVec(t_mathHelper.Abs(t_mathHelper.VecAddVec(m_direction, p_force)),m_mapNode->m_normal)); //VETTEFANOMDETTA
+	m_speed -= t_mathHelper.Abs(t_mathHelper.FloatMultiVec(t_mathHelper.Abs(t_mathHelper.VecAddVec(m_direction, p_force)),m_mapNode->m_normal)); //VETTEFANOMDETT
 	//Angle ska bli p_force projicerad på m_direction cross m_upvector och sen absolutbelopp på den vectorn
 
 }

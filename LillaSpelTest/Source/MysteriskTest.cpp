@@ -78,7 +78,7 @@ void MysteriskTest::Run(std::vector<UserCMD>* players, float dt)
 	switch (state)
 	{
 	case GAME_SETUP_SCREEN:
-		state = (ApplicationState)gameSetup->Update(players,dt);
+		state = (ApplicationState)gameSetup->Update(dt,players);
 		if (state != GAME_SETUP_SCREEN)
 		{
 			RunInitialization();
@@ -90,21 +90,21 @@ void MysteriskTest::Run(std::vector<UserCMD>* players, float dt)
 		state = GAME_SCREEN;
 		break;
 	case JOIN_GAME_SCREEN:
-		state = (ApplicationState)joinGame->Update(players,dt);
+		state = (ApplicationState)joinGame->Update(dt,players);
 		if (state != JOIN_GAME_SCREEN)
 		{
 			RunInitialization();
 		}
 		break;
 	case OPTIONS_SCREEN:
-		state = (ApplicationState)options->Update(players,dt);
+		state = (ApplicationState)options->Update(dt,players);
 		if (state != OPTIONS_SCREEN)
 		{
 			RunInitialization();
 		}
 		break;
 	case MAIN_MENU_SCREEN:
-		state = (ApplicationState)mainMenu->Update(players,dt);
+		state = (ApplicationState)mainMenu->Update(dt,players);
 		if (state != MAIN_MENU_SCREEN)
 		{
 			RunInitialization();
