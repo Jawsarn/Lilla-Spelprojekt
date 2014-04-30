@@ -22,7 +22,7 @@ int CollisionManager::PlayerVsObj(BoundingOrientedBox* p_player, std::vector<Sta
 	}
 }
 
-bool CollisionManager::PlayerVsPlayerWall(BoundingOrientedBox* p_player, std::vector<PlayerWall*> p_collisionBoxes)
+bool CollisionManager::PlayerVsPlayerWall(BoundingOrientedBox* p_player, std::vector<PlayerWall*>* p_collisionBoxes)
 {
 	for (int i = 0; i < p_collisionBoxes.size(); i++)
 	{
