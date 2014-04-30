@@ -870,6 +870,10 @@ void GraphicEngine::RemoveObject(UINT p_ObjectID)
 	m_DrawObjects[p_ObjectID] = nullptr;
 
 	m_DrawObjects.erase(p_ObjectID);
+	if (m_ObjectsOnDrawingScheme[p_ObjectID])
+	{
+		RemoveObjectFromDrawing(p_ObjectID);
+	}
 }
 
 void GraphicEngine::RemoveObjectFromDrawing(UINT p_ObjectID)
