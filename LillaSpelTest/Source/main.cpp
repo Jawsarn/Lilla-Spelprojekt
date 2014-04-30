@@ -21,7 +21,7 @@ void Run();
 
 HINSTANCE	handleInstance;
 HWND	m_HandleWindow;
-ApplicationState state;
+//ApplicationState state;
 
 #include "GraphicHandle.h"
 
