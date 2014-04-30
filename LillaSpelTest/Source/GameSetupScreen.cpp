@@ -20,9 +20,7 @@ GameSetupScreen::GameSetupScreen(GameInfo* p_gameInfo,GraphicHandle* p_graphicsH
 	currentButton = buttonList[0];
 	currentMap = 0;
 
-	mapList.push_back("1");
-	mapList.push_back("2");
-	mapList.push_back("3");
+	mapList.resize(m_graphicHandle->GetAmountOfLevels());
 }
 
 
@@ -42,8 +40,13 @@ int GameSetupScreen::Update(float p_dt,std::vector<UserCMD>* userCMD )
 			timeSinceLastChange[0] = 0;
 			if (mapList.size() - 1 > currentMap)
 			{
-				currentMap++;
+				currentMap++;	
 			}
+			else
+			{
+				currentMap=0;
+			}
+			m_graphicHandle->ChangeLevelSelection(currentMap);
 		}
 		else if (userCMD->at(0).Joystick.x<-0.8)
 		{
@@ -52,6 +55,11 @@ int GameSetupScreen::Update(float p_dt,std::vector<UserCMD>* userCMD )
 			{
 				currentMap--;
 			}
+			else
+			{
+				currentMap=mapList.size() -1;
+			}
+			m_graphicHandle->ChangeLevelSelection(currentMap);
 		}
 		if (userCMD->at(0).backButtonPressed)
 		{
@@ -71,9 +79,10 @@ void GameSetupScreen::Initialize()
 {
 	m_graphicHandle->SetViewportAmount(1);
 	m_graphicHandle->UseHud(0,m_hudHandle);
+	m_graphicHandle->ChangeLevelSelection(currentMap);
 }
 
 void GameSetupScreen::SaveInfo()
 {
-	m_gameInfo->mapName = mapList[currentMap];
+	//m_gameInfo->mapName = mapList[currentMap];
 }

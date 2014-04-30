@@ -99,7 +99,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 
 	///init Levels
 	m_Levels.resize(3,0);
-	InitializeLevel("Level.obj",m_LevelTexture[0]);
+	InitializeLevel("dust2.obj",m_LevelTexture[0]);
 	InitializeLevel("Level1.obj",m_LevelTexture[1]);
 	InitializeLevel("Level2.obj",m_LevelTexture[2]);
 	//XMMATRIX t_TempWorld = XMMatrixIdentity();
@@ -548,7 +548,7 @@ UINT GraphicHandle::CreateWall(int p_WhatWall,CXMMATRIX p_PlayerWallWorld,int p_
 			CreateDrawObject(m_MeshPlayerWall[p_WhatWall],
 			p_PlayerWallWorld,
 			m_Colours[m_PlayerColour[p_WhatPlayer]], 
-		r_WhatWall,false);
+		r_WhatWall,true);
 
 		//LightStruct t_LightStruct;
 		//t_LightStruct.m_Color=m_Colours[m_PlayerColour[i]];//vi skcikar in en färg men kräver att dne har färg i lightstruct
