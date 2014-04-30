@@ -26,9 +26,9 @@ GameSetupScreen::GameSetupScreen(GameInfo* p_gameInfo,GraphicHandle* p_graphicsH
 }
 
 
-int GameSetupScreen::Update(std::vector<UserCMD>* userCMD, float p_dt)
+int GameSetupScreen::Update(float p_dt,std::vector<UserCMD>* userCMD )
 {
-	MenuScreen::Update(userCMD,p_dt);
+	MenuScreen::Update(p_dt, userCMD);
 	if (timeSinceLastChange[0]>0.5)
 	{
 		std::string t_menuChoice = NavigateMenu(userCMD->at(0),m_hudHandle);
