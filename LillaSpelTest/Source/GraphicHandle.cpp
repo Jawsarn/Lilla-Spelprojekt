@@ -21,7 +21,7 @@ GraphicHandle::~GraphicHandle()
 
 }
 
-void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
+void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::vector <std::string> p_LevelNames)
 {
 	m_GraphicEngine = m_GraphicEngine->GetInstance();
 	m_GraphicEngine->Initialize(p_Width, p_Height, p_Handle);
@@ -34,7 +34,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 
 	/////////initshiptexture
 	UINT t_TempurTextur;
-	
+
 	m_GraphicEngine->LoadTexture(L"spaceship.dds", t_TempurTextur);
 	m_ShipTexture.push_back(t_TempurTextur);
 	m_GraphicEngine->LoadTexture(L"spaceship1.dds", t_TempurTextur);
@@ -44,12 +44,14 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 
 
 	/////InitLevelTextures
-	m_GraphicEngine->LoadTexture(L"Level.dds",t_TempurTextur);
-	m_LevelTexture.push_back(t_TempurTextur);
-	m_GraphicEngine->LoadTexture(L"Level1.dds",t_TempurTextur);
-	m_LevelTexture.push_back(t_TempurTextur);
-	m_GraphicEngine->LoadTexture(L"Level2.dds",t_TempurTextur);
-	m_LevelTexture.push_back(t_TempurTextur);
+
+
+	//m_GraphicEngine->LoadTexture(L"Level.dds",t_TempurTextur);
+	//m_LevelTexture.push_back(t_TempurTextur);
+	//m_GraphicEngine->LoadTexture(L"Level1.dds",t_TempurTextur);
+	//m_LevelTexture.push_back(t_TempurTextur);
+	//m_GraphicEngine->LoadTexture(L"Level2.dds",t_TempurTextur);
+	//m_LevelTexture.push_back(t_TempurTextur);
 
 
 	////initWallTextures
@@ -97,23 +99,49 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	InitializeShip("spaceship2.obj",m_ShipTexture[2]);
 
 
+
+
+
+
 	///init Levels
-	m_Levels.resize(3,0);
-	InitializeLevel("dust2.obj",m_LevelTexture[0]);
-	InitializeLevel("Level1.obj",m_LevelTexture[1]);
-	InitializeLevel("Level2.obj",m_LevelTexture[2]);
-	//XMMATRIX t_TempWorld = XMMatrixIdentity();
+	m_Levels.resize(p_LevelNames.size(),0);
+	for (int i = 0; i < p_LevelNames.size(); i++)
+	{
+		std::string t_stTompa =p_LevelNames[i];
+		t_stTompa +=".dds";
+		std::wstring t_sTompa = std::wstring(t_stTompa.begin(),t_stTompa.end());
+		m_GraphicEngine->LoadTexture(t_sTompa.c_str(),t_TempurTextur);
+
+		std::string t_Tompa =p_LevelNames[i];
+		t_Tompa += ".obj";
+		InitializeLevel(t_Tompa,t_TempurTextur);
+	}
+
+
+
+
+
+
+
+
+
+
+
+	//InitializeLevel("dust2.obj",m_LevelTexture[0]);
+	//InitializeLevel("Level1.obj",m_LevelTexture[1]);
+	//InitializeLevel("Level2.obj",m_LevelTexture[2]);
+
 	m_Levels.resize(m_MeshLevels.size(),0);
 	//for (int i = 0; i < m_MeshLevels.size(); i++)
 	//{
 	//CreateDrawObject(m_MeshLevels[i],XMMatrixIdentity(),XMFLOAT3(1,1,1),m_Levels[i],false);
 	for (int i = 0; i < m_MeshLevels.size(); i++)
 	{
-	CreateDrawObject(m_MeshLevels[i],XMMatrixIdentity(),XMFLOAT3(1,1,1),m_Levels[i],false);
-	//CreateDrawObject(
-	
+		CreateDrawObject(m_MeshLevels[i],XMMatrixIdentity(),XMFLOAT3(1,1,1),m_Levels[i],false);
+		//CreateDrawObject(
+
 	}
-	
+
 	//}
 	CreateDrawObject(m_MeshLevels[0],XMMatrixIdentity(),XMFLOAT3(1,1,1),m_Levels[0],true);
 
@@ -174,11 +202,11 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	//VilkenVehicle.push_back(0);
 	//t_Mat = XMMatrixTranslation(10,10,10); 
 	//StartGame(0,VilkenVehicle,plajerwurld,plajercullur,t_World,t_Color);
-	
-	
-	
 
-		//test 
+
+
+
+	//test 
 	//UINT t_temptest;
 	//t_temptest=CreateWall(0,plajerwurld[0],0);
 	//m_GraphicEngine->RemoveObjectFromDrawing(t_temptest);
@@ -226,7 +254,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 	}
 
 
-	
+
 
 	//m_GraphicEngine->MoveCamera(m_CameraID[0], 20,0,0,0,0);
 	//m_GraphicEngine->MoveCamera(m_CameraID[1], 50,0,0,0,0);
@@ -276,21 +304,21 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle)
 
 
 
-//	UpdatePlayer(0,t_Mat);
+	//	UpdatePlayer(0,t_Mat);
 }
 
 void GraphicHandle::ChangeLevelSelection(int p_WhatLevel)
 {
 
-		XMMATRIX t_TempWorldMatrix=XMMatrixIdentity();
-		XMFLOAT3 t_TempColour = XMFLOAT3(1,1,1);
-		m_GraphicEngine->AddObjectToDrawing(m_Levels[p_WhatLevel]);
+	XMMATRIX t_TempWorldMatrix=XMMatrixIdentity();
+	XMFLOAT3 t_TempColour = XMFLOAT3(1,1,1);
+	m_GraphicEngine->AddObjectToDrawing(m_Levels[p_WhatLevel]);
 
-		if(m_WhatLevelBefore!=999)
-		{
-			m_GraphicEngine->RemoveObjectFromDrawing(m_Levels[m_WhatLevelBefore]);
-		}
-		m_WhatLevelBefore=p_WhatLevel;
+	if(m_WhatLevelBefore!=999)
+	{
+		m_GraphicEngine->RemoveObjectFromDrawing(m_Levels[m_WhatLevelBefore]);
+	}
+	m_WhatLevelBefore=p_WhatLevel;
 }
 void GraphicHandle::UpdateCameraSelectLevel(int p_WhatLevel,int p_TheRotation)
 {
@@ -299,15 +327,6 @@ void GraphicHandle::UpdateCameraSelectLevel(int p_WhatLevel,int p_TheRotation)
 void GraphicHandle::UpdatePlayer(int p_playerID,CXMMATRIX p_PlayerMatrix,CXMMATRIX p_CameraMatrix)
 {
 	m_GraphicEngine->MoveObject(m_Player[p_playerID], p_PlayerMatrix);
-
-	//XMMATRIX t_Tempo = XMMatrixTranslation(0,0,-10);
-	//t_Tempo = XMMatrixMultiply(t_Tempo,p_matrix);
-	
-	
-	//p_matrix = XMMatrixTranslation(0,0,-10);
-	//t_Tempo = XMMatrixMultiply(t_Tempo,p_matrix);
-	
-	
 	JohnSetCamera(p_CameraMatrix,p_playerID);//ska vänta 180grader o backa lite med den!!!!
 	//uppdatera spelarens mätare cooldownbars(HUD)
 }
@@ -424,7 +443,7 @@ void GraphicHandle::StartGame(int p_WhatLevel,
 			p_PlayerWorld[i],
 			p_Color[i],true, 
 			m_Player[i]);
-		
+
 		//LightStruct t_LightStruct;
 		//t_LightStruct.m_Color=m_Colours[m_PlayerColour[i]];//vi skcikar in en färg men kräver att dne har färg i lightstruct
 		//t_LightStruct.m_LightID=m_PlayerLight[i];//samma här xD
@@ -452,10 +471,10 @@ void GraphicHandle::SelectVehicle()
 			m_SelectionShips[i],true);
 
 		//m_GraphicEngine->CreateDrawObject(m_MeshShips[i],
-			//t_Rot,
-			//t_Color,
-			//true, 
-			//m_SelectionShips[i]);
+		//t_Rot,
+		//t_Color,
+		//true, 
+		//m_SelectionShips[i]);
 
 		XMFLOAT4X4 t_Tempus;
 		XMStoreFloat4x4(&t_Tempus, t_Rot);
@@ -535,7 +554,7 @@ void GraphicHandle::InitializeShip(std::string p_ShipStringName, UINT p_Texture)
 }
 void GraphicHandle::InitializeLevel(std::string p_LevelStringName, UINT p_Texture)
 {
-		std::vector<UINT> t_ObjTemp;
+	std::vector<UINT> t_ObjTemp;
 	t_ObjTemp.clear();
 	m_GraphicEngine->LoadMesh(p_LevelStringName,t_ObjTemp);
 	m_MeshLevels.push_back(t_ObjTemp);	
@@ -550,17 +569,17 @@ UINT GraphicHandle::CreateWall(int p_WhatWall,CXMMATRIX p_PlayerWallWorld,int p_
 	UINT r_WhatWall;
 
 
-			CreateDrawObject(m_MeshPlayerWall[p_WhatWall],
-			p_PlayerWallWorld,
-			m_Colours[m_PlayerColour[p_WhatPlayer]], 
+	CreateDrawObject(m_MeshPlayerWall[p_WhatWall],
+		p_PlayerWallWorld,
+		m_Colours[m_PlayerColour[p_WhatPlayer]], 
 		r_WhatWall,true);
 
-		//LightStruct t_LightStruct;
-		//t_LightStruct.m_Color=m_Colours[m_PlayerColour[i]];//vi skcikar in en färg men kräver att dne har färg i lightstruct
-		//t_LightStruct.m_LightID=m_PlayerLight[i];//samma här xD
-		//t_LightStruct.m_Position=XMFLOAT3(//ta varje startnissesposition o bajsa lite under dem
-		//CreateLight(m_Player[i],m_Colours[m_PlayerColour[i]],m_PlayerLight[i],);//
-	
+	//LightStruct t_LightStruct;
+	//t_LightStruct.m_Color=m_Colours[m_PlayerColour[i]];//vi skcikar in en färg men kräver att dne har färg i lightstruct
+	//t_LightStruct.m_LightID=m_PlayerLight[i];//samma här xD
+	//t_LightStruct.m_Position=XMFLOAT3(//ta varje startnissesposition o bajsa lite under dem
+	//CreateLight(m_Player[i],m_Colours[m_PlayerColour[i]],m_PlayerLight[i],);//
+
 	return r_WhatWall;
 
 }
