@@ -85,7 +85,7 @@ public:
 	/*void SetCameraVehicleSelection(UINT p_CameraLogicID);*/
 	void InitializeShip(std::string p_ShipStringName, UINT p_Texture);
 	void InitializeLevel(std::string p_LevelStringName, UINT p_Texture);
-	void RemoveObjectDraw(UINT p_RemoveThisFromDraw);
+	void RemoveLevelDraw(int p_RemoveLevelDraw);
 	
 	UINT CreateWall(int p_WhatWall,CXMMATRIX p_PlayerWallWorld,int p_WhatPlayer);
 	void InitializeWall(std::string p_PlayerWallStringName, UINT p_Texture);

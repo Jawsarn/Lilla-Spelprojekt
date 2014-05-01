@@ -222,7 +222,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	//	}
 	//}
 
-
+	//SelectVehicle();
 
 	//	UpdatePlayer(0,t_Mat);
 }
@@ -511,9 +511,9 @@ void GraphicHandle::CreateDrawObject(std::vector <UINT> p_UINTMeshLista, CXMMATR
 	m_GraphicEngine->CreateDrawObject(p_UINTMeshLista,p_World,p_Colour,p_ShouldItBeDrawn, o_ObjectID);
 }
 
-void GraphicHandle::RemoveObjectDraw(UINT p_RemoveThisFromDraw)
+void GraphicHandle::RemoveLevelDraw(int p_RemoveLevelDraw)
 {
-	m_GraphicEngine->RemoveObjectFromDrawing(p_RemoveThisFromDraw);
+	m_GraphicEngine->RemoveObjectFromDrawing(m_Levels[p_RemoveLevelDraw]);
 }
 
 void GraphicHandle::LoadTexture(const wchar_t* p_FileName, UINT &o_TextureID)
