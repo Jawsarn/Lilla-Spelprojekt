@@ -22,7 +22,7 @@ JoinGameScreen::JoinGameScreen(GameInfo* p_gameInfo,GraphicHandle* p_graphicsHan
 		m_color[i] = 0;
 		m_playerStatus[i] = DISCONNECTED;
 		m_modellIncrease[i] = 0;
-		m_graphicHandle->UpdateCameraVehicleSelection(i,0);
+	
 	}
 }
 
@@ -33,6 +33,7 @@ JoinGameScreen::~JoinGameScreen(void)
 int JoinGameScreen::Update(float p_dt,std::vector<UserCMD>* userCMD)
 {
 	MenuScreen::Update(p_dt,userCMD);
+	m_graphicHandle->UpdateSelectVehicle(p_dt);
 	for (int i = 0; i < 4; i++)
 	{
 		if (timeSinceLastChange[i]>0.5)
@@ -56,6 +57,7 @@ int JoinGameScreen::Update(float p_dt,std::vector<UserCMD>* userCMD)
 			else if (userCMD->at(i).backButtonPressed)
 			{
 				timeSinceLastChange[i] = 0;
+				m_graphicHandle->RemoveSelectionDraw();
 				return GAME_SETUP_SCREEN;
 			}
 			if (userCMD->at(i).xButtonPressed && (m_playerStatus[i] == CHOOSE_MODELL || m_playerStatus[i] == CHOOSE_COLOR))
@@ -76,7 +78,7 @@ int JoinGameScreen::Update(float p_dt,std::vector<UserCMD>* userCMD)
 				}
 				else if (m_playerStatus[i] == CHOOSE_MODELL)
 				{
-					m_graphicHandle->UpdateCameraVehicleSelection(i,0);
+					m_graphicHandle->SetCameraVehicleSelection(i);
 					m_playerStatus[i] = DISCONNECTED;
 				}
 			}
@@ -127,6 +129,10 @@ void JoinGameScreen::Draw()
 
 void JoinGameScreen::Initialize()
 {
+	for (int i = 0; i < 4; i++)
+	{
+		m_graphicHandle->SetCameraVehicleSelection(i);
+	}
 	m_graphicHandle->SelectVehicle();
 	m_graphicHandle ->SetViewportAmount(4);
 }
