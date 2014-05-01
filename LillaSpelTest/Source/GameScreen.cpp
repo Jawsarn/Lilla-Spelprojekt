@@ -30,7 +30,7 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 	////////////////JOHNS TEST MÖS!!! kommentera bort så fungerar allt som en neger på en bomullsfarm
 	for (int i = 0; i < 2; i++)			//i<1 for test purposes. Make sure to change later
 	{
-		if(p_userCMDS->at(i).startButtonPressed)
+		if(p_userCMDS->at(i).leftTriggerPressed)
 			return PAUSE_SCREEN;
 		bool collision = false;
 		PlayerWall* t_newWall = m_players[i]->GetLastPlacedWall(); //
