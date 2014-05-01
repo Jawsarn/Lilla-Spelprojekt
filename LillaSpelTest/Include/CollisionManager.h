@@ -15,7 +15,7 @@ public:
 
 
 	int PlayerVsObj(BoundingOrientedBox* p_player, std::vector<StaticObj*>* p_collisionBoxes);
-	bool PlayerVsPlayerWall(BoundingOrientedBox* p_player, std::vector<PlayerWall*>*p_collisionBoxes); //Ändra för playerwall?
+	bool PlayerVsPlayerWall(BoundingOrientedBox* p_player, std::vector<PlayerWall*>p_collisionBoxes); //Ändra för playerwall?
 	std::vector<int> PlayerVsPlayer(BoundingOrientedBox* p_p1, BoundingOrientedBox* p_p2,BoundingOrientedBox* p_p3,BoundingOrientedBox* p_p4);
 
 private:

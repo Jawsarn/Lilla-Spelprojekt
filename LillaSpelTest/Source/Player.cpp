@@ -107,9 +107,8 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 	m_direction = t_mathHelper.Normalize( t_mathHelper.VecAddVec(t_frontNormalComponent, t_currentNormalComponent));
 	//now looking along the interpolated normal between current node and next node 
 
-	static float angle = 0;
-	angle += p_userCMD.Joystick.x/20;
-	FixUpVectorRotation(angle);
+	m_angle += p_userCMD.Joystick.x/20;
+	FixUpVectorRotation(m_angle);
 	//now rotating around the normal. Not yet properly implemented
 
 	FixOffsetFromCenterSpline();
@@ -135,7 +134,7 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 
 void Player::UpdateWorldMatrix()
 {
-	float t_cameraUpTrailDistance = 5;
+	float t_cameraUpTrailDistance = 1;
 	float t_cameraTargetTrailDistance = 5;
 	XMFLOAT3 t_position = XMFLOAT3(m_position.x, m_position.y, m_position.z);
 	XMVECTOR t_eyeVector = XMLoadFloat3(&t_position);
@@ -144,14 +143,14 @@ void Player::UpdateWorldMatrix()
 
 	m_worldMatrix = XMMatrixLookToLH(t_eyeVector, t_targetVector, t_upVector);
 	//offsets the camera position along the local y and z axes
-	XMVECTOR t_cameraPositionVector = t_eyeVector+t_upVector*t_cameraUpTrailDistance+t_cameraTargetTrailDistance*t_targetVector;
-	m_cameraMatrix = XMMatrixLookToLH(t_cameraPositionVector, t_targetVector, t_upVector);
+	XMVECTOR t_cameraPositionVector = t_eyeVector+t_upVector*t_cameraUpTrailDistance+t_cameraTargetTrailDistance*t_targetVector*-1;
+	m_cameraMatrix = XMMatrixLookAtLH(t_cameraPositionVector, t_eyeVector, t_upVector);
 
 }
 
 XMMATRIX Player::GetWorldMatrix()
 {
-	return m_worldMatrix;
+	return m_cameraMatrix;
 }
 
 XMMATRIX Player::GetCamMatrix()
@@ -203,7 +202,7 @@ void Player::PlaceWall()
 	XMStoreFloat4x4(&t_worldMatrixFloat, m_worldMatrix);
 	m_lastPlacedWall = new PlayerWall(XMFLOAT3(0,0,1), &m_position, &m_direction , &m_upVector);
 	m_placedWalls.push_back(m_lastPlacedWall);
-	m_mapNode->m_playerWalls.push_back(m_lastPlacedWall);
+	m_mapNode->AddWall(m_lastPlacedWall);
 }
 
 void Player::FixUpVectorRotation(float p_angle)

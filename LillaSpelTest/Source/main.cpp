@@ -52,9 +52,12 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	
 
 	m_LastMousePos = XMFLOAT2(0,0);
-
+	std::vector<std::string> grabben;
+	grabben.push_back("dust2");
+	grabben.push_back("Level");
+	grabben.push_back("freeway");
 	m_GraphicHandle = m_GraphicHandle->GetInstance();
-	m_GraphicHandle->Initialize(1920, 1080, m_HandleWindow); //fix this input variables right
+	m_GraphicHandle->Initialize(1920, 1080, m_HandleWindow,grabben); //fix this input variables right
 	m_GraphicHandle->SetFullScreen(false);
 
 	m_mainMenuScreen = new MainMenuScreen(m_GraphicHandle);
@@ -228,7 +231,6 @@ void OnMouseMove(WPARAM btnStae, int x, int y)
 		//m_GraphicHandle->UpdateCamera(m_ActiveCamera,0,0,0,dy,dx);
 		//m_GraphicHandle->UpdateCameraVehicleSelection(m_ActiveCamera,t_bajs);
 		//m_GraphicHandle->ChangeLevelSelection(0);
-		//m_GraphicHandle->SetCameraVehicleSelection(m_ActiveCamera);
 	}
 
 	m_LastMousePos.x = x;

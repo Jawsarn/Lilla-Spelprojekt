@@ -32,7 +32,7 @@ private:
 	
 	
 	
-	 UINT m_SelectionShips[4];
+	 std::vector<UINT> m_SelectionShips;
 
 	std::vector<UINT> m_Buttons;
 
@@ -61,7 +61,7 @@ public:
 	static GraphicHandle* GetInstance();
 
 
-	void Initialize(UINT p_Width, UINT p_Height, HWND p_Handle);
+	void Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::vector <std::string> p_LevelNames);
 	void DrawGame();
 	void ChangeHUDObject(int p_hudID, int p_hudObjID, int change());
 	void UpdateDynamicLight(UINT p_LightID,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius);
@@ -69,7 +69,7 @@ public:
 	void UpdateCamera(UINT p_CameraID,float p_Walk, float p_Strafe, float p_Hover, float p_Pitch, float p_RotateY); //for change if we are to use quaternions, else just need to add the "jaw"s =D=D
 	void UpdateSelectVehicle(float p_DeltaTime);
 	void CreatePlayer(std::vector<UINT> p_DrawPieceIDs, CXMMATRIX p_World, bool addToDrawNow, UINT &o_ObjectID,XMFLOAT3 p_Pos, XMFLOAT3 p_At, XMFLOAT3 p_Up, float p_FieldOfView, float p_Width, float p_Height, float p_NearZ, float p_FarZ, UINT &o_CameraID); //inte klar alls
-	void StartGame(int p_WhatLevel,std::vector<int> p_WhatVehicle,std::vector<XMMATRIX> p_PlayerWorld,std::vector<XMFLOAT3>p_PlayerColor,CXMMATRIX p_LevelWorld,XMFLOAT3 p_LevelColor);
+	void CreateShipForGame(std::vector<int> p_WhatVehicle,std::vector<XMMATRIX> p_PlayerWorld,std::vector<XMFLOAT3>p_PlayerColor,CXMMATRIX p_LevelWorld,XMFLOAT3 p_LevelColor);
 	void SelectVehicle();
 	void ChangeLevelSelection(int p_WhatLevel);
 	void UpdateCameraSelectLevel(int p_WhatLevel,int p_TheRotation);
@@ -79,14 +79,15 @@ public:
 	int GetAmountOfLevels();
 	void SetFullScreen(bool p_IsFullScreen);
 	void Cleanup();
-	//void TurnCameraSelection(float p_DeltaTime,CXMMATRIX p_Start, CXMMATRIX p_End)
 	void SetColourAndVehicle(std::vector<UINT> p_PlayerColour,std::vector<UINT> p_PlayerVehicle);
 	void ChangeTexture(UINT p_HUDIDObj);
 	void SetAmountOfPlayers(int p_NrOfPlayers);
 	void SetCameraVehicleSelection(UINT p_CameraLogicID);
 	void InitializeShip(std::string p_ShipStringName, UINT p_Texture);
 	void InitializeLevel(std::string p_LevelStringName, UINT p_Texture);
-	
+	void RemoveLevelDraw(int p_RemoveLevelDraw);
+	void AddLevelDraw(int p_AddLevelDraw);
+	void RemoveSelectionDraw();
 	
 	UINT CreateWall(int p_WhatWall,CXMMATRIX p_PlayerWallWorld,int p_WhatPlayer);
 	void InitializeWall(std::string p_PlayerWallStringName, UINT p_Texture);
