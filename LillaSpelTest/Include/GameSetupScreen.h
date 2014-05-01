@@ -4,7 +4,7 @@ class GameSetupScreen :
 	public MenuScreen
 {
 private:
-	std::vector<std::string> mapList;
+	int m_numberOfMaps;
 	int currentMap;
 	unsigned int m_hudHandle;
 public:

@@ -20,7 +20,7 @@ GameSetupScreen::GameSetupScreen(GameInfo* p_gameInfo,GraphicHandle* p_graphicsH
 	currentButton = buttonList[0];
 	currentMap = 0;
 
-	mapList.resize(m_graphicHandle->GetAmountOfLevels());
+	m_numberOfMaps = m_graphicHandle->GetAmountOfLevels();
 }
 
 
@@ -38,7 +38,7 @@ int GameSetupScreen::Update(float p_dt,std::vector<UserCMD>* userCMD )
 		else if (userCMD->at(0).Joystick.x>0.8)
 		{
 			timeSinceLastChange[0] = 0;
-			if (mapList.size() - 1 > currentMap)
+			if (m_numberOfMaps - 1 > currentMap)
 			{
 				currentMap++;	
 			}
@@ -57,7 +57,7 @@ int GameSetupScreen::Update(float p_dt,std::vector<UserCMD>* userCMD )
 			}
 			else
 			{
-				currentMap=mapList.size() -1;
+				currentMap=m_numberOfMaps -1;
 			}
 			m_graphicHandle->ChangeLevelSelection(currentMap);
 		}
@@ -84,5 +84,5 @@ void GameSetupScreen::Initialize()
 
 void GameSetupScreen::SaveInfo()
 {
-	//m_gameInfo->mapName = mapList[currentMap];
+	m_gameInfo->map = currentMap;
 }

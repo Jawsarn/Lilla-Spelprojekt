@@ -24,7 +24,7 @@ HINSTANCE	handleInstance;
 HWND	m_HandleWindow;
 
 ApplicationState m_state;
-
+std::vector<std::string> m_levelNames;
 //// The different screens ////
 Screen* m_mainMenuScreen;
 Screen* m_gameSetupScreen;
@@ -52,19 +52,19 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	
 
 	m_LastMousePos = XMFLOAT2(0,0);
-	std::vector<std::string> grabben;
-	grabben.push_back("dust2");
-	grabben.push_back("Level");
-	grabben.push_back("freeway");
+
+	m_levelNames.push_back("dust2");
+	m_levelNames.push_back("Level");
+	m_levelNames.push_back("freeway");
 	m_GraphicHandle = m_GraphicHandle->GetInstance();
-	m_GraphicHandle->Initialize(1920, 1080, m_HandleWindow,grabben); //fix this input variables right
+	m_GraphicHandle->Initialize(1920, 1080, m_HandleWindow,m_levelNames); //fix this input variables right
 	m_GraphicHandle->SetFullScreen(false);
 
 	m_mainMenuScreen = new MainMenuScreen(m_GraphicHandle);
 	m_gameSetupScreen = new GameSetupScreen(&m_gameInfo,m_GraphicHandle);
 	m_optionsScreen = new OptionsScreen(&m_gameInfo,m_GraphicHandle);
 	m_joinGameScreen = new JoinGameScreen(&m_gameInfo,m_GraphicHandle);
-	m_gameScreen = new GameScreen("dust2", 4, m_GraphicHandle);
+	//m_gameScreen = new GameScreen("dust2", 4, m_GraphicHandle);
 	m_state = MAIN_MENU_SCREEN;
 	Run();
 
@@ -78,7 +78,7 @@ void Run()
 	AzookaTest t_azookaTest = AzookaTest();
 	std::vector<UserCMD> *userCMDS = new std::vector<UserCMD>();
 	UserCMDHandler userCMDHandler = UserCMDHandler();
-	GameScreen gameScreen = GameScreen("dust2", 4, m_GraphicHandle);
+	//GameScreen gameScreen = GameScreen("dust2", 4, m_GraphicHandle);
 	for (int i = 0; i < 4; i++)
 	{
 		UserCMD t_userCMD = UserCMD(i);
@@ -152,6 +152,8 @@ void RunInitialization()
 	case PAUSE_SCREEN:
 		break;
 	case GAME_SCREEN:
+		delete m_gameScreen;
+		m_gameScreen = new GameScreen(m_levelNames[m_gameInfo.map],4,m_GraphicHandle); 
 		break;
 	case JOIN_GAME_SCREEN:
 		m_joinGameScreen->Initialize();
