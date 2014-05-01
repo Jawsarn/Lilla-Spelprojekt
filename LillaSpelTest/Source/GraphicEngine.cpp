@@ -705,12 +705,19 @@ HRESULT GraphicEngine::InitializeSamplerState()
 	if( FAILED(hr) )
 		return hr;
 
-	m_DeviceContext->VSSetSamplers(0,1,&m_SamplerStateWrap);
-	m_DeviceContext->HSSetSamplers(0,1,&m_SamplerStateWrap);
-	m_DeviceContext->DSSetSamplers(0,1,&m_SamplerStateWrap);
-	m_DeviceContext->GSSetSamplers(0,1,&m_SamplerStateWrap);
-	m_DeviceContext->PSSetSamplers(0,1,&m_SamplerStateWrap);
+	m_DeviceContext->VSSetSamplers( 0, 1, &m_SamplerStateWrap );
+	m_DeviceContext->HSSetSamplers( 0, 1, &m_SamplerStateWrap );
+	m_DeviceContext->DSSetSamplers( 0, 1, &m_SamplerStateWrap );
+	m_DeviceContext->GSSetSamplers( 0, 1, &m_SamplerStateWrap );
+	m_DeviceContext->PSSetSamplers( 0, 1, &m_SamplerStateWrap );
 	
+	//for compute shader
+	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	hr = m_Device->CreateSamplerState( &sampDesc, &m_SamplerStateLinearWrap);
+
+	m_DeviceContext->CSSetSamplers(0, 1, &m_SamplerStateLinearWrap);
+
+
 	return hr;
 }
 
@@ -1536,8 +1543,8 @@ void GraphicEngine::ComputeGlow()
 
 
 	//vert blur keep the x:es
-	UINT x = m_Width;
-	UINT y = ceil(m_Height/(FLOAT)THREAD_VERTBLURR_DIMENSION);
+	UINT x = m_Width/2;
+	UINT y = ceil(m_Height/(FLOAT)(THREAD_VERTBLURR_DIMENSION*2));
 
 	//very blurr first
 	m_DeviceContext->Dispatch(x, y, 1);
@@ -1555,8 +1562,8 @@ void GraphicEngine::ComputeGlow()
 
 	m_DeviceContext->CSSetShaderResources(1, 1, &m_BlurShaderResource);
 
-	x = ceil( m_Width/ (FLOAT)THREAD_HORBLURR_DIMENSION);
-	y = m_Height;
+	x = ceil( m_Width/ (FLOAT)(THREAD_HORBLURR_DIMENSION*2));
+	y = m_Height/2;
 
 	m_DeviceContext->Dispatch(x, y, 1);
 
