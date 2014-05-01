@@ -82,7 +82,7 @@ public:
 	void SetColourAndVehicle(std::vector<UINT> p_PlayerColour,std::vector<UINT> p_PlayerVehicle);
 	void ChangeTexture(UINT p_HUDIDObj);
 	void SetAmountOfPlayers(int p_NrOfPlayers);
-	/*void SetCameraVehicleSelection(UINT p_CameraLogicID);*/
+	void SetCameraVehicleSelection(UINT p_CameraLogicID);
 	void InitializeShip(std::string p_ShipStringName, UINT p_Texture);
 	void InitializeLevel(std::string p_LevelStringName, UINT p_Texture);
 	void RemoveLevelDraw(int p_RemoveLevelDraw);
