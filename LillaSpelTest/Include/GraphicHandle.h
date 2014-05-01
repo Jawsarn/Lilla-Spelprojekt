@@ -87,6 +87,7 @@ public:
 	void InitializeLevel(std::string p_LevelStringName, UINT p_Texture);
 	void RemoveLevelDraw(int p_RemoveLevelDraw);
 	void AddLevelDraw(int p_AddLevelDraw);
+	void AddSelectionDraw();
 	void RemoveSelectionDraw();
 	
 	UINT CreateWall(int p_WhatWall,CXMMATRIX p_PlayerWallWorld,int p_WhatPlayer);

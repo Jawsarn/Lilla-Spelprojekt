@@ -526,7 +526,13 @@ void GraphicHandle::RemoveSelectionDraw()
 		m_GraphicEngine->RemoveObjectFromDrawing(m_SelectionShips[i]);
 	}
 }
-
+void GraphicHandle::AddSelectionDraw()
+{
+	for (int i = 0; i < m_SelectionShips.size(); i++)
+	{
+		m_GraphicEngine->AddObjectToDrawing(m_SelectionShips[i]);
+	}
+}
 void GraphicHandle::LoadTexture(const wchar_t* p_FileName, UINT &o_TextureID)
 {
 	m_GraphicEngine->LoadTexture(p_FileName, o_TextureID);
