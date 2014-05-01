@@ -222,7 +222,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	//	}
 	//}
 
-	//SelectVehicle();
+	SelectVehicle();
 
 	//	UpdatePlayer(0,t_Mat);
 }
@@ -379,7 +379,7 @@ void GraphicHandle::SelectVehicle()
 		CreateDrawObject(m_MeshShips[i],
 			t_Rot,
 			t_Color, 
-			m_SelectionShips[i],true);
+			m_SelectionShips[i],false);
 
 		//m_GraphicEngine->CreateDrawObject(m_MeshShips[i],
 		//t_Rot,
