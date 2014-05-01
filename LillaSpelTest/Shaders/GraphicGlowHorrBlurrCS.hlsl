@@ -2,15 +2,16 @@
 
 cbuffer cbSettings
 {
-	float g_Weights[11] =
+	float g_Weights[7] =
 	{
-		0.05f, 0.05f, 0.1f, 0.1f, 0.1f, 0.2f, 0.1f, 0.1f, 0.1f, 0.05f, 0.05f,
+		//0.05f, 0.05f, 0.1f, 0.1f, 0.1f, 0.2f, 0.1f, 0.1f, 0.1f, 0.05f, 0.05f,
+		0.1f, 0.1f, 0.1f, 0.4f, 0.1f, 0.1f, 0.1f,
 	};
 }
 
 cbuffer cbFixed
 {
-	static const int g_BlurRadius = 5;
+	static const int g_BlurRadius = 3;
 }
 
 RWTexture2D<float4> g_Output : register(u0);
@@ -56,10 +57,21 @@ void CS(int3 groupThreadID : SV_GroupThreadID, int3 threadID : SV_DispatchThread
 	for(int i = -g_BlurRadius; i <= g_BlurRadius; ++i)
 	{
 		int k = groupThreadID.x + g_BlurRadius + i;
-		blurColor += g_Weights[i+g_BlurRadius]*g_Cache[k];
+		blurColor += g_Weights[i+g_BlurRadius] * g_Cache[k];
 	}
 
-	
+	blurColor = g_Input[uint2(threadID.xy)]* 0.2 + 
+				g_Input[uint2(threadID.x - 1, threadID.y)]* 0.1 +
+				g_Input[uint2(threadID.x - 2, threadID.y)]* 0.1 +
+				g_Input[uint2(threadID.x - 3, threadID.y)]* 0.1 +
+				g_Input[uint2(threadID.x - 4, threadID.y)]* 0.05 +
+				g_Input[uint2(threadID.x - 5, threadID.y)]* 0.05 +
+				g_Input[uint2(threadID.x + 1, threadID.y)]* 0.1 +
+				g_Input[uint2(threadID.x + 2, threadID.y)]* 0.1 +
+				g_Input[uint2(threadID.x + 3, threadID.y)]* 0.1 +
+				g_Input[uint2(threadID.x + 4, threadID.y)]* 0.05 + 
+				g_Input[uint2(threadID.x + 5, threadID.y)]* 0.05;
+
 	g_Output[topLeftBoxID.xy] = blurColor;
 
 	g_Output[ int2(topLeftBoxID.x + 1, topLeftBoxID.y) ] = blurColor;

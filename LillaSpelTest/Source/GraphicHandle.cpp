@@ -50,7 +50,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	InitializeShip("spaceship1.obj",m_ShipTexture[1]);
 	InitializeShip("spaceship2.obj",m_ShipTexture[2]);
 
-	m_SelectionShips.resize(m_MeshShips.size(),0);
+	m_SelectionShips.resize( m_MeshShips.size(), 0);
 
 
 

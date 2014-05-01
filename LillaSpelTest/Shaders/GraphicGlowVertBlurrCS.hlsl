@@ -71,7 +71,7 @@ void CS(int3 groupThreadID : SV_GroupThreadID, int3 threadID : SV_DispatchThread
 	
 	float4 Color;
 	//float4 Color = g_Input.SampleLevel(g_BlurrSampler, uvDimensions*threadID.xy , 0 );
-	if (threadID.x == 438)
+	if (threadID.x > 438 && threadID.x < 500)
 	{
 		Color = float4(1,0,0,0);
 	}
@@ -79,5 +79,11 @@ void CS(int3 groupThreadID : SV_GroupThreadID, int3 threadID : SV_DispatchThread
 	{
 		Color = float4(0,0,0,0);
 	}
+	/*Color = g_Input.SampleLevel(g_BlurrSampler, uvDimensions*threadID.xy , 0 )*0.4 +
+			g_Input.SampleLevel(g_BlurrSampler, uvDimensions*float2(threadID.x + 1, threadID.y), 0 )*0.2 + 
+			g_Input.SampleLevel(g_BlurrSampler, uvDimensions*float2(threadID.x + 2, threadID.y), 0 )*0.1 +
+			g_Input.SampleLevel(g_BlurrSampler, uvDimensions*float2(threadID.x - 1, threadID.y), 0 )*0.2 +
+			g_Input.SampleLevel(g_BlurrSampler, uvDimensions*float2(threadID.x - 2, threadID.y), 0 )*0.1;*/
+			
 	g_Output[threadID.xy] = Color;
 }
