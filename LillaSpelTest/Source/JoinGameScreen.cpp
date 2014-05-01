@@ -133,7 +133,7 @@ void JoinGameScreen::Initialize()
 	{
 		m_graphicHandle->SetCameraVehicleSelection(i);
 	}
-	m_graphicHandle->SelectVehicle();
+	//m_graphicHandle->SelectVehicle();
 	m_graphicHandle ->SetViewportAmount(4);
 }
 
