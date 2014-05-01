@@ -86,6 +86,8 @@ public:
 	void InitializeShip(std::string p_ShipStringName, UINT p_Texture);
 	void InitializeLevel(std::string p_LevelStringName, UINT p_Texture);
 	void RemoveLevelDraw(int p_RemoveLevelDraw);
+	void AddLevelDraw(int p_AddLevelDraw);
+	void RemoveSelectionDraw();
 	
 	UINT CreateWall(int p_WhatWall,CXMMATRIX p_PlayerWallWorld,int p_WhatPlayer);
 	void InitializeWall(std::string p_PlayerWallStringName, UINT p_Texture);

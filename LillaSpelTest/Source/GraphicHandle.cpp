@@ -45,7 +45,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	m_ShipTexture.push_back(t_TempurTextur);
 	m_GraphicEngine->LoadTexture(L"spaceship2.dds", t_TempurTextur);
 	m_ShipTexture.push_back(t_TempurTextur);
-	
+
 	InitializeShip("spaceship.obj",m_ShipTexture[0]);
 	InitializeShip("spaceship1.obj",m_ShipTexture[1]);
 	InitializeShip("spaceship2.obj",m_ShipTexture[2]);
@@ -146,7 +146,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 
 
 
-	
+
 
 
 	//add light to an already existing ship, (note to self maybe, if we have two ships that are the same for two players, same textures will be used, but not same lights, this is ok)
@@ -344,10 +344,10 @@ void GraphicHandle::CreateLight(int p_PlayerIndex,XMFLOAT3 p_Color,UINT p_Object
 }
 
 void GraphicHandle::CreateShipForGame( std::vector<int> p_WhatVehicle,
-							  std::vector<XMMATRIX> p_PlayerWorld,
-							  std::vector<XMFLOAT3>p_Color,
-							  CXMMATRIX p_LevelWorld,
-							  XMFLOAT3 p_LevelColor)
+									  std::vector<XMMATRIX> p_PlayerWorld,
+									  std::vector<XMFLOAT3>p_Color,
+									  CXMMATRIX p_LevelWorld,
+									  XMFLOAT3 p_LevelColor)
 {
 	for (int i = 0; i < m_Player.size(); i++)
 	{
@@ -515,6 +515,17 @@ void GraphicHandle::RemoveLevelDraw(int p_RemoveLevelDraw)
 {
 	m_GraphicEngine->RemoveObjectFromDrawing(m_Levels[p_RemoveLevelDraw]);
 }
+void GraphicHandle::AddLevelDraw(int p_AddLevelDraw)
+{
+	m_GraphicEngine->AddObjectToDrawing(m_Levels[p_AddLevelDraw]);
+}
+void GraphicHandle::RemoveSelectionDraw()
+{
+	for (int i = 0; i < m_SelectionShips.size(); i++)
+	{
+		m_GraphicEngine->RemoveObjectFromDrawing(m_SelectionShips[i]);
+	}
+}
 
 void GraphicHandle::LoadTexture(const wchar_t* p_FileName, UINT &o_TextureID)
 {
@@ -530,6 +541,7 @@ void GraphicHandle::RemoveObject(UINT p_RemoveAt)
 {
 	m_GraphicEngine->RemoveObject(p_RemoveAt);
 }
+
 
 
 //hud functions
