@@ -52,9 +52,12 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	
 
 	m_LastMousePos = XMFLOAT2(0,0);
-
+	std::vector<std::string> grabben;
+	grabben.push_back("dust2");
+	grabben.push_back("Level");
+	grabben.push_back("freeway");
 	m_GraphicHandle = m_GraphicHandle->GetInstance();
-	m_GraphicHandle->Initialize(1920, 1080, m_HandleWindow); //fix this input variables right
+	m_GraphicHandle->Initialize(1920, 1080, m_HandleWindow,grabben); //fix this input variables right
 	m_GraphicHandle->SetFullScreen(false);
 
 	m_mainMenuScreen = new MainMenuScreen(m_GraphicHandle);
