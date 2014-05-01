@@ -22,7 +22,7 @@ JoinGameScreen::JoinGameScreen(GameInfo* p_gameInfo,GraphicHandle* p_graphicsHan
 		m_color[i] = 0;
 		m_playerStatus[i] = DISCONNECTED;
 		m_modellIncrease[i] = 0;
-		m_graphicHandle->SetCameraVehicleSelection(i);
+		m_graphicHandle->UpdateCameraVehicleSelection(i,0);
 	}
 }
 
@@ -76,7 +76,7 @@ int JoinGameScreen::Update(float p_dt,std::vector<UserCMD>* userCMD)
 				}
 				else if (m_playerStatus[i] == CHOOSE_MODELL)
 				{
-					m_graphicHandle->SetCameraVehicleSelection(i);
+					m_graphicHandle->UpdateCameraVehicleSelection(i,0);
 					m_playerStatus[i] = DISCONNECTED;
 				}
 			}
