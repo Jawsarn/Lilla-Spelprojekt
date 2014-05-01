@@ -186,6 +186,7 @@ void Update(std::vector<UserCMD>* p_userCMDs)
 		break;
 	case GAME_SCREEN:
 		m_state = (ApplicationState)m_gameScreen->Update(m_DeltaTime,p_userCMDs);
+		m_state = GAME_SCREEN;
 		if (m_state != GAME_SCREEN)
 		{
 			RunInitialization();

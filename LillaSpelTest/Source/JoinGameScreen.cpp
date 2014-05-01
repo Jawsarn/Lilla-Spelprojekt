@@ -127,6 +127,7 @@ void JoinGameScreen::Draw()
 
 void JoinGameScreen::Initialize()
 {
+	m_graphicHandle->SelectVehicle();
 	m_graphicHandle ->SetViewportAmount(4);
 }
 
