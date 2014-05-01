@@ -133,6 +133,8 @@ void JoinGameScreen::Initialize()
 
 void JoinGameScreen::SaveInfo()
 {
+	m_graphicHandle->RemoveSelectionDraw();
+	m_graphicHandle->AddLevelDraw(m_gameInfo->map);
 	for (int i = 0; i < 4; i++)
 	{
 		if (m_playerStatus[i] != DISCONNECTED)
