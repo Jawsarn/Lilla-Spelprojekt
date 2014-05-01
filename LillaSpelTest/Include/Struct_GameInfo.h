@@ -15,7 +15,7 @@ struct GameInfo
 	int playerColor[4];
 	bool playerOnline[4];
 	int resolution;
-	std::string mapName;
+	int map;
 
 	GameInfo()
 	{
