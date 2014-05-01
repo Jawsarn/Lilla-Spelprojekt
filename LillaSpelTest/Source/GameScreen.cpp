@@ -28,8 +28,10 @@ void GameScreen::Initialize()
 int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS) 
 {
 	////////////////JOHNS TEST MÖS!!! kommentera bort så fungerar allt som en neger på en bomullsfarm
-	for (int i = 0; i < 4; i++)			//i<1 for test purposes. Make sure to change later
+	for (int i = 0; i < 2; i++)			//i<1 for test purposes. Make sure to change later
 	{
+		if(p_userCMDS->at(i).startButtonPressed)
+			return PAUSE_SCREEN;
 		bool collision = false;
 		PlayerWall* t_newWall = m_players[i]->GetLastPlacedWall(); //
 
@@ -56,14 +58,14 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 		////PLAYER VS PLAYERWALL
 		///check collision for play i against all playerwall objects in his mapnode
 		//gets the walls for the current mapnode
-		vector<PlayerWall*>* t_playerWallsToCheck = &t_currMapNode->m_playerWalls;
+		vector<PlayerWall*> t_playerWallsToCheck = t_currMapNode->m_playerWalls;
 		//adds next node's walls to the walls to check
 		//t_playerWallsToCheck->insert(t_playerWallsToCheck->end(), t_currMapNode->m_nextNode->m_playerWalls.begin(), t_currMapNode->m_playerWalls.end());
-		if (t_playerWallsToCheck->size()>0)
+		if (t_playerWallsToCheck.size()>0)
 		{
 			if(t_newWall == t_currMapNode->m_playerWalls.at(t_currMapNode->m_playerWalls.size()-1))		///PLAYER VS PLAYERWALL  Checks if the wall you placed this frame is in the list and removes it
 			{
-				t_playerWallsToCheck->pop_back();														///PLAYER VS PLAYERWALL
+				t_playerWallsToCheck.pop_back();														///PLAYER VS PLAYERWALL
 			}
 		}
 		if(m_collisionManager->PlayerVsPlayerWall(m_players[i]->GetCollisionBox(), t_playerWallsToCheck))		///PLAYER VS PLAYERWALL Collisionmanager returns true if hit

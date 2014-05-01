@@ -202,7 +202,7 @@ void Player::PlaceWall()
 	XMStoreFloat4x4(&t_worldMatrixFloat, m_worldMatrix);
 	m_lastPlacedWall = new PlayerWall(XMFLOAT3(0,0,1), &m_position, &m_direction , &m_upVector);
 	m_placedWalls.push_back(m_lastPlacedWall);
-	m_mapNode->m_playerWalls.push_back(m_placedWalls[m_placedWalls.size()-1]);
+	m_mapNode->AddWall(m_lastPlacedWall);
 }
 
 void Player::FixUpVectorRotation(float p_angle)

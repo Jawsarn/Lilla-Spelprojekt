@@ -20,4 +20,8 @@ struct MapNode
 		m_previousNode = nullptr;
 		m_nextNode = nullptr;
 	}
+	void AddWall(PlayerWall* p_wall)
+	{
+		m_playerWalls.push_back(p_wall);
+	}
 };
