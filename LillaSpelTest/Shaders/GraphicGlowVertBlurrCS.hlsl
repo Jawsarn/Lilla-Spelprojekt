@@ -26,7 +26,7 @@ groupshared float4 g_Cache[CacheSize];
 [numthreads(1, N, 1)]
 void CS(int3 groupThreadID : SV_GroupThreadID, int3 threadID : SV_DispatchThreadID)
 {
-	float2 uvDimensions = float2(1/960, 1/540);
+	float2 uvDimensions = float2(1.0f/960.0f, 1.0f/540.0f);
 
 	if(groupThreadID.y < g_BlurRadius)
 	{
@@ -61,12 +61,7 @@ void CS(int3 groupThreadID : SV_GroupThreadID, int3 threadID : SV_DispatchThread
 		blurColor += g_Weights[i+g_BlurRadius]*g_Cache[k];
 	}
 
-	//float4 Color = g_Input.SampleLevel(g_BlurrSampler, float2(threadID.x/960, threadID.y/540), 0);
-	float4 Color = g_Input[float2(threadID.x*2 , threadID.y*2)]*0.25 + 
-					g_Input[float2(threadID.x*2 + 1, threadID.y*2)]*0.25 +
-					g_Input[float2(threadID.x*2, threadID.y*2 + 1)]*0.25 +
-					g_Input[float2(threadID.x*2 + 1, threadID.y*2 + 1)]*0.25;
-	g_Output[threadID.xy] = Color;
+	g_Output[threadID.xy] = blurColor;
 
 	/*for (int i = 0; i < 11; i++)
 	{

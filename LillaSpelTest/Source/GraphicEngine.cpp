@@ -1354,7 +1354,7 @@ void GraphicEngine::DrawOpaqueObjects()
 		t_PerObjBuff.World = XMMatrixTranspose( XMLoadFloat4x4( &it->second->worldMatrix ));
 		
 		t_PerObjBuff.typeOfObject = 0;
-		t_PerObjBuff.fillers = XMFLOAT3(0,0,0);
+		t_PerObjBuff.Color = it->second->color;
 
 		m_DeviceContext->UpdateSubresource(m_PerObjectBuffer, 0, nullptr, &t_PerObjBuff, 0, 0 );
 

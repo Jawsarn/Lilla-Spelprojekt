@@ -83,7 +83,7 @@ public:
 	void ChangeTexture(UINT p_HUDIDObj);
 	void SetAmountOfPlayers(int p_NrOfPlayers);
 	void SetCameraVehicleSelection(UINT p_CameraLogicID);
-	void InitializeShip(std::string p_ShipStringName, UINT p_Texture);
+	void InitializeShip(std::string p_ShipStringName, UINT p_TextureDiffuseSpec, UINT p_TextureNormGlow);
 	void InitializeLevel(std::string p_LevelStringName, UINT p_Texture);
 	void RemoveLevelDraw(int p_RemoveLevelDraw);
 	void AddLevelDraw(int p_AddLevelDraw);
