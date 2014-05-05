@@ -22,16 +22,19 @@ int CollisionManager::PlayerVsObj(BoundingOrientedBox* p_player, std::vector<Sta
 	return 1;
 }
 
-bool CollisionManager::PlayerVsPlayerWall(BoundingOrientedBox* p_player, std::vector<PlayerWall*> p_collisionBoxes) //copies the list. Might be bad, but its a list of pointers. No biggie
+int CollisionManager::PlayerVsPlayerWall(BoundingOrientedBox* p_player, std::vector<PlayerWall*> p_collisionBoxes) //copies the list. Might be bad, but its a list of pointers. No biggie
 {
+	int t_wallSpheresHit = 0;
 	for (int i = 0; i < p_collisionBoxes.size(); i++)
 	{
-		if(p_player->Intersects(*p_collisionBoxes.at(i)->GetBox()))
+		if(p_player->Intersects(*p_collisionBoxes.at(i)->GetSphere()))
 		{
-			return true;
+			t_wallSpheresHit++;
+			if(p_player->Intersects(*p_collisionBoxes.at(i)->GetBox()))
+				return -1;
 		}
 	}
-	return false;
+	return t_wallSpheresHit;
 }
 
 std::vector<int> CollisionManager::PlayerVsPlayer(BoundingOrientedBox* p_p1, BoundingOrientedBox* p_p2,BoundingOrientedBox* p_p3,BoundingOrientedBox* p_p4)

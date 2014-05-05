@@ -346,15 +346,13 @@ void GraphicHandle::CreateLight(int p_PlayerIndex,XMFLOAT3 p_Color,UINT p_Object
 	m_GraphicEngine->AddObjectLight(p_ObjectId,p_LightStruct.m_Position,p_LightStruct.m_Color,p_LightStruct.m_Radius,p_LightStruct.m_LightID);
 }
 
-void GraphicHandle::CreateShipForGame( std::vector<int> p_WhatVehicle,
-									  std::vector<XMMATRIX> p_PlayerWorld,
-									  std::vector<XMFLOAT3>p_Color)//4123
+void GraphicHandle::CreateShipForGame(std::vector<XMMATRIX> p_PlayerWorld)//4123
 {
 	for (int i = 0; i < m_Player.size(); i++)
 	{
-		m_GraphicEngine->CreateDrawObject(m_MeshShips[p_WhatVehicle[i]],
+		m_GraphicEngine->CreateDrawObject(m_MeshShips[m_PlayerVehicle[i]],
 			p_PlayerWorld[i],
-			p_Color[i],true, 
+			m_Colours[m_PlayerColour[i]],true, 
 			m_Player[i]);
 
 		//LightStruct t_LightStruct;
@@ -414,8 +412,14 @@ void GraphicHandle::SetFullScreen(bool p_IsFullScreen)
 
 void GraphicHandle::SetColourAndVehicle(std::vector<UINT> p_PlayerColour,std::vector<UINT> p_PlayerVehicle)
 {
-	m_Player=p_PlayerVehicle;
-	m_PlayerColour=p_PlayerColour;
+
+	for (int i = 0; i < m_Player.size(); i++)
+	{
+		//m_PlayerVehicle.push_back(p_PlayerVehicle[i]);
+		m_PlayerVehicle.at(i) = p_PlayerVehicle[i];
+		m_PlayerColour.at(i) = p_PlayerColour[i];
+		//m_PlayerColour.push_back(p_PlayerColour[i]);
+	}
 }
 
 void GraphicHandle::ChangeTexture(UINT p_HUDIDObj)
@@ -429,6 +433,7 @@ void GraphicHandle::SetAmountOfPlayers(int p_NrOfPlayers)
 		m_Player.clear();	
 		m_GraphicEngine->SetViewportAmount(p_NrOfPlayers);//not fixed yet, just for testing
 		m_Player.resize(p_NrOfPlayers,0);
+		m_PlayerVehicle.resize(p_NrOfPlayers, 0);
 		m_PlayerColour.resize(p_NrOfPlayers,0);
 		m_PlayerLight.resize(p_NrOfPlayers,0);
 	}

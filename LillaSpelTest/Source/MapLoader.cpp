@@ -119,6 +119,7 @@ void MapLoader::LoadNodes(vector<XMFLOAT3>* p_centerPositions, vector<XMFLOAT3>*
 	{
 			m_logicalMap.push_back(new MapNode());
 			m_logicalMap[i]->m_position = p_centerPositions->at(i);
+			m_logicalMap[i]->m_Index = i;
 
 			if(i>0)
 			{

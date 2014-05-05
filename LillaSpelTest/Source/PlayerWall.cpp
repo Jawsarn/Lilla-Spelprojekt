@@ -30,7 +30,7 @@ PlayerWall::PlayerWall(XMFLOAT3 p_color, XMFLOAT3* p_wallPos, XMFLOAT3* p_wallDi
 	
 	
 	m_box = BoundingOrientedBox(*p_wallPos, t_boxExtents, t_quarternion);
-	
+	m_sphere = BoundingSphere(*p_wallPos, 2.5);
 
 
 }
@@ -42,6 +42,11 @@ PlayerWall::~PlayerWall(void)
 BoundingOrientedBox* PlayerWall::GetBox()
 {
 	return &m_box;
+}
+
+BoundingSphere* PlayerWall::GetSphere()
+{
+	return &m_sphere;
 }
 
 unsigned int PlayerWall::GetWallIndex()

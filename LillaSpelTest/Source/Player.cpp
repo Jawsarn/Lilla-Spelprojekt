@@ -14,10 +14,16 @@ Player::Player(MapNode* p_startNode, float p_startAngle)
 	m_upVector = XMFLOAT3(0,1,0);
 	m_angle = p_startAngle;
 	m_distance = 0.0f;
+	m_boostMeter = 0;
 	m_speed = 30;
 	m_position = m_mapNode->m_position;
 	m_direction = DirectX::XMFLOAT3(0,0,1);
 	m_lastPlacedWall = nullptr;
+
+	//initilaize world matrix stuff
+	FixUpVectorRotation(m_angle);
+	FixOffsetFromCenterSpline();
+	UpdateWorldMatrix();
 }
 
 
@@ -71,15 +77,30 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 
 	m_direction = XMFLOAT3(0,0,1);
 
-	////silly boost thingy
+	////silly boost thingy for testing
 	if(p_userCMD.aButtonPressed)
 		m_speed = 200;
-	else if (p_userCMD.bButtonPressed)
+	//else if (p_userCMD.bButtonPressed)
+	//	m_speed = 30;
+	//else if(p_userCMD.xButtonPressed)
+	//	m_speed = -30;
+	//else 
+	//	m_speed = 0;
+
+	
+
+	//RealSpeed and boost code:
+	if(p_userCMD.rightBumberPressed && m_boostMeter >0)
+	{
+		float t_boostDecay = 5;
+		m_speed = 50;
+		m_boostMeter -= p_dt*t_boostDecay;
+	}
+	else
+	{
 		m_speed = 30;
-	else if(p_userCMD.xButtonPressed)
-		m_speed = -30;
-	else 
-		m_speed = 0;
+	}
+
 
 
 	//adds distance from the current node based on speed and time since last update
@@ -119,14 +140,15 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 
 	UpdateCollisionBox();
 	
-	static float cooldownTimer = 0;
 
-	cooldownTimer -= 0.07; //lower means greater cooldown
-	if(p_userCMD.rightTriggerPressed && cooldownTimer <=0)
+	//lower means greater cooldown
+	
+	m_coolDown -= 0.07;
+	if(p_userCMD.rightTriggerPressed && m_coolDown <=0 && m_wallMeter < 1)
 	{
+		m_wallMeter-=1;
 		PlaceWall();
-		cooldownTimer = 1;
-		p_userCMD.controller.Vibrate(64000,64000);
+		m_coolDown = 1;
 		return 1;
 	}
 	return 0;
@@ -151,7 +173,7 @@ void Player::UpdateWorldMatrix()
 
 XMMATRIX Player::GetWorldMatrix()
 {
-	return m_cameraMatrix;
+	return XMMatrixInverse(&XMMatrixDeterminant(m_worldMatrix), m_worldMatrix);
 }
 
 XMMATRIX Player::GetCamMatrix()
@@ -288,4 +310,14 @@ XMFLOAT3 Player::GetPos()
 XMFLOAT3 Player::GetDirection()
 {
 	return m_direction;
+}
+
+int Player::GetPlayerBoost()
+{
+	return m_boostMeter;
+}
+
+void Player::SetPlayerBoost(float p_boost)
+{
+	m_boostMeter = p_boost;
 }
