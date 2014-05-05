@@ -63,6 +63,8 @@ public:
 	MapNode* GetCurrentMapNode();
 	BoundingOrientedBox* GetCollisionBox();
 	PlayerWall* GetLastPlacedWall();
+	int GetPlayerBoost();
+	void SetPlayerBoost(float p_boost);
 
 private:
 	//rotates the up vector to the proper angle
@@ -74,6 +76,6 @@ private:
 	void UpdateMapNode();
 	void BumpedIntoPlayer(XMFLOAT3 p_force);
 	void UpdateWorldMatrix();
-	
+
 };
 

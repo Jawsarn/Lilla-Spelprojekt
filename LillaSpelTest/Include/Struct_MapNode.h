@@ -15,6 +15,7 @@ struct MapNode
 	DirectX::XMFLOAT3 m_position;
 	XMFLOAT3 m_radiusVector;
 	float m_radius;
+	int m_Index;
 	MapNode()
 	{
 		m_previousNode = nullptr;
