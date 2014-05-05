@@ -22,8 +22,13 @@ JoinGameScreen::JoinGameScreen(GameInfo* p_gameInfo,GraphicHandle* p_graphicsHan
 		m_color[i] = 0;
 		m_playerStatus[i] = DISCONNECTED;
 		m_modellIncrease[i] = 0;
-	
 	}
+
+	MakeHud(L"Connect.dds", DISCONNECTED);
+	MakeHud(L"ChooseModellButton.dds",CHOOSE_MODELL);
+	MakeHud(L"ChooseColorButton.dds",CHOOSE_COLOR);
+	MakeHud(L"StartToStartButton.dds",READY);
+	
 }
 
 JoinGameScreen::~JoinGameScreen(void)
@@ -36,7 +41,7 @@ int JoinGameScreen::Update(float p_dt,std::vector<UserCMD>* userCMD)
 	m_graphicHandle->UpdateSelectVehicle(p_dt);
 	for (int i = 0; i < 4; i++)
 	{
-		if (timeSinceLastChange[i]>0.5)
+		if (timeSinceLastChange[i]>0.1)
 		{
 			if (userCMD->at(i).aButtonPressed)
 			{
@@ -44,14 +49,17 @@ int JoinGameScreen::Update(float p_dt,std::vector<UserCMD>* userCMD)
 				if (m_playerStatus[i] == CHOOSE_MODELL)
 				{
 					m_playerStatus[i]=CHOOSE_COLOR;
+					m_graphicHandle->UseHud(i,m_hudIDs[CHOOSE_COLOR]);
 				}
 				else if (m_playerStatus[i] == CHOOSE_COLOR)
 				{
 					m_playerStatus[i]=READY;
+					m_graphicHandle->UseHud(i,m_hudIDs[READY]);
 				}
 				else if (m_playerStatus[i] == DISCONNECTED)
 				{
 					m_playerStatus[i]=CHOOSE_MODELL;
+					m_graphicHandle->UseHud(i,m_hudIDs[CHOOSE_MODELL]);
 				}
 			}
 			else if (userCMD->at(i).backButtonPressed)
@@ -71,14 +79,17 @@ int JoinGameScreen::Update(float p_dt,std::vector<UserCMD>* userCMD)
 				if (m_playerStatus[i] == READY)
 				{
 					m_playerStatus[i]=CHOOSE_COLOR;
+					m_graphicHandle->UseHud(i,m_hudIDs[CHOOSE_COLOR]);
 				}
 				else if (m_playerStatus[i] == CHOOSE_COLOR)
 				{
+					m_graphicHandle->UseHud(i,m_hudIDs[CHOOSE_MODELL]);
 					m_playerStatus[i]=CHOOSE_MODELL;
 				}
 				else if (m_playerStatus[i] == CHOOSE_MODELL)
 				{
 					m_graphicHandle->SetCameraVehicleSelection(i);
+					m_graphicHandle->UseHud(i,m_hudIDs[DISCONNECTED]);
 					m_playerStatus[i] = DISCONNECTED;
 				}
 			}
@@ -132,9 +143,29 @@ void JoinGameScreen::Initialize()
 	for (int i = 0; i < 4; i++)
 	{
 		m_graphicHandle->SetCameraVehicleSelection(i);
+		m_graphicHandle->UseHud(i,m_hudIDs[DISCONNECTED]);
 	}
 	m_graphicHandle->AddSelectionDraw();
 	m_graphicHandle ->SetViewportAmount(4);
+	
+}
+
+void JoinGameScreen::MakeHud(const wchar_t* p_textureNames, int p_hudIndex)
+{
+	DirectX::XMFLOAT2 t_centerPoint = DirectX::XMFLOAT2(0,-0.8);
+	DirectX::XMFLOAT2 t_offset = DirectX::XMFLOAT2(0.3,0.1);
+	std::vector<unsigned int> t_objHandles;
+	std::vector<DirectX::XMFLOAT2> t_barOffsets;
+	t_barOffsets.push_back(DirectX::XMFLOAT2(0,0));
+	
+	unsigned int t_t1;
+	unsigned int t_objHandle;
+	unsigned int t_templateHandle;
+	m_graphicHandle->LoadTexture(p_textureNames,t_t1);
+	m_graphicHandle->CreateHUDObject(t_centerPoint,t_offset,t_t1,t_t1,t_objHandle);
+	t_objHandles.push_back(t_objHandle);
+	m_graphicHandle->CreateHudTemplate(t_objHandles,t_templateHandle);
+	m_graphicHandle->CreateHudFromTemplate(t_templateHandle,DirectX::XMFLOAT3(0,1,0),t_barOffsets,m_hudIDs[p_hudIndex]);
 }
 
 void JoinGameScreen::SaveInfo()

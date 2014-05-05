@@ -11,6 +11,7 @@ private:
 	float m_volume;
 	DirectX::XMFLOAT2 m_resolution;
 	unsigned int m_hudHandle;
+	bool m_fullScreen;
 private:
 	////////////FUNCTIONS/////////////
 	void AlterVolume(UserCMD& p_userCMD);

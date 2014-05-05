@@ -42,18 +42,19 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 
 
 	////Init alla skepp
-	m_GraphicEngine->LoadTexture(L"spaceship.dds", t_TempurTextur);
+	m_GraphicEngine->LoadTexture(L"spaceship_COL_SPEC.dds", t_TempurTextur);
 	m_ShipTexture.push_back(t_TempurTextur);
 	m_GraphicEngine->LoadTexture(L"spaceship1.dds", t_TempurTextur);
 	m_ShipTexture.push_back(t_TempurTextur);
 	m_GraphicEngine->LoadTexture(L"spaceship2.dds", t_TempurTextur);
 	m_ShipTexture.push_back(t_TempurTextur);
 
+
 	m_GraphicEngine->LoadTexture(L"spaceshipNG.dds", t_TempurTextur);
 	m_ShipTexture.push_back(t_TempurTextur);
 
 	
-	InitializeShip("spaceship.obj",m_ShipTexture[0], m_ShipTexture[3] ); //normalGlow texture is same for all ship, fix to 4123
+	InitializeShip("spaceship0.obj",m_ShipTexture[0], m_ShipTexture[3] ); //normalGlow texture is same for all ship, fix to 4123
 	InitializeShip("spaceship1.obj",m_ShipTexture[1], m_ShipTexture[3] );
 	InitializeShip("spaceship2.obj",m_ShipTexture[2],m_ShipTexture[3] );
 
@@ -85,7 +86,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	//CreateDrawObject(m_MeshLevels[0],XMMatrixIdentity(),XMFLOAT3(1,1,1),m_Levels[0],true);
 
 	////init walls
-	InitializeWall("wall.obj",m_PlayerWallTexture[0]);
+	InitializeWall("playerwall.obj",m_PlayerWallTexture[0]);
 
 
 
@@ -416,7 +417,6 @@ void GraphicHandle::SetFullScreen(bool p_IsFullScreen)
 
 void GraphicHandle::SetColourAndVehicle(std::vector<UINT> p_PlayerColour,std::vector<UINT> p_PlayerVehicle)
 {
-
 	for (int i = 0; i < m_Player.size(); i++)
 	{
 		//m_PlayerVehicle.push_back(p_PlayerVehicle[i]);

@@ -175,7 +175,7 @@ void Player::UpdateWorldMatrix()
 
 XMMATRIX Player::GetWorldMatrix()
 {
-	return XMMatrixInverse(nullptr, XMLoadFloat4x4( &m_worldMatrix ));
+	return XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_worldMatrix));
 }
 
 XMMATRIX Player::GetCamMatrix()
