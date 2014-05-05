@@ -78,8 +78,7 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 	m_direction = XMFLOAT3(0,0,1);
 
 	////silly boost thingy for testing
-	if(p_userCMD.aButtonPressed)
-		m_speed = 200;
+
 	//else if (p_userCMD.bButtonPressed)
 	//	m_speed = 30;
 	//else if(p_userCMD.xButtonPressed)
@@ -92,14 +91,16 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 	//RealSpeed and boost code:
 	if(p_userCMD.rightBumberPressed && m_boostMeter >0)
 	{
-		float t_boostDecay = 5;
-		m_speed = 50;
+		float t_boostDecay = 1;
+		m_speed = 105;
 		m_boostMeter -= p_dt*t_boostDecay;
 	}
 	else
 	{
-		m_speed = 30;
+		m_speed = 15;
 	}
+	if(p_userCMD.aButtonPressed)
+		m_speed = 80;
 
 
 

@@ -15,6 +15,7 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4], std::string p_mapNa
 	vector<UINT> t_whichVehicles;
 	for (int i = 0; i < p_numberOfPlayers; i++)
 	{
+		
 		m_players.push_back(new Player(m_mapNodes->at(0),0.0f));
 		t_shipWorldMatrices.push_back(m_players[i]->GetWorldMatrix());
 		t_colors.push_back(p_color[i]);
@@ -39,10 +40,10 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 {
 	////////////////JOHNS TEST MÖS!!! kommentera bort så fungerar allt som en neger på en bomullsfarm
 
-	for (int i = 0; i < 1; i++)			//i<1 for test purposes. Make sure to change later
+	for (int i = 0; i < m_players.size(); i++)			//i<1 for test purposes. Make sure to change later
 	{
-		if(p_userCMDS->at(i).leftTriggerPressed)
-			return PAUSE_SCREEN;
+		//if(p_userCMDS->at(i).leftTriggerPressed)
+			//return PAUSE_SCREEN;
 		bool collision = false;
 		PlayerWall* t_newWall = m_players[i]->GetLastPlacedWall(); //
 
@@ -94,7 +95,7 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 		else if (t_collisionResult>0)
 		{
 			//went close to wall and got boost
-			float t_boostPerWallPerUpdate = 1;
+			float t_boostPerWallPerUpdate = 10;
 			int t_currentBoost = m_players[i]->GetPlayerBoost();
 			m_players[i]->SetPlayerBoost(t_currentBoost+p_dt*t_collisionResult*t_boostPerWallPerUpdate);
 			p_userCMDS->at(i).controller.Vibrate(10000,10000);
