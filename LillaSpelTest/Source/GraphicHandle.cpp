@@ -42,14 +42,14 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 
 
 	////Init alla skepp
-	m_GraphicEngine->LoadTexture(L"spaceship.dds", t_TempurTextur);
+	m_GraphicEngine->LoadTexture(L"spaceship_COL_SPEC.dds", t_TempurTextur);
 	m_ShipTexture.push_back(t_TempurTextur);
 	m_GraphicEngine->LoadTexture(L"spaceship1.dds", t_TempurTextur);
 	m_ShipTexture.push_back(t_TempurTextur);
 	m_GraphicEngine->LoadTexture(L"spaceship2.dds", t_TempurTextur);
 	m_ShipTexture.push_back(t_TempurTextur);
 
-	InitializeShip("spaceship.obj",m_ShipTexture[0]);
+	InitializeShip("testship.obj",m_ShipTexture[0]);
 	InitializeShip("spaceship1.obj",m_ShipTexture[1]);
 	InitializeShip("spaceship2.obj",m_ShipTexture[2]);
 
@@ -414,8 +414,14 @@ void GraphicHandle::SetFullScreen(bool p_IsFullScreen)
 
 void GraphicHandle::SetColourAndVehicle(std::vector<UINT> p_PlayerColour,std::vector<UINT> p_PlayerVehicle)
 {
-	m_Player=p_PlayerVehicle;
-	m_PlayerColour=p_PlayerColour;
+	m_Player.resize(0,0);
+	m_PlayerColour.resize(0,0);
+	for (int i = 0; i < m_Player.size(); i++)
+	{
+		m_Player.push_back(p_PlayerVehicle[i]);
+		m_PlayerColour.push_back(p_PlayerColour[i]);
+	}
+	
 }
 
 void GraphicHandle::ChangeTexture(UINT p_HUDIDObj)

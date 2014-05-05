@@ -53,7 +53,7 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
 	m_LastMousePos = XMFLOAT2(0,0);
 
-	m_levelNames.push_back("dust2");
+	m_levelNames.push_back("testtube");
 	m_levelNames.push_back("Level");
 	m_levelNames.push_back("freeway");
 	m_GraphicHandle = m_GraphicHandle->GetInstance();
