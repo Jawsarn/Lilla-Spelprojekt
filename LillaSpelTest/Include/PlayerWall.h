@@ -6,7 +6,7 @@ class PlayerWall :
 {
 private:
 	DirectX::XMFLOAT3 m_color;
-	XMMATRIX m_worldMatrix;
+	XMFLOAT4X4 m_worldMatrix;
 public:
 	PlayerWall(void);
 	PlayerWall(XMFLOAT3 p_color, XMFLOAT3* p_wallPos, XMFLOAT3* p_wallDir, XMFLOAT3* p_wallUp);
