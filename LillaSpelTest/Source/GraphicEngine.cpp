@@ -692,7 +692,7 @@ HRESULT GraphicEngine::InitializeSamplerState()
 	HRESULT hr = S_OK;
 	D3D11_SAMPLER_DESC sampDesc;
     ZeroMemory( &sampDesc, sizeof(sampDesc) );
-    sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+    sampDesc.Filter = D3D11_FILTER_ANISOTROPIC; // D3D11_FILTER_ANISOTROPIC  D3D11_FILTER_MIN_MAG_MIP_LINEAR
 	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
     sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -700,7 +700,8 @@ HRESULT GraphicEngine::InitializeSamplerState()
     sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 	
     sampDesc.MinLOD = 0;
-    sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+    sampDesc.MaxLOD = D3D11_FLOAT32_MAX; //D3D11_FLOAT32_MAX
+	sampDesc.MaxAnisotropy = 16; //why not max it out when we can?
 	hr = m_Device->CreateSamplerState( &sampDesc, &m_SamplerStateWrap);
 	if( FAILED(hr) )
 		return hr;
@@ -713,6 +714,9 @@ HRESULT GraphicEngine::InitializeSamplerState()
 	
 	//for compute shader
 	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+    sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
 	hr = m_Device->CreateSamplerState( &sampDesc, &m_SamplerStateLinearWrap);
 
 	m_DeviceContext->CSSetSamplers(0, 1, &m_SamplerStateLinearWrap);
