@@ -591,7 +591,7 @@ HRESULT GraphicEngine::InitializeConstantBuffers()
 	m_DeviceContext->GSSetConstantBuffers(1,1,&m_PerObjectBuffer);
 	//m_DeviceContext->GSSetConstantBuffers(2,1,&m_HudConstantBuffer);
 
-	m_DeviceContext->PSSetConstantBuffers(1,1,&m_PerObjectBuffer);
+	m_DeviceContext->PSSetConstantBuffers(0,1,&m_PerObjectBuffer);
 
 	m_DeviceContext->CSSetConstantBuffers(0,1,&m_PerFrameBuffer);
 	m_DeviceContext->CSSetConstantBuffers(1,1,&m_PerComputeBuffer);
