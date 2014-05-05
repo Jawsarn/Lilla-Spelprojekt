@@ -42,12 +42,13 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 
 
 	////Init alla skepp
-	m_GraphicEngine->LoadTexture(L"spaceship.dds", t_TempurTextur);
+	m_GraphicEngine->LoadTexture(L"spaceship_COL_SPEC.dds", t_TempurTextur);
 	m_ShipTexture.push_back(t_TempurTextur);
 	m_GraphicEngine->LoadTexture(L"spaceship1.dds", t_TempurTextur);
 	m_ShipTexture.push_back(t_TempurTextur);
 	m_GraphicEngine->LoadTexture(L"spaceship2.dds", t_TempurTextur);
 	m_ShipTexture.push_back(t_TempurTextur);
+
 
 	m_GraphicEngine->LoadTexture(L"spaceshipNG.dds", t_TempurTextur);
 	m_ShipTexture.push_back(t_TempurTextur);
@@ -416,7 +417,6 @@ void GraphicHandle::SetFullScreen(bool p_IsFullScreen)
 
 void GraphicHandle::SetColourAndVehicle(std::vector<UINT> p_PlayerColour,std::vector<UINT> p_PlayerVehicle)
 {
-
 	for (int i = 0; i < m_Player.size(); i++)
 	{
 		//m_PlayerVehicle.push_back(p_PlayerVehicle[i]);
