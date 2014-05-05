@@ -150,6 +150,7 @@ private:
 	ID3D11DepthStencilState*	m_DepthStateOff;
 	ID3D11DepthStencilState*	m_DepthStateNoWrite;
 	ID3D11SamplerState*			m_SamplerStateWrap;
+	ID3D11SamplerState*			m_SamplerStateLinearWrap;
 
 	//backbuffer uav
 	ID3D11UnorderedAccessView* m_BackBufferUAV;

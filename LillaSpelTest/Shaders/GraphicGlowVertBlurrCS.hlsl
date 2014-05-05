@@ -34,48 +34,56 @@ groupshared float4 g_Cache[CacheSize];
 [numthreads(1, N, 1)]
 void CS(int3 groupThreadID : SV_GroupThreadID, int3 threadID : SV_DispatchThreadID)
 {
-	float2 topLeftBoxID = threadID.xy*2;
-	//if(groupThreadID.y < g_BlurRadius)
-	//{
-	//	// Clamp out of bound samples that occur at image borders.
-	//	int y = max(dispatchThreadID.y - g_BlurRadius, 0);
-	//	g_Cache[groupThreadID.y] = g_Input[int2(dispatchThreadID.x, y)];
-	//}
+	float2 uvDimensions = float2(1/960, 1/540);
 
-	//if(groupThreadID.y >= N-g_BlurRadius)
-	//{
-	//	// Clamp out of bound samples that occur at image borders.
-	//	int y = min(dispatchThreadID.y + g_BlurRadius, g_Input.Length.y-1);
-	//	g_Cache[groupThreadID.y+2*g_BlurRadius] =
-	//	g_Input[int2(dispatchThreadID.x, y)];
-	//}
-
-	//// Clamp out of bound samples that occur at image borders.
-	//g_Cache[groupThreadID.y+g_BlurRadius] = g_Input[min(dispatchThreadID.xy, g_Input.Length.xy-1)];
-
-	//// Wait for all threads to finish.
-	//GroupMemoryBarrierWithGroupSync();
-
-	////
-	//// Now blur each pixel.
-	////
-	//float4 blurColor = float4(0, 0, 0, 0);
-
-	//[unroll]
-	//for(int i = -g_BlurRadius; i <= g_BlurRadius; ++i)
-	//{
-	//	int k = groupThreadID.y + g_BlurRadius + i;
-	//	blurColor += gWeights[i+g_BlurRadius]*g_Cache[k];
-	//}
-	
-	if ( all(threadID.xy < float2( 960,540) ) )
+	if(groupThreadID.y < g_BlurRadius)
 	{
-		float4 blurColor = g_Input[topLeftBoxID]*0.25 + 
-							g_Input[float2(topLeftBoxID.x + 1, topLeftBoxID.y)]*0.25 + 
-							g_Input[float2(topLeftBoxID.x, topLeftBoxID.y + 1)]*0.25 + 
-							g_Input[float2(topLeftBoxID.x + 1, topLeftBoxID.y + 1)]*0.25;
-		//float4 blurColor = float4(0,1,0,0);
-
-		g_Output[threadID.xy] = blurColor;
+		// Clamp out of bound samples that occur at image borders.
+		int y = max(threadID.y - g_BlurRadius, 0);
+		g_Cache[groupThreadID.y] = g_Input.SampleLevel(g_BlurrSampler, float2(threadID.x*uvDimensions.x , y*uvDimensions.y ), 0 );
 	}
+
+	if(groupThreadID.y >= N-g_BlurRadius)
+	{
+		// Clamp out of bound samples that occur at image borders.
+		int y = min(threadID.y + g_BlurRadius, g_Input.Length.y - 1);
+
+		g_Cache[groupThreadID.y+2*g_BlurRadius] = g_Input.SampleLevel(g_BlurrSampler, float2(threadID.x*uvDimensions.x , y*uvDimensions.y ), 0 );
+	}
+
+	// Clamp out of bound samples that occur at image borders.
+	g_Cache[groupThreadID.y + g_BlurRadius] = g_Input.SampleLevel(g_BlurrSampler, uvDimensions*min(threadID.xy, g_Input.Length.xy-1) , 0 );
+
+	// Wait for all threads to finish.
+	GroupMemoryBarrierWithGroupSync();
+
+	//
+	// Now blur each pixel.
+	//
+	float4 blurColor = float4(0, 0, 0, 0);
+
+	[unroll]
+	for(int i = -g_BlurRadius; i <= g_BlurRadius; ++i)
+	{
+		int k = groupThreadID.y + g_BlurRadius + i;
+		blurColor += g_Weights[i+g_BlurRadius]*g_Cache[k];
+	}
+	
+	float4 Color;
+	//float4 Color = g_Input.SampleLevel(g_BlurrSampler, uvDimensions*threadID.xy , 0 );
+	if (threadID.x > 438 && threadID.x < 500)
+	{
+		Color = float4(1,0,0,0);
+	}
+	else
+	{
+		Color = float4(0,0,0,0);
+	}
+	/*Color = g_Input.SampleLevel(g_BlurrSampler, uvDimensions*threadID.xy , 0 )*0.4 +
+			g_Input.SampleLevel(g_BlurrSampler, uvDimensions*float2(threadID.x + 1, threadID.y), 0 )*0.2 + 
+			g_Input.SampleLevel(g_BlurrSampler, uvDimensions*float2(threadID.x + 2, threadID.y), 0 )*0.1 +
+			g_Input.SampleLevel(g_BlurrSampler, uvDimensions*float2(threadID.x - 1, threadID.y), 0 )*0.2 +
+			g_Input.SampleLevel(g_BlurrSampler, uvDimensions*float2(threadID.x - 2, threadID.y), 0 )*0.1;*/
+			
+	g_Output[threadID.xy] = Color;
 }

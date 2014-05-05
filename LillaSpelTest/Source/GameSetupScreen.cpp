@@ -32,7 +32,7 @@ int GameSetupScreen::Update(float p_dt,std::vector<UserCMD>* userCMD )
 		std::string t_menuChoice = NavigateMenu(userCMD->at(0),m_hudHandle);
 		if (t_menuChoice == "Start" || userCMD->at(0).startButtonPressed)
 		{
-			SaveInfo();
+6			SaveInfo();
 			return JOIN_GAME_SCREEN;
 		}
 		else if (userCMD->at(0).Joystick.x>0.8)

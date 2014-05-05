@@ -28,7 +28,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	SetAmountOfPlayers(4);
 
 
-	m_WhatLevelBefore=999;
+	m_WhatLevelBefore=0;
 
 
 	UINT t_TempurTextur;
@@ -50,7 +50,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	InitializeShip("spaceship1.obj",m_ShipTexture[1]);
 	InitializeShip("spaceship2.obj",m_ShipTexture[2]);
 
-	m_SelectionShips.resize(m_MeshShips.size(),0);
+	m_SelectionShips.resize( m_MeshShips.size(), 0);
 
 
 
@@ -222,7 +222,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	//	}
 	//}
 
-	//SelectVehicle();
+	SelectVehicle();
 
 	//	UpdatePlayer(0,t_Mat);
 }
@@ -234,7 +234,7 @@ void GraphicHandle::ChangeLevelSelection(int p_WhatLevel)
 	XMFLOAT3 t_TempColour = XMFLOAT3(1,1,1);
 	m_GraphicEngine->AddObjectToDrawing(m_Levels[p_WhatLevel]);
 
-	if(m_WhatLevelBefore!=999 || m_WhatLevelBefore==p_WhatLevel)
+	if( m_WhatLevelBefore!=p_WhatLevel)
 	{
 		m_GraphicEngine->RemoveObjectFromDrawing(m_Levels[m_WhatLevelBefore]);
 	}
