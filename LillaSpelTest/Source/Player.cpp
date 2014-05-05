@@ -19,6 +19,11 @@ Player::Player(MapNode* p_startNode, float p_startAngle)
 	m_position = m_mapNode->m_position;
 	m_direction = DirectX::XMFLOAT3(0,0,1);
 	m_lastPlacedWall = nullptr;
+
+	//initilaize world matrix stuff
+	FixUpVectorRotation(m_angle);
+	FixOffsetFromCenterSpline();
+	UpdateWorldMatrix();
 }
 
 
@@ -168,7 +173,7 @@ void Player::UpdateWorldMatrix()
 
 XMMATRIX Player::GetWorldMatrix()
 {
-	return m_cameraMatrix;
+	return XMMatrixInverse(&XMMatrixDeterminant(m_worldMatrix), m_worldMatrix);
 }
 
 XMMATRIX Player::GetCamMatrix()

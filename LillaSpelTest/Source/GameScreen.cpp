@@ -5,17 +5,25 @@ GameScreen::GameScreen(void)
 {
 }
 
-GameScreen::GameScreen(std::string p_mapName, int p_numberOfPlayers, GraphicHandle* p_graphicHandle )
+GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4], std::string p_mapName, int p_numberOfPlayers, GraphicHandle* p_graphicHandle )
 	:Screen(p_graphicHandle)
 {
 	m_mapLoader = new MapLoader();
 	m_mapNodes = m_mapLoader->LoadMap(p_mapName);
+	vector<XMMATRIX> t_shipWorldMatrices;
+	vector<UINT> t_colors;
+	vector<UINT> t_whichVehicles;
 	for (int i = 0; i < p_numberOfPlayers; i++)
 	{
 		m_players.push_back(new Player(m_mapNodes->at(0),0.0f));
-		
+		t_shipWorldMatrices.push_back(m_players[i]->GetWorldMatrix());
+		t_colors.push_back(p_color[i]);
+		t_whichVehicles.push_back(p_whatVehicle[i]);
 	}
+	
 	m_graphicHandle->SetAmountOfPlayers(p_numberOfPlayers);
+	m_graphicHandle->SetColourAndVehicle(t_colors, t_whichVehicles);
+	m_graphicHandle->CreateShipForGame(t_shipWorldMatrices);
 }
 
 GameScreen::~GameScreen(void)
@@ -31,7 +39,7 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 {
 	////////////////JOHNS TEST MÖS!!! kommentera bort så fungerar allt som en neger på en bomullsfarm
 
-	for (int i = 0; i < 2; i++)			//i<1 for test purposes. Make sure to change later
+	for (int i = 0; i < 1; i++)			//i<1 for test purposes. Make sure to change later
 	{
 		if(p_userCMDS->at(i).leftTriggerPressed)
 			return PAUSE_SCREEN;
@@ -48,6 +56,7 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 		}
 		//gets the world matrix
 		m_graphicHandle->JohnSetCamera(m_players[i]->GetWorldMatrix(), i);
+		m_graphicHandle->UpdatePlayer(i, m_players[i]->GetWorldMatrix(), m_players[i]->GetCamMatrix());
 		MapNode* t_currMapNode = m_players[i]->GetCurrentMapNode();    //för att slippa getta flera gånger i denna forsats
 
 		//check collision for player i against all wall objects in his mapnode
