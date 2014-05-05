@@ -17,3 +17,8 @@ Object::Object(BoundingOrientedBox p_box, XMFLOAT3 p_direction, XMFLOAT3 p_posit
 Object::~Object(void)
 {
 }
+
+void Object::SetBoundingSphere(BoundingSphere p_sphere)
+{
+	m_sphere = p_sphere;
+}

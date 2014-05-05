@@ -130,8 +130,8 @@ void Run()
 		
 			//gameScreen.Update(m_DeltaTime,userCMDS);
 					//m_graphicHandle->JohnSetCamera(m_players[i]->GetWorldMatrix(), i);
-			XMMATRIX t_debugCameraMatrix = t_azookaTest.GetDebugCameraWorldMatrix(&userCMDS->at(0), m_DeltaTime);
-			m_GraphicHandle->JohnSetCamera(t_debugCameraMatrix, 2);
+		//	XMMATRIX t_debugCameraMatrix = t_azookaTest.GetDebugCameraWorldMatrix(&userCMDS->at(0), m_DeltaTime);
+		//	m_GraphicHandle->JohnSetCamera(t_debugCameraMatrix, 2);
 
 			///UPDATE & DRAW TEMPDRAAWWWWW
 			//m_GraphicHandle->UpdateSelectVehicle(m_DeltaTime);
@@ -144,6 +144,8 @@ void Run()
 
 void RunInitialization()
 {
+	
+	int t_playerOnline =0;
 	switch (m_state)
 	{
 	case GAME_SETUP_SCREEN:
@@ -153,7 +155,12 @@ void RunInitialization()
 		break;
 	case GAME_SCREEN:
 		delete m_gameScreen;
-		m_gameScreen = new GameScreen(m_levelNames[m_gameInfo.map],4,m_GraphicHandle); 
+		for (int i = 0; i < 4; i++)
+		{
+			if(m_gameInfo.playerOnline[i])
+				t_playerOnline++;
+		}
+		m_gameScreen = new GameScreen(m_gameInfo.playerColor, m_gameInfo.shipModell, m_levelNames[m_gameInfo.map], t_playerOnline, m_GraphicHandle);
 		break;
 	case JOIN_GAME_SCREEN:
 		m_joinGameScreen->Initialize();

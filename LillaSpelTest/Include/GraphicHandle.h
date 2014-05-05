@@ -23,7 +23,8 @@ private:
 	};
 
 	
-	std::vector<UINT> m_Player;
+	std::vector<UINT> m_Player;//vilket obj
+	std::vector <int> m_PlayerVehicle;
 	//std::vector<UINT> m_PlayerWalls;
 	std::vector<UINT> m_PlayerColour;
 	std::vector<UINT> m_PlayerLight;
@@ -69,7 +70,7 @@ public:
 	void UpdateCamera(UINT p_CameraID,float p_Walk, float p_Strafe, float p_Hover, float p_Pitch, float p_RotateY); //for change if we are to use quaternions, else just need to add the "jaw"s =D=D
 	void UpdateSelectVehicle(float p_DeltaTime);
 	void CreatePlayer(std::vector<UINT> p_DrawPieceIDs, CXMMATRIX p_World, bool addToDrawNow, UINT &o_ObjectID,XMFLOAT3 p_Pos, XMFLOAT3 p_At, XMFLOAT3 p_Up, float p_FieldOfView, float p_Width, float p_Height, float p_NearZ, float p_FarZ, UINT &o_CameraID); //inte klar alls
-	void CreateShipForGame(std::vector<int> p_WhatVehicle,std::vector<XMMATRIX> p_PlayerWorld,std::vector<XMFLOAT3>p_PlayerColor,CXMMATRIX p_LevelWorld,XMFLOAT3 p_LevelColor);
+	void CreateShipForGame(std::vector<XMMATRIX> p_PlayerWorld);
 	void SelectVehicle();
 	void ChangeLevelSelection(int p_WhatLevel);
 	void UpdateCameraSelectLevel(int p_WhatLevel,int p_TheRotation);

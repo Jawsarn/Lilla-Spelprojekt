@@ -11,6 +11,7 @@ public:
 	PlayerWall(void);
 	PlayerWall(XMFLOAT3 p_color, XMFLOAT3* p_wallPos, XMFLOAT3* p_wallDir, XMFLOAT3* p_wallUp);
 	BoundingOrientedBox* GetBox();
+	BoundingSphere* GetSphere();
 	~PlayerWall(void);
 	unsigned int m_wallIndex;
 	void Update(float p_dt);
