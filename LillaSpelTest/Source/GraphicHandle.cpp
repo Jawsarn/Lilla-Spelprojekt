@@ -222,7 +222,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	//	}
 	//}
 
-	SelectVehicle();
+	//SelectVehicle();
 
 	//	UpdatePlayer(0,t_Mat);
 }
@@ -234,7 +234,7 @@ void GraphicHandle::ChangeLevelSelection(int p_WhatLevel)
 	XMFLOAT3 t_TempColour = XMFLOAT3(1,1,1);
 	m_GraphicEngine->AddObjectToDrawing(m_Levels[p_WhatLevel]);
 
-	if(m_WhatLevelBefore!=999 && m_WhatLevelBefore==p_WhatLevel)
+	if(m_WhatLevelBefore!=999 || m_WhatLevelBefore==p_WhatLevel)
 	{
 		m_GraphicEngine->RemoveObjectFromDrawing(m_Levels[m_WhatLevelBefore]);
 	}
