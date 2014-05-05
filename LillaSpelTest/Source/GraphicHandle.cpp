@@ -49,9 +49,13 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	m_GraphicEngine->LoadTexture(L"spaceship2.dds", t_TempurTextur);
 	m_ShipTexture.push_back(t_TempurTextur);
 
-	InitializeShip("spaceship.obj",m_ShipTexture[0]);
-	InitializeShip("spaceship1.obj",m_ShipTexture[1]);
-	InitializeShip("spaceship2.obj",m_ShipTexture[2]);
+	m_GraphicEngine->LoadTexture(L"spaceshipNG.dds", t_TempurTextur);
+	m_ShipTexture.push_back(t_TempurTextur);
+
+	
+	InitializeShip("spaceship.obj",m_ShipTexture[0], m_ShipTexture[3] ); //normalGlow texture is same for all ship, fix to 4123
+	InitializeShip("spaceship1.obj",m_ShipTexture[1], m_ShipTexture[3] );
+	InitializeShip("spaceship2.obj",m_ShipTexture[2],m_ShipTexture[3] );
 
 	m_SelectionShips.resize( m_MeshShips.size(), 0);
 
@@ -438,7 +442,7 @@ void GraphicHandle::SetAmountOfPlayers(int p_NrOfPlayers)
 		m_PlayerLight.resize(p_NrOfPlayers,0);
 	}
 }
-void GraphicHandle::InitializeShip(std::string p_ShipStringName, UINT p_Texture)
+void GraphicHandle::InitializeShip(std::string p_ShipStringName, UINT p_TextureDiffuseSpec, UINT p_TextureNormGlow)
 {
 	std::vector<UINT> t_ObjTemp;
 	t_ObjTemp.clear();
@@ -446,7 +450,8 @@ void GraphicHandle::InitializeShip(std::string p_ShipStringName, UINT p_Texture)
 	m_MeshShips.push_back(t_ObjTemp);	
 	for (int i = 0; i < t_ObjTemp.size(); i++)
 	{
-		m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[0],p_Texture,GraphicEngine::TextureType::DIFFUSE);
+		m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[0],p_TextureDiffuseSpec, GraphicEngine::TextureType::DIFFUSE);
+		m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[0],p_TextureNormGlow, GraphicEngine::TextureType::NORMAL);
 	}
 }
 void GraphicHandle::InitializeLevel(std::string p_LevelStringName, UINT p_Texture)

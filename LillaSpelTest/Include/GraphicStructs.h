@@ -83,8 +83,8 @@ struct PerFramebuffer
 struct PerObjectBuffer //updates for each object that needs this
 {
 	XMMATRIX World;
+	XMFLOAT3 Color;
 	float typeOfObject; //with types of textures etc
-	XMFLOAT3 fillers;
 };
 
 struct PerComputeBuffer
