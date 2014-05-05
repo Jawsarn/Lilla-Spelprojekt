@@ -97,6 +97,7 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 	}
 
 
+
 	//adds distance from the current node based on speed and time since last update
 	m_distance+=m_speed*p_dt;
 	//Checks of distance exceeds distance to new node. In other words, if the player "overshoots" the next node
@@ -134,14 +135,15 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 
 	UpdateCollisionBox();
 	
-	static float cooldownTimer = 0;
 
-	cooldownTimer -= 0.07; //lower means greater cooldown
-	if(p_userCMD.rightTriggerPressed && cooldownTimer <=0)
+	//lower means greater cooldown
+	
+	m_coolDown -= 0.07;
+	if(p_userCMD.rightTriggerPressed && m_coolDown <=0 && m_wallMeter < 1)
 	{
+		m_wallMeter-=1;
 		PlaceWall();
-		cooldownTimer = 1;
-		p_userCMD.controller.Vibrate(64000,64000);
+		m_coolDown = 1;
 		return 1;
 	}
 	return 0;
