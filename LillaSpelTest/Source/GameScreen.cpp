@@ -49,11 +49,10 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 
 		//check collision for player i against all wall objects in his mapnode
 		vector<StaticObj*>* m_wallsToCheck = &t_currMapNode->m_staticObjs;			///Create list of all the static objs in the currmapNode
-		//m_wallsToCheck->insert(m_wallsToCheck->end(), t_currMapNode->m_staticObjs.begin(), t_currMapNode->m_staticObjs.end());
 		if(m_collisionManager->PlayerVsObj(m_players[i]->GetCollisionBox(), m_wallsToCheck)!=1)    ///PLAYER VS STATIC Collisionmanager checks for hit and returns int representing the object you collided with
 		{
-			p_userCMDS->at(i).controller.Vibrate(64000,64000);										///PLAYER VS STATIC
-			collision = true;
+			//p_userCMDS->at(i).controller.Vibrate(64000,64000);										///PLAYER VS STATIC
+			//collision = true;
 		}
 		///END OF PLAYER VS STATIC
 
@@ -61,19 +60,28 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 		///check collision for play i against all playerwall objects in his mapnode
 		//gets the walls for the current mapnode
 		vector<PlayerWall*> t_playerWallsToCheck = t_currMapNode->m_playerWalls;
-		//adds next node's walls to the walls to check
-		//t_playerWallsToCheck->insert(t_playerWallsToCheck->end(), t_currMapNode->m_nextNode->m_playerWalls.begin(), t_currMapNode->m_playerWalls.end());
+		//ensures that collision check is not made against the last wall placed by the player
 		if (t_playerWallsToCheck.size()>0)
 		{
-			if(t_newWall == t_currMapNode->m_playerWalls.at(t_currMapNode->m_playerWalls.size()-1))		///PLAYER VS PLAYERWALL  Checks if the wall you placed this frame is in the list and removes it
+			if(t_newWall == t_currMapNode->m_playerWalls.at(t_currMapNode->m_playerWalls.size()-1))		
 			{
 				t_playerWallsToCheck.pop_back();														///PLAYER VS PLAYERWALL
 			}
 		}
-		if(m_collisionManager->PlayerVsPlayerWall(m_players[i]->GetCollisionBox(), t_playerWallsToCheck))		///PLAYER VS PLAYERWALL Collisionmanager returns true if hit
+		///checks collision for the playet against all walls in the current mapnode
+		//returns -1 if player hits a wall. Returns the number of spheres hit (used for boost calculation) otherwise
+		int t_collisionResult = m_collisionManager->PlayerVsPlayerWall(m_players[i]->GetCollisionBox(), t_playerWallsToCheck);
+		if(t_collisionResult == -1)	
 		{
-			p_userCMDS->at(i).controller.Vibrate(64000,64000);											///PLAYER VS PLAYERWALL
-			collision = true;																			///PLAYER VS PLAYERWALL
+			p_userCMDS->at(i).controller.Vibrate(64000,64000);											
+			collision = true;														
+		}
+		else if (t_collisionResult>0)
+		{
+			float t_boostPerWallPerUpdate = 1;
+			int t_currentBoost = m_players[i]->GetPlayerBoost();
+			m_players[i]->SetPlayerBoost(t_currentBoost+p_dt*t_collisionResult*t_boostPerWallPerUpdate);
+			p_userCMDS->at(i).controller.Vibrate(10000,10000);
 		}
 		if (!collision)
 			p_userCMDS->at(i).controller.Vibrate(0,0);

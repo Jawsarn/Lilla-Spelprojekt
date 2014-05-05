@@ -14,6 +14,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle)
 	m_upVector = XMFLOAT3(0,1,0);
 	m_angle = p_startAngle;
 	m_distance = 0.0f;
+	m_boostMeter = 0;
 	m_speed = 30;
 	m_position = m_mapNode->m_position;
 	m_direction = DirectX::XMFLOAT3(0,0,1);
@@ -71,15 +72,29 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 
 	m_direction = XMFLOAT3(0,0,1);
 
-	////silly boost thingy
+	////silly boost thingy for testing
 	if(p_userCMD.aButtonPressed)
 		m_speed = 200;
-	else if (p_userCMD.bButtonPressed)
+	//else if (p_userCMD.bButtonPressed)
+	//	m_speed = 30;
+	//else if(p_userCMD.xButtonPressed)
+	//	m_speed = -30;
+	//else 
+	//	m_speed = 0;
+
+	
+
+	//RealSpeed and boost code:
+	if(p_userCMD.rightBumberPressed && m_boostMeter >0)
+	{
+		float t_boostDecay = 5;
+		m_speed = 50;
+		m_boostMeter -= p_dt*t_boostDecay;
+	}
+	else
+	{
 		m_speed = 30;
-	else if(p_userCMD.xButtonPressed)
-		m_speed = -30;
-	else 
-		m_speed = 0;
+	}
 
 
 	//adds distance from the current node based on speed and time since last update
@@ -288,4 +303,14 @@ XMFLOAT3 Player::GetPos()
 XMFLOAT3 Player::GetDirection()
 {
 	return m_direction;
+}
+
+int Player::GetPlayerBoost()
+{
+	return m_boostMeter;
+}
+
+void Player::SetPlayerBoost(float p_boost)
+{
+	m_boostMeter = p_boost;
 }

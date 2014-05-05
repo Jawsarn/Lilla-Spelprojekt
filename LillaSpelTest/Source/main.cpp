@@ -153,7 +153,7 @@ void RunInitialization()
 		break;
 	case GAME_SCREEN:
 		delete m_gameScreen;
-		m_gameScreen = new GameScreen(m_levelNames[m_gameInfo.map],2,m_GraphicHandle); 
+		m_gameScreen = new GameScreen(m_levelNames[m_gameInfo.map],4,m_GraphicHandle); 
 		break;
 	case JOIN_GAME_SCREEN:
 		m_joinGameScreen->Initialize();
