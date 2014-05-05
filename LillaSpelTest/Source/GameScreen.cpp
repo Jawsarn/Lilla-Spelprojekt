@@ -13,7 +13,9 @@ GameScreen::GameScreen(std::string p_mapName, int p_numberOfPlayers, GraphicHand
 	for (int i = 0; i < p_numberOfPlayers; i++)
 	{
 		m_players.push_back(new Player(m_mapNodes->at(0),0.0f));
+
 	}
+	m_graphicHandle->SetAmountOfPlayers(p_numberOfPlayers);
 }
 
 GameScreen::~GameScreen(void)

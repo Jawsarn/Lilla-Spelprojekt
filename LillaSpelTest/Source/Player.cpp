@@ -134,6 +134,7 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 
 void Player::UpdateWorldMatrix()
 {
+	//change to properly calibrate the camera offset (don't wanna have dat camera clip thru he wall)
 	float t_cameraUpTrailDistance = 1;
 	float t_cameraTargetTrailDistance = 5;
 	XMFLOAT3 t_position = XMFLOAT3(m_position.x, m_position.y, m_position.z);
