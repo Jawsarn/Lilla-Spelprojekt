@@ -14,7 +14,8 @@ PlayerWall::PlayerWall(XMFLOAT3 p_color, XMFLOAT3* p_wallPos, XMFLOAT3* p_wallDi
 	
 	
 	XMMATRIX t_matrix = XMMatrixInverse(&XMMatrixDeterminant(XMMatrixLookToLH(t_eye,t_target , t_up)),XMMatrixLookToLH(t_eye,t_target , t_up));
-	m_worldMatrix = t_matrix;
+	XMStoreFloat4x4( &m_worldMatrix , t_matrix);
+	
 	
 	MathHelper t_mathHelper = MathHelper();
 	m_color = p_color;
@@ -57,5 +58,5 @@ unsigned int PlayerWall::GetWallIndex()
 XMMATRIX PlayerWall::GetWorldMatrix()
 {
 	
-	return m_worldMatrix;
+	return XMLoadFloat4x4( &m_worldMatrix);
 }
