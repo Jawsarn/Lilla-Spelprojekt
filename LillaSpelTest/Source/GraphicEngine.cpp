@@ -1354,7 +1354,7 @@ void GraphicEngine::DrawOpaqueObjects()
 		t_PerObjBuff.World = XMMatrixTranspose( XMLoadFloat4x4( &it->second->worldMatrix ));
 		
 		t_PerObjBuff.typeOfObject = 0;
-		t_PerObjBuff.fillers = XMFLOAT3(0,0,0);
+		t_PerObjBuff.Color = it->second->color;
 
 		m_DeviceContext->UpdateSubresource(m_PerObjectBuffer, 0, nullptr, &t_PerObjBuff, 0, 0 );
 
@@ -1419,6 +1419,9 @@ void GraphicEngine::ComputeTileDeferredLightning()
 {
 	m_DeviceContext->CSSetShader(m_ComputeShaders[0],nullptr,0); //HÅRDKODAT
 	
+	//set constant buffersss
+	m_DeviceContext->CSSetConstantBuffers(0,1,&m_PerFrameBuffer);
+	m_DeviceContext->CSSetConstantBuffers(1,1,&m_PerComputeBuffer);
 	
 	
 	m_DeviceContext->CSSetUnorderedAccessViews(0, 1, &m_BackBufferUAV, nullptr);
@@ -1541,6 +1544,11 @@ void GraphicEngine::ComputeGlow()
 
 	m_DeviceContext->CSSetShaderResources( 1, 1, &m_GbufferShaderResource[2] );
 
+
+	//set constant buffers
+	ID3D11Buffer* t_RemoveBuffer[] = {0,0};
+	m_DeviceContext->CSSetConstantBuffers(0,2,t_RemoveBuffer);
+	
 
 	//vert blur keep the x:es
 	UINT x = m_Width/2;

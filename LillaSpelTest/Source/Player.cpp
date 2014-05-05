@@ -164,24 +164,23 @@ void Player::UpdateWorldMatrix()
 	XMVECTOR t_targetVector = XMLoadFloat3(&m_direction);
 	XMVECTOR t_upVector = XMLoadFloat3(&m_upVector);
 
-	m_worldMatrix = XMMatrixLookToLH(t_eyeVector, t_targetVector, t_upVector);
+	XMStoreFloat4x4( &m_worldMatrix, XMMatrixLookToLH(t_eyeVector, t_targetVector, t_upVector));
+
 	//offsets the camera position along the local y and z axes
 	XMVECTOR t_cameraPositionVector = t_eyeVector+t_upVector*t_cameraUpTrailDistance+t_cameraTargetTrailDistance*t_targetVector*-1;
-	m_cameraMatrix = XMMatrixLookAtLH(t_cameraPositionVector, t_eyeVector, t_upVector);
+	XMStoreFloat4x4(&m_cameraMatrix , XMMatrixLookAtLH(t_cameraPositionVector, t_eyeVector, t_upVector));
+	
 
 }
 
 XMMATRIX Player::GetWorldMatrix()
 {
-	//XMVECTOR t_determinant = XMMatrixDeterminant(m_worldMatrix);
-	XMVECTOR t_det;
-	XMMATRIX r_matrix = XMMatrixInverse(&t_det, m_worldMatrix);
-	return r_matrix;
+	return XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_worldMatrix));
 }
 
 XMMATRIX Player::GetCamMatrix()
 {
-	return m_cameraMatrix;
+	return XMLoadFloat4x4( &m_cameraMatrix);
 }
 MapNode* Player::GetCurrentMapNode()
 {
@@ -224,8 +223,6 @@ void Player::ChangeState(PlayerState p_state)
 
 void Player::PlaceWall()
 {
-	XMFLOAT4X4 t_worldMatrixFloat;
-	XMStoreFloat4x4(&t_worldMatrixFloat, m_worldMatrix);
 	m_lastPlacedWall = new PlayerWall(XMFLOAT3(0,0,1), &m_position, &m_direction , &m_upVector);
 	m_placedWalls.push_back(m_lastPlacedWall);
 	m_mapNode->AddWall(m_lastPlacedWall);

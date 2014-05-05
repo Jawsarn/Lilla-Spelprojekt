@@ -12,13 +12,13 @@ cbuffer PerFrameBuffer : register(c0)
 cbuffer PerObjectBuffer	:register(c1)
 {
 	matrix World;
+	float3 Color;
 	float typeOfObject; //with types of textures etc
-	float3 fillers3;
 }
 
 
 
 Texture2D diffuseTexture	: register(t0);
-Texture2D normalTexture		: register(t1);
+Texture2D normalGlow		: register(t1);
 
 SamplerState wrapSampler	: register(s0);

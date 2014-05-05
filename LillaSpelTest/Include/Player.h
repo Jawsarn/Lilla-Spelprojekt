@@ -34,8 +34,8 @@ private:
 	XMFLOAT3 m_color;
 	XMFLOAT3 m_upVector;
 
-	XMMATRIX m_cameraMatrix;
-	XMMATRIX m_worldMatrix;
+	XMFLOAT4X4 m_cameraMatrix;
+	XMFLOAT4X4 m_worldMatrix;
 	PlayerWall* m_lastPlacedWall;
 	PlayerState m_state;
 

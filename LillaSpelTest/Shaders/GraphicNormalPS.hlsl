@@ -24,14 +24,27 @@ PS_OUTPUT PS(GS_OUTPUT input) : SV_TARGET
 	PS_OUTPUT output;
 
 	float4 diffuseColorSpecFac = diffuseTexture.Sample(wrapSampler, input.Tex);
-	
+	float4 normalGlowFac = normalGlow.Sample(wrapSampler, input.Tex);
+
 	float depth = input.Depth.x / input.Depth.y;
 
 	output.Normal_Depth = float4(input.Normal, depth);
 
+	float4 glowOut;
+	if (normalGlowFac.w > 0.1f)
+	{
+		glowOut = float4(Color, 1);
+		diffuseColorSpecFac = float4( Color , 0 );
+	}
+	else
+	{
+		glowOut = float4(0,0,0,1);
+	}
+
+	output.Glowmap = glowOut;
 	output.DiffuseColor_Spec = diffuseColorSpecFac;
 
-	output.Glowmap = float4(0.25, 0.25, 0.25, 1);
+	
 
 	return output;
 }
