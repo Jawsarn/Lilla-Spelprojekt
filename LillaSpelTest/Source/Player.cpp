@@ -8,8 +8,10 @@ Player::Player()
 }
 
 
-Player::Player(MapNode* p_startNode, float p_startAngle)
+Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 {
+	m_playerIndex = p_playerIndex;
+
 	m_maxBoost = 20000;
 	m_maxWalls = 100;
 	m_boostDecay = 100;
@@ -22,7 +24,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle)
 	m_maxDeathTimer = 1;
 
 	m_distance = 0.0f;
-	m_boostMeter =20000;//test value
+	m_boostMeter = 20000;//test value
 
 	m_position = m_mapNode->m_position;
 	m_direction = DirectX::XMFLOAT3(0,0,1);
@@ -287,7 +289,7 @@ void Player::ChangeState(PlayerState p_state)
 
 void Player::PlaceWall()
 {
-	m_lastPlacedWall = new PlayerWall(XMFLOAT3(0,0,1), &m_position, &m_direction , &m_upVector);
+	m_lastPlacedWall = new PlayerWall(XMFLOAT3(0,0,1), &m_position, &m_direction , &m_upVector, m_playerIndex);
 	m_placedWalls.push_back(m_lastPlacedWall);
 	m_mapNode->AddWall(m_lastPlacedWall);
 }
@@ -421,4 +423,9 @@ void Player::Die()
 {
 	m_speed = 0;
 	m_immortalTimer = m_maxImmortalTimer;
+}
+
+int Player::GetPlayerIndex()
+{
+	return m_playerIndex;
 }
