@@ -10,15 +10,30 @@ Player::Player()
 
 Player::Player(MapNode* p_startNode, float p_startAngle)
 {
+
+	m_coolDownDecay = 0.07;
 	m_mapNode = p_startNode;
 	m_upVector = XMFLOAT3(0,1,0);
-	m_angle = p_startAngle;
+
 	m_distance = 0.0f;
-	m_boostMeter = 0;
-	m_speed = 30;
+	m_boostMeter =20000;//test value
+
 	m_position = m_mapNode->m_position;
 	m_direction = DirectX::XMFLOAT3(0,0,1);
 	m_lastPlacedWall = nullptr;
+
+	//speed stuff
+	m_speed = 0;
+	m_maxSpeed = 20;
+	m_maxBoostSpeed = 20000;//test value
+
+	m_acceleration = 4;
+	m_boostAcceleration = 20;
+	m_deceleration = 5;
+
+	//rotation stuff
+	m_rotateSpeed = 2;
+	m_angle = p_startAngle;
 
 	//initilaize world matrix stuff
 	FixUpVectorRotation(m_angle);
@@ -68,13 +83,13 @@ void Player::UpdatePosition(float p_dt, UserCMD p_userCMD)
 
 int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 {
-	
+
 	MathHelper t_mathHelper;
 	//m_position = m_mapNode->m_position;
 	//m_direction = t_mathHelper.Normalize(m_mapNode->m_normal);
 	//m_upVector = XMFLOAT3(0,1,0);
-	
 
+	//not sure if entierly needed...
 	m_direction = XMFLOAT3(0,0,1);
 
 	////silly boost thingy for testing
@@ -86,24 +101,60 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 	//else 
 	//	m_speed = 0;
 
-	
 
-	//RealSpeed and boost code:
-	if(p_userCMD.rightBumberPressed && m_boostMeter >0)
+
+
+	////Acceleration
+	//boost acceleration
+	if(p_userCMD.rightBumberPressed && m_boostMeter>0)
 	{
-		float t_boostDecay = 1;
-		m_speed = 105;
-		m_boostMeter -= p_dt*t_boostDecay;
+		//check if max boost speed is attained, otherwise accelerate
+		if(m_maxBoostSpeed>m_speed)
+		{
+			m_speed += p_dt*m_boostAcceleration;
+		}
+		else
+		{
+			//if you've reached the max boost speed, you stay there
+			m_speed = m_maxBoostSpeed;
+		}
+		//lower remaining boost
+		m_boostMeter -= m_boostDecay;
 	}
+	//ordinary acceleration
 	else
 	{
-		m_speed = 15;
+		if(m_maxSpeed >m_speed)
+		{
+			m_speed+=p_dt*m_acceleration;
+		}
+		//decelerate if you're above ordinary max speed
+		else
+		{
+			m_speed-=p_dt*m_deceleration;
+		}
 	}
+	////Rotation
+	m_angle += p_dt*p_userCMD.Joystick.x*m_rotateSpeed;
+
+
+
+	//RealSpeed and boost code:
+	//if(p_userCMD.rightBumberPressed && m_boostMeter >0)
+	//{
+	//	float t_boostDecay = 1;
+	//	m_speed = 105;
+	//	m_boostMeter -= p_dt*t_boostDecay;
+	//}
+	//else
+	//{
+	//	m_speed = 15;
+	//}
 	if(p_userCMD.aButtonPressed)
 		m_speed = 80;
 
 
-
+	////movement along logical map stuff
 	//adds distance from the current node based on speed and time since last update
 	m_distance+=m_speed*p_dt;
 	//Checks of distance exceeds distance to new node. In other words, if the player "overshoots" the next node
@@ -129,7 +180,9 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 	m_direction = t_mathHelper.Normalize( t_mathHelper.VecAddVec(t_frontNormalComponent, t_currentNormalComponent));
 	//now looking along the interpolated normal between current node and next node 
 
-	m_angle += p_userCMD.Joystick.x/20;
+
+
+	////Fix from logical map to actual world position and orientation
 	FixUpVectorRotation(m_angle);
 	//now rotating around the normal. Not yet properly implemented
 
@@ -140,11 +193,11 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 	//Matrix now updates. Ready to be grabbed from the gamescreen
 
 	UpdateCollisionBox();
-	
 
+
+	////Wall placement
 	//lower means greater cooldown
-	
-	m_coolDown -= 0.07;
+	m_coolDown -= m_coolDownDecay;
 	if(p_userCMD.rightTriggerPressed && m_coolDown <=0 && m_wallMeter < 1)
 	{
 		m_wallMeter-=1;
@@ -170,7 +223,7 @@ void Player::UpdateWorldMatrix()
 	//offsets the camera position along the local y and z axes
 	XMVECTOR t_cameraPositionVector = t_eyeVector+t_upVector*t_cameraUpTrailDistance+t_cameraTargetTrailDistance*t_targetVector*-1;
 	XMStoreFloat4x4(&m_cameraMatrix , XMMatrixLookAtLH(t_cameraPositionVector, t_eyeVector, t_upVector));
-	
+
 
 }
 
@@ -297,7 +350,6 @@ void Player::BumpedIntoPlayer(XMFLOAT3 p_force)
 	MathHelper t_mathHelper = MathHelper();
 	m_speed -= t_mathHelper.Abs(t_mathHelper.FloatMultiVec(t_mathHelper.Abs(t_mathHelper.VecAddVec(m_direction, p_force)),m_mapNode->m_normal)); //VETTEFANOMDETT
 	//Angle ska bli p_force projicerad på m_direction cross m_upvector och sen absolutbelopp på den vectorn
-
 }
 
 
@@ -321,4 +373,15 @@ int Player::GetPlayerBoost()
 void Player::SetPlayerBoost(float p_boost)
 {
 	m_boostMeter = p_boost;
+}
+
+float Player::GetDistanceTraveled()
+{
+	float t_distance = (float)m_mapNode->m_Index;
+	t_distance += m_distance/100; //SÅ att du kan skilja på positioner även om fler spelare är i samma mapnode
+	return t_distance;
+}
+void Player::SetPlayerRacePosition(int p_pos)
+{
+	m_racePos = p_pos;
 }
