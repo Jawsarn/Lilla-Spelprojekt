@@ -846,12 +846,15 @@ HRESULT GraphicEngine::AddObjectLight(UINT p_ObjectID ,XMFLOAT3 p_Position, XMFL
 {
 	if (m_DrawObjects[p_ObjectID] != nullptr)
 	{
-		m_StaticLights[m_CurrentNumOfLights] = Light(p_Position,p_Radius,p_Color,0);
+		m_StaticLights[m_CurrentNumOfLights] = Light(p_Position,p_Radius,p_Color,0); //could add it immidietly without multiplying the matrix
 
-		m_DrawObjects[p_ObjectID]->lights.push_back(m_CurrentNumOfLights);
+
+		m_DrawObjects[p_ObjectID]->lightID.push_back(m_CurrentNumOfLights);
+		m_DrawObjects[p_ObjectID]->lightWorld.push_back(Light(p_Position,p_Radius,p_Color,0));
+
 		m_CurrentNumOfLights++;
 
-		o_LightID = m_DrawObjects[p_ObjectID]->lights.size() -1;
+		o_LightID = m_DrawObjects[p_ObjectID]->lightID.size() -1;
 		return S_OK;
 	}
 	else
@@ -864,9 +867,10 @@ HRESULT GraphicEngine::ChangeObjectsLight(UINT p_ObjectID, UINT p_LightID,XMFLOA
 {
 	if (m_DrawObjects[p_ObjectID] != nullptr)
 	{
-		if (p_LightID < m_DrawObjects[p_ObjectID]->lights.size())
+		if (p_LightID < m_DrawObjects[p_ObjectID]->lightID.size())
 		{
-			m_StaticLights[m_DrawObjects[p_ObjectID]->lights[p_LightID]] =  Light(p_Position,p_Radius,p_Color,0);
+			//m_StaticLights[m_DrawObjects[p_ObjectID]->lightID[p_LightID]] =  Light(p_Position,p_Radius,p_Color,0); // could add immidietly ehre as well
+			m_DrawObjects[p_ObjectID]->lightWorld[p_LightID] = Light(p_Position,p_Radius,p_Color,0);
 
 			return S_OK;
 		}
@@ -886,6 +890,18 @@ HRESULT GraphicEngine::MoveObject(UINT p_ObjectID, CXMMATRIX p_Matrix)
 	if (m_DrawObjects[p_ObjectID] != nullptr)
 	{
 		 XMStoreFloat4x4(&m_DrawObjects[p_ObjectID]->worldMatrix, p_Matrix);
+		 
+		 for (int i = 0; i < m_DrawObjects[p_ObjectID]->lightID.size(); i++)
+		 {
+			 XMFLOAT3 t_Tempus = m_DrawObjects[p_ObjectID]->lightWorld[i].position;
+			 XMVECTOR t_LightPos = XMLoadFloat4( &XMFLOAT4( t_Tempus.x, t_Tempus.y, t_Tempus.z, 1));
+
+			 t_LightPos = XMVector3Transform( t_LightPos, p_Matrix);
+
+			 XMStoreFloat3( &t_Tempus, t_LightPos);
+
+			 m_StaticLights[m_DrawObjects[p_ObjectID]->lightID[i]].position = t_Tempus;
+		 }
 
 		return S_OK;
 	}
