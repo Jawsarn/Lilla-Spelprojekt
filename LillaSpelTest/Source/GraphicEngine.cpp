@@ -1078,11 +1078,15 @@ void GraphicEngine::UseHud(UINT p_Viewport, UINT p_HudID)
 	m_ViewportHud[p_Viewport] = p_HudID;
 }
 
-void GraphicEngine::ChangeTextureOnHudObject(UINT p_HudID, UINT p_HudObjectID, UINT activeTexture)
+void GraphicEngine::ChangeTextureOnHudObject(UINT p_HudID, UINT p_HudListID, UINT p_ActiveTexture)
 {
-	m_Huds[p_HudID]->activeTexture[p_HudObjectID] = activeTexture;
+	m_Huds[p_HudID]->activeTexture[p_HudListID] = p_ActiveTexture;
 }
 
+void GraphicEngine::UpdateBarOffset(UINT p_HudID, UINT p_HudListID, XMFLOAT2 barOffsets)
+{
+	m_Huds[p_HudID]->barOffsets[p_HudListID] = barOffsets;
+}
 
 ///////////////////////////////////////////////
 //==========Camera functions=================//
@@ -1515,7 +1519,7 @@ void GraphicEngine::DrawHud()
 				m_DeviceContext->UpdateSubresource(m_HudConstantBuffer, 0, nullptr, &t_Hcb, 0, 0 );
 
 				//update texture and buffer and other stuff to constant buffer
-				UINT textureID = m_Huds[m_ViewportHud[j]]->activeTexture[i];
+				UINT textureID = t_CurHudObject.textures[m_Huds[m_ViewportHud[j]]->activeTexture[i]];
 
 
 				//set texture

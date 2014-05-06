@@ -68,7 +68,8 @@ public:
 
 	HRESULT CreateHudFromTemplate(UINT p_HudTemplateID,  XMFLOAT3 p_Color, std::vector<XMFLOAT2> barOffsets ,UINT &o_HudID);
 	void UseHud(UINT p_Viewport, UINT p_HudI);
-	void ChangeTextureOnHudObject(UINT p_HudID, UINT p_HudObjectID, UINT activeTexture);
+	void ChangeTextureOnHudObject(UINT p_HudID, UINT p_HudListID, UINT activeTexture);
+	void UpdateBarOffset(UINT p_HudID, UINT p_HudListID, XMFLOAT2 barOffsets);
 
 	//camera funcs
 	HRESULT CreateCamera( XMFLOAT3 p_Pos, XMFLOAT3 p_At, XMFLOAT3 p_Up, float p_FieldOfView, float p_Width, float p_Height, float p_NearZ, float p_FarZ, UINT &o_CameraID);
