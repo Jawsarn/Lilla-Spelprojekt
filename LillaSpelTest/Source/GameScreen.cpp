@@ -127,7 +127,7 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 
 			}
 		}
-		m_players[i]->SetPlayerPosition(t_racePos);
+		m_players[i]->SetPlayerRacePosition(t_racePos);
 	}
 
 
