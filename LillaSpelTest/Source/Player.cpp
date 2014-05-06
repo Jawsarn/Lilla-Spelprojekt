@@ -389,3 +389,4 @@ int Player::GetRacePosition()
 {
 	return m_racePos;
 }
+

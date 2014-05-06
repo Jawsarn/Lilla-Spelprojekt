@@ -48,7 +48,7 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 			//return PAUSE_SCREEN;
 		bool collision = false;
 		PlayerWall* t_newWall = m_players[i]->GetLastPlacedWall(); //
-
+		
 		//fixes the position, direction, sets up world matrix, drops wall, etc.
 		//Update player and check if he placed a wall
 		if(m_players[i]->ProperUpdatePosition(p_dt, p_userCMDS->at(i)) == 1)
