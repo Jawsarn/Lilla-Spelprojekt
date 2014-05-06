@@ -50,6 +50,7 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 		PlayerWall* t_newWall = m_players[i]->GetLastPlacedWall(); //
 
 		//fixes the position, direction, sets up world matrix, drops wall, etc.
+		/////////////////UPDATE PLAYER POSITION AND DROP WALLS/////////////////
 		//Update player and check if he placed a wall
 		if(m_players[i]->ProperUpdatePosition(p_dt, p_userCMDS->at(i)) == 1)
 		{
@@ -62,6 +63,8 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 		m_graphicHandle->UpdatePlayer(i, m_players[i]->GetWorldMatrix(), m_players[i]->GetCamMatrix());
 		MapNode* t_currMapNode = m_players[i]->GetCurrentMapNode();    //för att slippa getta flera gånger i denna forsats
 
+
+		////////COLLISION CHECKS///////////
 		//check collision for player i against all wall objects in his mapnode
 		vector<StaticObj*>* m_wallsToCheck = &t_currMapNode->m_staticObjs;			///Create list of all the static objs in the currmapNode
 		if(m_collisionManager->PlayerVsObj(m_players[i]->GetCollisionBox(), m_wallsToCheck)!=1)    ///PLAYER VS STATIC Collisionmanager checks for hit and returns int representing the object you collided with
@@ -81,7 +84,7 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 		{
 			if(t_newWall == t_currMapNode->m_playerWalls.at(t_currMapNode->m_playerWalls.size()-1))		
 			{
-				t_playerWallsToCheck.pop_back();														///PLAYER VS PLAYERWALL
+				t_playerWallsToCheck.pop_back();														
 			}
 		}
 		///checks collision for the playet against all walls in the current mapnode
@@ -98,7 +101,7 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 		{
 			//went close to wall and got boost
 			float t_boostPerWallPerUpdate = 10;
-			int t_currentBoost = m_players[i]->GetPlayerBoost();
+			float t_currentBoost = m_players[i]->GetPlayerBoost();
 			m_players[i]->SetPlayerBoost(t_currentBoost+p_dt*t_collisionResult*t_boostPerWallPerUpdate);
 			p_userCMDS->at(i).controller.Vibrate(10000,10000);
 		}
