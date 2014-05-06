@@ -64,11 +64,12 @@ public:
 
 	//hud functions //not yet implemented
 	void CreateHudTemplate(std::vector<UINT> p_ObjectIDs, UINT &o_HudID);
-	HRESULT CreateHudObject(XMFLOAT2 p_Position, XMFLOAT2 p_Offset, int p_TextureID1, int p_TextureID2, UINT &o_HudObjectID);
+	HRESULT CreateHudObject(XMFLOAT2 p_Position, XMFLOAT2 p_Offset, std::vector<UINT> p_Textures, UINT &o_HudObjectID);
 
 	HRESULT CreateHudFromTemplate(UINT p_HudTemplateID,  XMFLOAT3 p_Color, std::vector<XMFLOAT2> barOffsets ,UINT &o_HudID);
 	void UseHud(UINT p_Viewport, UINT p_HudI);
-	void ChangeTextureOnHudObject(UINT p_HudID, UINT p_HudObjectID, bool useFrontTexture);
+	void ChangeTextureOnHudObject(UINT p_HudID, UINT p_HudListID, UINT activeTexture);
+	void UpdateBarOffset(UINT p_HudID, UINT p_HudListID, XMFLOAT2 barOffsets);
 
 	//camera funcs
 	HRESULT CreateCamera( XMFLOAT3 p_Pos, XMFLOAT3 p_At, XMFLOAT3 p_Up, float p_FieldOfView, float p_Width, float p_Height, float p_NearZ, float p_FarZ, UINT &o_CameraID);

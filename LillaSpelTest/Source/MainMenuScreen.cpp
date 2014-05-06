@@ -21,7 +21,7 @@ MainMenuScreen::MainMenuScreen(GraphicHandle* p_graphicsHandle)
 	m_graphicHandle->SetViewportAmount(1);
 	m_graphicHandle->UseHud(0,m_hudHandle);
 	currentButton = buttonList[0];
-	m_graphicHandle->ChangeHudObjectTexture(m_hudHandle,currentButton->buttonHandle,false);
+	m_graphicHandle->ChangeHudObjectTexture(m_hudHandle,currentButton->buttonHandle,1);
 	
 }
 
