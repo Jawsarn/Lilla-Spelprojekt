@@ -47,7 +47,9 @@ private:
 
 	///Timers///
 	float m_deathTimer;
+	float m_maxDeathTimer;
 	float m_immortalTimer;
+	float m_maxImmortalTimer;
 	int m_racePos;
 	float m_wallGain;
 
@@ -64,10 +66,12 @@ private:
 	std::vector<PlayerWall*> m_placedWalls;
 	MapNode* m_mapNode;
 
+	int m_playerIndex;
+
 	///////////////FUNCTIONS/////////////
 public:
 	Player();
-	Player(MapNode* p_startNode, float p_startAngle);
+	Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex);
 	~Player();
 
 	void Update(float p_dt,UserCMD p_userCMD); //Updates position and dropps walls
@@ -92,6 +96,9 @@ public:
 	int GetRacePosition();
 	float GetHudBoosterInfo();
 	float GetHudWallInfo();
+	bool GetImmortal();
+	void Die();
+	int GetPlayerIndex();
 
 private:
 	//rotates the up vector to the proper angle

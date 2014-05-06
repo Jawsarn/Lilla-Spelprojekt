@@ -8,15 +8,23 @@ Player::Player()
 }
 
 
-Player::Player(MapNode* p_startNode, float p_startAngle)
+Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 {
+	m_playerIndex = p_playerIndex;
+
+	m_maxBoost = 20000;
+	m_maxWalls = 100;
+	m_boostDecay = 100;
 	m_racePos = 1;
 	m_coolDownDecay = 0.07;
 	m_mapNode = p_startNode;
 	m_upVector = XMFLOAT3(0,1,0);
 
+	m_maxImmortalTimer = 5;
+	m_maxDeathTimer = 1;
+
 	m_distance = 0.0f;
-	m_boostMeter =20000;//test value
+	m_boostMeter = 20000;//test value
 
 	m_position = m_mapNode->m_position;
 	m_direction = DirectX::XMFLOAT3(0,0,1);
@@ -205,6 +213,10 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 		m_coolDown = 1;
 		return 1;
 	}
+
+	////immortal and death timers
+	m_immortalTimer-=p_dt;
+	m_deathTimer -=p_dt;
 	return 0;
 }
 
@@ -277,7 +289,7 @@ void Player::ChangeState(PlayerState p_state)
 
 void Player::PlaceWall()
 {
-	m_lastPlacedWall = new PlayerWall(XMFLOAT3(0,0,1), &m_position, &m_direction , &m_upVector);
+	m_lastPlacedWall = new PlayerWall(XMFLOAT3(0,0,1), &m_position, &m_direction , &m_upVector, m_playerIndex);
 	m_placedWalls.push_back(m_lastPlacedWall);
 	m_mapNode->AddWall(m_lastPlacedWall);
 }
@@ -391,13 +403,29 @@ int Player::GetRacePosition()
 }
 
 
-	float Player::GetHudBoosterInfo()
-	{
-		//apparently wants 0 to be alot of boost, and 1 to be empty
-		return 1-(m_boostMeter/m_maxBoost);
-	}
-	float Player::GetHudWallInfo()
-	{
-		//apparently wants 0 to be alot of walls, and 1 to be empty
-		return 1-(m_maxWalls/m_wallMeter);
-	}
+float Player::GetHudBoosterInfo()
+{
+	//apparently wants 0 to be alot of boost, and 1 to be empty
+	return 1-(m_boostMeter/m_maxBoost);
+}
+float Player::GetHudWallInfo()
+{
+	//apparently wants 0 to be alot of walls, and 1 to be empty
+	return 1-(m_maxWalls/m_wallMeter);
+}
+
+bool Player::GetImmortal()
+{
+	return (m_immortalTimer>0);
+}
+
+void Player::Die()
+{
+	m_speed = 0;
+	m_immortalTimer = m_maxImmortalTimer;
+}
+
+int Player::GetPlayerIndex()
+{
+	return m_playerIndex;
+}

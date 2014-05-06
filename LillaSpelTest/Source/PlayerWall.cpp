@@ -6,8 +6,10 @@ PlayerWall::PlayerWall(void)
 
 }
 
-PlayerWall::PlayerWall(XMFLOAT3 p_color, XMFLOAT3* p_wallPos, XMFLOAT3* p_wallDir, XMFLOAT3* p_wallUp)
+PlayerWall::PlayerWall(XMFLOAT3 p_color, XMFLOAT3* p_wallPos, XMFLOAT3* p_wallDir, XMFLOAT3* p_wallUp, int p_playerIndex)
 {
+	m_playerIndex = p_playerIndex;
+
 	XMVECTOR t_eye = XMLoadFloat3(p_wallPos);
 	XMVECTOR t_target = XMLoadFloat3(p_wallDir);
 	XMVECTOR t_up = XMLoadFloat3(p_wallUp);
@@ -59,4 +61,9 @@ XMMATRIX PlayerWall::GetWorldMatrix()
 {
 	
 	return XMLoadFloat4x4( &m_worldMatrix);
+}
+
+int PlayerWall::GetPlayerIndex()
+{
+	return m_playerIndex;
 }

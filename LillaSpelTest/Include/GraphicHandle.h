@@ -45,6 +45,7 @@ private:
 
 	//texturelists
 	std::vector <UINT> m_ShipTexture;
+	std::vector <UINT> m_ShipNormalGlow;
 	std::vector <UINT> m_LevelTexture;
 	std::vector <UINT> m_PlayerWallTexture;
 	GraphicEngine* m_GraphicEngine;
@@ -110,4 +111,5 @@ public:
 	void CreateHudFromTemplate(UINT p_HudTemplate, int p_Color, std::vector<XMFLOAT2> p_BarOffsets, UINT &o_HudID);
 	void UseHud(UINT p_ViewportID, UINT p_HudID);
 	void ChangeHudObjectTexture(UINT p_hudID, UINT p_objectID, UINT p_useFrontTexture);
+	void UpdateHudBarOffset(UINT p_hudID, UINT p_objectID, DirectX::XMFLOAT2 p_barOffset);
 };
