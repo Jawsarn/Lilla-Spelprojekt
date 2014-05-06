@@ -53,7 +53,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	m_GraphicEngine->LoadTexture(L"spaceshipNG.dds", t_TempurTextur);
 	m_ShipTexture.push_back(t_TempurTextur);
 
-	
+	  
 	InitializeShip("spaceship.obj",m_ShipTexture[0], m_ShipTexture[3] ); //normalGlow texture is same for all ship, fix to 4123
 	InitializeShip("spaceship1.obj",m_ShipTexture[1], m_ShipTexture[3] );
 	InitializeShip("spaceship2.obj",m_ShipTexture[2],m_ShipTexture[3] );
@@ -67,13 +67,15 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	m_Levels.resize(p_LevelNames.size(),0);
 	for (int i = 0; i < p_LevelNames.size(); i++)
 	{
-		std::string t_stTompa =p_LevelNames[i];
-		t_stTompa +=".dds";
+		std::string t_stTompa ="Levels/";//p_LevelNames[i];
+		t_stTompa +=p_LevelNames[i];
+		t_stTompa +="/Texture.dds";
 		std::wstring t_sTompa = std::wstring(t_stTompa.begin(),t_stTompa.end());
 		m_GraphicEngine->LoadTexture(t_sTompa.c_str(),t_TempurTextur);
 
-		std::string t_Tompa =p_LevelNames[i];
-		t_Tompa += ".obj";
+		std::string t_Tompa ="Levels/";//p_LevelNames[i];
+		t_Tompa+=p_LevelNames[i];
+		t_Tompa += "/Tube.obj";
 		InitializeLevel(t_Tompa,t_TempurTextur);
 	}
 
