@@ -147,6 +147,8 @@ void GameScreen::CreatePlayerHUDs(int p_numberOfPlayers, int p_color[4])
 	UINT t_placementHandle;
 	UINT t_texture;
 	UINT t_templateHandle;
+	UINT t_boostBarHandle;
+	UINT t_wallBarHandle;
 	std::vector<UINT> t_hudParts;
 	std::vector<UINT> t_textureIDs;
 	std::vector<DirectX::XMFLOAT2> t_barOffsets;
@@ -161,6 +163,12 @@ void GameScreen::CreatePlayerHUDs(int p_numberOfPlayers, int p_color[4])
 	m_graphicHandle->CreateHUDObject(DirectX::XMFLOAT2(-0.8,0.8),DirectX::XMFLOAT2(0.1,0.1),t_textureIDs,t_placementHandle);
 	t_hudParts.push_back(t_placementHandle);
 	t_barOffsets.push_back(DirectX::XMFLOAT2(0,0));
+	m_graphicHandle->CreateHUDObject(DirectX::XMFLOAT2(0,-0.8),DirectX::XMFLOAT2(1,0.02),t_textureIDs,t_boostBarHandle);
+	t_hudParts.push_back(t_boostBarHandle);
+	t_barOffsets.push_back(DirectX::XMFLOAT2(0,0));
+	m_graphicHandle->CreateHUDObject(DirectX::XMFLOAT2(0,-0.9),DirectX::XMFLOAT2(1,0.02),t_textureIDs,t_wallBarHandle);
+	t_hudParts.push_back(t_wallBarHandle);
+	t_barOffsets.push_back(DirectX::XMFLOAT2(0,0));
 	m_graphicHandle->CreateHudTemplate(t_hudParts,t_templateHandle);
 	
 	for (int i = 0; i < p_numberOfPlayers; i++)
@@ -169,8 +177,11 @@ void GameScreen::CreatePlayerHUDs(int p_numberOfPlayers, int p_color[4])
 		m_graphicHandle->UseHud(i,m_hudID[i]);
 	}
 }
-
+float t_testing = 1;
+float t_testing2 = 1;
 void GameScreen::UpdatePlayerHUD(int p_player)
 {
 	m_graphicHandle->ChangeHudObjectTexture(m_hudID[p_player],0,m_players[p_player]->GetRacePosition()-1);
+	m_graphicHandle->UpdateHudBarOffset(m_hudID[p_player],1,DirectX::XMFLOAT2(1-(t_testing-=0.001),0));//1-m_players[p_player]->GetPlayerBoost()
+	m_graphicHandle->UpdateHudBarOffset(m_hudID[p_player],2,DirectX::XMFLOAT2(1-(t_testing2-=0.0007),0));
 }

@@ -569,3 +569,7 @@ void GraphicHandle::ChangeHudObjectTexture(UINT p_hudID, UINT p_objectID, UINT p
 	m_GraphicEngine->ChangeTextureOnHudObject(p_hudID,p_objectID,p_useFrontTexture);
 }
 
+void GraphicHandle::UpdateHudBarOffset(UINT p_hudID, UINT p_objectID, DirectX::XMFLOAT2 p_barOffset)
+{
+	m_GraphicEngine->UpdateBarOffset(p_hudID,p_objectID,p_barOffset);
+}
