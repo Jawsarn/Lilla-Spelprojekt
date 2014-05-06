@@ -544,9 +544,9 @@ void GraphicHandle::RemoveObject(UINT p_RemoveAt)
 //hud functions
 
 
-void GraphicHandle::CreateHUDObject(XMFLOAT2 p_Position, XMFLOAT2 p_Offset, int p_TextureID1, int p_TextureID2, UINT &o_HudObjectID)
+void GraphicHandle::CreateHUDObject(XMFLOAT2 p_Position, XMFLOAT2 p_Offset, std::vector<UINT> p_textureIDs, UINT &o_HudObjectID)
 {
-	m_GraphicEngine->CreateHudObject(p_Position, p_Offset, p_TextureID1 , p_TextureID2, o_HudObjectID);
+	m_GraphicEngine->CreateHudObject(p_Position, p_Offset, p_textureIDs, o_HudObjectID);
 }
 
 void GraphicHandle::CreateHudTemplate(std::vector<UINT> p_HudObjects, UINT& o_TemplateID)
@@ -564,7 +564,7 @@ void GraphicHandle::UseHud(UINT p_ViewportID, UINT p_HudID)
 	m_GraphicEngine->UseHud(p_ViewportID, p_HudID);
 }
 
-void GraphicHandle::ChangeHudObjectTexture(UINT p_hudID, UINT p_objectID, bool p_useFrontTexture)
+void GraphicHandle::ChangeHudObjectTexture(UINT p_hudID, UINT p_objectID, UINT p_useFrontTexture)
 {
 	m_GraphicEngine->ChangeTextureOnHudObject(p_hudID,p_objectID,p_useFrontTexture);
 }

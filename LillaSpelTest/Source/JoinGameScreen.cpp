@@ -162,7 +162,9 @@ void JoinGameScreen::MakeHud(const wchar_t* p_textureNames, int p_hudIndex)
 	unsigned int t_objHandle;
 	unsigned int t_templateHandle;
 	m_graphicHandle->LoadTexture(p_textureNames,t_t1);
-	m_graphicHandle->CreateHUDObject(t_centerPoint,t_offset,t_t1,t_t1,t_objHandle);
+	std::vector<unsigned int> t_textureIDs;
+	t_textureIDs.push_back(t_t1);
+	m_graphicHandle->CreateHUDObject(t_centerPoint,t_offset,t_textureIDs,t_objHandle);
 	t_objHandles.push_back(t_objHandle);
 	m_graphicHandle->CreateHudTemplate(t_objHandles,t_templateHandle);
 	m_graphicHandle->CreateHudFromTemplate(t_templateHandle,DirectX::XMFLOAT3(0,1,0),t_barOffsets,m_hudIDs[p_hudIndex]);

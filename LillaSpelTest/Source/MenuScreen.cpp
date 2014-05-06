@@ -53,27 +53,27 @@ std::string MenuScreen::NavigateMenu(UserCMD& p_userCMD, unsigned int p_hudHandl
 
 		if (p_userCMD.Joystick.y > 0.8 && currentButton->upButton != nullptr)
 		{
-			m_graphicHandle->ChangeHudObjectTexture(p_hudHandle,currentButton->buttonHandle, true);
+			m_graphicHandle->ChangeHudObjectTexture(p_hudHandle,currentButton->buttonHandle, 0);
 			currentButton = currentButton->upButton;
-			m_graphicHandle->ChangeHudObjectTexture(p_hudHandle,currentButton->buttonHandle, false);
+			m_graphicHandle->ChangeHudObjectTexture(p_hudHandle,currentButton->buttonHandle, 1);
 		}
 		else if (p_userCMD.Joystick.y < -0.8 && currentButton->downButton != nullptr)
 		{
-			m_graphicHandle->ChangeHudObjectTexture(p_hudHandle,currentButton->buttonHandle, true);
+			m_graphicHandle->ChangeHudObjectTexture(p_hudHandle,currentButton->buttonHandle, 0);
 			currentButton = currentButton->downButton;
-			m_graphicHandle->ChangeHudObjectTexture(p_hudHandle,currentButton->buttonHandle, false);
+			m_graphicHandle->ChangeHudObjectTexture(p_hudHandle,currentButton->buttonHandle, 1);
 		}
 		else if (p_userCMD.Joystick.x > 0.8 && currentButton->rightButton != nullptr)
 		{
-			m_graphicHandle->ChangeHudObjectTexture(p_hudHandle,currentButton->buttonHandle, true);
+			m_graphicHandle->ChangeHudObjectTexture(p_hudHandle,currentButton->buttonHandle, 0);
 			currentButton = currentButton->rightButton;
-			m_graphicHandle->ChangeHudObjectTexture(p_hudHandle,currentButton->buttonHandle, false);
+			m_graphicHandle->ChangeHudObjectTexture(p_hudHandle,currentButton->buttonHandle, 1);
 		}
 		else if (p_userCMD.Joystick.x < -0.8 && currentButton->leftButton != nullptr)
 		{
-			m_graphicHandle->ChangeHudObjectTexture(p_hudHandle,currentButton->buttonHandle, true);
+			m_graphicHandle->ChangeHudObjectTexture(p_hudHandle,currentButton->buttonHandle, 0);
 			currentButton = currentButton->leftButton;
-			m_graphicHandle->ChangeHudObjectTexture(p_hudHandle,currentButton->buttonHandle, false);
+			m_graphicHandle->ChangeHudObjectTexture(p_hudHandle,currentButton->buttonHandle, 1);
 		}
 		else
 		{
@@ -96,11 +96,15 @@ void MenuScreen::AddButton(std::string p_buttonName, DirectX::XMFLOAT2 p_centerP
 	unsigned int t_t2 = 3555;
 	m_graphicHandle->LoadTexture(texture1,t_t1);
 	m_graphicHandle->LoadTexture(texture2,t_t2);
+	
 	if (t_t1 == 3555 || t_t2 == 3555)
 	{
 		//exit(3555); // Failed to load a button texture
 	}
-	m_graphicHandle->CreateHUDObject(buttonList[t_index]->centerPoint,buttonList[t_index]->offset,t_t1,t_t2,buttonList[t_index]->buttonHandle);
+	std::vector<unsigned int> t_textureIDs;
+	t_textureIDs.push_back(t_t1);
+	t_textureIDs.push_back(t_t2);
+	m_graphicHandle->CreateHUDObject(buttonList[t_index]->centerPoint,buttonList[t_index]->offset,t_textureIDs,buttonList[t_index]->buttonHandle);
 }
 
 void MenuScreen::MakeHud(unsigned int & o_hudID)
