@@ -412,7 +412,11 @@ void GraphicHandle::CreateShipForGame(std::vector<XMMATRIX> p_PlayerWorld)//4123
 			m_Player[i]);
 		//JAWS KOD
 		UINT t_LightID;
-		m_GraphicEngine->AddObjectLight(m_Player[i], XMFLOAT3(0.0f,0.5f,3.0f), m_Colours[m_PlayerColour[i]],2.0f,t_LightID);
+		m_GraphicEngine->AddObjectLight(m_Player[i], XMFLOAT3(0.0f,-0.1f,0.0f), m_Colours[m_PlayerColour[i]],2.0f,t_LightID);
+		m_GraphicEngine->AddObjectLight(m_Player[i], XMFLOAT3(0.0f,-0.1f,1.0f), m_Colours[m_PlayerColour[i]],2.0f,t_LightID);
+		m_GraphicEngine->AddObjectLight(m_Player[i], XMFLOAT3(0.0f,-0.1f,2.0f), m_Colours[m_PlayerColour[i]],2.0f,t_LightID);
+		m_GraphicEngine->AddObjectLight(m_Player[i], XMFLOAT3(0.0f,-0.1f,3.0f), m_Colours[m_PlayerColour[i]],2.0f,t_LightID);
+		m_GraphicEngine->AddObjectLight(m_Player[i], XMFLOAT3(0.0f,-0.1f,4.0f), m_Colours[m_PlayerColour[i]],2.0f,t_LightID);
 
 		//LightStruct t_LightStruct;
 		//t_LightStruct.m_Color=m_Colours[m_PlayerColour[i]];//vi skcikar in en färg men kräver att dne har färg i lightstruct

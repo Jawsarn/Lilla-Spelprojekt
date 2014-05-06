@@ -87,7 +87,7 @@ float3 DirectIllumination(float3 pos, float3 norm , Light light, float inSpec,in
 	float3 v = reflect(-lightVec, norm);
 	float specFactor = pow(max(dot(v,toEye), 0.0f), 100)*inSpec;
 
-	return (light.color * att * (diffuseFactor + specFactor));
+	return (light.color * att * (diffuseFactor/* + specFactor*/));
 }
 
 struct PixelData
