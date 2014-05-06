@@ -15,6 +15,7 @@ private:
 	std::vector<MapNode*>* m_mapNodes;
 	std::vector<Player*> m_players;
 	std::vector<UINT> m_hudID;
+	int m_lastNodeIndex;
 public:
 	GameScreen(void);
 	void Initialize();
