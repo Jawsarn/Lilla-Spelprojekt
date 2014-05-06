@@ -10,6 +10,9 @@ Player::Player()
 
 Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 {
+	m_wallBoxExtents = XMFLOAT3(1,1,1);
+	m_playerShipBoxExtents = XMFLOAT3(1,1,1);
+
 	m_playerIndex = p_playerIndex;
 
 	m_maxBoost = 20000;
@@ -289,7 +292,7 @@ void Player::ChangeState(PlayerState p_state)
 
 void Player::PlaceWall()
 {
-	m_lastPlacedWall = new PlayerWall(XMFLOAT3(0,0,1), &m_position, &m_direction , &m_upVector, m_playerIndex);
+	m_lastPlacedWall = new PlayerWall(XMFLOAT3(0,0,1), &m_position, &m_direction , &m_upVector, m_playerIndex, m_wallBoxExtents);
 	m_placedWalls.push_back(m_lastPlacedWall);
 	m_mapNode->AddWall(m_lastPlacedWall);
 }
@@ -325,7 +328,7 @@ void Player::UpdateCollisionBox()
 	XMStoreFloat4(&t_quarternion, t_boxOrientationVector);
 
 	m_box.Center = m_position;
-	m_box.Extents = XMFLOAT3(1,1,1); //////TEMPEXTENTSLOL
+	m_box.Extents = m_playerShipBoxExtents; //////TEMPEXTENTSLOL
 	m_box.Orientation = t_quarternion;
 
 

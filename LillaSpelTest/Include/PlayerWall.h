@@ -9,7 +9,7 @@ private:
 	XMFLOAT4X4 m_worldMatrix;
 public:
 	PlayerWall(void);
-	PlayerWall(XMFLOAT3 p_color, XMFLOAT3* p_wallPos, XMFLOAT3* p_wallDir, XMFLOAT3* p_wallUp, int p_playerIndex);
+	PlayerWall(XMFLOAT3 p_color, XMFLOAT3* p_wallPos, XMFLOAT3* p_wallDir, XMFLOAT3* p_wallUp, int p_playerIndex, XMFLOAT3 p_extents);
 	BoundingOrientedBox* GetBox();
 	BoundingSphere* GetSphere();
 	~PlayerWall(void);

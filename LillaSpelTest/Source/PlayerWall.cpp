@@ -6,7 +6,7 @@ PlayerWall::PlayerWall(void)
 
 }
 
-PlayerWall::PlayerWall(XMFLOAT3 p_color, XMFLOAT3* p_wallPos, XMFLOAT3* p_wallDir, XMFLOAT3* p_wallUp, int p_playerIndex)
+PlayerWall::PlayerWall(XMFLOAT3 p_color, XMFLOAT3* p_wallPos, XMFLOAT3* p_wallDir, XMFLOAT3* p_wallUp, int p_playerIndex, XMFLOAT3 p_extents)
 {
 	m_playerIndex = p_playerIndex;
 
@@ -22,9 +22,6 @@ PlayerWall::PlayerWall(XMFLOAT3 p_color, XMFLOAT3* p_wallPos, XMFLOAT3* p_wallDi
 	MathHelper t_mathHelper = MathHelper();
 	m_color = p_color;
 
-	XMFLOAT3 t_boxExtents = XMFLOAT3(1,1,1);		////////////HARD CODED JUNK
-
-
 	XMFLOAT4 t_quarternion = XMFLOAT4(0,0,0,1);
 	XMVECTOR t_orientationVector = XMLoadFloat4(&t_quarternion);
 	t_orientationVector = XMVector4Transform(t_orientationVector, t_matrix);
@@ -32,8 +29,8 @@ PlayerWall::PlayerWall(XMFLOAT3 p_color, XMFLOAT3* p_wallPos, XMFLOAT3* p_wallDi
 	XMStoreFloat4(&t_quarternion, t_orientationVector);
 	
 	
-	m_box = BoundingOrientedBox(*p_wallPos, t_boxExtents, t_quarternion);
-	m_sphere = BoundingSphere(*p_wallPos, 2.5);
+	m_box = BoundingOrientedBox(*p_wallPos, p_extents, t_quarternion);
+	m_sphere = BoundingSphere(*p_wallPos, p_extents.z);
 
 
 }

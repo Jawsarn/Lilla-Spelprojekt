@@ -58,6 +58,9 @@ private:
 	XMFLOAT3 m_color;
 	XMFLOAT3 m_upVector;
 
+	XMFLOAT3 m_wallBoxExtents;
+	XMFLOAT3 m_playerShipBoxExtents;
+
 	XMFLOAT4X4 m_cameraMatrix;
 	XMFLOAT4X4 m_worldMatrix;
 	PlayerWall* m_lastPlacedWall;
