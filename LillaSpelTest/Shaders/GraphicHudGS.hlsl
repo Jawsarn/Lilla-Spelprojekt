@@ -19,13 +19,13 @@ void GS(point VS_OUTPUT input[1], inout TriangleStream <GS_OUTPUT> triangle_stre
 	GS_OUTPUT o1;
 
 	o1.position = float4(input[0].position.x - input[0].size.x, input[0].position.y + input[0].size.y*(1 - barOffset.y*2), 0.0f, 1.0f); //topleft
-	o1.tex = float2(0,0);
+	o1.tex = float2(0,0 + barOffset.y);
 	o1.viewport = activeViewport;
 	triangle_stream.Append(o1);
 
 	GS_OUTPUT o2;
 	o2.position = float4(input[0].position.x + input[0].size.x*(1 - barOffset.x*2),		input[0].position.y + input[0].size.y*(1 - barOffset.y*2), 0.0f, 1.0f); //topright
-	o2.tex = float2(1,0);
+	o2.tex = float2(1 - barOffset.x, 0  + barOffset.y);
 	o2.viewport = activeViewport;
 	triangle_stream.Append(o2);
 
@@ -44,13 +44,13 @@ void GS(point VS_OUTPUT input[1], inout TriangleStream <GS_OUTPUT> triangle_stre
 
 	GS_OUTPUT o5;
 	o5.position = float4(input[0].position.x + input[0].size.x*(1 - barOffset.x*2),		input[0].position.y + input[0].size.y*(1 - barOffset.y*2), 0.0f, 1.0f); //topright
-	o5.tex = float2(1,0);
+	o5.tex = float2(1 - barOffset.x,0  + barOffset.y);
 	o5.viewport = activeViewport;
 	triangle_stream.Append(o5);
 
 	GS_OUTPUT o6;
 	o6.position = float4(input[0].position.x + input[0].size.x*(1 - barOffset.x*2),		input[0].position.y - input[0].size.y, 0.0f, 1.0f); //botright
-	o6.tex = float2(1,1);
+	o6.tex = float2(1 - barOffset.x,1);
 	o6.viewport = activeViewport;
 	triangle_stream.Append(o6);
 	triangle_stream.RestartStrip();
