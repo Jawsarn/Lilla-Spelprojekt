@@ -179,12 +179,12 @@ void GameScreen::CreatePlayerHUDs(int p_numberOfPlayers, int p_color[4])
 		m_graphicHandle->CreateHudFromTemplate(t_templateHandle,p_color[i],t_barOffsets,m_hudID[i]);
 		m_graphicHandle->UseHud(i,m_hudID[i]);
 	}
+	
 }
-float t_testing = 1;
-float t_testing2 = 1;
+
 void GameScreen::UpdatePlayerHUD(int p_player)
 {
 	m_graphicHandle->ChangeHudObjectTexture(m_hudID[p_player],0,m_players[p_player]->GetRacePosition()-1);
-	m_graphicHandle->UpdateHudBarOffset(m_hudID[p_player],1,DirectX::XMFLOAT2(1-(t_testing-=0.001),0));//1-m_players[p_player]->GetPlayerBoost()
-	m_graphicHandle->UpdateHudBarOffset(m_hudID[p_player],2,DirectX::XMFLOAT2(1-(t_testing2-=0.0007),0));
+	m_graphicHandle->UpdateHudBarOffset(m_hudID[p_player],1,DirectX::XMFLOAT2(m_players[p_player]->GetHudBoosterInfo(),0));
+	m_graphicHandle->UpdateHudBarOffset(m_hudID[p_player],2,DirectX::XMFLOAT2(m_players[p_player]->GetHudWallInfo(),0));
 }
