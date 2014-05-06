@@ -196,9 +196,16 @@ void Update(std::vector<UserCMD>* p_userCMDs)
 		break;
 	case PAUSE_SCREEN:
 		m_state = (ApplicationState)m_pauseScreen->Update(m_DeltaTime,p_userCMDs);
-		if (m_state != PAUSE_SCREEN && m_state != GAME_SCREEN)
+		if (m_state != PAUSE_SCREEN )
 		{
-			RunInitialization();
+			if (m_state != GAME_SCREEN)
+			{
+				RunInitialization();
+			}
+			else
+			{
+				m_gameScreen->Initialize();
+			}
 		}
 		break;
 	case GAME_SCREEN:

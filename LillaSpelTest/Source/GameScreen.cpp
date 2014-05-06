@@ -35,7 +35,10 @@ GameScreen::~GameScreen(void)
 }
 void GameScreen::Initialize()
 {
-
+	for (int i = 0; i < m_players.size(); i++)
+	{
+		m_graphicHandle->UseHud(i,m_hudID[i]);
+	}
 }
 
 
@@ -45,13 +48,14 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 
 	for (int i = 0; i < m_players.size(); i++)			//i<1 for test purposes. Make sure to change later
 	{
+		if(p_userCMDS->at(i).backButtonPressed)
+		{
+			m_pauseDudeIndex = i;
+			return PAUSE_SCREEN;
+		}
 		if (m_lastNodeIndex != m_players[i]->GetCurrentMapNode()->m_Index)
 		{
-			if(p_userCMDS->at(i).backButtonPressed)
-			{
-				m_pauseDudeIndex = i;
-				return PAUSE_SCREEN;
-			}
+			
 			bool collision = false;
 			PlayerWall* t_newWall = m_players[i]->GetLastPlacedWall(); //
 
