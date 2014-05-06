@@ -15,6 +15,7 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4], std::string p_mapNa
 	vector<UINT> t_whichVehicles;
 	for (int i = 0; i < p_numberOfPlayers; i++)
 	{
+		
 		m_players.push_back(new Player(m_mapNodes->at(0),0.0f));
 		t_shipWorldMatrices.push_back(m_players[i]->GetWorldMatrix());
 		t_colors.push_back(p_color[i]);
@@ -24,6 +25,8 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4], std::string p_mapNa
 	m_graphicHandle->SetAmountOfPlayers(p_numberOfPlayers);
 	m_graphicHandle->SetColourAndVehicle(t_colors, t_whichVehicles);
 	m_graphicHandle->CreateShipForGame(t_shipWorldMatrices);
+
+	CreatePlayerHUDs(p_numberOfPlayers,p_color);
 }
 
 GameScreen::~GameScreen(void)
@@ -39,10 +42,10 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 {
 	////////////////JOHNS TEST MÖS!!! kommentera bort så fungerar allt som en neger på en bomullsfarm
 
-	for (int i = 0; i < 1; i++)			//i<1 for test purposes. Make sure to change later
+	for (int i = 0; i < m_players.size(); i++)			//i<1 for test purposes. Make sure to change later
 	{
-		if(p_userCMDS->at(i).leftTriggerPressed)
-			return PAUSE_SCREEN;
+		//if(p_userCMDS->at(i).leftTriggerPressed)
+			//return PAUSE_SCREEN;
 		bool collision = false;
 		PlayerWall* t_newWall = m_players[i]->GetLastPlacedWall(); //
 
@@ -94,7 +97,7 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 		else if (t_collisionResult>0)
 		{
 			//went close to wall and got boost
-			float t_boostPerWallPerUpdate = 1;
+			float t_boostPerWallPerUpdate = 10;
 			int t_currentBoost = m_players[i]->GetPlayerBoost();
 			m_players[i]->SetPlayerBoost(t_currentBoost+p_dt*t_collisionResult*t_boostPerWallPerUpdate);
 			p_userCMDS->at(i).controller.Vibrate(10000,10000);
@@ -105,8 +108,29 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 			p_userCMDS->at(i).controller.Vibrate(0,0);
 		}
 
+		UpdatePlayerHUD(i);
 	}
 
+	//Give all players their respective racePosition by checking ever player vs every other player
+	
+	for (int i = 0; i < m_players.size(); i++)
+	{
+		float t_currPlayerDistance = m_players[i]->GetDistanceTraveled();
+		int t_racePos = 1;
+		for (int j = 0; j < m_players.size(); j++)
+		{
+			if(i!=j)
+			{
+				float t_distanceToCheck = m_players[j]->GetDistanceTraveled();
+				if(t_currPlayerDistance < t_distanceToCheck)
+				{
+					t_racePos++;
+				}
+
+			}
+		}
+		m_players[i]->SetPlayerRacePosition(t_racePos);
+	}
 
 
 	return GAME_SCREEN;
@@ -115,4 +139,38 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 void GameScreen::Draw()
 {
 
+}
+
+void GameScreen::CreatePlayerHUDs(int p_numberOfPlayers, int p_color[4])
+{
+	m_hudID.resize(p_numberOfPlayers,0);
+	UINT t_placementHandle;
+	UINT t_texture;
+	UINT t_templateHandle;
+	std::vector<UINT> t_hudParts;
+	std::vector<UINT> t_textureIDs;
+	std::vector<DirectX::XMFLOAT2> t_barOffsets;
+	m_graphicHandle->LoadTexture(L"first.dds",t_texture);
+	t_textureIDs.push_back(t_texture);
+	m_graphicHandle->LoadTexture(L"second.dds",t_texture);
+	t_textureIDs.push_back(t_texture);
+	m_graphicHandle->LoadTexture(L"third.dds",t_texture);
+	t_textureIDs.push_back(t_texture);
+	m_graphicHandle->LoadTexture(L"fourth.dds",t_texture);
+	t_textureIDs.push_back(t_texture);
+	m_graphicHandle->CreateHUDObject(DirectX::XMFLOAT2(-0.8,0.8),DirectX::XMFLOAT2(0.1,0.1),t_textureIDs,t_placementHandle);
+	t_hudParts.push_back(t_placementHandle);
+	t_barOffsets.push_back(DirectX::XMFLOAT2(0,0));
+	m_graphicHandle->CreateHudTemplate(t_hudParts,t_templateHandle);
+	
+	for (int i = 0; i < p_numberOfPlayers; i++)
+	{
+		m_graphicHandle->CreateHudFromTemplate(t_templateHandle,p_color[i],t_barOffsets,m_hudID[i]);
+		m_graphicHandle->UseHud(i,m_hudID[i]);
+	}
+}
+
+void GameScreen::UpdatePlayerHUD(int p_player)
+{
+	m_graphicHandle->ChangeHudObjectTexture(m_hudID[p_player],0,m_players[p_player]->GetRacePosition()-1);
 }

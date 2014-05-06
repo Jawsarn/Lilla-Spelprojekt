@@ -12,6 +12,7 @@ private:
 	int m_modell[4];
 	int m_modellIncrease[4];
 	int m_color[4];
+	unsigned int m_hudIDs[4];
 public:
 	JoinGameScreen(void);
 	JoinGameScreen(GameInfo* p_gameInfo, GraphicHandle* p_graphicsHandle);
@@ -25,5 +26,6 @@ private:
 	void SaveInfo();
 	void ModellChanger(int i, float p_dt, std::vector<UserCMD>* userCMD);
 	void ColorChanger(int i, float p_dt, std::vector<UserCMD>* userCMD);
+	void MakeHud(const wchar_t* p_textureName, int p_hudIndex);
 };
 

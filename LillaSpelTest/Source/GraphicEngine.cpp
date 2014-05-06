@@ -591,7 +591,7 @@ HRESULT GraphicEngine::InitializeConstantBuffers()
 	m_DeviceContext->GSSetConstantBuffers(1,1,&m_PerObjectBuffer);
 	//m_DeviceContext->GSSetConstantBuffers(2,1,&m_HudConstantBuffer);
 
-	m_DeviceContext->PSSetConstantBuffers(1,1,&m_PerObjectBuffer);
+	m_DeviceContext->PSSetConstantBuffers(0,1,&m_PerObjectBuffer);
 
 	m_DeviceContext->CSSetConstantBuffers(0,1,&m_PerFrameBuffer);
 	m_DeviceContext->CSSetConstantBuffers(1,1,&m_PerComputeBuffer);
@@ -692,7 +692,7 @@ HRESULT GraphicEngine::InitializeSamplerState()
 	HRESULT hr = S_OK;
 	D3D11_SAMPLER_DESC sampDesc;
     ZeroMemory( &sampDesc, sizeof(sampDesc) );
-    sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+    sampDesc.Filter = D3D11_FILTER_ANISOTROPIC; // D3D11_FILTER_ANISOTROPIC  D3D11_FILTER_MIN_MAG_MIP_LINEAR
 	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
     sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -700,7 +700,8 @@ HRESULT GraphicEngine::InitializeSamplerState()
     sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 	
     sampDesc.MinLOD = 0;
-    sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+    sampDesc.MaxLOD = D3D11_FLOAT32_MAX; //D3D11_FLOAT32_MAX
+	sampDesc.MaxAnisotropy = 16; //why not max it out when we can?
 	hr = m_Device->CreateSamplerState( &sampDesc, &m_SamplerStateWrap);
 	if( FAILED(hr) )
 		return hr;
@@ -713,6 +714,9 @@ HRESULT GraphicEngine::InitializeSamplerState()
 	
 	//for compute shader
 	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+    sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
 	hr = m_Device->CreateSamplerState( &sampDesc, &m_SamplerStateLinearWrap);
 
 	m_DeviceContext->CSSetSamplers(0, 1, &m_SamplerStateLinearWrap);
@@ -994,14 +998,14 @@ void GraphicEngine::CreateHudTemplate(std::vector<UINT> p_ObjectIDs, UINT &o_Hud
 	o_HudID = m_HudTemplates.size() -  1;
 }
 
-HRESULT GraphicEngine::CreateHudObject(XMFLOAT2 p_Position, XMFLOAT2 p_Offset, int p_TextureID1, int p_TextureID2, UINT &o_HudObjectID)
+HRESULT GraphicEngine::CreateHudObject(XMFLOAT2 p_Position, XMFLOAT2 p_Offset, std::vector<UINT> p_Textures, UINT &o_HudObjectID)
 {
 	HRESULT hr = S_OK;
 
 	HudObject t_NewHudObject;
 	
-	t_NewHudObject.textureID1 = p_TextureID1;
-	t_NewHudObject.textureID2 = p_TextureID2;
+	t_NewHudObject.textures = p_Textures;
+	
 
 	HudVertex t_newHudVert;
 	t_newHudVert.position = p_Position;
@@ -1063,7 +1067,7 @@ HRESULT GraphicEngine::CreateHudFromTemplate(UINT p_HudTemplateID,  XMFLOAT3 p_C
 
 	m_Huds[o_HudID]->templateID = p_HudTemplateID;
 	m_Huds[o_HudID]->color = p_Color;
-	m_Huds[o_HudID]->firstTextureActive = std::vector<bool>(barOffsets.size(), true); //not sure if this is correct
+	m_Huds[o_HudID]->activeTexture = std::vector<UINT>(barOffsets.size(), 0); //not sure if this is correct
 	m_Huds[o_HudID]->barOffsets = barOffsets;
 
 	return S_OK;
@@ -1074,11 +1078,15 @@ void GraphicEngine::UseHud(UINT p_Viewport, UINT p_HudID)
 	m_ViewportHud[p_Viewport] = p_HudID;
 }
 
-void GraphicEngine::ChangeTextureOnHudObject(UINT p_HudID, UINT p_HudObjectID, bool useFrontTexture)
+void GraphicEngine::ChangeTextureOnHudObject(UINT p_HudID, UINT p_HudListID, UINT p_ActiveTexture)
 {
-	m_Huds[p_HudID]->firstTextureActive[p_HudObjectID] = useFrontTexture;
+	m_Huds[p_HudID]->activeTexture[p_HudListID] = p_ActiveTexture;
 }
 
+void GraphicEngine::UpdateBarOffset(UINT p_HudID, UINT p_HudListID, XMFLOAT2 barOffsets)
+{
+	m_Huds[p_HudID]->barOffsets[p_HudListID] = barOffsets;
+}
 
 ///////////////////////////////////////////////
 //==========Camera functions=================//
@@ -1511,15 +1519,8 @@ void GraphicEngine::DrawHud()
 				m_DeviceContext->UpdateSubresource(m_HudConstantBuffer, 0, nullptr, &t_Hcb, 0, 0 );
 
 				//update texture and buffer and other stuff to constant buffer
-				int textureID;
-				if (m_Huds[m_ViewportHud[j]]->firstTextureActive[i])
-				{
-					textureID = t_CurHudObject.textureID1;
-				}
-				else
-				{
-					textureID = t_CurHudObject.textureID2;
-				}
+				UINT textureID = t_CurHudObject.textures[m_Huds[m_ViewportHud[j]]->activeTexture[i]];
+
 
 				//set texture
 				m_DeviceContext->PSSetShaderResources(0, 1, &m_Textures[textureID]);

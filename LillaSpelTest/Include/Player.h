@@ -18,8 +18,21 @@ class Player :
 {
 	///////////////VARIABLES///////////
 private:
+	//speed stuff
+	float m_maxSpeed;
+	float m_maxBoostSpeed;
+	float m_acceleration;
+	float m_boostAcceleration;
+	float m_deceleration;
 
+	//rotation stuff
+	float m_rotateSpeed;
 	float m_angle;
+
+
+	float m_coolDownDecay;
+	float m_boostDecay;
+
 	float m_distance;
 	float m_boostMeter;
 	float m_wallMeter;
@@ -28,9 +41,11 @@ private:
 	///Timers///
 	float m_deathTimer;
 	float m_immortalTimer;
+	int m_racePos;
+	float m_wallGain;
 
 	XMFLOAT3 m_logicalPosition;
-	XMFLOAT3 m_acceleration;
+	//XMFLOAT3 m_acceleration;
 	XMFLOAT3 m_color;
 	XMFLOAT3 m_upVector;
 
@@ -53,7 +68,7 @@ public:
 	int ProperUpdatePosition(float p_dt, UserCMD p_userCMD);
 	std::vector<BoundingOrientedBox*> GetWallsToCheck();
 	void ChangeState(PlayerState p_state);
-	
+
 
 	//Gets yo
 	XMMATRIX GetCamMatrix();
@@ -63,8 +78,11 @@ public:
 	MapNode* GetCurrentMapNode();
 	BoundingOrientedBox* GetCollisionBox();
 	PlayerWall* GetLastPlacedWall();
+	float GetDistanceTraveled(); 
 	int GetPlayerBoost();
 	void SetPlayerBoost(float p_boost);
+	void SetPlayerRacePosition(int p_pos);
+	int GetRacePosition();
 
 private:
 	//rotates the up vector to the proper angle
@@ -76,6 +94,7 @@ private:
 	void UpdateMapNode();
 	void BumpedIntoPlayer(XMFLOAT3 p_force);
 	void UpdateWorldMatrix();
+	void UpdateWallMeter(float p_dt);
 
 };
 

@@ -1,5 +1,18 @@
-#include "GraphicShaderHelper.fx"
 
+
+cbuffer PerObjectBuffer	:register(c0)
+{
+	matrix World;
+	float3 Color;
+	float typeOfObject; //with types of textures etc
+}
+
+
+
+Texture2D diffuseTexture	: register(t0);
+Texture2D normalGlow		: register(t1);
+
+SamplerState wrapSampler	: register(s0);
 
 struct GS_OUTPUT
 {
@@ -34,7 +47,7 @@ PS_OUTPUT PS(GS_OUTPUT input) : SV_TARGET
 	if (normalGlowFac.w > 0.1f)
 	{
 		glowOut = float4(Color, 1);
-		diffuseColorSpecFac = float4( Color , 0 );
+		diffuseColorSpecFac = float4(Color , 0 );
 	}
 	else
 	{
@@ -42,6 +55,7 @@ PS_OUTPUT PS(GS_OUTPUT input) : SV_TARGET
 	}
 
 	output.Glowmap = glowOut;
+
 	output.DiffuseColor_Spec = diffuseColorSpecFac;
 
 	

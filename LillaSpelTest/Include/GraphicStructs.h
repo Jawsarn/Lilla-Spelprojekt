@@ -107,8 +107,7 @@ struct HudVertex
 struct HudObject
 {
 	UINT vertexBufferID;
-	int textureID1;
-	int textureID2;
+	std::vector<UINT> textures;
 };
 
 struct HudTemplate
@@ -120,7 +119,7 @@ struct Hud
 {
 	UINT templateID;
 	XMFLOAT3 color;
-	std::vector<bool> firstTextureActive;
+	std::vector<UINT> activeTexture;
 	std::vector<XMFLOAT2> barOffsets;
 };
 

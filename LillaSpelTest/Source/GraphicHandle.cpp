@@ -42,7 +42,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 
 
 	////Init alla skepp
-	m_GraphicEngine->LoadTexture(L"spaceship_COL_SPEC.dds", t_TempurTextur);
+	m_GraphicEngine->LoadTexture(L"Ships/MilleniumKalk/Texture.dds", t_TempurTextur);
 	m_ShipTexture.push_back(t_TempurTextur);
 	m_GraphicEngine->LoadTexture(L"spaceship1.dds", t_TempurTextur);
 	m_ShipTexture.push_back(t_TempurTextur);
@@ -51,13 +51,16 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 
 
 	m_GraphicEngine->LoadTexture(L"spaceshipNG.dds", t_TempurTextur);
-	m_ShipTexture.push_back(t_TempurTextur);
+	m_ShipNormalGlow.push_back(t_TempurTextur);
 
-	  
-	InitializeShip("spaceship.obj",m_ShipTexture[0], m_ShipTexture[3] ); //normalGlow texture is same for all ship, fix to 4123
-	InitializeShip("spaceship1.obj",m_ShipTexture[1], m_ShipTexture[3] );
-	InitializeShip("spaceship2.obj",m_ShipTexture[2],m_ShipTexture[3] );
 
+	
+	InitializeShip("Ships/MilleniumKalk/Mesh.obj",m_ShipTexture[0], m_ShipNormalGlow[0] ); //normalGlow texture is same for all ship, fix to 4123
+	InitializeShip("spaceship1.obj",m_ShipTexture[1], m_ShipNormalGlow[0] );
+	InitializeShip("spaceship2.obj",m_ShipTexture[2],m_ShipNormalGlow[0] );
+
+	
+	
 	m_SelectionShips.resize( m_MeshShips.size(), 0);
 
 
@@ -88,7 +91,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	//CreateDrawObject(m_MeshLevels[0],XMMatrixIdentity(),XMFLOAT3(1,1,1),m_Levels[0],true);
 
 	////init walls
-	InitializeWall("wall.obj",m_PlayerWallTexture[0]);
+	InitializeWall("playerwall.obj",m_PlayerWallTexture[0]);
 
 
 
@@ -373,7 +376,7 @@ void GraphicHandle::SelectVehicle()
 {
 	XMMATRIX t_WorldMat = XMMatrixTranslation(0,0,5*m_MeshShips.size());
 
-	XMFLOAT3 t_Color = XMFLOAT3(0,1,0);
+	XMFLOAT3 t_Color = XMFLOAT3(1,1,1);
 
 	for (int i = 0; i < m_MeshShips.size(); i++)
 	{
@@ -455,6 +458,7 @@ void GraphicHandle::InitializeShip(std::string p_ShipStringName, UINT p_TextureD
 		m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[0],p_TextureDiffuseSpec, GraphicEngine::TextureType::DIFFUSE);
 		m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[0],p_TextureNormGlow, GraphicEngine::TextureType::NORMAL);
 	}
+
 }
 void GraphicHandle::InitializeLevel(std::string p_LevelStringName, UINT p_Texture)
 {
@@ -546,9 +550,9 @@ void GraphicHandle::RemoveObject(UINT p_RemoveAt)
 //hud functions
 
 
-void GraphicHandle::CreateHUDObject(XMFLOAT2 p_Position, XMFLOAT2 p_Offset, int p_TextureID1, int p_TextureID2, UINT &o_HudObjectID)
+void GraphicHandle::CreateHUDObject(XMFLOAT2 p_Position, XMFLOAT2 p_Offset, std::vector<UINT> p_textureIDs, UINT &o_HudObjectID)
 {
-	m_GraphicEngine->CreateHudObject(p_Position, p_Offset, p_TextureID1 , p_TextureID2, o_HudObjectID);
+	m_GraphicEngine->CreateHudObject(p_Position, p_Offset, p_textureIDs, o_HudObjectID);
 }
 
 void GraphicHandle::CreateHudTemplate(std::vector<UINT> p_HudObjects, UINT& o_TemplateID)
@@ -556,9 +560,9 @@ void GraphicHandle::CreateHudTemplate(std::vector<UINT> p_HudObjects, UINT& o_Te
 	m_GraphicEngine->CreateHudTemplate(p_HudObjects, o_TemplateID);
 }
 
-void GraphicHandle::CreateHudFromTemplate(UINT p_HudTemplate, XMFLOAT3 p_Color, std::vector<XMFLOAT2> p_BarOffsets, UINT &o_HudID)
+void GraphicHandle::CreateHudFromTemplate(UINT p_HudTemplate, int p_Color, std::vector<XMFLOAT2> p_BarOffsets, UINT &o_HudID)
 {
-	m_GraphicEngine->CreateHudFromTemplate(p_HudTemplate, p_Color, p_BarOffsets, o_HudID);
+	m_GraphicEngine->CreateHudFromTemplate(p_HudTemplate, m_Colours[p_Color], p_BarOffsets, o_HudID);
 }
 
 void GraphicHandle::UseHud(UINT p_ViewportID, UINT p_HudID)
@@ -566,7 +570,7 @@ void GraphicHandle::UseHud(UINT p_ViewportID, UINT p_HudID)
 	m_GraphicEngine->UseHud(p_ViewportID, p_HudID);
 }
 
-void GraphicHandle::ChangeHudObjectTexture(UINT p_hudID, UINT p_objectID, bool p_useFrontTexture)
+void GraphicHandle::ChangeHudObjectTexture(UINT p_hudID, UINT p_objectID, UINT p_useFrontTexture)
 {
 	m_GraphicEngine->ChangeTextureOnHudObject(p_hudID,p_objectID,p_useFrontTexture);
 }
