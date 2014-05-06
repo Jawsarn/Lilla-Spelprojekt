@@ -998,14 +998,14 @@ void GraphicEngine::CreateHudTemplate(std::vector<UINT> p_ObjectIDs, UINT &o_Hud
 	o_HudID = m_HudTemplates.size() -  1;
 }
 
-HRESULT GraphicEngine::CreateHudObject(XMFLOAT2 p_Position, XMFLOAT2 p_Offset, int p_TextureID1, int p_TextureID2, UINT &o_HudObjectID)
+HRESULT GraphicEngine::CreateHudObject(XMFLOAT2 p_Position, XMFLOAT2 p_Offset, std::vector<UINT> p_Textures, UINT &o_HudObjectID)
 {
 	HRESULT hr = S_OK;
 
 	HudObject t_NewHudObject;
 	
-	t_NewHudObject.textureID1 = p_TextureID1;
-	t_NewHudObject.textureID2 = p_TextureID2;
+	t_NewHudObject.textures = p_Textures;
+	
 
 	HudVertex t_newHudVert;
 	t_newHudVert.position = p_Position;
@@ -1067,7 +1067,7 @@ HRESULT GraphicEngine::CreateHudFromTemplate(UINT p_HudTemplateID,  XMFLOAT3 p_C
 
 	m_Huds[o_HudID]->templateID = p_HudTemplateID;
 	m_Huds[o_HudID]->color = p_Color;
-	m_Huds[o_HudID]->firstTextureActive = std::vector<bool>(barOffsets.size(), true); //not sure if this is correct
+	m_Huds[o_HudID]->activeTexture = std::vector<UINT>(barOffsets.size(), 0); //not sure if this is correct
 	m_Huds[o_HudID]->barOffsets = barOffsets;
 
 	return S_OK;
@@ -1078,9 +1078,9 @@ void GraphicEngine::UseHud(UINT p_Viewport, UINT p_HudID)
 	m_ViewportHud[p_Viewport] = p_HudID;
 }
 
-void GraphicEngine::ChangeTextureOnHudObject(UINT p_HudID, UINT p_HudObjectID, bool useFrontTexture)
+void GraphicEngine::ChangeTextureOnHudObject(UINT p_HudID, UINT p_HudObjectID, UINT activeTexture)
 {
-	m_Huds[p_HudID]->firstTextureActive[p_HudObjectID] = useFrontTexture;
+	m_Huds[p_HudID]->activeTexture[p_HudObjectID] = activeTexture;
 }
 
 
@@ -1515,15 +1515,8 @@ void GraphicEngine::DrawHud()
 				m_DeviceContext->UpdateSubresource(m_HudConstantBuffer, 0, nullptr, &t_Hcb, 0, 0 );
 
 				//update texture and buffer and other stuff to constant buffer
-				int textureID;
-				if (m_Huds[m_ViewportHud[j]]->firstTextureActive[i])
-				{
-					textureID = t_CurHudObject.textureID1;
-				}
-				else
-				{
-					textureID = t_CurHudObject.textureID2;
-				}
+				UINT textureID = m_Huds[m_ViewportHud[j]]->activeTexture[i];
+
 
 				//set texture
 				m_DeviceContext->PSSetShaderResources(0, 1, &m_Textures[textureID]);
