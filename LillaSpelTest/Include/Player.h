@@ -47,7 +47,9 @@ private:
 
 	///Timers///
 	float m_deathTimer;
+	float m_maxDeathTimer;
 	float m_immortalTimer;
+	float m_maxImmortalTimer;
 	int m_racePos;
 	float m_wallGain;
 
@@ -92,6 +94,8 @@ public:
 	int GetRacePosition();
 	float GetHudBoosterInfo();
 	float GetHudWallInfo();
+	bool GetImmortal();
+	void Die();
 
 private:
 	//rotates the up vector to the proper angle
