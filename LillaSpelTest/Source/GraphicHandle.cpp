@@ -64,6 +64,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	std::vector<std::string> t_ShipNames;
 	t_ShipNames.push_back("MilleniumKalk");
 	t_ShipNames.push_back("PajFighter");
+	t_ShipNames.push_back("SpazMnic");
 		for (int i = 0; i < t_ShipNames.size(); i++)
 	{
 
