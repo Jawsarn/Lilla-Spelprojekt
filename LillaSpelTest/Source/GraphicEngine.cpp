@@ -737,7 +737,11 @@ HRESULT GraphicEngine::LoadMesh(std::string p_FileName, std::vector<UINT> &o_Dra
 	std::vector<std::vector<SimpleVertex>> t_VertexGroupLists;
 	hr = m_MeshLoader->ReadObjFile(p_FileName,t_VertexGroupLists,1.0f);
 	if( FAILED( hr ))
+	{
+		MessageBox( nullptr, L"Something failed, ask Jaws why Lolz..", L"ErrorMessage", MB_OK );
 		return hr;
+	}
+		
 	
 	D3D11_BUFFER_DESC vbd;
 	ZeroMemory( &vbd, sizeof(vbd));
@@ -918,7 +922,10 @@ HRESULT GraphicEngine::LoadTexture(const wchar_t * p_FileName, UINT &o_TextureID
 	ID3D11ShaderResourceView* t_NewSRV;
 	hr = CreateDDSTextureFromFile(m_Device, p_FileName, nullptr, &t_NewSRV);
 	if( FAILED( hr ))
+	{
+		MessageBox( nullptr, L"YOU FUCKING LOADED A NON EXISTING TEXTURE YOU NOOB", L"ErrorMessage", MB_OK );
 		return hr;
+	}
 
 	m_Textures.push_back(t_NewSRV);
 
@@ -1480,6 +1487,9 @@ void GraphicEngine::DrawMenu()
 
 void GraphicEngine::DrawHud()
 {
+	float t_BlendFactors[] = {0.0f, 0.0f, 0.0f, 0.0f};
+	m_DeviceContext->OMSetBlendState( m_BlendStateOn, t_BlendFactors, 0xffffffff );
+	
 	m_DeviceContext->GSSetConstantBuffers(0,1,&m_HudConstantBuffer);
 	
 	UINT strides = sizeof(HudVertex);
@@ -1489,7 +1499,7 @@ void GraphicEngine::DrawHud()
 	m_DeviceContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
 
 	//turn off depth checks
-	m_DeviceContext->OMSetDepthStencilState(m_DepthStateOff,0);
+	m_DeviceContext->OMSetDepthStencilState(m_DepthStateOff, 0);
 
 	//use right program
 	SetShaderProgram(m_ShaderPrograms[1]);
@@ -1533,6 +1543,7 @@ void GraphicEngine::DrawHud()
 			}
 		}
 	}
+	m_DeviceContext->OMSetBlendState( m_BlendStateOff, t_BlendFactors, 0xffffffff );
 }
 
 void GraphicEngine::ComputeGlow()
