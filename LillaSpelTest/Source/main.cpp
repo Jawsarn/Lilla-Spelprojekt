@@ -14,6 +14,7 @@
 #include "Struct_GameInfo.h"
 #include "MainMenuScreen.h"
 #include "OptionsScreen.h"
+#include "PauseScreen.h"
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam );
 HRESULT InitializeWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow);
@@ -30,7 +31,8 @@ Screen* m_mainMenuScreen;
 Screen* m_gameSetupScreen;
 Screen* m_optionsScreen;
 Screen* m_joinGameScreen;
-Screen* m_gameScreen;
+PauseScreen* m_pauseScreen;
+GameScreen* m_gameScreen;
 GameInfo m_gameInfo;
 
 #include "GraphicHandle.h"
@@ -53,7 +55,6 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
 	m_LastMousePos = XMFLOAT2(0,0);
 
-	m_levelNames.push_back("testtube");
 	m_levelNames.push_back("dust2");
 	m_levelNames.push_back("freeway");
 	m_levelNames.push_back("assault");
@@ -66,6 +67,7 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	m_gameSetupScreen = new GameSetupScreen(&m_gameInfo,m_GraphicHandle);
 	m_optionsScreen = new OptionsScreen(&m_gameInfo,m_GraphicHandle);
 	m_joinGameScreen = new JoinGameScreen(&m_gameInfo,m_GraphicHandle);
+	m_pauseScreen = new PauseScreen(m_GraphicHandle);
 	//m_gameScreen = new GameScreen("dust2", 4, m_GraphicHandle);
 	m_state = MAIN_MENU_SCREEN;
 	Run();
