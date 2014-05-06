@@ -15,8 +15,11 @@ private:
 	std::vector<MapNode*>* m_mapNodes;
 	std::vector<Player*> m_players;
 	std::vector<UINT> m_hudID;
+	int m_lastNodeIndex;
+	int m_pauseDudeIndex;
 public:
 	GameScreen(void);
+	int GetPauseDudeIndex();
 	void Initialize();
 	GameScreen(int p_colors[4], int p_whatVehicle[4], string p_mapName, int p_numberOfPlayers, GraphicHandle* p_graphicHandle);
 	~GameScreen(void);

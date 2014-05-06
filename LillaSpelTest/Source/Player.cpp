@@ -10,10 +10,16 @@ Player::Player()
 
 Player::Player(MapNode* p_startNode, float p_startAngle)
 {
+	m_maxBoost = 20000;
+	m_maxWalls = 100;
+	m_boostDecay = 100;
 	m_racePos = 1;
 	m_coolDownDecay = 0.07;
 	m_mapNode = p_startNode;
 	m_upVector = XMFLOAT3(0,1,0);
+
+	m_maxImmortalTimer = 5;
+	m_maxDeathTimer = 1;
 
 	m_distance = 0.0f;
 	m_boostMeter =20000;//test value
@@ -205,6 +211,10 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 		m_coolDown = 1;
 		return 1;
 	}
+
+	////immortal and death timers
+	m_immortalTimer-=p_dt;
+	m_deathTimer -=p_dt;
 	return 0;
 }
 
@@ -391,13 +401,24 @@ int Player::GetRacePosition()
 }
 
 
-	float Player::GetHudBoosterInfo()
-	{
-		//apparently wants 0 to be alot of boost, and 1 to be empty
-		return 1-(m_boostMeter/m_maxBoost);
-	}
-	float Player::GetHudWallInfo()
-	{
-		//apparently wants 0 to be alot of walls, and 1 to be empty
-		return 1-(m_maxWalls/m_wallMeter);
-	}
+float Player::GetHudBoosterInfo()
+{
+	//apparently wants 0 to be alot of boost, and 1 to be empty
+	return 1-(m_boostMeter/m_maxBoost);
+}
+float Player::GetHudWallInfo()
+{
+	//apparently wants 0 to be alot of walls, and 1 to be empty
+	return 1-(m_maxWalls/m_wallMeter);
+}
+
+bool Player::GetImmortal()
+{
+	return (m_immortalTimer>0);
+}
+
+void Player::Die()
+{
+	m_speed = 0;
+	m_immortalTimer = m_maxImmortalTimer;
+}
