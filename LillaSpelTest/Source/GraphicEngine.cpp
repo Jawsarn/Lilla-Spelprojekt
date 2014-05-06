@@ -1480,6 +1480,9 @@ void GraphicEngine::DrawMenu()
 
 void GraphicEngine::DrawHud()
 {
+	float t_BlendFactors[] = {0.0f, 0.0f, 0.0f, 0.0f};
+	m_DeviceContext->OMSetBlendState( m_BlendStateOn, t_BlendFactors, 0xffffffff );
+	
 	m_DeviceContext->GSSetConstantBuffers(0,1,&m_HudConstantBuffer);
 	
 	UINT strides = sizeof(HudVertex);
@@ -1489,7 +1492,7 @@ void GraphicEngine::DrawHud()
 	m_DeviceContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
 
 	//turn off depth checks
-	m_DeviceContext->OMSetDepthStencilState(m_DepthStateOff,0);
+	m_DeviceContext->OMSetDepthStencilState(m_DepthStateOff, 0);
 
 	//use right program
 	SetShaderProgram(m_ShaderPrograms[1]);
@@ -1533,6 +1536,7 @@ void GraphicEngine::DrawHud()
 			}
 		}
 	}
+	m_DeviceContext->OMSetBlendState( m_BlendStateOff, t_BlendFactors, 0xffffffff );
 }
 
 void GraphicEngine::ComputeGlow()
