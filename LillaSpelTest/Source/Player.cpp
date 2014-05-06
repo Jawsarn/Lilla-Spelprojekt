@@ -25,7 +25,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle)
 	//speed stuff
 	m_speed = 0;
 	m_maxSpeed = 20;
-	m_maxBoostSpeed = 20000;//test value
+	m_maxBoostSpeed = 20000;//
 
 	m_acceleration = 4;
 	m_boostAcceleration = 20;
@@ -365,7 +365,7 @@ XMFLOAT3 Player::GetDirection()
 	return m_direction;
 }
 
-int Player::GetPlayerBoost()
+float Player::GetPlayerBoost()
 {
 	return m_boostMeter;
 }
@@ -390,3 +390,15 @@ int Player::GetRacePosition()
 	return m_racePos;
 }
 
+
+
+float Player::GetHudBoosterInfo()
+{
+	//apparently wants 0 to be alot of boost, and 1 to be empty
+	return 1-(m_boostMeter/m_maxBoost);
+}
+float Player::GetHudWallInfo()
+{
+	//apparently wants 0 to be alot of walls, and 1 to be empty
+	return 1-(m_maxWalls/m_wallMeter);
+}
