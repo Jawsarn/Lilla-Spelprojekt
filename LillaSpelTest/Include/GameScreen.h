@@ -14,6 +14,7 @@ private:
 	CollisionManager* m_collisionManager;
 	std::vector<MapNode*>* m_mapNodes;
 	std::vector<Player*> m_players;
+	std::vector<UINT> m_hudID;
 public:
 	GameScreen(void);
 	void Initialize();
@@ -21,5 +22,7 @@ public:
 	~GameScreen(void);
 	int Update(float p_dt, std::vector<UserCMD>* p_userCMDS); //shouldnt be here
 	void Draw();
+private:
+	void CreatePlayerHUDs(int p_numberOfPlayers,int p_color[4]);
 };
 

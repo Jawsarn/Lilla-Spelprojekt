@@ -167,7 +167,7 @@ void JoinGameScreen::MakeHud(const wchar_t* p_textureNames, int p_hudIndex)
 	m_graphicHandle->CreateHUDObject(t_centerPoint,t_offset,t_textureIDs,t_objHandle);
 	t_objHandles.push_back(t_objHandle);
 	m_graphicHandle->CreateHudTemplate(t_objHandles,t_templateHandle);
-	m_graphicHandle->CreateHudFromTemplate(t_templateHandle,DirectX::XMFLOAT3(0,1,0),t_barOffsets,m_hudIDs[p_hudIndex]);
+	m_graphicHandle->CreateHudFromTemplate(t_templateHandle,5,t_barOffsets,m_hudIDs[p_hudIndex]);
 }
 
 void JoinGameScreen::SaveInfo()

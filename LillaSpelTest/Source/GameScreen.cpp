@@ -25,6 +25,8 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4], std::string p_mapNa
 	m_graphicHandle->SetAmountOfPlayers(p_numberOfPlayers);
 	m_graphicHandle->SetColourAndVehicle(t_colors, t_whichVehicles);
 	m_graphicHandle->CreateShipForGame(t_shipWorldMatrices);
+
+	CreatePlayerHUDs(p_numberOfPlayers,p_color);
 }
 
 GameScreen::~GameScreen(void)
@@ -116,4 +118,33 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 void GameScreen::Draw()
 {
 
+}
+
+void GameScreen::CreatePlayerHUDs(int p_numberOfPlayers, int p_color[4])
+{
+	m_hudID.resize(p_numberOfPlayers,0);
+	UINT t_placementHandle;
+	UINT t_texture;
+	UINT t_templateHandle;
+	std::vector<UINT> t_hudParts;
+	std::vector<UINT> t_textureIDs;
+	std::vector<DirectX::XMFLOAT2> t_barOffsets;
+	m_graphicHandle->LoadTexture(L"first.dds",t_texture);
+	t_textureIDs.push_back(t_texture);
+	m_graphicHandle->LoadTexture(L"second.dds",t_texture);
+	t_textureIDs.push_back(t_texture);
+	m_graphicHandle->LoadTexture(L"third.dds",t_texture);
+	t_textureIDs.push_back(t_texture);
+	m_graphicHandle->LoadTexture(L"fourth.dds",t_texture);
+	t_textureIDs.push_back(t_texture);
+	m_graphicHandle->CreateHUDObject(DirectX::XMFLOAT2(-0.8,0.8),DirectX::XMFLOAT2(0.1,0.1),t_textureIDs,t_placementHandle);
+	t_hudParts.push_back(t_placementHandle);
+	t_barOffsets.push_back(DirectX::XMFLOAT2(0,0));
+	m_graphicHandle->CreateHudTemplate(t_hudParts,t_templateHandle);
+	
+	for (int i = 0; i < p_numberOfPlayers; i++)
+	{
+		m_graphicHandle->CreateHudFromTemplate(t_templateHandle,p_color[i],t_barOffsets,m_hudID[i]);
+		m_graphicHandle->UseHud(i,m_hudID[i]);
+	}
 }

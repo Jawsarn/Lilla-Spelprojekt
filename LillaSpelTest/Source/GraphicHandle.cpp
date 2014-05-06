@@ -554,9 +554,9 @@ void GraphicHandle::CreateHudTemplate(std::vector<UINT> p_HudObjects, UINT& o_Te
 	m_GraphicEngine->CreateHudTemplate(p_HudObjects, o_TemplateID);
 }
 
-void GraphicHandle::CreateHudFromTemplate(UINT p_HudTemplate, XMFLOAT3 p_Color, std::vector<XMFLOAT2> p_BarOffsets, UINT &o_HudID)
+void GraphicHandle::CreateHudFromTemplate(UINT p_HudTemplate, int p_Color, std::vector<XMFLOAT2> p_BarOffsets, UINT &o_HudID)
 {
-	m_GraphicEngine->CreateHudFromTemplate(p_HudTemplate, p_Color, p_BarOffsets, o_HudID);
+	m_GraphicEngine->CreateHudFromTemplate(p_HudTemplate, m_Colours[p_Color], p_BarOffsets, o_HudID);
 }
 
 void GraphicHandle::UseHud(UINT p_ViewportID, UINT p_HudID)
