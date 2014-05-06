@@ -10,7 +10,7 @@ Player::Player()
 
 Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 {
-	m_wallBoxExtents = XMFLOAT3(1,1,1);
+	m_wallBoxExtents = XMFLOAT3(0.5,0.5,1);
 	m_playerShipBoxExtents = XMFLOAT3(1,1,1);
 
 	m_playerIndex = p_playerIndex;
@@ -19,7 +19,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_maxWalls = 100;
 	m_boostDecay = 100;
 	m_racePos = 1;
-	m_coolDownDecay = 0.07;
+	m_coolDownDecay = 0.03;
 	m_mapNode = p_startNode;
 	m_upVector = XMFLOAT3(0,1,0);
 
@@ -36,11 +36,11 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	//speed stuff
 	m_speed = 0;
 	m_maxSpeed = 20;
-	m_maxBoostSpeed = 20000;//
+	m_maxBoostSpeed = 60;//
 
-	m_acceleration = 4;
-	m_boostAcceleration = 20;
-	m_deceleration = 5;
+	m_acceleration = 8;
+	m_boostAcceleration = 25;
+	m_deceleration = 16;
 
 	//rotation stuff
 	m_rotateSpeed = 2;
@@ -161,8 +161,8 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 	//{
 	//	m_speed = 15;
 	//}
-	if(p_userCMD.aButtonPressed)
-		m_speed = 80;
+	if(p_userCMD.xButtonPressed)
+		m_speed = 60;
 
 
 	////movement along logical map stuff

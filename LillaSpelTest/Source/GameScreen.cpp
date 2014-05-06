@@ -114,7 +114,7 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 				else if (t_collisionResult>0)
 				{
 					//went close to wall and got boost
-					float t_boostPerWallPerUpdate = 10;
+					float t_boostPerWallPerUpdate = 10000;
 					float t_currentBoost = m_players[i]->GetPlayerBoost();
 					m_players[i]->SetPlayerBoost(t_currentBoost+p_dt*t_collisionResult*t_boostPerWallPerUpdate);
 					p_userCMDS->at(i).controller.Vibrate(10000,10000);
