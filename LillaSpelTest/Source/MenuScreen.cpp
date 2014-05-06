@@ -119,7 +119,7 @@ void MenuScreen::MakeHud(unsigned int & o_hudID)
 	}
 	unsigned int t_templateHandle;
 	m_graphicHandle->CreateHudTemplate(t_buttonHandles,t_templateHandle);
-	m_graphicHandle->CreateHudFromTemplate(t_templateHandle,DirectX::XMFLOAT3(0,1,0),t_barOffsets,o_hudID);
+	m_graphicHandle->CreateHudFromTemplate(t_templateHandle,5,t_barOffsets,o_hudID);
 }
 
 void MenuScreen::FixButtonPointers()
