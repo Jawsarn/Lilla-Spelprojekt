@@ -14,6 +14,7 @@
 #include "Struct_GameInfo.h"
 #include "MainMenuScreen.h"
 #include "OptionsScreen.h"
+#include "PauseScreen.h"
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam );
 HRESULT InitializeWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow);
@@ -30,7 +31,8 @@ Screen* m_mainMenuScreen;
 Screen* m_gameSetupScreen;
 Screen* m_optionsScreen;
 Screen* m_joinGameScreen;
-Screen* m_gameScreen;
+PauseScreen* m_pauseScreen;
+GameScreen* m_gameScreen;
 GameInfo m_gameInfo;
 
 #include "GraphicHandle.h"
@@ -53,10 +55,10 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
 	m_LastMousePos = XMFLOAT2(0,0);
 
-	m_levelNames.push_back("testtube");
-	m_levelNames.push_back("dust2");
-	m_levelNames.push_back("freeway");
-	m_levelNames.push_back("assault");
+
+	m_levelNames.push_back("Assault");
+	m_levelNames.push_back("Dust2");
+
 
 	m_GraphicHandle = m_GraphicHandle->GetInstance();
 	m_GraphicHandle->Initialize(1920, 1080, m_HandleWindow,m_levelNames); //fix this input variables right
@@ -66,6 +68,7 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	m_gameSetupScreen = new GameSetupScreen(&m_gameInfo,m_GraphicHandle);
 	m_optionsScreen = new OptionsScreen(&m_gameInfo,m_GraphicHandle);
 	m_joinGameScreen = new JoinGameScreen(&m_gameInfo,m_GraphicHandle);
+	m_pauseScreen = new PauseScreen(m_GraphicHandle);
 	//m_gameScreen = new GameScreen("dust2", 4, m_GraphicHandle);
 	m_state = MAIN_MENU_SCREEN;
 	Run();
@@ -154,6 +157,7 @@ void RunInitialization()
 		m_gameSetupScreen->Initialize();
 		break;
 	case PAUSE_SCREEN:
+		m_pauseScreen->Initialize(m_gameScreen->GetPauseDudeIndex());
 		break;
 	case GAME_SCREEN:
 		delete m_gameScreen;
@@ -192,10 +196,21 @@ void Update(std::vector<UserCMD>* p_userCMDs)
 		}
 		break;
 	case PAUSE_SCREEN:
+		m_state = (ApplicationState)m_pauseScreen->Update(m_DeltaTime,p_userCMDs);
+		if (m_state != PAUSE_SCREEN )
+		{
+			if (m_state != GAME_SCREEN)
+			{
+				RunInitialization();
+			}
+			else
+			{
+				m_gameScreen->Initialize();
+			}
+		}
 		break;
 	case GAME_SCREEN:
 		m_state = (ApplicationState)m_gameScreen->Update(m_DeltaTime,p_userCMDs);
-		m_state = GAME_SCREEN;
 		if (m_state != GAME_SCREEN)
 		{
 			RunInitialization();

@@ -23,10 +23,17 @@ vector<MapNode*>* MapLoader::LoadMap(string p_mapName)
 {
 
 	//silly stuff. Apparently one does not simply add strings together
-	string t_centerSplineString = AddStrings(p_mapName, "CenterSpline.obj");
-	string t_edgeSplineString = AddStrings(p_mapName, "EdgeSpline.obj");
-	string t_holeBoxString = AddStrings(p_mapName, "HoleBoxes.obj");
-	string t_wallBoxString = AddStrings(p_mapName, "WallBoxes.obj");		///////////TO BE CHANGED. RATHER SILLY AS IT IS//////////////
+	string t_TempMan = "Levels/";
+	string t_SideTemp;
+
+	t_SideTemp = AddStrings(t_TempMan,p_mapName);
+
+	string t_centerSplineString = AddStrings(t_SideTemp, "/CenterSpline.obj");
+	string t_edgeSplineString = AddStrings(t_SideTemp, "/EdgeSpline.obj");
+
+
+	string t_holeBoxString = AddStrings(t_SideTemp, "/HoleBoxes.obj");
+	string t_wallBoxString = AddStrings(t_SideTemp, "/WallBoxes.obj");		///////////TO BE CHANGED. RATHER SILLY AS IT IS//////////////
 
 	//Load all information necessary for node creation
 	vector<vector<XMFLOAT3>> t_centerPositions = LoadLogicalObj(t_centerSplineString);

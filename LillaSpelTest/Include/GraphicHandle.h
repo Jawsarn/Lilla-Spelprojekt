@@ -45,6 +45,7 @@ private:
 
 	//texturelists
 	std::vector <UINT> m_ShipTexture;
+	std::vector <UINT> m_ShipNormalGlow;
 	std::vector <UINT> m_LevelTexture;
 	std::vector <UINT> m_PlayerWallTexture;
 	GraphicEngine* m_GraphicEngine;

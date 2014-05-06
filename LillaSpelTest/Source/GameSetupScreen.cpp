@@ -13,7 +13,7 @@ GameSetupScreen::~GameSetupScreen(void)
 GameSetupScreen::GameSetupScreen(GameInfo* p_gameInfo,GraphicHandle* p_graphicsHandle)
 	:MenuScreen(p_gameInfo, p_graphicsHandle)
 {
-	AddButton("Start", DirectX::XMFLOAT2(0,-0.7),0.1,0.1, L"Start1.dds",nullptr);
+	AddButton("Start", DirectX::XMFLOAT2(0,-0.7),0.1,0.1, L"Start1.dds",L"Start1.dds");
 
 	FixButtonPointers();
 	MakeHud(m_hudHandle);
