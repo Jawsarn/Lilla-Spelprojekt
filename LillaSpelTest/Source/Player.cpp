@@ -19,9 +19,11 @@ Player::Player(MapNode* p_startNode, float p_startAngle)
 	m_position = m_mapNode->m_position;
 	m_direction = DirectX::XMFLOAT3(0,0,1);
 	m_lastPlacedWall = nullptr;
-
+	m_wallGain = 0.1;     //How much wall per update?
+	m_wallMeter=0;
 	//initilaize world matrix stuff
 	FixUpVectorRotation(m_angle);
+	m_racePos = 1;
 	FixOffsetFromCenterSpline();
 	UpdateWorldMatrix();
 }
@@ -152,6 +154,9 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 		m_coolDown = 1;
 		return 1;
 	}
+
+	//Slowie
+	UpdateWallMeter(p_dt);
 	return 0;
 }
 
@@ -300,6 +305,10 @@ void Player::BumpedIntoPlayer(XMFLOAT3 p_force)
 
 }
 
+void Player::UpdateWallMeter(float p_dt)
+{
+	m_wallMeter += (5-m_racePos)*m_wallGain*p_dt;
+}
 
 
 /// Gets yo
@@ -321,4 +330,15 @@ int Player::GetPlayerBoost()
 void Player::SetPlayerBoost(float p_boost)
 {
 	m_boostMeter = p_boost;
+}
+
+float Player::GetDistanceTraveled()
+{
+	float t_distance = (float)m_mapNode->m_Index;
+	t_distance += m_distance/100; //SÅ att du kan skilja på positioner även om fler spelare är i samma mapnode
+	return t_distance;
+}
+void Player::SetPlayerPosition(int p_pos)
+{
+	m_racePos = p_pos;
 }

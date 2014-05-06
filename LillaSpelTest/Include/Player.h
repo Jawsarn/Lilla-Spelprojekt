@@ -28,6 +28,8 @@ private:
 	///Timers///
 	float m_deathTimer;
 	float m_immortalTimer;
+	int m_racePos;
+	float m_wallGain;
 
 	XMFLOAT3 m_logicalPosition;
 	XMFLOAT3 m_acceleration;
@@ -63,8 +65,10 @@ public:
 	MapNode* GetCurrentMapNode();
 	BoundingOrientedBox* GetCollisionBox();
 	PlayerWall* GetLastPlacedWall();
+	float GetDistanceTraveled(); 
 	int GetPlayerBoost();
 	void SetPlayerBoost(float p_boost);
+	void SetPlayerPosition(int p_pos);
 
 private:
 	//rotates the up vector to the proper angle
@@ -76,6 +80,7 @@ private:
 	void UpdateMapNode();
 	void BumpedIntoPlayer(XMFLOAT3 p_force);
 	void UpdateWorldMatrix();
+	void UpdateWallMeter(float p_dt);
 
 };
 

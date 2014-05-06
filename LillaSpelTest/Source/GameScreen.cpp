@@ -106,8 +106,29 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 			p_userCMDS->at(i).controller.Vibrate(0,0);
 		}
 
+
 	}
 
+	//Give all players their respective racePosition by checking ever player vs every other player
+	
+	for (int i = 0; i < m_players.size(); i++)
+	{
+		float t_currPlayerDistance = m_players[i]->GetDistanceTraveled();
+		int t_racePos = 1;
+		for (int j = 0; j < m_players.size(); j++)
+		{
+			if(i!=j)
+			{
+				float t_distanceToCheck = m_players[j]->GetDistanceTraveled();
+				if(t_currPlayerDistance < t_distanceToCheck)
+				{
+					t_racePos++;
+				}
+
+			}
+		}
+		m_players[i]->SetPlayerPosition(t_racePos);
+	}
 
 
 	return GAME_SCREEN;
