@@ -24,5 +24,6 @@ public:
 	void Draw();
 private:
 	void CreatePlayerHUDs(int p_numberOfPlayers,int p_color[4]);
+	void UpdatePlayerHUD(int p_player);
 };
 

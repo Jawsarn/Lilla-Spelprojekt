@@ -82,6 +82,7 @@ public:
 	int GetPlayerBoost();
 	void SetPlayerBoost(float p_boost);
 	void SetPlayerRacePosition(int p_pos);
+	int GetRacePosition();
 
 private:
 	//rotates the up vector to the proper angle

@@ -10,7 +10,7 @@ Player::Player()
 
 Player::Player(MapNode* p_startNode, float p_startAngle)
 {
-
+	m_racePos = 1;
 	m_coolDownDecay = 0.07;
 	m_mapNode = p_startNode;
 	m_upVector = XMFLOAT3(0,1,0);
@@ -384,4 +384,8 @@ float Player::GetDistanceTraveled()
 void Player::SetPlayerRacePosition(int p_pos)
 {
 	m_racePos = p_pos;
+}
+int Player::GetRacePosition()
+{
+	return m_racePos;
 }

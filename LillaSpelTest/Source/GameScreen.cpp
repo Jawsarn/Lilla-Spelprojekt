@@ -108,7 +108,7 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 			p_userCMDS->at(i).controller.Vibrate(0,0);
 		}
 
-
+		UpdatePlayerHUD(i);
 	}
 
 	//Give all players their respective racePosition by checking ever player vs every other player
@@ -168,4 +168,9 @@ void GameScreen::CreatePlayerHUDs(int p_numberOfPlayers, int p_color[4])
 		m_graphicHandle->CreateHudFromTemplate(t_templateHandle,p_color[i],t_barOffsets,m_hudID[i]);
 		m_graphicHandle->UseHud(i,m_hudID[i]);
 	}
+}
+
+void GameScreen::UpdatePlayerHUD(int p_player)
+{
+	m_graphicHandle->ChangeHudObjectTexture(m_hudID[p_player],0,m_players[p_player]->GetRacePosition()-1);
 }
