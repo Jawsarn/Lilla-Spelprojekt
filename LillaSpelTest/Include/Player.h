@@ -19,6 +19,7 @@ class Player :
 	///////////////VARIABLES///////////
 private:
 	//speed stuff
+	float m_speed;
 	float m_maxSpeed;
 	float m_maxBoostSpeed;
 	float m_acceleration;
@@ -29,15 +30,21 @@ private:
 	float m_rotateSpeed;
 	float m_angle;
 
-
-	float m_coolDownDecay;
+	//boost stuff
 	float m_boostDecay;
+	float m_maxBoost;
+	float m_boostMeter;
+
+	//wall stuff
+	float m_wallMeter;
+	float m_maxWalls;
+	float m_coolDown;
+	float m_coolDownDecay;
 
 	float m_distance;
-	float m_boostMeter;
-	float m_wallMeter;
-	float m_coolDown;
-	float m_speed;
+
+
+
 	///Timers///
 	float m_deathTimer;
 	float m_immortalTimer;
@@ -79,9 +86,12 @@ public:
 	BoundingOrientedBox* GetCollisionBox();
 	PlayerWall* GetLastPlacedWall();
 	float GetDistanceTraveled(); 
-	int GetPlayerBoost();
+	float GetPlayerBoost();
 	void SetPlayerBoost(float p_boost);
 	void SetPlayerRacePosition(int p_pos);
+	int GetRacePosition();
+	float GetHudBoosterInfo();
+	float GetHudWallInfo();
 
 private:
 	//rotates the up vector to the proper angle
