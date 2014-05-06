@@ -334,14 +334,14 @@ void CS( uint3 threadID		: SV_DispatchThreadID,
 	/////////Calc lights////////
 	////////////////////////////
 	uint groupSize = BLOCK_SIZE * BLOCK_SIZE;
-	//lightcull for this tile, may change more towards the dice implementation
+	//lightcull for this tile, may change more towards the dice implementation maxNumOfLights
 	for (uint lightIndex = groupIndex; lightIndex < maxNumOfLights; lightIndex+= groupSize)
 	{
 		Light light = lights[lightIndex];
 
 
 		bool inFrustum = true;
-		for (int i = 0; i < 6 && inFrustum; i++)
+		for (int i = 0; i < 6 && inFrustum; i++) //6
 		{
 			float4 lightPos = mul(float4(light.position,1), View[viewport]);
 

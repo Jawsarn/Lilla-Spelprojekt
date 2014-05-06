@@ -54,7 +54,7 @@ struct DrawPiece
 struct DrawObject
 {
 	std::vector<UINT> piecesID; //=D=D=D=D
-	std::vector<Light> lights;	//lighteruuu
+	std::vector<UINT> lights;	//lighteruuu
 	//std::vector<transparentID>?
 	//std::vector<ParticleEffectID>
 	XMFLOAT3 color;

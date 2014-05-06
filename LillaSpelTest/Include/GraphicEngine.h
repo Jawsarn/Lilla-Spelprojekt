@@ -120,7 +120,7 @@ private:
 	void SetShaderProgram(ShaderProgram p_Program);
 	void SetTextures(DrawPiece p_DrawPiece);
 	void ComputeTileDeferredLightning();
-	void UpdateConstantBuffer(); //not written
+	void UpdateLightBuffer();
 	void DrawHud();
 	void ComputeGlow();
 

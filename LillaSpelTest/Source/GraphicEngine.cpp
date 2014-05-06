@@ -560,6 +560,7 @@ HRESULT GraphicEngine::InitializeConstantBuffers()
 	if ( FAILED( hr ) )
 		return hr;
 
+	//light buffer
 	m_StaticLights.resize(MAX_NUM_OF_LIGHTS);
 	/*bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	bd.Usage = D3D11_USAGE_DYNAMIC;*/
@@ -845,7 +846,11 @@ HRESULT GraphicEngine::AddObjectLight(UINT p_ObjectID ,XMFLOAT3 p_Position, XMFL
 {
 	if (m_DrawObjects[p_ObjectID] != nullptr)
 	{
-		m_DrawObjects[p_ObjectID]->lights.push_back(Light(p_Position,p_Radius,p_Color,0));
+		m_StaticLights[m_CurrentNumOfLights] = Light(p_Position,p_Radius,p_Color,0);
+
+		m_DrawObjects[p_ObjectID]->lights.push_back(m_CurrentNumOfLights);
+		m_CurrentNumOfLights++;
+
 		o_LightID = m_DrawObjects[p_ObjectID]->lights.size() -1;
 		return S_OK;
 	}
@@ -861,7 +866,8 @@ HRESULT GraphicEngine::ChangeObjectsLight(UINT p_ObjectID, UINT p_LightID,XMFLOA
 	{
 		if (p_LightID < m_DrawObjects[p_ObjectID]->lights.size())
 		{
-			m_DrawObjects[p_ObjectID]->lights[p_LightID] = Light(p_Position,p_Radius,p_Color,0);
+			m_StaticLights[m_DrawObjects[p_ObjectID]->lights[p_LightID]] =  Light(p_Position,p_Radius,p_Color,0);
+
 			return S_OK;
 		}
 		else
@@ -1310,7 +1316,7 @@ void GraphicEngine::DrawGame()
 	//compute tiled lighting
 	ComputeTileDeferredLightning();
 
-	//draw hud
+	////draw hud
 	DrawHud();
 
 	m_SwapChain->Present( 1, 0 );
@@ -1432,6 +1438,8 @@ void GraphicEngine::SetTextures(DrawPiece p_DrawPiece)
 
 void GraphicEngine::ComputeTileDeferredLightning()
 {
+	UpdateLightBuffer();
+	
 	m_DeviceContext->CSSetShader(m_ComputeShaders[0],nullptr,0); //HÅRDKODAT
 	
 	//set constant buffersss
@@ -1471,6 +1479,11 @@ void GraphicEngine::ComputeTileDeferredLightning()
 	m_DeviceContext->CSSetShaderResources(1,3,temp);
 	ID3D11UnorderedAccessView* temp2 = {0};
 	m_DeviceContext->CSSetUnorderedAccessViews(0, 1, &temp2, nullptr);
+}
+
+void GraphicEngine::UpdateLightBuffer()
+{
+	m_DeviceContext->UpdateSubresource(m_LightBuffer, 0, nullptr, &m_StaticLights[0], 0, 0);
 }
 
 void GraphicEngine::DrawMenu()
@@ -1603,3 +1616,13 @@ void GraphicEngine::Cleanup()
 {
 	SetFullscreenState(false);
 }
+
+/*
+OK future jaws, do dis
+
+update light positions for players, yes...
+
+and also, remove lights if object is removed, yes!
+but wait!.. maybe save lights somewhere....................
+
+*/
