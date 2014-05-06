@@ -24,8 +24,20 @@ GraphicHandle::~GraphicHandle()
 void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::vector <std::string> p_LevelNames)
 {
 
+		//en generell metod för all bajsar	//en generell metod för all bajsar	//en generell metod för all bajsar	//en generell metod för all bajsar	//en generell metod för all bajsar	//en generell metod för all bajsar	//en generell metod för all bajsar	//en generell metod för all bajsar	//en generell metod för all bajsar	//en generell metod för all bajsar
+		//en generell metod för all bajsar	//en generell metod för all bajsar
+		//en generell metod för all bajsar
+		//en generell metod för all bajsar
+		//en generell metod för all bajsar
+		//en generell metod för all bajsar
+		//en generell metod för all bajsar
+		//en generell metod för all bajsar
+		//en generell metod för all bajsar
+		//en generell metod för all bajsar
+		//en generell metod för all bajsar
+		//en generell metod för all bajsar
+		//en generell metod för all bajsar
 
-	//kony ska kalla på 4123 när spelet ska startas
 	m_GraphicEngine = m_GraphicEngine->GetInstance();
 	m_GraphicEngine->Initialize(p_Width, p_Height, p_Handle);
 	SetAmountOfPlayers(4);
@@ -37,7 +49,9 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	UINT t_TempurTextur;
 	UINT t_TempurTexturNG;
 	////initWallTextures
-	m_GraphicEngine->LoadTexture(L"Walls/FirstWall/Texture.dds",t_TempurTextur);
+	m_GraphicEngine->LoadTexture(L"Walls/FirstWall/Texture.dds",t_TempurTextur);//en generell metod för all bajsar
+
+
 	InitializeWall("Walls/FirstWall/Mesh.obj",t_TempurTextur);
 	//m_PlayerWallTexture.push_back(t_TempurTextur);
 
