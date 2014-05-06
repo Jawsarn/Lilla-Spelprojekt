@@ -17,7 +17,7 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4], std::string p_mapNa
 	for (int i = 0; i < p_numberOfPlayers; i++)
 	{
 
-		m_players.push_back(new Player(m_mapNodes->at(0),0.0f));
+		m_players.push_back(new Player(m_mapNodes->at(0),0.0f, i));
 		t_shipWorldMatrices.push_back(m_players[i]->GetWorldMatrix());
 		t_colors.push_back(p_color[i]);
 		t_whichVehicles.push_back(p_whatVehicle[i]);
@@ -98,7 +98,7 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 
 				///checks collision for the playet against all walls in the current mapnode
 				//returns -1 if player hits a wall. Returns the number of spheres hit (used for boost calculation) otherwise
-				int t_collisionResult = m_collisionManager->PlayerVsPlayerWall(m_players[i]->GetCollisionBox(), t_playerWallsToCheck);
+				int t_collisionResult = m_collisionManager->PlayerVsPlayerWall(m_players[i]->GetCollisionBox(), t_playerWallsToCheck, i);
 				if(t_collisionResult == -1)	
 				{
 					//Collided with playerwall
