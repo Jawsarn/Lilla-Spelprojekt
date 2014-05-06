@@ -144,6 +144,7 @@ void JoinGameScreen::Initialize()
 	{
 		m_graphicHandle->SetCameraVehicleSelection(i);
 		m_graphicHandle->UseHud(i,m_hudIDs[DISCONNECTED]);
+		m_playerStatus[i]=DISCONNECTED;
 	}
 	m_graphicHandle->AddSelectionDraw();
 	m_graphicHandle ->SetViewportAmount(4);
