@@ -5,6 +5,7 @@ class PauseScreen :
 {
 private:
 	unsigned int m_hudHandle;
+	int m_whoPaused;
 public:
 	PauseScreen(void);
 	PauseScreen(GraphicHandle* p_graphicHandle);

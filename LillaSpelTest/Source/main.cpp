@@ -156,6 +156,7 @@ void RunInitialization()
 		m_gameSetupScreen->Initialize();
 		break;
 	case PAUSE_SCREEN:
+		m_pauseScreen->Initialize(m_gameScreen->GetPauseDudeIndex());
 		break;
 	case GAME_SCREEN:
 		delete m_gameScreen;
@@ -194,10 +195,14 @@ void Update(std::vector<UserCMD>* p_userCMDs)
 		}
 		break;
 	case PAUSE_SCREEN:
+		m_state = (ApplicationState)m_pauseScreen->Update(m_DeltaTime,p_userCMDs);
+		if (m_state != PAUSE_SCREEN && m_state != GAME_SCREEN)
+		{
+			RunInitialization();
+		}
 		break;
 	case GAME_SCREEN:
 		m_state = (ApplicationState)m_gameScreen->Update(m_DeltaTime,p_userCMDs);
-		m_state = GAME_SCREEN;
 		if (m_state != GAME_SCREEN)
 		{
 			RunInitialization();
