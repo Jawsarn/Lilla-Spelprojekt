@@ -181,7 +181,7 @@ void GameScreen::CreatePlayerHUDs(int p_numberOfPlayers, int p_color[4])
 	}
 	
 }
-
+float testaren = 1;
 void GameScreen::UpdatePlayerHUD(int p_player)
 {
 	m_graphicHandle->ChangeHudObjectTexture(m_hudID[p_player],0,m_players[p_player]->GetRacePosition()-1);

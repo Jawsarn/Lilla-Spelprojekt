@@ -10,8 +10,9 @@ Player::Player()
 
 Player::Player(MapNode* p_startNode, float p_startAngle)
 {
-	m_maxBoost = 100;
+	m_maxBoost = 20000;
 	m_maxWalls = 100;
+	m_boostDecay = 100;
 	m_racePos = 1;
 	m_coolDownDecay = 0.07;
 	m_mapNode = p_startNode;
