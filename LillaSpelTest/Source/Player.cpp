@@ -336,7 +336,8 @@ void Player::UpdateWorldMatrix()
 	t_vehicleTargetVector = XMVector3Normalize(t_vehicleTargetVector);
 
 
-
+	////CAMERA MATRIX
+	//t_cameraEyeVector = t_vehicleEyeVector+t_vehicleUpVector*t_cameraUpTrailDistance+t_cameraTargetTrailDistance*t_vehicleTargetVector*-1;
 	XMStoreFloat4x4(&m_cameraMatrix , XMMatrixLookAtLH(t_cameraEyeVector, t_cameraTargetVector, t_vehicleUpVector));
 
 
