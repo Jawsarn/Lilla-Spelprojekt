@@ -21,6 +21,8 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	vector<XMFLOAT3> t_wallBoxCorners = t_mapLoader.LoadLogicalObj("walls/firstwall/mesh.obj").at(0);
 	vector <XMFLOAT3> t_playerShipBoxCorners = t_mapLoader.LoadLogicalObj("ships/pajfighter/mesh.obj").at(0);
 
+	m_aButtonPressedAtStart=0;
+
 	m_wallBoxExtents = SetBoxExtents(t_wallBoxCorners);
 	m_playerShipBoxExtents = SetBoxExtents(t_playerShipBoxCorners);
 
