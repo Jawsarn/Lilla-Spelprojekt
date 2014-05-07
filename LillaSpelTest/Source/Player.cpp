@@ -11,6 +11,10 @@ Player::Player()
 
 Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 {
+
+	m_cameraFollowSpeed = 1;
+
+	m_cameraAngle = 0;
 	m_state = STARTING;
 	m_deltaAngle = 0;
 	MapLoader t_mapLoader = MapLoader(); //might need to explicitly call constructor to get member variable set. Dunno about this one...
@@ -341,9 +345,19 @@ void Player::UpdateWorldMatrix()
 
 
 	////CAMERA MATRIX
+
+	//update camera angle
+	//if(m_angle > m_cameraAngle)
+	//	m_cameraAngle += m_cameraFollowSpeed*p_dt;
+	//else if(m_cameraAngle > m_angle)
+	//	m_cameraAngle -= m_cameraFollowSpeed*p_dt;
+	m_cameraAngle  = m_angle;
+
+
+
 	//t_cameraEyeVector = t_vehicleEyeVector+t_vehicleUpVector*t_cameraUpTrailDistance+t_cameraTargetTrailDistance*t_vehicleTargetVector*-1;
 
-	XMMATRIX t_awesomeMatrix = XMMatrixRotationAxis(t_awesomevector, -m_deltaAngle*10);
+	XMMATRIX t_awesomeMatrix = XMMatrixRotationAxis(t_awesomevector, m_cameraAngle*10);
 	t_cameraUpVector = XMVector3Transform(t_cameraUpVector, t_awesomeMatrix);
 	t_cameraUpVector = XMVector3Normalize(t_cameraUpVector);
 

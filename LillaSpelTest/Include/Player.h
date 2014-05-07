@@ -83,6 +83,9 @@ private:
 	XMFLOAT3 m_bobOffset;
 	default_random_engine m_randomGenerator;
 
+	float m_cameraAngle;
+	float m_cameraFollowSpeed;
+
 	//unused but perhaps needed stuff
 	XMFLOAT3 m_color;
 	PlayerState m_state;
