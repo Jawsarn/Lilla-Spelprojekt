@@ -27,8 +27,12 @@ struct SpotLight
 {
 	float3 position;
 	float radius;
+
 	float3 color;
 	float filler;
+
+	float3 direction;
+	float filler2;
 };
 
 
@@ -70,7 +74,7 @@ float4 CreateFrustrum(float4 F, float4 S)
 
 
 
-float3 DirectIllumination(float3 pos, float3 norm , Light light, float inSpec,int viewport)
+float3 DirectIllumination(float3 pos, float3 norm , Light light,float inSpec,int viewport)
 {
 	float3 lightPos = mul(float4(light.position,1),View[viewport]).xyz;
 
@@ -96,7 +100,7 @@ float3 DirectIllumination(float3 pos, float3 norm , Light light, float inSpec,in
 	float3 v = reflect(-lightVec, norm);
 	float specFactor = pow(max(dot(v,toEye), 0.0f), 1)*inSpec;
 
-	return (light.color * att * (diffuseFactor + specFactor));
+	return (light.color *att * (diffuseFactor + specFactor));
 }
 
 struct PixelData
@@ -379,7 +383,10 @@ void CS( uint3 threadID		: SV_DispatchThreadID,
 	////////////////////////////
 	uint numOfLights = visibleLightCount;
 
-	float3 finalColor = DiffuseColor_Spec[threadID.xy].xyz*0.5;
+	
+	float3 matColor = DiffuseColor_Spec[threadID.xy].xyz;
+	float3 finalColor = float3(0,0,0);
+
 	float inSpec = DiffuseColor_Spec[threadID.xy].z/255;
 
 	//if(all(globalCord < screenDimensions)) //checks for all components if blow zero, uses this for checking if outside screendim
@@ -389,7 +396,7 @@ void CS( uint3 threadID		: SV_DispatchThreadID,
 			uint lightIndex = visibleLightIndices[i];
 			Light light = lights[lightIndex];
 	
-			finalColor += DirectIllumination(data.positionView, data.normalView , light, inSpec, viewport);
+			finalColor += matColor*DirectIllumination(data.positionView, data.normalView , light, inSpec, viewport);
 		}
 	//}
 

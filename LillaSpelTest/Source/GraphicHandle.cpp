@@ -599,6 +599,77 @@ void GraphicHandle::RemoveObject(UINT p_RemoveAt)
 	m_GraphicEngine->RemoveObject(p_RemoveAt);
 }
 
+//light functions
+
+void GraphicHandle::CreateMapLights(std::vector<XMFLOAT3> p_CenterSpline)
+{
+	int full = p_CenterSpline.size();
+	int counter = 0;
+	float r = 1;
+	float g = 0;
+	float b = 0;
+	int colChanger;
+	float t_ColChanger =  0.3f;
+	while (counter < full)
+	{
+		UINT id;
+		m_GraphicEngine->CreateStaticLight(p_CenterSpline[counter],XMFLOAT3(r,g,b), 3.0f,id);
+
+		
+		if (colChanger == 0) //här blir det gult
+		{
+			g += t_ColChanger;
+			if (g >= 1)
+			{
+				colChanger = 1;
+			}
+		}
+		else if (colChanger = 1) // här blir det grönt
+		{
+			r -= t_ColChanger;
+			if (r <= 0)
+			{
+				colChanger = 2;
+			}
+		}
+		else if (colChanger = 2) // här blir det turkås
+		{
+			b += t_ColChanger;
+			if (b >= 1)
+			{
+				colChanger = 3;
+			}
+		}
+		else if (colChanger = 3) //här blir det blått
+		{
+			g -= t_ColChanger;
+			if (g <= 0)
+			{
+				colChanger = 4;
+			}
+		}
+		else if (colChanger = 4) //här blir det lila
+		{
+			r += t_ColChanger;
+			if (r >= 1)
+			{
+				colChanger = 5;
+			}
+		}
+		else if (colChanger = 5) //här blir det rött
+		{
+			b -= t_ColChanger;
+			if (b <= 0)
+			{
+				colChanger = 0;
+			}
+		}
+		
+
+		counter += 4;
+	}
+}
+
 
 
 //hud functions
