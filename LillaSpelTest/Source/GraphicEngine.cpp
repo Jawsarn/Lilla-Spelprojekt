@@ -899,7 +899,7 @@ HRESULT GraphicEngine::MoveObject(UINT p_ObjectID, CXMMATRIX p_Matrix)
 	{
 		 XMStoreFloat4x4(&m_DrawObjects[p_ObjectID]->worldMatrix, p_Matrix);
 		 
-		 for (int i = 0; i < m_DrawObjects[p_ObjectID]->lightID.size(); i++)
+		 for (UINT i = 0; i < m_DrawObjects[p_ObjectID]->lightID.size(); i++)
 		 {
 			 XMFLOAT3 t_Tempus = m_DrawObjects[p_ObjectID]->lightWorld[i].position;
 			 XMVECTOR t_LightPos = XMLoadFloat4( &XMFLOAT4( t_Tempus.x, t_Tempus.y, t_Tempus.z, 1));
@@ -1644,12 +1644,3 @@ void GraphicEngine::Cleanup()
 	SetFullscreenState(false);
 }
 
-/*
-OK future jaws, do dis
-
-update light positions for players, yes...
-
-and also, remove lights if object is removed, yes!
-but wait!.. maybe save lights somewhere....................
-
-*/
