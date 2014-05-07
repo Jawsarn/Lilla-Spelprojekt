@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "MapLoader.h"
+#include <Windows.h>
 
 
 Player::Player()
@@ -23,6 +24,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 
 	m_playerIndex = p_playerIndex;
 
+	m_bobOffset = XMFLOAT3(0,0,0);
 	m_maxBoost = 20000;
 	m_maxWalls = 100;
 	m_boostDecay = 100;
@@ -187,6 +189,9 @@ void Player::FixWorldPosition()
 	FixOffsetFromCenterSpline();
 	//now offset from the center, following the tube edge
 
+	BobOffset();
+	//now offset a tiny bit from "Actual position" depending on speed
+
 	UpdateWorldMatrix();
 	//Matrix now updates. Ready to be grabbed from the gamescreen
 }
@@ -245,10 +250,11 @@ void Player::UpdateWorldMatrix()
 	float t_cameraTargetTrailDistance = 5;
 	XMFLOAT3 t_position = XMFLOAT3(m_position.x, m_position.y, m_position.z);
 	XMVECTOR t_eyeVector = XMLoadFloat3(&t_position);
+	XMVECTOR t_bobOffsetVector = XMLoadFloat3(&m_bobOffset);
 	XMVECTOR t_targetVector = XMLoadFloat3(&m_direction);
 	XMVECTOR t_upVector = XMLoadFloat3(&m_upVector);
 
-	XMStoreFloat4x4( &m_worldMatrix, XMMatrixLookToLH(t_eyeVector, t_targetVector, t_upVector));
+	XMStoreFloat4x4( &m_worldMatrix, XMMatrixLookToLH(t_eyeVector+t_bobOffsetVector, t_targetVector, t_upVector));
 
 	//offsets the camera position along the local y and z axes
 	XMVECTOR t_cameraPositionVector = t_eyeVector+t_upVector*t_cameraUpTrailDistance+t_cameraTargetTrailDistance*t_targetVector*-1;
@@ -296,11 +302,22 @@ void Player::FixUpVectorRotation(float p_angle)
 
 void Player::FixOffsetFromCenterSpline()
 {
-	MathHelper t_mathHelper = MathHelper();
-
-	m_position = t_mathHelper.VecAddVec(m_position, t_mathHelper.FloatMultiVec(-m_mapNode->m_radius+(m_mapNode->m_radius/4), m_upVector)); 
+	m_position = m_mathHelper.VecAddVec(m_position, m_mathHelper.FloatMultiVec(-m_mapNode->m_radius+(m_mapNode->m_radius/4), m_upVector)); 
 }
 
+void Player::BobOffset()
+{
+	//declaring offset variables
+	float t_bobX, t_bobY, t_bobZ;
+	
+	uniform_real_distribution<float> distribution(-0.05, 0.05);
+	t_bobX = distribution(m_randomGenerator);
+	t_bobY = distribution(m_randomGenerator);
+	t_bobZ = distribution(m_randomGenerator);
+
+	m_bobOffset = m_mathHelper.FloatMultiVec(m_speed/m_maxBoostSpeed/3,XMFLOAT3(t_bobX, t_bobY, t_bobZ));
+
+}
 
 void Player::BumpedIntoPlayer(XMFLOAT3 p_force)
 {
