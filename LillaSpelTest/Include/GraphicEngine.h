@@ -8,20 +8,13 @@
 #include "GraphicStructs.h"
 #include "Camera.h"
 #include "MeshLoader.h"
+#include "ParticleSystem.h"
 
 using namespace DirectX;
 
 
 
 
-/*NOTE:
-the size you get to the engine is wrong, it should be gained from 
-GetClientRect( g_hWnd, &rc );
-UINT width = rc.right - rc.left;
-UINT height = rc.bottom - rc.top;
-
-requires saving of hwind and rc
-*/
 
 #define THREAD_BLOCK_DIMENSIONS 16
 #define THREAD_VERTBLURR_DIMENSION 256
@@ -169,7 +162,11 @@ private:
 	UINT m_Width;
 	UINT m_Height;
 
+	//shader loader
 	ShaderLoader* m_ShaderLoader;
+
+	//particleSystem
+	//ParticleSystem* m_ParticleSystem;
 
 	//objects lights camarsas
 	std::map<UINT, DrawObject*> m_DrawObjects;
