@@ -846,16 +846,24 @@ HRESULT GraphicEngine::AddObjectLight(UINT p_ObjectID ,XMFLOAT3 p_Position, XMFL
 {
 	if (m_DrawObjects[p_ObjectID] != nullptr)
 	{
-		m_StaticLights[m_CurrentNumOfLights] = Light(p_Position,p_Radius,p_Color,0); //could add it immidietly without multiplying the matrix
+		if (m_CurrentNumOfLights < 1024)
+		{
+			m_StaticLights[m_CurrentNumOfLights] = Light(p_Position,p_Radius,p_Color,0); //could add it immidietly without multiplying the matrix
 
 
-		m_DrawObjects[p_ObjectID]->lightID.push_back(m_CurrentNumOfLights);
-		m_DrawObjects[p_ObjectID]->lightWorld.push_back(Light(p_Position,p_Radius,p_Color,0));
+			m_DrawObjects[p_ObjectID]->lightID.push_back(m_CurrentNumOfLights);
+			m_DrawObjects[p_ObjectID]->lightWorld.push_back(Light(p_Position,p_Radius,p_Color,0));
 
-		m_CurrentNumOfLights++;
+			m_CurrentNumOfLights++;
 
-		o_LightID = m_DrawObjects[p_ObjectID]->lightID.size() -1;
-		return S_OK;
+			o_LightID = m_DrawObjects[p_ObjectID]->lightID.size() -1;
+			return S_OK;
+		}
+		else
+		{
+			return E_FAIL;
+		}
+		
 	}
 	else
 	{
@@ -962,15 +970,18 @@ HRESULT GraphicEngine::LoadTexture(const wchar_t * p_FileName, UINT &o_TextureID
 
 void GraphicEngine::CreateStaticLight(XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius, UINT &o_LightID)
 {
-	Light t_NewLight(p_Position,p_Radius,p_Color,0);
+	if (m_CurrentNumOfLights < 1024)
+	{
+		Light t_NewLight(p_Position,p_Radius,p_Color,0);
 
-	m_StaticLights[m_CurrentNumOfLights] = t_NewLight;
+		m_StaticLights[m_CurrentNumOfLights] = t_NewLight;
 
-	o_LightID = m_CurrentNumOfLights;
+		o_LightID = m_CurrentNumOfLights;
 
-	m_CurrentNumOfLights++;
+		m_CurrentNumOfLights++;
 
-	m_DeviceContext->UpdateSubresource(m_LightBuffer, 0, nullptr, &m_StaticLights[0], 0, 0);
+		m_DeviceContext->UpdateSubresource(m_LightBuffer, 0, nullptr, &m_StaticLights[0], 0, 0);
+	}
 }
 
 HRESULT GraphicEngine::CreateDynamicLight(XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius, UINT &o_LightID)

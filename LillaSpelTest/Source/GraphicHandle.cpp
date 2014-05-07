@@ -625,12 +625,12 @@ void GraphicHandle::CreateMapLights(std::vector<XMFLOAT3> p_CenterSpline)
 	float r = 1;
 	float g = 0;
 	float b = 0;
-	int colChanger;
-	float t_ColChanger =  0.3f;
-	while (counter < full)
+	int colChanger = 0;
+	float t_ColChanger =  0.05f;
+	while (counter < (full))
 	{
 		UINT id;
-		m_GraphicEngine->CreateStaticLight(p_CenterSpline[counter],XMFLOAT3(r,g,b), 3.0f,id);
+		m_GraphicEngine->CreateStaticLight(p_CenterSpline[counter],XMFLOAT3(r,g,b), 10.0f,id);
 
 		
 		if (colChanger == 0) //här blir det gult
@@ -639,51 +639,57 @@ void GraphicHandle::CreateMapLights(std::vector<XMFLOAT3> p_CenterSpline)
 			if (g >= 1)
 			{
 				colChanger = 1;
+				g = 1;
 			}
 		}
-		else if (colChanger = 1) // här blir det grönt
+		else if (colChanger == 1) // här blir det grönt
 		{
 			r -= t_ColChanger;
 			if (r <= 0)
 			{
 				colChanger = 2;
+				r = 0;
 			}
 		}
-		else if (colChanger = 2) // här blir det turkås
+		else if (colChanger == 2) // här blir det turkås
 		{
 			b += t_ColChanger;
 			if (b >= 1)
 			{
 				colChanger = 3;
+				b = 1;
 			}
 		}
-		else if (colChanger = 3) //här blir det blått
+		else if (colChanger == 3) //här blir det blått
 		{
 			g -= t_ColChanger;
 			if (g <= 0)
 			{
 				colChanger = 4;
+				g = 0;
 			}
 		}
-		else if (colChanger = 4) //här blir det lila
+		else if (colChanger == 4) //här blir det lila
 		{
 			r += t_ColChanger;
 			if (r >= 1)
 			{
 				colChanger = 5;
+				r = 1;
 			}
 		}
-		else if (colChanger = 5) //här blir det rött
+		else if (colChanger == 5) //här blir det rött
 		{
 			b -= t_ColChanger;
 			if (b <= 0)
 			{
 				colChanger = 0;
+				b = 0;
 			}
 		}
 		
 
-		counter += 4;
+		counter += 10;
 	}
 }
 

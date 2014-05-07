@@ -385,7 +385,7 @@ void CS( uint3 threadID		: SV_DispatchThreadID,
 
 	
 	float3 matColor = DiffuseColor_Spec[threadID.xy].xyz;
-	float3 finalColor = float3(0,0,0);
+	float3 finalColor = float3(0,0,0) + DiffuseColor_Spec[threadID.xy].xyz*0.1f;
 
 	float inSpec = DiffuseColor_Spec[threadID.xy].z/255;
 
