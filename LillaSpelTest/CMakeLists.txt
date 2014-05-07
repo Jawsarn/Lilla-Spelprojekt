@@ -14,7 +14,7 @@ file(GLOB_RECURSE HEADERS Include/*.h)
 include_directories(Include)		 # No idea what this is
 
 # Set library search path
-link_directories(${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/SpelProjekt/lib)
+link_directories(${CMAKE_BINARY_DIR}/lib)
 
 # Add the target
 add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})
