@@ -10,6 +10,7 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4], std::string p_mapNa
 {
 	m_mapLoader = new MapLoader();
 	m_mapNodes = m_mapLoader->LoadMap(p_mapName);
+	//vector<XMFLOAT3> t_centerSplinePositions = m_mapLoader->LoadLogicalObj("centerspline").at(0);
 	m_lastNodeIndex = m_mapNodes->at(m_mapNodes->size()-1)->m_Index;
 	vector<XMMATRIX> t_shipWorldMatrices;
 	vector<UINT> t_colors;
@@ -17,7 +18,7 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4], std::string p_mapNa
 	for (int i = 0; i < p_numberOfPlayers; i++)
 	{
 
-		m_players.push_back(new Player(m_mapNodes->at(0),0.0f, i));
+		m_players.push_back(new Player(m_mapNodes->at(0),(180/p_numberOfPlayers)*i, i));
 		t_shipWorldMatrices.push_back(m_players[i]->GetWorldMatrix());
 		t_colors.push_back(p_color[i]);
 		t_whichVehicles.push_back(p_whatVehicle[i]);
@@ -129,12 +130,6 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 				UpdatePlayerHUD(i);
 			}
 
-
-
-
-
-
-
 			//Give all players their respective racePosition by checking ever player vs every other player
 
 			for (int i = 0; i < m_players.size(); i++)
@@ -184,8 +179,10 @@ void GameScreen::CreatePlayerHUDs(int p_numberOfPlayers, int p_color[4])
 	UINT t_templateHandle;
 	UINT t_boostBarHandle;
 	UINT t_wallBarHandle;
+	UINT t_MiedelHandle;
 	std::vector<UINT> t_hudParts;
 	std::vector<UINT> t_textureIDs;
+	std::vector<UINT> t_textureCountDownID;
 	std::vector<DirectX::XMFLOAT2> t_barOffsets;
 	m_graphicHandle->LoadTexture(L"first.dds",t_texture);
 	t_textureIDs.push_back(t_texture);
@@ -195,8 +192,20 @@ void GameScreen::CreatePlayerHUDs(int p_numberOfPlayers, int p_color[4])
 	t_textureIDs.push_back(t_texture);
 	m_graphicHandle->LoadTexture(L"fourth.dds",t_texture);
 	t_textureIDs.push_back(t_texture);
+
+
+
+
+
+
+
 	m_graphicHandle->CreateHUDObject(DirectX::XMFLOAT2(-0.8,0.8),DirectX::XMFLOAT2(0.1,0.1),t_textureIDs,t_placementHandle);
 	t_hudParts.push_back(t_placementHandle);
+
+
+
+
+
 	t_barOffsets.push_back(DirectX::XMFLOAT2(0,0));
 	m_graphicHandle->CreateHUDObject(DirectX::XMFLOAT2(0,-0.8),DirectX::XMFLOAT2(1,0.02),t_textureIDs,t_boostBarHandle);
 	t_hudParts.push_back(t_boostBarHandle);
@@ -204,6 +213,23 @@ void GameScreen::CreatePlayerHUDs(int p_numberOfPlayers, int p_color[4])
 	m_graphicHandle->CreateHUDObject(DirectX::XMFLOAT2(0,-0.9),DirectX::XMFLOAT2(1,0.02),t_textureIDs,t_wallBarHandle);
 	t_hudParts.push_back(t_wallBarHandle);
 	t_barOffsets.push_back(DirectX::XMFLOAT2(0,0));
+
+	m_graphicHandle->LoadTexture(L"CountDown_Three.dds",t_texture);
+	t_textureCountDownID.push_back(t_texture);
+	m_graphicHandle->LoadTexture(L"CountDown_Two.dds",t_texture);
+	t_textureCountDownID.push_back(t_texture);
+	m_graphicHandle->LoadTexture(L"CountDown_One.dds",t_texture);
+	t_textureCountDownID.push_back(t_texture);
+	m_graphicHandle->LoadTexture(L"CountDown_Go.dds",t_texture);
+	t_textureCountDownID.push_back(t_texture);
+	m_graphicHandle->LoadTexture(L"Nothing.dds",t_texture);
+	t_textureCountDownID.push_back(t_texture);
+
+
+	m_graphicHandle->CreateHUDObject(DirectX::XMFLOAT2(0.0,0.0),DirectX::XMFLOAT2(0.2,0.2),t_textureCountDownID,t_MiedelHandle);
+	t_hudParts.push_back(t_MiedelHandle);
+	t_barOffsets.push_back(DirectX::XMFLOAT2(0,0));
+	
 	m_graphicHandle->CreateHudTemplate(t_hudParts,t_templateHandle);
 
 	for (int i = 0; i < p_numberOfPlayers; i++)

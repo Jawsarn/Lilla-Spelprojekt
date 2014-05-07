@@ -19,7 +19,10 @@ struct UserCMD
 	DirectX::XMFLOAT2 rightJoystick;
 
 	Controller controller;
+	UserCMD()
+	{
 
+	}
 	UserCMD(int p_controllerNumber)
 	{
 		leftTriggerPressed = false;	

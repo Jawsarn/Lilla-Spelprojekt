@@ -14,9 +14,12 @@ int CollisionManager::PlayerVsObj(BoundingOrientedBox* p_player, std::vector<Sta
 {
 	for (int i = 0; i < p_collisionBoxes->size(); i++)
 	{
-		if(p_player->Intersects(*p_collisionBoxes->at(i)->GetBox()))
+		if(p_collisionBoxes->at(i)->GetType() == 1) //uber hax ugly code to make sure we aren't affected by  hole boxes
 		{
-			return p_collisionBoxes->at(i)->GetType();
+			if(p_player->Intersects(*p_collisionBoxes->at(i)->GetBox()))
+			{
+				return p_collisionBoxes->at(i)->GetType();
+			}
 		}
 	}
 	return 1;
