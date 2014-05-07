@@ -24,19 +24,19 @@ GraphicHandle::~GraphicHandle()
 void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::vector <std::string> p_LevelNames)
 {
 
-		//en generell metod för all bajsar	//en generell metod för all bajsar	//en generell metod för all bajsar	//en generell metod för all bajsar	//en generell metod för all bajsar	//en generell metod för all bajsar	//en generell metod för all bajsar	//en generell metod för all bajsar	//en generell metod för all bajsar	//en generell metod för all bajsar
-		//en generell metod för all bajsar	//en generell metod för all bajsar
-		//en generell metod för all bajsar
-		//en generell metod för all bajsar
-		//en generell metod för all bajsar
-		//en generell metod för all bajsar
-		//en generell metod för all bajsar
-		//en generell metod för all bajsar
-		//en generell metod för all bajsar
-		//en generell metod för all bajsar
-		//en generell metod för all bajsar
-		//en generell metod för all bajsar
-		//en generell metod för all bajsar
+	//en generell metod för all bajsar	//en generell metod för all bajsar	//en generell metod för all bajsar	//en generell metod för all bajsar	//en generell metod för all bajsar	//en generell metod för all bajsar	//en generell metod för all bajsar	//en generell metod för all bajsar	//en generell metod för all bajsar	//en generell metod för all bajsar
+	//en generell metod för all bajsar	//en generell metod för all bajsar
+	//en generell metod för all bajsar
+	//en generell metod för all bajsar
+	//en generell metod för all bajsar
+	//en generell metod för all bajsar
+	//en generell metod för all bajsar
+	//en generell metod för all bajsar
+	//en generell metod för all bajsar
+	//en generell metod för all bajsar
+	//en generell metod för all bajsar
+	//en generell metod för all bajsar
+	//en generell metod för all bajsar
 
 	m_GraphicEngine = m_GraphicEngine->GetInstance();
 	m_GraphicEngine->Initialize(p_Width, p_Height, p_Handle);
@@ -48,11 +48,18 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 
 	UINT t_TempurTextur;
 	UINT t_TempurTexturNG;
+
+
+
+
+
 	////initWallTextures
-	m_GraphicEngine->LoadTexture(L"Walls/FirstWall/Texture.dds",t_TempurTextur);//en generell metod för all bajsar
+	m_GraphicEngine->LoadTexture(L"Walls/FirstWall/Texture.dds",t_TempurTextur);//en generell metod för all bajsa
+	m_GraphicEngine->LoadTexture(L"Walls/FirstWall/NG.dds",t_TempurTexturNG);
 
 
-	InitializeWall("Walls/FirstWall/Mesh.obj",t_TempurTextur);
+
+	InitializeWall("Walls/FirstWall/Mesh.obj",t_TempurTextur,t_TempurTexturNG);
 	//m_PlayerWallTexture.push_back(t_TempurTextur);
 
 
@@ -69,17 +76,17 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	//m_GraphicEngine->LoadTexture(L"Ships/PajFighter/NG.dds", t_TempurTextur);
 	//m_ShipNormalGlow.push_back(t_TempurTextur);
 
-	
+
 	//InitializeShip("Ships/MilleniumKalk/Mesh.obj",m_ShipTexture[0], m_ShipNormalGlow[0] ); //normalGlow texture is same for all ship, fix to 4123
 	//InitializeShip("Ships/PajFighter/Mesh.obj",m_ShipTexture[1], m_ShipNormalGlow[1] );
-	
+
 	//InitializeShip("spaceship2.obj",m_ShipTexture[2],m_ShipNormalGlow[0]);
 
 	std::vector<std::string> t_ShipNames;
 	t_ShipNames.push_back("MilleniumKalk");
 	t_ShipNames.push_back("PajFighter");
-	t_ShipNames.push_back("SpazMnic");
-		for (int i = 0; i < t_ShipNames.size(); i++)
+	t_ShipNames.push_back("SpazMnik");
+	for (int i = 0; i < t_ShipNames.size(); i++)
 	{
 
 		std::string t_stTompa ="Ships/";
@@ -116,17 +123,25 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	m_Levels.resize(p_LevelNames.size(),0);
 	for (int i = 0; i < p_LevelNames.size(); i++)
 	{
-		std::string t_stTompa ="Levels/";//p_LevelNames[i];
+		std::string t_stTompa ="Levels/";
 		t_stTompa +=p_LevelNames[i];
 		t_stTompa +="/Texture.dds";
 		std::wstring t_sTompa = std::wstring(t_stTompa.begin(),t_stTompa.end());
 
 		m_GraphicEngine->LoadTexture(t_sTompa.c_str(),t_TempurTextur);
 
-		std::string t_Tompa ="Levels/";//p_LevelNames[i];
+		std::string t_Tompa ="Levels/";
 		t_Tompa+=p_LevelNames[i];
 		t_Tompa += "/Tube.obj";
-		InitializeLevel(t_Tompa,t_TempurTextur);
+
+		std::string t_astTompa ="Levels/";
+		t_astTompa +=p_LevelNames[i];
+		t_astTompa +="/NG.dds";
+		std::wstring t_aasTompa = std::wstring(t_astTompa.begin(),t_astTompa.end());
+
+		m_GraphicEngine->LoadTexture(t_aasTompa.c_str(),t_TempurTexturNG);
+
+		InitializeLevel(t_Tompa,t_TempurTextur,t_TempurTexturNG);
 	}
 
 	m_Levels.resize(m_MeshLevels.size(),0);
@@ -135,7 +150,6 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 		CreateDrawObject(m_MeshLevels[i],XMMatrixIdentity(),XMFLOAT3(1,1,1),m_Levels[i],false);
 	}
 
-	//CreateDrawObject(m_MeshLevels[0],XMMatrixIdentity(),XMFLOAT3(1,1,1),m_Levels[0],true);
 
 
 
@@ -514,7 +528,7 @@ void GraphicHandle::InitializeShip(std::string p_ShipStringName, UINT p_TextureD
 	}
 
 }
-void GraphicHandle::InitializeLevel(std::string p_LevelStringName, UINT p_Texture)
+void GraphicHandle::InitializeLevel(std::string p_LevelStringName, UINT p_Texture,UINT p_TextureNormGlow)
 {
 	std::vector<UINT> t_ObjTemp;
 	t_ObjTemp.clear();
@@ -523,6 +537,19 @@ void GraphicHandle::InitializeLevel(std::string p_LevelStringName, UINT p_Textur
 	for (int i = 0; i < t_ObjTemp.size(); i++)
 	{
 		m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[0],p_Texture,GraphicEngine::TextureType::DIFFUSE);
+		m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[0],p_TextureNormGlow, GraphicEngine::TextureType::NORMAL);
+	}
+}
+void GraphicHandle::InitializeWall(std::string p_PlayerWallStringName, UINT p_Texture,UINT p_TextureNormGlow)
+{
+	std::vector<UINT> t_ObjTemp;
+	t_ObjTemp.clear();
+	m_GraphicEngine->LoadMesh(p_PlayerWallStringName,t_ObjTemp);
+	m_MeshPlayerWall.push_back(t_ObjTemp);	
+	for (int i = 0; i < t_ObjTemp.size(); i++)
+	{
+		m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[0],p_Texture,GraphicEngine::TextureType::DIFFUSE);
+		m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[0],p_TextureNormGlow, GraphicEngine::TextureType::NORMAL);
 	}
 }
 
@@ -545,17 +572,7 @@ UINT GraphicHandle::CreateWall(int p_WhatWall,CXMMATRIX p_PlayerWallWorld,int p_
 	return r_WhatWall;
 
 }
-void GraphicHandle::InitializeWall(std::string p_PlayerWallStringName, UINT p_Texture)
-{
-	std::vector<UINT> t_ObjTemp;
-	t_ObjTemp.clear();
-	m_GraphicEngine->LoadMesh(p_PlayerWallStringName,t_ObjTemp);
-	m_MeshPlayerWall.push_back(t_ObjTemp);	
-	for (int i = 0; i < t_ObjTemp.size(); i++)
-	{
-		m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[0],p_Texture,GraphicEngine::TextureType::DIFFUSE);
-	}
-}
+
 
 void GraphicHandle::CreateDrawObject(std::vector <UINT> p_UINTMeshLista, CXMMATRIX p_World,XMFLOAT3 p_Colour,UINT & o_ObjectID, bool p_ShouldItBeDrawn)
 {

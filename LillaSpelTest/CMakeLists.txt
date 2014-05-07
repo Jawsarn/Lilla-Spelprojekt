@@ -33,7 +33,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS"
 
 add_custom_target(_resourceCopy ALL 
 	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/LillaSpelTest/Shaders ${CMAKE_BINARY_DIR}/LillaSpelTest
-	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/LillaSpelTest/Objs ${CMAKE_BINARY_DIR}/LillaSpelTest
 	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/LillaSpelTest/Textures ${CMAKE_BINARY_DIR}/LillaSpelTest
 	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/LillaSpelTest/Object ${CMAKE_BINARY_DIR}/LillaSpelTest
 )
