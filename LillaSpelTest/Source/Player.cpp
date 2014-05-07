@@ -11,6 +11,8 @@ Player::Player()
 
 Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 {
+	m_state = STARTING;
+	m_deltaAngle = 0;
 	MapLoader t_mapLoader = MapLoader(); //might need to explicitly call constructor to get member variable set. Dunno about this one...
 	m_mathHelper = MathHelper();
 	m_previousUserCmd = UserCMD(p_playerIndex);
@@ -53,7 +55,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_deceleration = 16;
 
 	//rotation stuff
-	m_rotateSpeed = 2;
+	m_rotateSpeed = 0.05;
 	m_angle = p_startAngle;
 
 	//initilaize world matrix stuff
@@ -145,7 +147,9 @@ void Player::Acceleration(float p_dt)
 
 void Player::Rotation(float p_dt)
 {
-	m_angle += p_dt*m_currentUserCmd.Joystick.x*m_rotateSpeed;
+	m_deltaAngle = 0;
+	m_deltaAngle = m_currentUserCmd.Joystick.x*m_rotateSpeed;
+	m_angle += m_deltaAngle;
 }
 
 void Player::MovementAlongLogicalMap(float p_dt)
@@ -177,6 +181,7 @@ void Player::SetDirection()
 	XMFLOAT3 t_frontNormalComponent = m_mathHelper.FloatMultiVec(t_interpolation, m_mathHelper.Normalize(m_mapNode->m_nextNode->m_normal));
 	XMFLOAT3 t_currentNormalComponent = m_mathHelper.FloatMultiVec(1-t_interpolation,m_mathHelper.Normalize(m_mapNode->m_normal));
 	m_direction = m_mathHelper.Normalize( m_mathHelper.VecAddVec(t_frontNormalComponent, t_currentNormalComponent));
+
 	//now looking along the interpolated normal between current node and next node 
 }
 
@@ -243,25 +248,7 @@ void Player::UpdateTimers(float p_dt)
 
 
 /////PUNY PEASANT SLAVE METHODS
-void Player::UpdateWorldMatrix()
-{
-	//change to properly calibrate the camera offset (don't wanna have dat camera clip thru he wall)
-	float t_cameraUpTrailDistance = 1;
-	float t_cameraTargetTrailDistance = 5;
-	XMFLOAT3 t_position = XMFLOAT3(m_position.x, m_position.y, m_position.z);
-	XMVECTOR t_eyeVector = XMLoadFloat3(&t_position);
-	XMVECTOR t_bobOffsetVector = XMLoadFloat3(&m_bobOffset);
-	XMVECTOR t_targetVector = XMLoadFloat3(&m_direction);
-	XMVECTOR t_upVector = XMLoadFloat3(&m_upVector);
 
-	XMStoreFloat4x4( &m_worldMatrix, XMMatrixLookToLH(t_eyeVector+t_bobOffsetVector, t_targetVector, t_upVector));
-
-	//offsets the camera position along the local y and z axes
-	XMVECTOR t_cameraPositionVector = t_eyeVector+t_upVector*t_cameraUpTrailDistance+t_cameraTargetTrailDistance*t_targetVector*-1;
-	XMStoreFloat4x4(&m_cameraMatrix , XMMatrixLookAtLH(t_cameraPositionVector, t_eyeVector, t_upVector));
-
-
-}
 
 void Player::ChangeState(PlayerState p_state)
 {
@@ -309,7 +296,7 @@ void Player::BobOffset()
 {
 	//declaring offset variables
 	float t_bobX, t_bobY, t_bobZ;
-	
+
 	uniform_real_distribution<float> distribution(-0.05, 0.05);
 	t_bobX = distribution(m_randomGenerator);
 	t_bobY = distribution(m_randomGenerator);
@@ -319,6 +306,42 @@ void Player::BobOffset()
 
 }
 
+void Player::UpdateWorldMatrix()
+{
+	//change to properly calibrate the camera offset (don't wanna have dat camera clip thru he wall)
+	float t_cameraUpTrailDistance = 1;
+	float t_cameraTargetTrailDistance = 5;
+	XMFLOAT3 t_position = XMFLOAT3(m_position.x, m_position.y, m_position.z);
+	XMVECTOR t_eyeVector = XMLoadFloat3(&t_position);
+	XMVECTOR t_bobOffsetVector = XMLoadFloat3(&m_bobOffset);
+	XMVECTOR t_targetVector = XMLoadFloat3(&m_direction);
+
+	XMVECTOR t_upVector = XMLoadFloat3(&m_upVector);
+
+	////CAMERA FIX
+	XMVECTOR t_cameraPositionVector = t_eyeVector+t_upVector*t_cameraUpTrailDistance+t_cameraTargetTrailDistance*t_targetVector*-1;
+	XMStoreFloat4x4(&m_cameraMatrix , XMMatrixLookAtLH(t_cameraPositionVector, t_eyeVector, t_upVector));
+
+	////VEHICLE TILT
+	//rotate along target vector
+	XMMATRIX t_directionRotationMatrixTarget = XMMatrixRotationAxis(t_targetVector,m_deltaAngle*10);					//////////////////////////MAKE SURE YOU CHANGE THIS HARDCODED 10 CRAP////////////////
+	t_upVector = XMVector3Transform(t_upVector, t_directionRotationMatrixTarget);
+	t_upVector = XMVector3Normalize(t_upVector);
+
+	//roate along new up vector
+	XMMATRIX t_directionRotationMatrixUp = XMMatrixRotationAxis(t_upVector, m_deltaAngle*10);					//////////////////////////MAKE SURE YOU CHANGE THIS HARDCODED 10 CRAP////////////////
+	t_targetVector = XMVector3Transform(t_targetVector, t_directionRotationMatrixUp);
+	t_targetVector = XMVector3Normalize(t_targetVector);
+
+	XMStoreFloat4x4( &m_worldMatrix, XMMatrixLookToLH(t_eyeVector+t_bobOffsetVector, t_targetVector, t_upVector));
+
+	//store direction of car for wall placement
+	XMStoreFloat3(&m_direction, t_targetVector);
+
+
+
+
+}
 void Player::BumpedIntoPlayer(XMFLOAT3 p_force)
 {
 	MathHelper t_mathHelper = MathHelper();
