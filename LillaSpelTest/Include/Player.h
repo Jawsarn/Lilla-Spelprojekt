@@ -39,6 +39,7 @@ private:
 	//rotation stuff
 	float m_rotateSpeed;
 	float m_angle;
+	float m_deltaAngle;
 
 	//boost stuff
 	float m_boostDecay;
@@ -142,6 +143,7 @@ private:
 	//Help methods
 	void FixUpVectorRotation(float p_angle);
 	void FixOffsetFromCenterSpline();
+	
 	void PlaceWall();
 	void BumpedIntoPlayer(XMFLOAT3 p_force);
 	void UpdateWorldMatrix();
