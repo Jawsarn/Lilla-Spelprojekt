@@ -49,7 +49,7 @@ void GameScreen::Initialize()
 
 void GameScreen::PreUpdate(float p_dt, std::vector<UserCMD>* p_userCMDS, int p_Player)
 {
-	m_timeSpentDuringPreUpdate +=p_dt;
+	m_timeSpentDuringPreUpdate +=(p_dt/m_players.size());
 
 	if(m_timeSpentDuringPreUpdate>=1 && m_timeSpentDuringPreUpdate <2)
 	{
@@ -70,11 +70,10 @@ void GameScreen::PreUpdate(float p_dt, std::vector<UserCMD>* p_userCMDS, int p_P
 
 	}
 	else if(m_timeSpentDuringPreUpdate >=4)
-	{
-
-		m_graphicHandle->ChangeHudObjectTexture(m_hudID[p_Player],3,4);
+	{		
 		for (int i = 0; i < m_players.size(); i++)
 		{
+			m_graphicHandle->ChangeHudObjectTexture(m_hudID[i],3,4);
 			m_players[i]->Start();
 		}
 		
@@ -186,6 +185,7 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 					UpdatePlayerHUD(i);
 				}
 				break;
+				}
 				//Give all players their respective racePosition by checking ever player vs every other player
 
 				for (int i = 0; i < m_players.size(); i++)
@@ -217,10 +217,11 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 					}
 					m_players[i]->SetPlayerRacePosition(t_racePos);
 				}
-			}
+			
 		}
-		return GAME_SCREEN;
+		
 	}
+	return GAME_SCREEN;
 }
 void GameScreen::Draw()
 {
