@@ -92,9 +92,10 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 		FixWorldPosition();
 		UpdateCollisionBox();
 
+		r_returnInt = WallPlacement(p_dt);
+		UpdateTimers(p_dt);
+
 	}
-	r_returnInt = WallPlacement(p_dt);
-	UpdateTimers(p_dt);
 
 	return r_returnInt;
 }
@@ -335,7 +336,7 @@ void Player::UpdateWorldMatrix()
 	t_vehicleTargetVector = XMVector3Normalize(t_vehicleTargetVector);
 
 
-	
+
 	XMStoreFloat4x4(&m_cameraMatrix , XMMatrixLookAtLH(t_cameraEyeVector, t_cameraTargetVector, t_vehicleUpVector));
 
 
