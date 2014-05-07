@@ -14,8 +14,8 @@ MenuScreen::~MenuScreen(void)
 {
 }
 
-MenuScreen::MenuScreen(GameInfo* p_gameInfo, GraphicHandle* p_graphicsHandle)
-	:Screen(p_graphicsHandle)
+MenuScreen::MenuScreen(GameInfo* p_gameInfo, GraphicHandle* p_graphicsHandle, AudioManager* p_audioManager)
+	:Screen(p_graphicsHandle, p_audioManager)
 {
 	m_gameInfo = p_gameInfo;
 	for (int i = 0; i < 4; i++)
@@ -79,6 +79,7 @@ std::string MenuScreen::NavigateMenu(UserCMD& p_userCMD, unsigned int p_hudHandl
 		{
 			return ""; 
 		}
+		m_audioManager->PlaySpecificSound("waca.wav", false);
 		timeSinceLastChange[0]=0;
 	}
 	return ""; 

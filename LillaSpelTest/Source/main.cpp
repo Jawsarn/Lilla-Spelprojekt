@@ -15,6 +15,7 @@
 #include "MainMenuScreen.h"
 #include "OptionsScreen.h"
 #include "PauseScreen.h"
+#include "AudioManager.h"
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam );
 HRESULT InitializeWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow);
@@ -34,6 +35,10 @@ Screen* m_joinGameScreen;
 PauseScreen* m_pauseScreen;
 GameScreen* m_gameScreen;
 GameInfo m_gameInfo;
+
+////audiomanager to send to different screens////
+AudioManager* m_audioManager;
+
 
 #include "GraphicHandle.h"
 
@@ -63,12 +68,16 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	m_GraphicHandle = m_GraphicHandle->GetInstance();
 	m_GraphicHandle->Initialize(1920, 1080, m_HandleWindow,m_levelNames); //fix this input variables right
 	m_GraphicHandle->SetFullScreen(false);
+	m_audioManager = new AudioManager();
+	m_audioManager->Initialize();
 
-	m_mainMenuScreen = new MainMenuScreen(m_GraphicHandle);
-	m_gameSetupScreen = new GameSetupScreen(&m_gameInfo,m_GraphicHandle);
-	m_optionsScreen = new OptionsScreen(&m_gameInfo,m_GraphicHandle);
-	m_joinGameScreen = new JoinGameScreen(&m_gameInfo,m_GraphicHandle);
-	m_pauseScreen = new PauseScreen(m_GraphicHandle);
+	m_mainMenuScreen = new MainMenuScreen(m_GraphicHandle, m_audioManager);
+	m_gameSetupScreen = new GameSetupScreen(&m_gameInfo,m_GraphicHandle, m_audioManager);
+	m_optionsScreen = new OptionsScreen(&m_gameInfo,m_GraphicHandle, m_audioManager);
+	m_joinGameScreen = new JoinGameScreen(&m_gameInfo,m_GraphicHandle, m_audioManager);
+	m_pauseScreen = new PauseScreen(m_GraphicHandle, m_audioManager);
+
+
 	//m_gameScreen = new GameScreen("dust2", 4, m_GraphicHandle);
 	m_state = MAIN_MENU_SCREEN;
 	Run();
@@ -91,8 +100,8 @@ void Run()
 	}
 	
 
-	//MysteriskTest t_Mtest = MysteriskTest(m_GraphicHandle);
-
+	MysteriskTest t_Mtest = MysteriskTest(m_GraphicHandle);
+	t_Mtest.Run(userCMDS,m_DeltaTime);
 
 	//message game loop
 	MSG msg = {0};

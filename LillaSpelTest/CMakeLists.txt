@@ -14,7 +14,7 @@ file(GLOB_RECURSE HEADERS Include/*.h)
 include_directories(Include)		 # No idea what this is
 
 # Set library search path
-#link_directories(${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/SpelProjekt/Debug)
+link_directories(${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/SpelProjekt/lib)
 
 # Add the target
 add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})
@@ -26,6 +26,8 @@ target_link_libraries(${PROJECT_NAME} Xinput9_1_0.lib)
 target_link_libraries(${PROJECT_NAME} dxguid.lib)
 target_link_libraries(${PROJECT_NAME} winmm.lib)
 target_link_libraries(${PROJECT_NAME} comctl32.lib)
+target_link_libraries(${PROJECT_NAME} fmodex_vc.lib)
+target_link_libraries(${PROJECT_NAME} fmodexL_vc.lib)
 
 
 # Set SUBSYSTEM:WINDOWS
@@ -35,6 +37,9 @@ add_custom_target(_resourceCopyResources ALL
 	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/LillaSpelTest/Objs ${CMAKE_BINARY_DIR}/LillaSpelTest
 	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/LillaSpelTest/Textures ${CMAKE_BINARY_DIR}/LillaSpelTest
 	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/LillaSpelTest/Object ${CMAKE_BINARY_DIR}/LillaSpelTest
+	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/LillaSpelTest/lib ${CMAKE_BINARY_DIR}/lib
+	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/LillaSpelTest/DLL ${CMAKE_BINARY_DIR}/Debug
+	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/LillaSpelTest/Sounds ${CMAKE_BINARY_DIR}/LillaSpelTest
 )
 
 add_custom_target(_resourceCopyShaders ALL 

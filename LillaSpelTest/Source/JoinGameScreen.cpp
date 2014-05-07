@@ -12,8 +12,8 @@ JoinGameScreen::JoinGameScreen(void)
 	}
 }
 
-JoinGameScreen::JoinGameScreen(GameInfo* p_gameInfo,GraphicHandle* p_graphicsHandle)
-	:MenuScreen(p_gameInfo,p_graphicsHandle)
+JoinGameScreen::JoinGameScreen(GameInfo* p_gameInfo,GraphicHandle* p_graphicsHandle, AudioManager* p_audioManager)
+	:MenuScreen(p_gameInfo,p_graphicsHandle, p_audioManager)
 {
 	numberOfModells = m_graphicHandle->GetAmountOfVehicles();
 	for (int i = 0; i < 4; i++)

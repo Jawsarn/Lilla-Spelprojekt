@@ -7,6 +7,12 @@ Screen::Screen(GraphicHandle* p_graphicHandle)
 	m_graphicHandle = p_graphicHandle;
 }
 
+Screen::Screen(GraphicHandle* p_graphicHandle, AudioManager* p_audioManager)
+{
+	m_graphicHandle = p_graphicHandle;
+	m_audioManager = p_audioManager;
+}
+
 Screen::~Screen(void)
 {
 }

@@ -9,7 +9,7 @@ private:
 	unsigned int m_hudHandle;
 public:
 	GameSetupScreen(void);
-	GameSetupScreen(GameInfo* p_gameInfo, GraphicHandle* p_graphicsHandle);
+	GameSetupScreen(GameInfo* p_gameInfo, GraphicHandle* p_graphicsHandle, AudioManager* p_audioManager);
 	~GameSetupScreen(void);
 
 	int Update(float p_dt,std::vector<UserCMD>* userCMD );

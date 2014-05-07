@@ -17,7 +17,7 @@ private:
 	void AlterVolume(UserCMD& p_userCMD);
 public:
 	OptionsScreen(void);
-	OptionsScreen(GameInfo* p_gameInfo, GraphicHandle* p_graphicsHandle);
+	OptionsScreen(GameInfo* p_gameInfo, GraphicHandle* p_graphicsHandle, AudioManager* p_audioManager);
 	~OptionsScreen(void);
 	int Update(float p_dt,std::vector<UserCMD>* userCMD );
 	void Draw();

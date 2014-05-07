@@ -15,7 +15,7 @@ private:
 	unsigned int m_hudIDs[4];
 public:
 	JoinGameScreen(void);
-	JoinGameScreen(GameInfo* p_gameInfo, GraphicHandle* p_graphicsHandle);
+	JoinGameScreen(GameInfo* p_gameInfo, GraphicHandle* p_graphicsHandle, AudioManager* p_audioManager);
 	~JoinGameScreen(void);
 
 	int Update(float p_dt,std::vector<UserCMD>* userCMD);

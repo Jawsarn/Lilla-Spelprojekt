@@ -5,8 +5,8 @@ OptionsScreen::OptionsScreen(void)
 {
 }
 
-OptionsScreen::OptionsScreen(GameInfo* p_gameInfo, GraphicHandle* p_graphicsHandle)
-	:MenuScreen(p_gameInfo,p_graphicsHandle)
+OptionsScreen::OptionsScreen(GameInfo* p_gameInfo, GraphicHandle* p_graphicsHandle, AudioManager* p_audioManager)
+	:MenuScreen(p_gameInfo,p_graphicsHandle,  p_audioManager)
 {
 	AddButton("Volume", DirectX::XMFLOAT2(0,0.6),0.7,0.1, L"Volume1.dds",L"Volume2.dds");
 	AddButton("Resolution", DirectX::XMFLOAT2(0,0.2),0.5,0.1,L"Resolution1.dds",L"Resolution2.dds");

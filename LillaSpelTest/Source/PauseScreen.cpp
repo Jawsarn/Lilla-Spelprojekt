@@ -5,8 +5,8 @@ PauseScreen::PauseScreen(void)
 {
 }
 
-PauseScreen::PauseScreen(GraphicHandle* p_graphicHandle)
-	:MenuScreen(nullptr,p_graphicHandle)
+PauseScreen::PauseScreen(GraphicHandle* p_graphicHandle, AudioManager* p_audioManager)
+	:MenuScreen(nullptr,p_graphicHandle, p_audioManager)
 {
 	AddButton("Continue", DirectX::XMFLOAT2(0,0.5),0.5,0.2,L"continue1.dds",L"continue2.dds");
 	AddButton("Main Menu",DirectX::XMFLOAT2(0,0),0.5,0.2,L"MainMenu1.dds",L"MainMenu2.dds");

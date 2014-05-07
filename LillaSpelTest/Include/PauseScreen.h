@@ -8,7 +8,7 @@ private:
 	int m_whoPaused;
 public:
 	PauseScreen(void);
-	PauseScreen(GraphicHandle* p_graphicHandle);
+	PauseScreen(GraphicHandle* p_graphicHandle, AudioManager* p_audioManager);
 	~PauseScreen(void);
 	int Update(float p_dt,std::vector<UserCMD>* userCMD );
 	void Draw();

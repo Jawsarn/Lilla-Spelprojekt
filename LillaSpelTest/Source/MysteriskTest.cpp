@@ -4,6 +4,7 @@
 #include "Struct_GameInfo.h"
 #include "MainMenuScreen.h"
 #include "OptionsScreen.h"
+#include "AudioManager.h"
 #include <string>
 
 
@@ -14,9 +15,10 @@ MenuScreen* joinGame;
 MenuScreen* mainMenu;
 MenuScreen* options;
 
-int soundNumber1 = 0;
-int soundNumber2 = 0;
+AudioManager au;
 
+int soundNumber1 = 5647;
+int soundNumber2 = 0;
 GameInfo gameInfo;
 GameSetupScreen setuptest;
 JoinGameScreen jointest;
@@ -34,11 +36,16 @@ MysteriskTest::MysteriskTest(void)
 
 MysteriskTest::MysteriskTest(GraphicHandle* grphandle)
 {
-	gameSetup = new GameSetupScreen(&gameInfo, grphandle);
-	joinGame = new JoinGameScreen(&gameInfo, grphandle);
-	mainMenu = new MainMenuScreen(grphandle);
-	options = new OptionsScreen(&gameInfo,grphandle);
-	state = MAIN_MENU_SCREEN;
+	//gameSetup = new GameSetupScreen(&gameInfo, grphandle);
+	//joinGame = new JoinGameScreen(&gameInfo, grphandle);
+	//mainMenu = new MainMenuScreen(grphandle);
+	//options = new OptionsScreen(&gameInfo,grphandle);
+	au = AudioManager();
+	au.Initialize();
+	au.CreateSound("main.wav");
+	au.PlaySpecificSound("main.wav",true);
+	au.PlaySpecificSound("main.wav",true);
+	//state = MAIN_MENU_SCREEN;
 }
 
 
@@ -75,6 +82,8 @@ MysteriskTest::~MysteriskTest(void)
 
 void MysteriskTest::Run(std::vector<UserCMD>* players, float dt)
 {
+
+
 	/*switch (state)
 	{
 	case GAME_SETUP_SCREEN:
