@@ -46,7 +46,7 @@ PS_OUTPUT PS(GS_OUTPUT input) : SV_TARGET
 	float4 glowOut;
 	if (normalGlowFac.w > 0.1f)
 	{
-		glowOut = float4(Color, 1);
+		glowOut = float4(Color, 1)*(normalGlowFac.w);
 		diffuseColorSpecFac = float4(Color , 0 );
 	}
 	else
