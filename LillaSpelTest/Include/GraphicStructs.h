@@ -10,6 +10,7 @@ struct SimpleVertex
 	XMFLOAT2 textureUV;
 };
 
+//point Light
 struct Light
 {
 	XMFLOAT3 position;
@@ -35,6 +36,44 @@ struct Light
 		return *this;
 	}
 };
+//spot light
+
+struct SpotLight
+{
+	XMFLOAT3 position;
+	float radius;
+
+	XMFLOAT3 color;
+	float filler;
+
+	XMFLOAT3 direction;
+	float filler2;
+
+	SpotLight()
+	{}
+	SpotLight(XMFLOAT3 p_Pos, float p_Rad, XMFLOAT3 p_Col, float p_Fil, XMFLOAT3 p_Dir, float p_Fil2)
+	{
+		position = p_Pos;
+		radius = p_Rad;
+		color = p_Col;
+		filler = p_Fil;
+		direction = p_Dir;
+		filler2 = p_Fil2;
+	}
+	SpotLight operator=(SpotLight &p_in)
+	{
+		position = p_in.position;
+		radius = p_in.radius;
+		color = p_in.color;
+		filler = p_in.filler;
+		direction = p_in.direction;
+		filler2 = p_in.filler2;
+
+		return *this;
+	}
+};
+
+
 
 struct VertexBufferWithNOV
 {

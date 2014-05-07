@@ -6,6 +6,8 @@
 #include "UserCMD.h"
 #include <DirectXCollision.h>
 #include "MathHelper.h"
+#include <random>
+
 
 using namespace DirectX;
 
@@ -37,6 +39,7 @@ private:
 	//rotation stuff
 	float m_rotateSpeed;
 	float m_angle;
+	float m_deltaAngle;
 
 	//boost stuff
 	float m_boostDecay;
@@ -77,6 +80,8 @@ private:
 
 	MathHelper m_mathHelper;
 
+	XMFLOAT3 m_bobOffset;
+	default_random_engine m_randomGenerator;
 
 	//unused but perhaps needed stuff
 	XMFLOAT3 m_color;
@@ -138,10 +143,13 @@ private:
 	//Help methods
 	void FixUpVectorRotation(float p_angle);
 	void FixOffsetFromCenterSpline();
+	
 	void PlaceWall();
 	void BumpedIntoPlayer(XMFLOAT3 p_force);
 	void UpdateWorldMatrix();
 	void UpdateWallMeter(float p_dt);
+	void BobOffset();
+
 
 	//this really does deserve its own class. Or something
 	XMFLOAT3 SetBoxExtents(vector<XMFLOAT3> p_corners);

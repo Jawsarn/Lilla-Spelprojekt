@@ -13,6 +13,9 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4], std::string p_mapNa
 	m_mapNodes = m_mapLoader->LoadMap(p_mapName);
 	m_timeSpentDuringPreUpdate = 0;
 	//vector<XMFLOAT3> t_centerSplinePositions = m_mapLoader->LoadLogicalObj("centerspline").at(0);
+	vector<XMFLOAT3> t_centerSplinePositions = m_mapLoader->LoadLogicalObj("Levels/"+p_mapName+"/CenterSpline.obj").at(0);
+	m_graphicHandle->CreateMapLights(t_centerSplinePositions);
+
 	m_lastNodeIndex = m_mapNodes->at(m_mapNodes->size()-1)->m_Index;
 	vector<XMMATRIX> t_shipWorldMatrices;
 	vector<UINT> t_colors;
@@ -44,43 +47,37 @@ void GameScreen::Initialize()
 	}
 }
 
-void GameScreen::PreUpdate(float p_dt, std::vector<UserCMD>* p_userCMDS)
+void GameScreen::PreUpdate(float p_dt, std::vector<UserCMD>* p_userCMDS, int p_Player)
 {
 	m_timeSpentDuringPreUpdate +=p_dt;
 
-	for (int i = 0; i < m_players.size(); i++)
-	{
-		m_players[i]->ProperUpdatePosition(p_dt, p_userCMDS->at(i));
-	}
 	if(m_timeSpentDuringPreUpdate>=1 && m_timeSpentDuringPreUpdate <2)
 	{
-		for (int i = 0; i < m_players.size(); i++)
-		{
-			m_graphicHandle->ChangeHudObjectTexture(m_hudID[i],3,1); 
-		}
+
+		m_graphicHandle->ChangeHudObjectTexture(m_hudID[p_Player],3,1); 
+
 	}
 	else if(m_timeSpentDuringPreUpdate >=2 && m_timeSpentDuringPreUpdate <3)
 	{
-		for (int i = 0; i < m_players.size(); i++)
-		{
-			m_graphicHandle->ChangeHudObjectTexture(m_hudID[i],3,2);
-		}
+
+		m_graphicHandle->ChangeHudObjectTexture(m_hudID[p_Player],3,2);
+
 	}
 	else if(m_timeSpentDuringPreUpdate >=3 && m_timeSpentDuringPreUpdate <4)
 	{
-		for (int i = 0; i < m_players.size(); i++)
-		{
-			m_graphicHandle->ChangeHudObjectTexture(m_hudID[i],3,3);
-		}
+
+		m_graphicHandle->ChangeHudObjectTexture(m_hudID[p_Player],3,3);
+
 	}
 	else if(m_timeSpentDuringPreUpdate >=4)
 	{
+
+		m_graphicHandle->ChangeHudObjectTexture(m_hudID[p_Player],3,4);
 		for (int i = 0; i < m_players.size(); i++)
 		{
-			m_graphicHandle->ChangeHudObjectTexture(m_hudID[i],3,4);
 			m_players[i]->Start();
-
 		}
+		
 
 		m_state = PLAY;
 	}
@@ -94,45 +91,45 @@ void GameScreen::PreUpdate(float p_dt, std::vector<UserCMD>* p_userCMDS)
 int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS) 
 {
 	////////////////JOHNS TEST MÖS!!! kommentera bort så fungerar allt som en neger på en bomullsfarm
-	switch(m_state)
+
+
+
+	for (int i = 0; i < m_players.size(); i++)			//i<1 for test purposes. Make sure to change later
 	{
-	case COUNTDOWN:
-		PreUpdate(p_dt, p_userCMDS);
-		break;
-
-	case PLAY:
 
 
-		for (int i = 0; i < m_players.size(); i++)			//i<1 for test purposes. Make sure to change later
+
+		if(p_userCMDS->at(i).backButtonPressed)
+		{
+			m_pauseDudeIndex = i;
+			return PAUSE_SCREEN;
+		}
+		if (m_lastNodeIndex != m_players[i]->GetCurrentMapNode()->m_Index)
 		{
 
+			bool collision = false;
+			PlayerWall* t_newWall = m_players[i]->GetLastPlacedWall(); //
 
-
-			if(p_userCMDS->at(i).backButtonPressed)
+			//fixes the position, direction, sets up world matrix, drops wall, etc.
+			/////////////////UPDATE PLAYER POSITION AND DROP WALLS/////////////////
+			//Update player and check if he placed a wall
+			if(m_players[i]->ProperUpdatePosition(p_dt, p_userCMDS->at(i)) == 1)
 			{
-				m_pauseDudeIndex = i;
-				return PAUSE_SCREEN;
+
+				PlayerWall* t_newWall = m_players[i]->GetLastPlacedWall();
+				t_newWall->m_wallIndex = m_graphicHandle->CreateWall(0, t_newWall->GetWorldMatrix(), i);			//PUBLIC VARIALBE!!! MAKE FIX BEFORE JAWS DISCOVERS!!!t_newWall->GetWorldMatrix()
 			}
-			if (m_lastNodeIndex != m_players[i]->GetCurrentMapNode()->m_Index)
+			//gets the world matrix
+			m_graphicHandle->JohnSetCamera(m_players[i]->GetWorldMatrix(), i);
+			m_graphicHandle->UpdatePlayer(i, m_players[i]->GetWorldMatrix(), m_players[i]->GetCamMatrix());
+			MapNode* t_currMapNode = m_players[i]->GetCurrentMapNode();    //för att slippa getta flera gånger i denna forsats
+			switch(m_state)
 			{
+			case COUNTDOWN:
+				PreUpdate(p_dt, p_userCMDS,i);
+				break;
 
-				bool collision = false;
-				PlayerWall* t_newWall = m_players[i]->GetLastPlacedWall(); //
-
-				//fixes the position, direction, sets up world matrix, drops wall, etc.
-				/////////////////UPDATE PLAYER POSITION AND DROP WALLS/////////////////
-				//Update player and check if he placed a wall
-				if(m_players[i]->ProperUpdatePosition(p_dt, p_userCMDS->at(i)) == 1)
-				{
-
-					PlayerWall* t_newWall = m_players[i]->GetLastPlacedWall();
-					t_newWall->m_wallIndex = m_graphicHandle->CreateWall(0, t_newWall->GetWorldMatrix(), i);			//PUBLIC VARIALBE!!! MAKE FIX BEFORE JAWS DISCOVERS!!!t_newWall->GetWorldMatrix()
-				}
-				//gets the world matrix
-				m_graphicHandle->JohnSetCamera(m_players[i]->GetWorldMatrix(), i);
-				m_graphicHandle->UpdatePlayer(i, m_players[i]->GetWorldMatrix(), m_players[i]->GetCamMatrix());
-				MapNode* t_currMapNode = m_players[i]->GetCurrentMapNode();    //för att slippa getta flera gånger i denna forsats
-
+			case PLAY:
 				////////COLLISION CHECKS///////////
 				if(!m_players[i]->GetImmortal())
 				{
@@ -188,7 +185,7 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 					}
 					UpdatePlayerHUD(i);
 				}
-
+				break;
 				//Give all players their respective racePosition by checking ever player vs every other player
 
 				for (int i = 0; i < m_players.size(); i++)
@@ -223,9 +220,6 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 			}
 		}
 		return GAME_SCREEN;
-		break;
-			default:
-		break;
 	}
 }
 void GameScreen::Draw()
