@@ -114,4 +114,5 @@ public:
 	void UseHud(UINT p_ViewportID, UINT p_HudID);
 	void ChangeHudObjectTexture(UINT p_hudID, UINT p_objectID, UINT p_useFrontTexture);
 	void UpdateHudBarOffset(UINT p_hudID, UINT p_objectID, DirectX::XMFLOAT2 p_barOffset);
+	void ScaleHudObject(UINT p_hudID, UINT p_objectID, float scale);
 };
