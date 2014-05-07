@@ -5,10 +5,11 @@
 #include "PlayerWall.h"
 #include "UserCMD.h"
 #include <DirectXCollision.h>
+#include "MathHelper.h"
 
 using namespace DirectX;
 
-enum PlayerState{NORMAL,DEAD,IMMORTAL};
+enum PlayerState{NORMAL,DEAD,IMMORTAL, STARTING};
 
 #define DEATH_TIME 2
 #define IMMORTAL_TIME 2
@@ -18,6 +19,13 @@ class Player :
 {
 	///////////////VARIABLES///////////
 private:
+
+	//player stats
+	float m_distance;
+	int m_racePos;
+	int m_playerIndex;
+	int m_aButtonPressedAtStart;
+
 	//speed stuff
 	float m_speed;
 	float m_maxSpeed;
@@ -40,36 +48,41 @@ private:
 	float m_maxWalls;
 	float m_coolDown;
 	float m_coolDownDecay;
-
-	float m_distance;
-
-
+	float m_wallGain;
 
 	///Timers///
 	float m_deathTimer;
 	float m_maxDeathTimer;
 	float m_immortalTimer;
 	float m_maxImmortalTimer;
-	int m_racePos;
-	float m_wallGain;
 
+	//important for actual world position stuff
 	XMFLOAT3 m_logicalPosition;
-	//XMFLOAT3 m_acceleration;
-	XMFLOAT3 m_color;
 	XMFLOAT3 m_upVector;
+	XMFLOAT4X4 m_cameraMatrix;
+	XMFLOAT4X4 m_worldMatrix;
 
+	//bounding box creation stuff
 	XMFLOAT3 m_wallBoxExtents;
 	XMFLOAT3 m_playerShipBoxExtents;
 
-	XMFLOAT4X4 m_cameraMatrix;
-	XMFLOAT4X4 m_worldMatrix;
-	PlayerWall* m_lastPlacedWall;
-	PlayerState m_state;
 
+	//other stuff
 	std::vector<PlayerWall*> m_placedWalls;
 	MapNode* m_mapNode;
+	PlayerWall* m_lastPlacedWall;
 
-	int m_playerIndex;
+	UserCMD m_previousUserCmd;
+	UserCMD m_currentUserCmd;
+
+	MathHelper m_mathHelper;
+
+
+	//unused but perhaps needed stuff
+	XMFLOAT3 m_color;
+	PlayerState m_state;
+
+
 
 	///////////////FUNCTIONS/////////////
 public:
@@ -102,15 +115,26 @@ public:
 	bool GetImmortal();
 	void Die();
 	int GetPlayerIndex();
+	int GetNrOfAPressedAtStart();
+
 
 private:
-	//rotates the up vector to the proper angle
+
+
+	//Update methods
+	void Acceleration(float p_dt);
+	void Rotation(float p_dt);
+	void MovementAlongLogicalMap(float p_dt);
+	void SetDirection();
+	void FixWorldPosition();
+	void UpdateCollisionBox();
+	int WallPlacement(float p_dt);
+	void UpdateTimers(float p_dt);
+
+	//Help methods
 	void FixUpVectorRotation(float p_angle);
-	//translates the position along the new upvector
 	void FixOffsetFromCenterSpline();
 	void PlaceWall();
-	void UpdateCollisionBox();
-	void UpdateMapNode();
 	void BumpedIntoPlayer(XMFLOAT3 p_force);
 	void UpdateWorldMatrix();
 	void UpdateWallMeter(float p_dt);
