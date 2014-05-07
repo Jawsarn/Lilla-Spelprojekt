@@ -107,21 +107,25 @@ public:
 	PlayerWall* GetLastPlacedWall();
 	float GetDistanceTraveled(); 
 	float GetPlayerBoost();
-	void SetPlayerBoost(float p_boost);
-	void SetPlayerRacePosition(int p_pos);
+
 	int GetRacePosition();
 	float GetHudBoosterInfo();
 	float GetHudWallInfo();
 	bool GetImmortal();
-	void Die();
 	int GetPlayerIndex();
 	int GetNrOfAPressedAtStart();
 
+	//modifiers
+	void Die();
+	void Start();
+	void SetPlayerBoost(float p_boost);
+	void SetPlayerRacePosition(int p_pos);
 
 private:
 
 
 	//Update methods
+	void StartupSpam();
 	void Acceleration(float p_dt);
 	void Rotation(float p_dt);
 	void MovementAlongLogicalMap(float p_dt);
