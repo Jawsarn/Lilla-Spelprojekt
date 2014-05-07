@@ -1,5 +1,5 @@
 #include "Player.h"
-#include "MathHelper.h"
+#include "MapLoader.h"
 
 
 Player::Player()
@@ -10,8 +10,16 @@ Player::Player()
 
 Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 {
-	m_wallBoxExtents = XMFLOAT3(0.5,0.5,1);
-	m_playerShipBoxExtents = XMFLOAT3(1,1,1);
+	MapLoader t_mapLoader = MapLoader(); //might need to explicitly call constructor to get member variable set. Dunno about this one...
+	m_mathHelper = MathHelper();
+	m_previousUserCmd = UserCMD(p_playerIndex);
+	m_currentUserCmd = UserCMD(p_playerIndex);
+	//gets the corners from the maploader. Yes. This works
+	vector<XMFLOAT3> t_wallBoxCorners = t_mapLoader.LoadLogicalObj("walls/firstwall/mesh.obj").at(0);
+	vector <XMFLOAT3> t_playerShipBoxCorners = t_mapLoader.LoadLogicalObj("ships/pajfighter/mesh.obj").at(0);
+
+	m_wallBoxExtents = SetBoxExtents(t_wallBoxCorners);
+	m_playerShipBoxExtents = SetBoxExtents(t_playerShipBoxCorners);
 
 	m_playerIndex = p_playerIndex;
 
@@ -57,67 +65,51 @@ Player::~Player(void)
 {
 }
 
-void Player::Update(float p_dt, UserCMD userCMD)
-{
-	switch (m_state)
-	{
-	case NORMAL:
-		break;
-	case DEAD:
-		m_deathTimer -= p_dt;
-		if (m_deathTimer <=0)
-		{
-			ChangeState(IMMORTAL);
-		}
-		break;
-	case IMMORTAL:
-		m_immortalTimer -= p_dt;
-		if (m_immortalTimer <= 0)
-		{
-			ChangeState(NORMAL);
-		}
-		break;
-	default:
-		break;
-	}
-}
-void Player::UpdatePosition(float p_dt, UserCMD p_userCMD)
-{
-	////free moving////
-	MathHelper t_mathHelper;
-	m_direction.x += p_userCMD.Joystick.x;
-	m_direction.y += p_userCMD.Joystick.y;
-	m_direction = t_mathHelper.Normalize(m_direction);
 
-	m_position = t_mathHelper.FloatMultiVec(p_dt,t_mathHelper.FloatMultiVec(m_speed,m_direction));
-}
-
+//////THE BOSS METHOD
 int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 {
-
+	int r_returnInt = 0;
+	m_previousUserCmd = m_currentUserCmd;
+	m_currentUserCmd = p_userCMD;
 	MathHelper t_mathHelper;
-	//m_position = m_mapNode->m_position;
-	//m_direction = t_mathHelper.Normalize(m_mapNode->m_normal);
-	//m_upVector = XMFLOAT3(0,1,0);
 
 	//not sure if entierly needed...
 	m_direction = XMFLOAT3(0,0,1);
 
-	////silly boost thingy for testing
+	if(m_state ==STARTING)
+		StartupSpam();
+	if(m_state == NORMAL || m_state == IMMORTAL)
+	{
+		Acceleration(p_dt);
+		Rotation(p_dt);
+		MovementAlongLogicalMap(p_dt);
+		SetDirection();
+		FixWorldPosition();
+		UpdateCollisionBox();
 
-	//else if (p_userCMD.bButtonPressed)
-	//	m_speed = 30;
-	//else if(p_userCMD.xButtonPressed)
-	//	m_speed = -30;
-	//else 
-	//	m_speed = 0;
+	}
+	r_returnInt = WallPlacement(p_dt);
+	UpdateTimers(p_dt);
+
+	return r_returnInt;
+}
 
 
+//////BIG FAT ARISTOCRAT METHODS
+void Player::StartupSpam()
+{
+	if(m_previousUserCmd.aButtonPressed && !m_currentUserCmd.aButtonPressed)
+	{
+		m_aButtonPressedAtStart++;
+	}
+}
 
-
+void Player::Acceleration(float p_dt)
+{
 	////Acceleration
 	//boost acceleration
-	if(p_userCMD.rightBumberPressed && m_boostMeter>0)
+	if(m_currentUserCmd.rightBumberPressed && m_boostMeter>0)
 	{
 		//check if max boost speed is attained, otherwise accelerate
 		if(m_maxBoostSpeed>m_speed)
@@ -145,84 +137,107 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 			m_speed-=p_dt*m_deceleration;
 		}
 	}
-	////Rotation
-	m_angle += p_dt*p_userCMD.Joystick.x*m_rotateSpeed;
+	if(m_currentUserCmd.xButtonPressed)
+		m_speed+= 2*m_boostAcceleration*p_dt;
+}
 
+void Player::Rotation(float p_dt)
+{
+	m_angle += p_dt*m_currentUserCmd.Joystick.x*m_rotateSpeed;
+}
 
-
-	//RealSpeed and boost code:
-	//if(p_userCMD.rightBumberPressed && m_boostMeter >0)
-	//{
-	//	float t_boostDecay = 1;
-	//	m_speed = 105;
-	//	m_boostMeter -= p_dt*t_boostDecay;
-	//}
-	//else
-	//{
-	//	m_speed = 15;
-	//}
-	if(p_userCMD.xButtonPressed)
-		m_speed = 60;
-
-
-	////movement along logical map stuff
+void Player::MovementAlongLogicalMap(float p_dt)
+{
+	////movement along logical map
 	//adds distance from the current node based on speed and time since last update
 	m_distance+=m_speed*p_dt;
 	//Checks of distance exceeds distance to new node. In other words, if the player "overshoots" the next node
-	while(m_distance >= t_mathHelper.Abs(m_mapNode->m_normal))
+	while(m_distance >= m_mathHelper.Abs(m_mapNode->m_normal))
 	{
-		float t_remainingDistance = m_distance - t_mathHelper.Abs(m_mapNode->m_normal);
+		float t_remainingDistance = m_distance - m_mathHelper.Abs(m_mapNode->m_normal);
 		m_distance = t_remainingDistance;
 		m_mapNode = m_mapNode->m_nextNode;
 	}
 	//Moves the position along the normal of current node with distance
-	XMFLOAT3 t_nodeNormalDirection = t_mathHelper.Normalize(m_mapNode->m_normal);
-	XMFLOAT3 t_vectorToMove = t_mathHelper.FloatMultiVec(m_distance, t_nodeNormalDirection);
+	XMFLOAT3 t_nodeNormalDirection = m_mathHelper.Normalize(m_mapNode->m_normal);
+	XMFLOAT3 t_vectorToMove = m_mathHelper.FloatMultiVec(m_distance, t_nodeNormalDirection);
 
-	m_position = t_mathHelper.VecAddVec(m_mapNode->m_position, t_vectorToMove);
+	m_position = m_mathHelper.VecAddVec(m_mapNode->m_position, t_vectorToMove);
 	//now following middle spline
+}
 
-
+void Player::SetDirection()
+{
+	///SETS DIRECTION OF PLAYER
 	//interpolate normals between current and previous
 	float t_interpolation;
-	t_interpolation = m_distance/t_mathHelper.Abs(m_mapNode->m_normal);
-	XMFLOAT3 t_frontNormalComponent = t_mathHelper.FloatMultiVec(t_interpolation, t_mathHelper.Normalize(m_mapNode->m_nextNode->m_normal));
-	XMFLOAT3 t_currentNormalComponent = t_mathHelper.FloatMultiVec(1-t_interpolation,t_mathHelper.Normalize(m_mapNode->m_normal));
-	m_direction = t_mathHelper.Normalize( t_mathHelper.VecAddVec(t_frontNormalComponent, t_currentNormalComponent));
+	t_interpolation = m_distance/m_mathHelper.Abs(m_mapNode->m_normal);
+	XMFLOAT3 t_frontNormalComponent = m_mathHelper.FloatMultiVec(t_interpolation, m_mathHelper.Normalize(m_mapNode->m_nextNode->m_normal));
+	XMFLOAT3 t_currentNormalComponent = m_mathHelper.FloatMultiVec(1-t_interpolation,m_mathHelper.Normalize(m_mapNode->m_normal));
+	m_direction = m_mathHelper.Normalize( m_mathHelper.VecAddVec(t_frontNormalComponent, t_currentNormalComponent));
 	//now looking along the interpolated normal between current node and next node 
+}
 
-
-
+void Player::FixWorldPosition()
+{
 	////Fix from logical map to actual world position and orientation
 	FixUpVectorRotation(m_angle);
-	//now rotating around the normal. Not yet properly implemented
+	//now rotating around the normal
 
 	FixOffsetFromCenterSpline();
 	//now offset from the center, following the tube edge
 
 	UpdateWorldMatrix();
 	//Matrix now updates. Ready to be grabbed from the gamescreen
+}
 
-	UpdateCollisionBox();
+void Player::UpdateCollisionBox()
+{
+	MathHelper t_mathHelper = MathHelper();
+	//XMFLOAT3 t_vector = t_mathHelper.CrossProduct(m_direction, m_upVector); kanske inte behövs
+	XMFLOAT4 t_quarternion = XMFLOAT4(0,0,0,1);
+	XMMATRIX t_boxOrientationMatrix = XMMatrixLookAtLH(XMLoadFloat3(&m_position), XMLoadFloat3(&m_direction),XMLoadFloat3(&m_upVector)); //matrixyo
+	XMVECTOR t_boxOrientationVector = XMLoadFloat4(&t_quarternion);
+	t_boxOrientationVector = XMVector4Transform(t_boxOrientationVector, t_boxOrientationMatrix);
+	t_boxOrientationVector = XMVector4Normalize(t_boxOrientationVector);
+	XMStoreFloat4(&t_quarternion, t_boxOrientationVector);
+
+	m_box.Center = m_position;
+	m_box.Extents = m_playerShipBoxExtents; //////TEMPEXTENTSLOL
+	m_box.Orientation = t_quarternion;
 
 
-	////Wall placement
-	//lower means greater cooldown
-	m_coolDown -= m_coolDownDecay;
-	if(p_userCMD.rightTriggerPressed && m_coolDown <=0 && m_wallMeter < 1)
+}
+
+int Player::WallPlacement(float p_dt)
+{
+	m_coolDown -= p_dt;
+	if(m_currentUserCmd.rightTriggerPressed && m_coolDown <=0 && m_wallMeter < 1)
 	{
 		m_wallMeter-=1;
 		PlaceWall();
 		m_coolDown = 1;
-		return 1;
+		return  1;
 	}
-
-	////immortal and death timers
-	m_immortalTimer-=p_dt;
-	m_deathTimer -=p_dt;
 	return 0;
+
 }
 
+void Player::UpdateTimers(float p_dt)
+{
+	////immortal and death timers
+	m_immortalTimer-=p_dt;
+	if(m_immortalTimer<0)
+		m_state = NORMAL;
+	m_deathTimer -=p_dt;
+
+}
+
+
+
+
+
+/////PUNY PEASANT SLAVE METHODS
 void Player::UpdateWorldMatrix()
 {
 	//change to properly calibrate the camera offset (don't wanna have dat camera clip thru he wall)
@@ -240,36 +255,6 @@ void Player::UpdateWorldMatrix()
 	XMStoreFloat4x4(&m_cameraMatrix , XMMatrixLookAtLH(t_cameraPositionVector, t_eyeVector, t_upVector));
 
 
-}
-
-XMMATRIX Player::GetWorldMatrix()
-{
-	return XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_worldMatrix));
-}
-
-XMMATRIX Player::GetCamMatrix()
-{
-	return XMLoadFloat4x4( &m_cameraMatrix);
-}
-MapNode* Player::GetCurrentMapNode()
-{
-	return m_mapNode;
-}
-
-BoundingOrientedBox* Player::GetCollisionBox()
-{
-	return &m_box;
-}
-
-PlayerWall* Player::GetLastPlacedWall()
-{
-	return m_lastPlacedWall;	
-}
-
-std::vector<BoundingOrientedBox*> Player::GetWallsToCheck()
-{
-	std::vector<BoundingOrientedBox*> r_return;
-	return r_return;
 }
 
 void Player::ChangeState(PlayerState p_state)
@@ -316,49 +301,6 @@ void Player::FixOffsetFromCenterSpline()
 	m_position = t_mathHelper.VecAddVec(m_position, t_mathHelper.FloatMultiVec(-m_mapNode->m_radius+(m_mapNode->m_radius/4), m_upVector)); 
 }
 
-void Player::UpdateCollisionBox()
-{
-	MathHelper t_mathHelper = MathHelper();
-	//XMFLOAT3 t_vector = t_mathHelper.CrossProduct(m_direction, m_upVector); kanske inte behövs
-	XMFLOAT4 t_quarternion = XMFLOAT4(0,0,0,1);
-	XMMATRIX t_boxOrientationMatrix = XMMatrixLookAtLH(XMLoadFloat3(&m_position), XMLoadFloat3(&m_direction),XMLoadFloat3(&m_upVector)); //matrixyo
-	XMVECTOR t_boxOrientationVector = XMLoadFloat4(&t_quarternion);
-	t_boxOrientationVector = XMVector4Transform(t_boxOrientationVector, t_boxOrientationMatrix);
-	t_boxOrientationVector = XMVector4Normalize(t_boxOrientationVector);
-	XMStoreFloat4(&t_quarternion, t_boxOrientationVector);
-
-	m_box.Center = m_position;
-	m_box.Extents = m_playerShipBoxExtents; //////TEMPEXTENTSLOL
-	m_box.Orientation = t_quarternion;
-
-
-}
-
-void Player::UpdateMapNode() //Uppdaterar logisk playerpos(m_logicalPosition) och currMapnode
-{
-	int t_WhileBreak = 0;
-	XMFLOAT3 t_vec;
-	MathHelper t_mathHelp = MathHelper();
-	float t_distFromPlayerToCurrNode = t_mathHelp.Abs(t_mathHelp.VecSubVec(m_mapNode->m_position, m_logicalPosition)); //Skapar en vector mellan playerpos å currentnodepos och tar absolutvärde
-	while(t_WhileBreak = 0)
-	{
-		if(t_distFromPlayerToCurrNode > t_mathHelp.Abs(m_mapNode->m_normal)) //Kolla om den skapade vectorn är längre än vad normalen(Vectorn mellan node och node->next
-		{
-			t_distFromPlayerToCurrNode -= t_mathHelp.Abs(m_mapNode->m_normal); //Tar bort den "travelade" längden 
-			m_mapNode = m_mapNode->m_nextNode;									//Byta currmapnode
-			t_vec = t_mathHelp.FloatMultiVec(t_distFromPlayerToCurrNode, t_mathHelp.Normalize(m_mapNode->m_normal));  //Skapa ny vector solm har samma uppgift å egenskaper som den första
-			m_logicalPosition = t_vec;																							//Uppdatera playerpos
-			//t_distFromPlayerToCurrNode = t_mathHelp.Abs(t_vec);															//Behövs inte 
-
-		}
-		else
-		{
-			t_WhileBreak = 1;
-		}
-	}
-	//Med Antagande att position är uppdaterad redan
-}
-
 
 void Player::BumpedIntoPlayer(XMFLOAT3 p_force)
 {
@@ -367,9 +309,85 @@ void Player::BumpedIntoPlayer(XMFLOAT3 p_force)
 	//Angle ska bli p_force projicerad på m_direction cross m_upvector och sen absolutbelopp på den vectorn
 }
 
+XMFLOAT3 Player::SetBoxExtents(vector<XMFLOAT3> p_corners)
+{
+	float t_maxX = 0;
+	float t_maxY = 0;
+	float t_maxZ = 0;
+
+	float t_minX = 0;
+	float t_minY = 0;
+	float t_minZ = 0;
+	for (int i = 0; i < p_corners.size(); i++)
+	{
+		//gets max and min x
+		if(p_corners[i].x > t_maxX)
+			t_maxX = p_corners[i].x;
+		else if(p_corners[i].x < t_minX)
+			t_minX = p_corners[i].x;
+
+		//gets max and min y
+		if(p_corners[i].x > t_maxY)
+			t_maxY=p_corners[i].x;
+		else if(p_corners[i].x < t_minY)
+			t_minY = p_corners[i].x;
+
+		//gets max and min Z
+		if(p_corners[i].x > t_maxZ)
+			t_maxZ = p_corners[i].x ;
+		else if(p_corners[i].x < t_minZ)
+			t_minZ=p_corners[i].x ;
+	}
+
+	//checks if absolute value of min values is greater than max values (really unnecessary if models are symetric, but can TA really be trusted?
+	if(t_maxX < -t_minX)
+		t_maxX = -t_minX;
+
+	if(t_maxY < -t_minY)
+		t_maxY = -t_minY;
+
+	if(t_maxZ < -t_minZ)
+		t_maxZ = -t_minZ;
+
+	return XMFLOAT3(t_maxX, t_maxY, t_maxZ);
+}
 
 
-/// Gets yo
+
+
+
+/////MESSENGERS
+//Accessors
+XMMATRIX Player::GetWorldMatrix()
+{
+	return XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_worldMatrix));
+}
+
+XMMATRIX Player::GetCamMatrix()
+{
+	return XMLoadFloat4x4( &m_cameraMatrix);
+}
+MapNode* Player::GetCurrentMapNode()
+{
+	return m_mapNode;
+}
+
+BoundingOrientedBox* Player::GetCollisionBox()
+{
+	return &m_box;
+}
+
+PlayerWall* Player::GetLastPlacedWall()
+{
+	return m_lastPlacedWall;	
+}
+
+std::vector<BoundingOrientedBox*> Player::GetWallsToCheck()
+{
+	std::vector<BoundingOrientedBox*> r_return;
+	return r_return;
+}
+
 XMFLOAT3 Player::GetPos()
 {
 	return m_position;
@@ -385,10 +403,7 @@ float Player::GetPlayerBoost()
 	return m_boostMeter;
 }
 
-void Player::SetPlayerBoost(float p_boost)
-{
-	m_boostMeter = p_boost;
-}
+
 
 float Player::GetDistanceTraveled()
 {
@@ -396,21 +411,20 @@ float Player::GetDistanceTraveled()
 	t_distance += m_distance/100; //SÅ att du kan skilja på positioner även om fler spelare är i samma mapnode
 	return t_distance;
 }
-void Player::SetPlayerRacePosition(int p_pos)
-{
-	m_racePos = p_pos;
-}
+
+
+
 int Player::GetRacePosition()
 {
 	return m_racePos;
 }
-
 
 float Player::GetHudBoosterInfo()
 {
 	//apparently wants 0 to be alot of boost, and 1 to be empty
 	return 1-(m_boostMeter/m_maxBoost);
 }
+
 float Player::GetHudWallInfo()
 {
 	//apparently wants 0 to be alot of walls, and 1 to be empty
@@ -419,16 +433,76 @@ float Player::GetHudWallInfo()
 
 bool Player::GetImmortal()
 {
-	return (m_immortalTimer>0);
+	return(m_state == IMMORTAL);
 }
 
-void Player::Die()
-{
-	m_speed = 0;
-	m_immortalTimer = m_maxImmortalTimer;
-}
+
 
 int Player::GetPlayerIndex()
 {
 	return m_playerIndex;
+}
+
+int Player::GetNrOfAPressedAtStart()
+{
+	return m_aButtonPressedAtStart;
+}
+
+//Modifiers
+void Player::Die()
+{
+	m_speed = 0;
+	m_immortalTimer = m_maxImmortalTimer;
+	m_state = IMMORTAL;
+}
+
+void Player::SetPlayerRacePosition(int p_pos)
+{
+	m_racePos = p_pos;
+}
+
+void Player::SetPlayerBoost(float p_boost)
+{
+	m_boostMeter = p_boost;
+}
+void Player::Start()
+{
+	m_speed = (float)(m_aButtonPressedAtStart)/2;
+	m_state = NORMAL;
+}
+////scrap
+
+void Player::Update(float p_dt, UserCMD userCMD)
+{
+	switch (m_state)
+	{
+	case NORMAL:
+		break;
+	case DEAD:
+		m_deathTimer -= p_dt;
+		if (m_deathTimer <=0)
+		{
+			ChangeState(IMMORTAL);
+		}
+		break;
+	case IMMORTAL:
+		m_immortalTimer -= p_dt;
+		if (m_immortalTimer <= 0)
+		{
+			ChangeState(NORMAL);
+		}
+		break;
+	default:
+		break;
+	}
+}
+void Player::UpdatePosition(float p_dt, UserCMD p_userCMD)
+{
+	////free moving////
+	MathHelper t_mathHelper;
+	m_direction.x += p_userCMD.Joystick.x;
+	m_direction.y += p_userCMD.Joystick.y;
+	m_direction = t_mathHelper.Normalize(m_direction);
+
+	m_position = t_mathHelper.FloatMultiVec(p_dt,t_mathHelper.FloatMultiVec(m_speed,m_direction));
 }

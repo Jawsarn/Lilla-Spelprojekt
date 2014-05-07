@@ -23,9 +23,18 @@ struct Light
 	float filler;
 };
 
+struct SpotLight
+{
+	float3 position;
+	float radius;
+	float3 color;
+	float filler;
+};
+
 
 //lights
-StructuredBuffer<Light> lights	:register(t4);
+StructuredBuffer<Light> lights			:register(t4);
+StructuredBuffer<SpotLight> spotLights	:register(t5);
 
 //input textures
 Texture2D<float4> Normal_Depth	:register(t1);
@@ -85,9 +94,9 @@ float3 DirectIllumination(float3 pos, float3 norm , Light light, float inSpec,in
 
 	float3 toEye = -pos;
 	float3 v = reflect(-lightVec, norm);
-	float specFactor = pow(max(dot(v,toEye), 0.0f), 100)*inSpec;
+	float specFactor = pow(max(dot(v,toEye), 0.0f), 1)*inSpec;
 
-	return (light.color * att * (diffuseFactor/* + specFactor*/));
+	return (light.color * att * (diffuseFactor + specFactor));
 }
 
 struct PixelData

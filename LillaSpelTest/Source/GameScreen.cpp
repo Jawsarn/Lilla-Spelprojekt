@@ -10,6 +10,7 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4], std::string p_mapNa
 {
 	m_mapLoader = new MapLoader();
 	m_mapNodes = m_mapLoader->LoadMap(p_mapName);
+	//vector<XMFLOAT3> t_centerSplinePositions = m_mapLoader->LoadLogicalObj("centerspline").at(0);
 	m_lastNodeIndex = m_mapNodes->at(m_mapNodes->size()-1)->m_Index;
 	vector<XMMATRIX> t_shipWorldMatrices;
 	vector<UINT> t_colors;
@@ -17,7 +18,7 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4], std::string p_mapNa
 	for (int i = 0; i < p_numberOfPlayers; i++)
 	{
 
-		m_players.push_back(new Player(m_mapNodes->at(0),0.0f, i));
+		m_players.push_back(new Player(m_mapNodes->at(0),(180/p_numberOfPlayers)*i, i));
 		t_shipWorldMatrices.push_back(m_players[i]->GetWorldMatrix());
 		t_colors.push_back(p_color[i]);
 		t_whichVehicles.push_back(p_whatVehicle[i]);
@@ -128,12 +129,6 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 				}
 				UpdatePlayerHUD(i);
 			}
-
-
-
-
-
-
 
 			//Give all players their respective racePosition by checking ever player vs every other player
 
