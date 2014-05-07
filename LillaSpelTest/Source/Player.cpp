@@ -467,6 +467,7 @@ void Player::SetPlayerBoost(float p_boost)
 }
 void Player::Start()
 {
+	m_speed = (float)(m_aButtonPressedAtStart)/2;
 	m_state = NORMAL;
 }
 ////scrap
