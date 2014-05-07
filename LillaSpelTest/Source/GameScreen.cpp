@@ -179,8 +179,10 @@ void GameScreen::CreatePlayerHUDs(int p_numberOfPlayers, int p_color[4])
 	UINT t_templateHandle;
 	UINT t_boostBarHandle;
 	UINT t_wallBarHandle;
+	UINT t_MiedelHandle;
 	std::vector<UINT> t_hudParts;
 	std::vector<UINT> t_textureIDs;
+	std::vector<UINT> t_textureCountDownID;
 	std::vector<DirectX::XMFLOAT2> t_barOffsets;
 	m_graphicHandle->LoadTexture(L"first.dds",t_texture);
 	t_textureIDs.push_back(t_texture);
@@ -190,8 +192,20 @@ void GameScreen::CreatePlayerHUDs(int p_numberOfPlayers, int p_color[4])
 	t_textureIDs.push_back(t_texture);
 	m_graphicHandle->LoadTexture(L"fourth.dds",t_texture);
 	t_textureIDs.push_back(t_texture);
+
+
+
+
+
+
+
 	m_graphicHandle->CreateHUDObject(DirectX::XMFLOAT2(-0.8,0.8),DirectX::XMFLOAT2(0.1,0.1),t_textureIDs,t_placementHandle);
 	t_hudParts.push_back(t_placementHandle);
+
+
+
+
+
 	t_barOffsets.push_back(DirectX::XMFLOAT2(0,0));
 	m_graphicHandle->CreateHUDObject(DirectX::XMFLOAT2(0,-0.8),DirectX::XMFLOAT2(1,0.02),t_textureIDs,t_boostBarHandle);
 	t_hudParts.push_back(t_boostBarHandle);
@@ -199,6 +213,23 @@ void GameScreen::CreatePlayerHUDs(int p_numberOfPlayers, int p_color[4])
 	m_graphicHandle->CreateHUDObject(DirectX::XMFLOAT2(0,-0.9),DirectX::XMFLOAT2(1,0.02),t_textureIDs,t_wallBarHandle);
 	t_hudParts.push_back(t_wallBarHandle);
 	t_barOffsets.push_back(DirectX::XMFLOAT2(0,0));
+
+	m_graphicHandle->LoadTexture(L"CountDown_Three.dds",t_texture);
+	t_textureCountDownID.push_back(t_texture);
+	m_graphicHandle->LoadTexture(L"CountDown_Two.dds",t_texture);
+	t_textureCountDownID.push_back(t_texture);
+	m_graphicHandle->LoadTexture(L"CountDown_One.dds",t_texture);
+	t_textureCountDownID.push_back(t_texture);
+	m_graphicHandle->LoadTexture(L"CountDown_Go.dds",t_texture);
+	t_textureCountDownID.push_back(t_texture);
+	m_graphicHandle->LoadTexture(L"Nothing.dds",t_texture);
+	t_textureCountDownID.push_back(t_texture);
+
+
+	m_graphicHandle->CreateHUDObject(DirectX::XMFLOAT2(0.0,0.0),DirectX::XMFLOAT2(0.2,0.2),t_textureCountDownID,t_MiedelHandle);
+	t_hudParts.push_back(t_MiedelHandle);
+	t_barOffsets.push_back(DirectX::XMFLOAT2(0,0));
+	
 	m_graphicHandle->CreateHudTemplate(t_hudParts,t_templateHandle);
 
 	for (int i = 0; i < p_numberOfPlayers; i++)

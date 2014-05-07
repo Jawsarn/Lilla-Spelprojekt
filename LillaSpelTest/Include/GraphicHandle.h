@@ -86,14 +86,14 @@ public:
 	void SetAmountOfPlayers(int p_NrOfPlayers);
 	void SetCameraVehicleSelection(UINT p_CameraLogicID);
 	void InitializeShip(std::string p_ShipStringName, UINT p_TextureDiffuseSpec, UINT p_TextureNormGlow);
-	void InitializeLevel(std::string p_LevelStringName, UINT p_Texture);
+	void InitializeLevel(std::string p_LevelStringName, UINT p_Texture,UINT p_TextureNormGlow);
+	void InitializeWall(std::string p_PlayerWallStringName, UINT p_Texture,UINT p_TextureNormGlow);
 	void RemoveLevelDraw(int p_RemoveLevelDraw);
 	void AddLevelDraw(int p_AddLevelDraw);
 	void AddSelectionDraw();
 	void RemoveSelectionDraw();
 	
 	UINT CreateWall(int p_WhatWall,CXMMATRIX p_PlayerWallWorld,int p_WhatPlayer);
-	void InitializeWall(std::string p_PlayerWallStringName, UINT p_Texture);
 
 
 	void SetViewportAmount(UINT p_ViewportAmount);
