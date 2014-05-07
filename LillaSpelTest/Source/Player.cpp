@@ -92,9 +92,10 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 		FixWorldPosition();
 		UpdateCollisionBox();
 
+		r_returnInt = WallPlacement(p_dt);
+		UpdateTimers(p_dt);
+
 	}
-	r_returnInt = WallPlacement(p_dt);
-	UpdateTimers(p_dt);
 
 	return r_returnInt;
 }
@@ -311,32 +312,39 @@ void Player::UpdateWorldMatrix()
 	//change to properly calibrate the camera offset (don't wanna have dat camera clip thru he wall)
 	float t_cameraUpTrailDistance = 1;
 	float t_cameraTargetTrailDistance = 5;
+	//Vehicle Variables
 	XMFLOAT3 t_position = XMFLOAT3(m_position.x, m_position.y, m_position.z);
-	XMVECTOR t_eyeVector = XMLoadFloat3(&t_position);
-	XMVECTOR t_bobOffsetVector = XMLoadFloat3(&m_bobOffset);
-	XMVECTOR t_targetVector = XMLoadFloat3(&m_direction);
 
-	XMVECTOR t_upVector = XMLoadFloat3(&m_upVector);
 
-	////CAMERA FIX
-	XMVECTOR t_cameraPositionVector = t_eyeVector+t_upVector*t_cameraUpTrailDistance+t_cameraTargetTrailDistance*t_targetVector*-1;
-	XMStoreFloat4x4(&m_cameraMatrix , XMMatrixLookAtLH(t_cameraPositionVector, t_eyeVector, t_upVector));
+	XMVECTOR t_vehicleEyeVector = XMLoadFloat3(&t_position);
+	XMVECTOR t_vehicleTargetVector = XMLoadFloat3(&m_direction);
+	XMVECTOR t_vehicleUpVector = XMLoadFloat3(&m_upVector);
+
+	XMVECTOR t_cameraEyeVector = t_vehicleEyeVector+t_vehicleUpVector*t_cameraUpTrailDistance+t_cameraTargetTrailDistance*t_vehicleTargetVector*-1;
+	XMVECTOR t_cameraUpVector = t_vehicleUpVector;
+	XMVECTOR t_cameraTargetVector = t_vehicleEyeVector;
 
 	////VEHICLE TILT
 	//rotate along target vector
-	XMMATRIX t_directionRotationMatrixTarget = XMMatrixRotationAxis(t_targetVector,m_deltaAngle*10);					//////////////////////////MAKE SURE YOU CHANGE THIS HARDCODED 10 CRAP////////////////
-	t_upVector = XMVector3Transform(t_upVector, t_directionRotationMatrixTarget);
-	t_upVector = XMVector3Normalize(t_upVector);
+	XMMATRIX t_directionRotationMatrixTarget = XMMatrixRotationAxis(t_vehicleTargetVector,m_deltaAngle*3);					//////////////////////////MAKE SURE YOU CHANGE THIS HARDCODED 10 CRAP////////////////
+	t_vehicleUpVector = XMVector3Transform(t_vehicleUpVector, t_directionRotationMatrixTarget);
+	t_vehicleUpVector = XMVector3Normalize(t_vehicleUpVector);
 
 	//roate along new up vector
-	XMMATRIX t_directionRotationMatrixUp = XMMatrixRotationAxis(t_upVector, m_deltaAngle*10);					//////////////////////////MAKE SURE YOU CHANGE THIS HARDCODED 10 CRAP////////////////
-	t_targetVector = XMVector3Transform(t_targetVector, t_directionRotationMatrixUp);
-	t_targetVector = XMVector3Normalize(t_targetVector);
+	XMMATRIX t_directionRotationMatrixUp = XMMatrixRotationAxis(t_vehicleUpVector, m_deltaAngle*10);					//////////////////////////MAKE SURE YOU CHANGE THIS HARDCODED 10 CRAP////////////////
+	t_vehicleTargetVector = XMVector3Transform(t_vehicleTargetVector, t_directionRotationMatrixUp);
+	t_vehicleTargetVector = XMVector3Normalize(t_vehicleTargetVector);
 
-	XMStoreFloat4x4( &m_worldMatrix, XMMatrixLookToLH(t_eyeVector+t_bobOffsetVector, t_targetVector, t_upVector));
+
+
+	XMStoreFloat4x4(&m_cameraMatrix , XMMatrixLookAtLH(t_cameraEyeVector, t_cameraTargetVector, t_vehicleUpVector));
+
+
+	XMVECTOR t_bobOffsetVector = XMLoadFloat3(&m_bobOffset);
+	XMStoreFloat4x4( &m_worldMatrix, XMMatrixLookToLH(t_vehicleEyeVector+t_bobOffsetVector, t_vehicleTargetVector, t_vehicleUpVector));
 
 	//store direction of car for wall placement
-	XMStoreFloat3(&m_direction, t_targetVector);
+	XMStoreFloat3(&m_direction, t_vehicleTargetVector);
 
 
 
