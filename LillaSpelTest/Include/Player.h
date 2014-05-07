@@ -115,5 +115,8 @@ private:
 	void UpdateWorldMatrix();
 	void UpdateWallMeter(float p_dt);
 
+	//this really does deserve its own class. Or something
+	XMFLOAT3 SetBoxExtents(vector<XMFLOAT3> p_corners);
+
 };
 

@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "MathHelper.h"
+#include "MapLoader.h"
 
 
 Player::Player()
@@ -10,8 +11,14 @@ Player::Player()
 
 Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 {
-	m_wallBoxExtents = XMFLOAT3(0.5,0.5,1);
-	m_playerShipBoxExtents = XMFLOAT3(1,1,1);
+	MapLoader t_mapLoader = MapLoader(); //might need to explicitly call constructor to get member variable set. Dunno about this one...
+
+	//gets the corners from the maploader. Yes. This works
+	vector<XMFLOAT3> t_wallBoxCorners = t_mapLoader.LoadLogicalObj("walls/firstwall/mesh.obj").at(0);
+	vector <XMFLOAT3> t_playerShipBoxCorners = t_mapLoader.LoadLogicalObj("ships/pajfighter/mesh.obj").at(0);
+
+	m_wallBoxExtents = SetBoxExtents(t_wallBoxCorners);
+	m_playerShipBoxExtents = SetBoxExtents(t_playerShipBoxCorners);
 
 	m_playerIndex = p_playerIndex;
 
@@ -367,6 +374,48 @@ void Player::BumpedIntoPlayer(XMFLOAT3 p_force)
 	//Angle ska bli p_force projicerad på m_direction cross m_upvector och sen absolutbelopp på den vectorn
 }
 
+XMFLOAT3 Player::SetBoxExtents(vector<XMFLOAT3> p_corners)
+{
+	float t_maxX = 0;
+	float t_maxY = 0;
+	float t_maxZ = 0;
+
+	float t_minX = 0;
+	float t_minY = 0;
+	float t_minZ = 0;
+	for (int i = 0; i < p_corners.size(); i++)
+	{
+		//gets max and min x
+		if(p_corners[i].x > t_maxX)
+			t_maxX = p_corners[i].x;
+		else if(p_corners[i].x < t_minX)
+			t_minX = p_corners[i].x;
+
+		//gets max and min y
+		if(p_corners[i].x > t_maxY)
+			t_maxY=p_corners[i].x;
+		else if(p_corners[i].x < t_minY)
+			t_minY = p_corners[i].x;
+
+		//gets max and min Z
+		if(p_corners[i].x > t_maxZ)
+			t_maxZ = p_corners[i].x ;
+		else if(p_corners[i].x < t_minZ)
+			t_minZ=p_corners[i].x ;
+	}
+
+	//checks if absolute value of min values is greater than max values (really unnecessary if models are symetric, but can TA really be trusted?
+	if(t_maxX < -t_minX)
+		t_maxX = -t_minX;
+
+	if(t_maxY < -t_minY)
+		t_maxY = -t_minY;
+
+	if(t_maxZ < -t_minZ)
+		t_maxZ = -t_minZ;
+
+	return XMFLOAT3(t_maxX, t_maxY, t_maxZ);
+}
 
 
 /// Gets yo
