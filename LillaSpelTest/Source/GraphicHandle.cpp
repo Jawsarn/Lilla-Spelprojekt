@@ -427,7 +427,7 @@ void GraphicHandle::CreateShipForGame(std::vector<XMMATRIX> p_PlayerWorld)//4123
 		//JAWS KOD
 		UINT t_LightID;
 		//m_GraphicEngine->AddObjectLight(m_Player[i], XMFLOAT3(0.0f,-0.1f,0.0f), m_Colours[m_PlayerColour[i]],2.0f,t_LightID);
-		m_GraphicEngine->AddObjectLight(m_Player[i], XMFLOAT3(0.0f,-0.3f,1.0f), m_Colours[m_PlayerColour[i]],2.0f,t_LightID);
+		m_GraphicEngine->AddObjectLight(m_Player[i], XMFLOAT3(0.0f,-0.3f,1.0f), m_Colours[m_PlayerColour[i]],4.0f,t_LightID);
 		//m_GraphicEngine->AddObjectLight(m_Player[i], XMFLOAT3(0.0f,-0.1f,2.0f), m_Colours[m_PlayerColour[i]],2.0f,t_LightID);
 		/*
 		m_GraphicEngine->AddObjectLight(m_Player[i], XMFLOAT3(0.0f,-0.1f,3.0f), m_Colours[m_PlayerColour[i]],2.0f,t_LightID);
