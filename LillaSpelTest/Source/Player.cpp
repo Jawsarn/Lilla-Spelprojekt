@@ -12,7 +12,7 @@ Player::Player()
 Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 {
 
-	m_cameraFollowSpeed = 1;
+	m_cameraFollowSpeed = 0.1;
 
 	m_cameraAngle = 0;
 	m_state = STARTING;
@@ -53,8 +53,8 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 
 	//speed stuff
 	m_speed = 0;
-	m_maxSpeed = 20;
-	m_maxBoostSpeed = 60;//
+	m_maxSpeed = 5;
+	m_maxBoostSpeed = 10;//
 
 	m_acceleration = 8;
 	m_boostAcceleration = 25;
@@ -326,39 +326,47 @@ void Player::UpdateWorldMatrix()
 	XMVECTOR t_vehicleTargetVector = XMLoadFloat3(&m_direction);
 	XMVECTOR t_vehicleUpVector = XMLoadFloat3(&m_upVector);
 
-	XMVECTOR t_cameraEyeVector = t_vehicleEyeVector+t_vehicleUpVector*t_cameraUpTrailDistance+t_cameraTargetTrailDistance*t_vehicleTargetVector*-1;
+	XMVECTOR t_cameraEyeVector = t_vehicleEyeVector + t_vehicleUpVector*t_cameraUpTrailDistance + t_cameraTargetTrailDistance*t_vehicleTargetVector*-1;
 	XMVECTOR t_cameraUpVector = t_vehicleUpVector;
 	XMVECTOR t_cameraTargetVector = t_vehicleEyeVector;
 
-	XMVECTOR t_awesomevector = t_vehicleTargetVector;
+	XMVECTOR t_vehicleUnmoddedTargetVector = t_vehicleTargetVector;
 
 	////VEHICLE TILT
 	//rotate along target vector
-	XMMATRIX t_directionRotationMatrixTarget = XMMatrixRotationAxis(t_vehicleTargetVector,m_deltaAngle*8);					//////////////////////////MAKE SURE YOU CHANGE THIS HARDCODED 10 CRAP////////////////
+	XMMATRIX t_directionRotationMatrixTarget = XMMatrixRotationAxis(t_vehicleTargetVector, m_deltaAngle * 8);					//////////////////////////MAKE SURE YOU CHANGE THIS HARDCODED 10 CRAP////////////////
 	t_vehicleUpVector = XMVector3Transform(t_vehicleUpVector, t_directionRotationMatrixTarget);
 	t_vehicleUpVector = XMVector3Normalize(t_vehicleUpVector);
 
 	//roate along new up vector
-	XMMATRIX t_directionRotationMatrixUp = XMMatrixRotationAxis(t_vehicleUpVector, m_deltaAngle*10);					//////////////////////////MAKE SURE YOU CHANGE THIS HARDCODED 10 CRAP////////////////
+	XMMATRIX t_directionRotationMatrixUp = XMMatrixRotationAxis(t_vehicleUpVector, m_deltaAngle * 10);					//////////////////////////MAKE SURE YOU CHANGE THIS HARDCODED 10 CRAP////////////////
 	t_vehicleTargetVector = XMVector3Transform(t_vehicleTargetVector, t_directionRotationMatrixUp);
 	t_vehicleTargetVector = XMVector3Normalize(t_vehicleTargetVector);
 
 
 	////CAMERA MATRIX
 
+	m_cameraFollowSpeed = 0.0005;
 	//update camera angle
-	//if(m_angle > m_cameraAngle)
-	//	m_cameraAngle += m_cameraFollowSpeed*p_dt;
-	//else if(m_cameraAngle > m_angle)
-	//	m_cameraAngle -= m_cameraFollowSpeed*p_dt;
-	m_cameraAngle  = m_angle;
+	
+	//TIME FOR RETARD HAXX!!
+	int t_intBuffer = 1000000;
+	int t_deltaAngleInt = (int)(m_deltaAngle * t_intBuffer);
+	int t_cameraAngleInt = (int)(m_cameraAngle * t_intBuffer);
+
+	if (t_deltaAngleInt > t_cameraAngleInt)
+		m_cameraAngle += m_cameraFollowSpeed;
+	else if (t_cameraAngleInt  > t_deltaAngleInt)
+		m_cameraAngle -= m_cameraFollowSpeed;
 
 
 
-	//t_cameraEyeVector = t_vehicleEyeVector+t_vehicleUpVector*t_cameraUpTrailDistance+t_cameraTargetTrailDistance*t_vehicleTargetVector*-1;
 
-	XMMATRIX t_awesomeMatrix = XMMatrixRotationAxis(t_awesomevector, m_cameraAngle*10);
-	t_cameraUpVector = XMVector3Transform(t_cameraUpVector, t_awesomeMatrix);
+	//pushes the camera back a tad
+	//t_cameraEyeVector = t_vehicleEyeVector+t_vehicleUpVector*t_vehicleTargetVector+t_cameraTargetTrailDistance*t_vehicleTargetVector*-1;
+
+	XMMATRIX t_cameraRotationMatrix = XMMatrixRotationAxis(t_vehicleUnmoddedTargetVector, -m_deltaAngle-m_cameraAngle* 20);
+	t_cameraUpVector = XMVector3Transform(t_cameraUpVector, t_cameraRotationMatrix);
 	t_cameraUpVector = XMVector3Normalize(t_cameraUpVector);
 
 
