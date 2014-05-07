@@ -86,14 +86,14 @@ public:
 	void SetAmountOfPlayers(int p_NrOfPlayers);
 	void SetCameraVehicleSelection(UINT p_CameraLogicID);
 	void InitializeShip(std::string p_ShipStringName, UINT p_TextureDiffuseSpec, UINT p_TextureNormGlow);
-	void InitializeLevel(std::string p_LevelStringName, UINT p_Texture);
+	void InitializeLevel(std::string p_LevelStringName, UINT p_Texture,UINT p_TextureNormGlow);
+	void InitializeWall(std::string p_PlayerWallStringName, UINT p_Texture,UINT p_TextureNormGlow);
 	void RemoveLevelDraw(int p_RemoveLevelDraw);
 	void AddLevelDraw(int p_AddLevelDraw);
 	void AddSelectionDraw();
 	void RemoveSelectionDraw();
 	
 	UINT CreateWall(int p_WhatWall,CXMMATRIX p_PlayerWallWorld,int p_WhatPlayer);
-	void InitializeWall(std::string p_PlayerWallStringName, UINT p_Texture);
 
 
 	void SetViewportAmount(UINT p_ViewportAmount);
@@ -103,6 +103,8 @@ public:
 	void CreateDrawObject(std::vector <UINT> p_UINTMeshLista, CXMMATRIX p_World,XMFLOAT3 p_Colour,UINT & o_ObjectID,bool p_ShouldItBeDrawn);
 	void RemoveObject(UINT p_RemoveAt);
 
+	//light functions
+	void CreateMapLights(std::vector<XMFLOAT3> p_CenterSpline);
 
 	//hud functions
 	void CreateHUD(UINT &o_HUDID);
@@ -112,4 +114,5 @@ public:
 	void UseHud(UINT p_ViewportID, UINT p_HudID);
 	void ChangeHudObjectTexture(UINT p_hudID, UINT p_objectID, UINT p_useFrontTexture);
 	void UpdateHudBarOffset(UINT p_hudID, UINT p_objectID, DirectX::XMFLOAT2 p_barOffset);
+	void ScaleHudObject(UINT p_hudID, UINT p_objectID, float scale);
 };

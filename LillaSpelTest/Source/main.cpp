@@ -63,6 +63,7 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
 	m_levelNames.push_back("Assault");
 	m_levelNames.push_back("Dust2");
+	m_levelNames.push_back("Aztec");
 
 
 	m_GraphicHandle = m_GraphicHandle->GetInstance();
