@@ -326,9 +326,11 @@ void Player::UpdateWorldMatrix()
 	XMVECTOR t_cameraUpVector = t_vehicleUpVector;
 	XMVECTOR t_cameraTargetVector = t_vehicleEyeVector;
 
+	XMVECTOR t_awesomevector = t_vehicleTargetVector;
+
 	////VEHICLE TILT
 	//rotate along target vector
-	XMMATRIX t_directionRotationMatrixTarget = XMMatrixRotationAxis(t_vehicleTargetVector,m_deltaAngle*3);					//////////////////////////MAKE SURE YOU CHANGE THIS HARDCODED 10 CRAP////////////////
+	XMMATRIX t_directionRotationMatrixTarget = XMMatrixRotationAxis(t_vehicleTargetVector,m_deltaAngle*8);					//////////////////////////MAKE SURE YOU CHANGE THIS HARDCODED 10 CRAP////////////////
 	t_vehicleUpVector = XMVector3Transform(t_vehicleUpVector, t_directionRotationMatrixTarget);
 	t_vehicleUpVector = XMVector3Normalize(t_vehicleUpVector);
 
@@ -340,7 +342,14 @@ void Player::UpdateWorldMatrix()
 
 	////CAMERA MATRIX
 	//t_cameraEyeVector = t_vehicleEyeVector+t_vehicleUpVector*t_cameraUpTrailDistance+t_cameraTargetTrailDistance*t_vehicleTargetVector*-1;
-	XMStoreFloat4x4(&m_cameraMatrix , XMMatrixLookAtLH(t_cameraEyeVector, t_cameraTargetVector, t_vehicleUpVector));
+
+	XMMATRIX t_awesomeMatrix = XMMatrixRotationAxis(t_awesomevector, -m_deltaAngle*10);
+	t_cameraUpVector = XMVector3Transform(t_cameraUpVector, t_awesomeMatrix);
+	t_cameraUpVector = XMVector3Normalize(t_cameraUpVector);
+
+
+
+	XMStoreFloat4x4(&m_cameraMatrix , XMMatrixLookAtLH(t_cameraEyeVector, t_cameraTargetVector, t_cameraUpVector));
 
 
 	XMVECTOR t_bobOffsetVector = XMLoadFloat3(&m_bobOffset);
