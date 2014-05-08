@@ -379,6 +379,7 @@ void Player::UpdateWorldMatrix()
 	t_vehicleTargetVector = XMVector3Transform(t_vehicleTargetVector, t_directionRotationMatrixUp);
 	t_vehicleTargetVector = XMVector3Normalize(t_vehicleTargetVector);
 
+	XMStoreFloat3(&m_direction, t_vehicleTargetVector);
 
 	////CAMERA MATRIX
 
