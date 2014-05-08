@@ -61,13 +61,13 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	m_LastMousePos = XMFLOAT2(0,0);
 
 
-	m_levelNames.push_back("Assault");
-	m_levelNames.push_back("Dust2");
-	m_levelNames.push_back("Aztec");
+	m_levelNames.push_back("Levels/Assault");
+	m_levelNames.push_back("Levels/Dust2");
+	m_levelNames.push_back("Levels/Aztec");
 
 
 	m_GraphicHandle = m_GraphicHandle->GetInstance();
-	m_GraphicHandle->Initialize(1920, 1080, m_HandleWindow,m_levelNames); //fix this input variables right
+	m_GraphicHandle->Initialize(1920, 1080, m_HandleWindow,m_levelNames); //fix this ipnleagut variables right
 	m_GraphicHandle->SetFullScreen(false);
 	m_audioManager = m_audioManager->GetInstance();
 	m_audioManager->PlaySpecificSound("main.wav",true);

@@ -30,6 +30,7 @@ private:
 	std::vector<UINT> m_PlayerLight;
 	UINT m_WhatLevelBefore;
 	std::vector <UINT> m_Levels;
+	std::vector <std::string> m_WallNames;
 	
 	
 	
@@ -44,10 +45,10 @@ private:
 	std::vector<XMFLOAT3> m_Colours;
 
 	//texturelists
-	std::vector <UINT> m_ShipTexture;
-	std::vector <UINT> m_ShipNormalGlow;
-	std::vector <UINT> m_LevelTexture;
-	std::vector <UINT> m_PlayerWallTexture;
+	//std::vector <UINT> m_ShipTexture;
+	//std::vector <UINT> m_ShipNormalGlow;
+	//std::vector <UINT> m_LevelTexture;
+	//std::vector <UINT> m_PlayerWallTexture;
 	GraphicEngine* m_GraphicEngine;
 
 	UINT m_CameraID[4];
@@ -88,6 +89,7 @@ public:
 	void InitializeShip(std::string p_ShipStringName, UINT p_TextureDiffuseSpec, UINT p_TextureNormGlow);
 	void InitializeLevel(std::string p_LevelStringName, UINT p_Texture,UINT p_TextureNormGlow);
 	void InitializeWall(std::string p_PlayerWallStringName, UINT p_Texture,UINT p_TextureNormGlow);
+	std::vector <UINT> InitializeObj(std::string p_ObjectStringName);
 	void RemoveLevelDraw(int p_RemoveLevelDraw);
 	void AddLevelDraw(int p_AddLevelDraw);
 	void AddSelectionDraw();

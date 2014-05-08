@@ -13,7 +13,7 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4], std::string p_mapNa
 	m_mapNodes = m_mapLoader->LoadMap(p_mapName);
 	m_timeSpentDuringPreUpdate = 0;
 	//vector<XMFLOAT3> t_centerSplinePositions = m_mapLoader->LoadLogicalObj("centerspline").at(0);
-	vector<XMFLOAT3> t_centerSplinePositions = m_mapLoader->LoadLogicalObj("Levels/"+p_mapName+"/CenterSpline.obj").at(0);
+	vector<XMFLOAT3> t_centerSplinePositions = m_mapLoader->LoadLogicalObj(p_mapName+"/CenterSpline.obj").at(0);
 	m_graphicHandle->CreateMapLights(t_centerSplinePositions);
 
 	m_lastNodeIndex = m_mapNodes->at(m_mapNodes->size()-1)->m_Index;
