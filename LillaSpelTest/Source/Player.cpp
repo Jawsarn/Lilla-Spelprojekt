@@ -32,14 +32,15 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_wallBoxExtents = SetBoxExtents(t_wallBoxCorners);
 	m_playerShipBoxExtents = SetBoxExtents(t_playerShipBoxCorners);
 
-
+	m_wallBoxExtents.y*=0.6;
+	m_playerShipBoxExtents.y*=0.6;
 
 	////VARIABLE INITIALIZATION (not relevant for game balancing)
 	m_wallMeter = 0;
 	m_coolDown = 0;	
 	m_aButtonPressedAtStart=0;
 	m_bobOffset = XMFLOAT3(0,0,0);
-	m_upVector = XMFLOAT3(0,1,0);
+	m_up = XMFLOAT3(0,1,0);
 	m_distance = 0.0f;
 	m_boostMeter = 0;//test value
 	m_direction = DirectX::XMFLOAT3(0,0,1);
@@ -48,14 +49,16 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_cameraAngle = 0;
 	m_deltaAngle = 0;
 	m_hasWon = false;
+	m_gravityShifting = false;
+	m_gravityShiftProgress = 0;
 
 	////BALANCING VARIABLES
 
 
 	//max boost meter
 	m_maxBoost = 100;
-	m_boostGain = 1;
-	m_boostDecay = 2;//probably not gonna be used
+	m_boostGain = 20;
+	m_boostDecay = 1;//probably not gonna be used
 
 	m_maxSpeed = 5;
 	m_maxBoostSpeed = 10;
@@ -77,9 +80,14 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_maxDeathTimer = 1;//currently unused
 
 	//the speed at which camera follows the ship when turning
-	m_cameraFollowSpeed = 0.1;
+	m_cameraFollowSpeed = 0.0005;
 
-	
+	//how far behind the vehicle the camera is
+	m_cameraTrailDistanceTarget = 5;
+	//how high above the vehicle the camera is
+	m_cameraTrailDistanceUp = 1;
+
+
 	m_deathShakeMaxIntensity = 8;//reversed intensity: higher number means lower intensity. Because logic
 	m_deathShakeIntensityDrop = 4;
 
@@ -104,6 +112,13 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 	m_currentUserCmd = p_userCMD;
 	MathHelper t_mathHelper;
 
+	if(p_userCMD.bButtonPressed)
+	{
+		m_gravityShifting = true;
+		m_gravityShiftProgress = 0;
+	}
+
+
 	//not sure if entirely needed...
 	m_direction = XMFLOAT3(0,0,1);
 
@@ -116,12 +131,14 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 		MovementAlongLogicalMap(p_dt);
 		SetDirection();
 		FixWorldPosition();
-		
+		if(m_gravityShifting)
+			GravityShift(m_gravityShiftProgress);
+
 		UpdateCollisionBox();
 
 		r_returnInt = WallPlacement(p_dt);
 		UpdateTimers(p_dt);
-		
+
 	}
 
 	if (m_state == IMMORTAL)
@@ -228,8 +245,6 @@ void Player::FixWorldPosition()
 	//now offset from the center, following the tube edge
 
 	//BobOffset();
-	//now offset a tiny bit from "Actual position" depending on speed
-
 	UpdateWorldMatrix();
 	//Matrix now updates. Ready to be grabbed from the gamescreen
 }
@@ -239,9 +254,9 @@ void Player::UpdateCollisionBox()
 	MathHelper t_mathHelper = MathHelper();
 	//XMFLOAT3 t_vector = t_mathHelper.CrossProduct(m_direction, m_upVector); kanske inte behövs
 	XMFLOAT4 t_quarternion = XMFLOAT4(0,0,0,1);
-	XMMATRIX t_boxOrientationMatrix = XMMatrixLookAtLH(XMLoadFloat3(&m_position), XMLoadFloat3(&m_direction),XMLoadFloat3(&m_upVector)); //matrixyo
+	XMMATRIX t_boxOrientationMatrix = XMMatrixLookToLH(XMLoadFloat3(&m_position), XMLoadFloat3(&m_direction),XMLoadFloat3(&m_up)); //matrixyo
 	XMVECTOR t_boxOrientationVector = XMLoadFloat4(&t_quarternion);
-	t_boxOrientationVector = XMVector4Transform(t_boxOrientationVector, t_boxOrientationMatrix);
+	t_boxOrientationVector = XMVector4Transform(t_boxOrientationVector, XMLoadFloat4x4(&m_worldMatrix));
 	t_boxOrientationVector = XMVector4Normalize(t_boxOrientationVector);
 	XMStoreFloat4(&t_quarternion, t_boxOrientationVector);
 
@@ -285,7 +300,8 @@ void Player::UpdateTimers(float p_dt)
 	if(m_immortalTimer<0)
 		m_state = NORMAL;
 	m_deathTimer -=p_dt;
-
+	if(m_gravityShifting)
+		m_gravityShiftProgress += p_dt*0.5;
 	m_wallMeter+= p_dt*m_wallGain*(4-m_racePos);
 
 }
@@ -301,7 +317,7 @@ void Player::UpdateTimers(float p_dt)
 
 void Player::PlaceWall()
 {
-	m_lastPlacedWall = new PlayerWall(XMFLOAT3(0,0,1), &m_position, &m_direction , &m_upVector, m_playerIndex, m_wallBoxExtents);
+	m_lastPlacedWall = new PlayerWall(XMFLOAT3(0,0,1), &m_position, &m_wallPlacementDirection , &m_up, m_playerIndex, m_wallBoxExtents);
 	m_placedWalls.push_back(m_lastPlacedWall);
 	m_mapNode->AddWall(m_lastPlacedWall);
 }
@@ -314,13 +330,13 @@ void Player::FixUpVectorRotation(float p_angle)
 	XMMATRIX t_rotationmatrix = XMMatrixRotationAxis(XMLoadFloat3(&t_mathHelper.Normalize( m_mapNode->m_normal)), p_angle);
 	XMVECTOR t_upVector = XMLoadFloat3(&m_mapNode->m_radiusVector);
 	t_upVector = XMVector3Transform(t_upVector, t_rotationmatrix);
-	XMStoreFloat3(&m_upVector, t_upVector);
-	m_upVector = t_mathHelper.Normalize(m_upVector);
+	XMStoreFloat3(&m_up, t_upVector);
+	m_up = t_mathHelper.Normalize(m_up);
 }
 
 void Player::FixOffsetFromCenterSpline()
 {
-	m_position = m_mathHelper.VecAddVec(m_position, m_mathHelper.FloatMultiVec(-m_mapNode->m_radius+(m_mapNode->m_radius/4), m_upVector)); 
+	m_position = m_mathHelper.VecAddVec(m_position, m_mathHelper.FloatMultiVec(-m_mapNode->m_radius+(m_mapNode->m_radius/4), m_up)); 
 }
 
 void Player::BobOffset()
@@ -352,17 +368,15 @@ void Player::DeathShake()
 void Player::UpdateWorldMatrix()
 {
 	//change to properly calibrate the camera offset (don't wanna have dat camera clip thru he wall)
-	float t_cameraUpTrailDistance = 1;
-	float t_cameraTargetTrailDistance = 5;
 	//Vehicle Variables
 	XMFLOAT3 t_position = XMFLOAT3(m_position.x, m_position.y, m_position.z);
 
 
 	XMVECTOR t_vehicleEyeVector = XMLoadFloat3(&t_position);
 	XMVECTOR t_vehicleTargetVector = XMLoadFloat3(&m_direction);
-	XMVECTOR t_vehicleUpVector = XMLoadFloat3(&m_upVector);
+	XMVECTOR t_vehicleUpVector = XMLoadFloat3(&m_up);
 
-	XMVECTOR t_cameraEyeVector = t_vehicleEyeVector + t_vehicleUpVector*t_cameraUpTrailDistance + t_cameraTargetTrailDistance*t_vehicleTargetVector*-1;
+	XMVECTOR t_cameraEyeVector = t_vehicleEyeVector + t_vehicleUpVector*m_cameraTrailDistanceUp + m_cameraTrailDistanceTarget*t_vehicleTargetVector*-1;
 	XMVECTOR t_cameraUpVector = t_vehicleUpVector;
 	XMVECTOR t_cameraTargetVector = t_vehicleEyeVector;
 
@@ -379,10 +393,12 @@ void Player::UpdateWorldMatrix()
 	t_vehicleTargetVector = XMVector3Transform(t_vehicleTargetVector, t_directionRotationMatrixUp);
 	t_vehicleTargetVector = XMVector3Normalize(t_vehicleTargetVector);
 
+	//XMStoreFloat3(&m_direction, t_vehicleTargetVector);
+	//XMStoreFloat3(&m_upVector, t_vehicleUpVector);
 
-	////CAMERA MATRIX
+	////CAMERA MATRIX GENERATION
 
-	m_cameraFollowSpeed = 0.0005;
+
 	//update camera angle
 
 	//TIME FOR RETARD HAXX!! makes the camera chase after the angle
@@ -397,10 +413,6 @@ void Player::UpdateWorldMatrix()
 
 
 
-
-	//pushes the camera back a tad
-	//t_cameraEyeVector = t_vehicleEyeVector+t_vehicleUpVector*t_vehicleTargetVector+t_cameraTargetTrailDistance*t_vehicleTargetVector*-1;
-
 	XMMATRIX t_cameraRotationMatrix = XMMatrixRotationAxis(t_vehicleUnmoddedTargetVector, -m_deltaAngle-m_cameraAngle* 10);
 	t_cameraUpVector = XMVector3Transform(t_cameraUpVector, t_cameraRotationMatrix);
 	t_cameraUpVector = XMVector3Normalize(t_cameraUpVector);
@@ -414,11 +426,33 @@ void Player::UpdateWorldMatrix()
 	XMStoreFloat4x4( &m_worldMatrix, XMMatrixLookToLH(t_vehicleEyeVector+t_bobOffsetVector, t_vehicleTargetVector, t_vehicleUpVector));
 
 	//store direction of car for wall placement
-	XMStoreFloat3(&m_direction, t_vehicleTargetVector);
+	XMStoreFloat3(&m_wallPlacementDirection, t_vehicleTargetVector);
 
-	
+
 	m_bobOffset = XMFLOAT3 (0,0,0);
 }
+
+void Player::GravityShift(float p_progress)
+{
+	//time for reversing
+	XMVECTOR t_eyeVector = XMLoadFloat3(&m_position);
+	XMVECTOR t_upVector = XMLoadFloat3(&m_up);
+	XMVECTOR t_targetVector = XMLoadFloat3(&m_direction);
+	float t_radius = m_mapNode->m_radius;
+	float t_targetAngle = 3.14; //pi
+
+
+	t_eyeVector += t_upVector*t_radius*p_progress*2;
+
+	XMMATRIX t_directionRotationMatrixTarget = XMMatrixRotationAxis(t_targetVector, p_progress*t_targetAngle);					//////////////////////////MAKE SURE YOU CHANGE THIS HARDCODED 10 CRAP////////////////
+	t_upVector = XMVector3Transform(t_upVector, t_directionRotationMatrixTarget);
+	t_upVector = XMVector3Normalize(t_upVector);
+
+
+
+	XMStoreFloat4x4( &m_worldMatrix, XMMatrixLookToLH(t_eyeVector, t_targetVector, t_upVector));
+}
+
 
 XMFLOAT3 Player::SetBoxExtents(vector<XMFLOAT3> p_corners)
 {
@@ -438,16 +472,16 @@ XMFLOAT3 Player::SetBoxExtents(vector<XMFLOAT3> p_corners)
 			t_minX = p_corners[i].x;
 
 		//gets max and min y
-		if(p_corners[i].x > t_maxY)
-			t_maxY=p_corners[i].x;
-		else if(p_corners[i].x < t_minY)
-			t_minY = p_corners[i].x;
+		if(p_corners[i].y > t_maxY)
+			t_maxY=p_corners[i].y;
+		else if(p_corners[i].y < t_minY)
+			t_minY = p_corners[i].y;
 
 		//gets max and min Z
-		if(p_corners[i].x > t_maxZ)
-			t_maxZ = p_corners[i].x ;
-		else if(p_corners[i].x < t_minZ)
-			t_minZ=p_corners[i].x ;
+		if(p_corners[i].z > t_maxZ)
+			t_maxZ = p_corners[i].z ;
+		else if(p_corners[i].z < t_minZ)
+			t_minZ=p_corners[i].z ;
 	}
 
 	//checks if absolute value of min values is greater than max values (really unnecessary if models are symetric, but can TA really be trusted?

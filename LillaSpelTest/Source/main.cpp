@@ -117,7 +117,7 @@ void Run()
 		}
 		else  //if there are no messages, update and draw
 		{
-			
+			m_audioManager->Update();
 			for (int i = 0; i < 4; i++) ///Fixes UserCMDs for all connected players
 			{
 				if (userCMDS->at(i).controller.IsConnected())
