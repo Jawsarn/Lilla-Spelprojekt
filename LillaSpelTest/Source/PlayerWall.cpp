@@ -27,8 +27,7 @@ PlayerWall::PlayerWall(XMFLOAT3 p_color, XMFLOAT3* p_wallPos, XMFLOAT3* p_wallDi
 	t_orientationVector = XMVector4Transform(t_orientationVector, t_matrix);
 	t_orientationVector = XMVector4Normalize(t_orientationVector);
 	XMStoreFloat4(&t_quarternion, t_orientationVector);
-	
-	
+	//p_extents.y = p_extents.y -0.17; needs some fixing, made the problem a bit less noticable
 	m_box = BoundingOrientedBox(*p_wallPos, p_extents, t_quarternion);
 	m_sphere = BoundingSphere(*p_wallPos, p_extents.z);
 
