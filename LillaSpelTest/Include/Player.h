@@ -87,6 +87,11 @@ private:
 	float m_cameraAngle;
 	float m_cameraFollowSpeed;
 
+	float m_deathShakeMaxIntensity;
+	float m_deathShakeIntensityDrop;
+
+	bool m_hasWon;
+
 	//unused but perhaps needed stuff
 	XMFLOAT3 m_color;
 	PlayerState m_state;
@@ -130,6 +135,7 @@ public:
 	void SetPlayerBoost(float p_boost);
 	void SetPlayerRacePosition(int p_pos);
 	void IncreaseBoost(int p_nrOfWallsClose, float p_dt);
+	void SetFinalDirection();
 
 private:
 
@@ -154,6 +160,7 @@ private:
 	void UpdateWorldMatrix();
 	void UpdateWallMeter(float p_dt);
 	void BobOffset();
+	void DeathShake();
 
 
 	//this really does deserve its own class. Or something

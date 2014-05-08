@@ -124,8 +124,11 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 				DrawPlayerHUD(i);
 				break;
 			}
-			DrawPlayer(i);
+
 		}
+		else
+		m_players[i]->SetFinalDirection();
+		DrawPlayer(i);
 	}
 	return GAME_SCREEN;
 }

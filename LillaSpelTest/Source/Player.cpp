@@ -13,7 +13,6 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 {
 
 
-
 	////MACRO STUFF
 	m_state = STARTING;
 	m_mathHelper = MathHelper();
@@ -48,14 +47,15 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_speed = 0;
 	m_cameraAngle = 0;
 	m_deltaAngle = 0;
+	m_hasWon = false;
 
 	////BALANCING VARIABLES
 
 
 	//max boost meter
-	m_maxBoost = 20000;
+	m_maxBoost = 100;
 	m_boostGain = 1;
-	m_boostDecay = 100;//probably not gonna be used
+	m_boostDecay = 2;//probably not gonna be used
 
 	m_maxSpeed = 5;
 	m_maxBoostSpeed = 10;
@@ -78,6 +78,10 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 
 	//the speed at which camera follows the ship when turning
 	m_cameraFollowSpeed = 0.1;
+
+	
+	m_deathShakeMaxIntensity = 8;//reversed intensity: higher number means lower intensity. Because logic
+	m_deathShakeIntensityDrop = 4;
 
 
 	////FINAL WORLD MATRIX INITIALIZATION
@@ -112,11 +116,17 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 		MovementAlongLogicalMap(p_dt);
 		SetDirection();
 		FixWorldPosition();
+		
 		UpdateCollisionBox();
 
 		r_returnInt = WallPlacement(p_dt);
 		UpdateTimers(p_dt);
+		
+	}
 
+	if (m_state == IMMORTAL)
+	{
+		DeathShake();
 	}
 
 	return r_returnInt;
@@ -217,7 +227,7 @@ void Player::FixWorldPosition()
 	FixOffsetFromCenterSpline();
 	//now offset from the center, following the tube edge
 
-	BobOffset();
+	//BobOffset();
 	//now offset a tiny bit from "Actual position" depending on speed
 
 	UpdateWorldMatrix();
@@ -287,23 +297,7 @@ void Player::UpdateTimers(float p_dt)
 /////PUNY PEASANT SLAVE METHODS
 
 
-void Player::ChangeState(PlayerState p_state)
-{
-	m_state = p_state;
-	switch (m_state)
-	{
-	case NORMAL:
-		break;
-	case DEAD:
-		m_deathTimer =  DEATH_TIME;
-		break;
-	case IMMORTAL:
-		m_immortalTimer = IMMORTAL_TIME;
-		break;
-	default:
-		break;
-	}
-}
+
 
 void Player::PlaceWall()
 {
@@ -334,13 +328,25 @@ void Player::BobOffset()
 	//declaring offset variables
 	float t_bobX, t_bobY, t_bobZ;
 
-	uniform_real_distribution<float> distribution(-0.05, 0.05);
+	uniform_real_distribution<float> distribution(-1, 1);
 	t_bobX = distribution(m_randomGenerator);
 	t_bobY = distribution(m_randomGenerator);
 	t_bobZ = distribution(m_randomGenerator);
 
-	m_bobOffset = m_mathHelper.FloatMultiVec(m_speed/m_maxBoostSpeed/3,XMFLOAT3(t_bobX, t_bobY, t_bobZ));
+	m_bobOffset = m_mathHelper.VecAddVec(m_bobOffset, m_mathHelper.FloatMultiVec(1,XMFLOAT3(t_bobX, t_bobY, t_bobZ)));
 
+}
+
+void Player::DeathShake()
+{
+	float t_bobX, t_bobY, t_bobZ;
+
+	uniform_real_distribution<float> distribution(-1, 1);
+	t_bobX = distribution(m_randomGenerator);
+	t_bobY = distribution(m_randomGenerator);
+	t_bobZ = distribution(m_randomGenerator);
+
+	m_bobOffset = m_mathHelper.VecAddVec(m_bobOffset, m_mathHelper.FloatMultiVec(pow(m_immortalTimer/m_deathShakeMaxIntensity, m_deathShakeIntensityDrop),XMFLOAT3(t_bobX, t_bobY, t_bobZ)));
 }
 
 void Player::UpdateWorldMatrix()
@@ -410,15 +416,8 @@ void Player::UpdateWorldMatrix()
 	//store direction of car for wall placement
 	XMStoreFloat3(&m_direction, t_vehicleTargetVector);
 
-
-
-
-}
-void Player::BumpedIntoPlayer(XMFLOAT3 p_force)
-{
-	MathHelper t_mathHelper = MathHelper();
-	m_speed -= t_mathHelper.Abs(t_mathHelper.FloatMultiVec(t_mathHelper.Abs(t_mathHelper.VecAddVec(m_direction, p_force)),m_mapNode->m_normal)); //VETTEFANOMDETT
-	//Angle ska bli p_force projicerad på m_direction cross m_upvector och sen absolutbelopp på den vectorn
+	
+	m_bobOffset = XMFLOAT3 (0,0,0);
 }
 
 XMFLOAT3 Player::SetBoxExtents(vector<XMFLOAT3> p_corners)
@@ -583,36 +582,32 @@ void Player::IncreaseBoost(int p_nrOfWallsClose, float p_dt)
 	m_boostMeter += p_nrOfWallsClose*p_dt*m_boostGain;
 }
 
+void Player::SetFinalDirection()
+{
+	if (!m_hasWon)
+	{
+		m_direction = m_mathHelper.FloatMultiVec(-1,m_mapNode->m_previousNode->m_normal);
+		m_direction = m_mathHelper.Normalize(m_direction);
+		m_position = m_mapNode->m_position;
+		FixWorldPosition();
+		m_hasWon = true;
+	}
+}
+
 void Player::Start()
 {
 	m_speed = (float)(m_aButtonPressedAtStart)/2;
 	m_state = NORMAL;
 }
+
+
+
+
+
 ////scrap
 
 void Player::Update(float p_dt, UserCMD userCMD)
 {
-	switch (m_state)
-	{
-	case NORMAL:
-		break;
-	case DEAD:
-		m_deathTimer -= p_dt;
-		if (m_deathTimer <=0)
-		{
-			ChangeState(IMMORTAL);
-		}
-		break;
-	case IMMORTAL:
-		m_immortalTimer -= p_dt;
-		if (m_immortalTimer <= 0)
-		{
-			ChangeState(NORMAL);
-		}
-		break;
-	default:
-		break;
-	}
 }
 void Player::UpdatePosition(float p_dt, UserCMD p_userCMD)
 {
@@ -623,4 +618,30 @@ void Player::UpdatePosition(float p_dt, UserCMD p_userCMD)
 	m_direction = t_mathHelper.Normalize(m_direction);
 
 	m_position = t_mathHelper.FloatMultiVec(p_dt,t_mathHelper.FloatMultiVec(m_speed,m_direction));
+}
+
+
+void Player::ChangeState(PlayerState p_state)
+{
+	m_state = p_state;
+	switch (m_state)
+	{
+	case NORMAL:
+		break;
+	case DEAD:
+		m_deathTimer =  DEATH_TIME;
+		break;
+	case IMMORTAL:
+		m_immortalTimer = IMMORTAL_TIME;
+		break;
+	default:
+		break;
+	}
+}
+
+void Player::BumpedIntoPlayer(XMFLOAT3 p_force)
+{
+	MathHelper t_mathHelper = MathHelper();
+	m_speed -= t_mathHelper.Abs(t_mathHelper.FloatMultiVec(t_mathHelper.Abs(t_mathHelper.VecAddVec(m_direction, p_force)),m_mapNode->m_normal)); //VETTEFANOMDETT
+	//Angle ska bli p_force projicerad på m_direction cross m_upvector och sen absolutbelopp på den vectorn
 }
