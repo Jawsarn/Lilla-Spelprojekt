@@ -71,6 +71,7 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	m_GraphicHandle->SetFullScreen(false);
 	m_audioManager = new AudioManager();
 	m_audioManager->Initialize();
+	m_audioManager->PlaySpecificSound("main.wav",true);
 
 	m_mainMenuScreen = new MainMenuScreen(m_GraphicHandle, m_audioManager);
 	m_gameSetupScreen = new GameSetupScreen(&m_gameInfo,m_GraphicHandle, m_audioManager);
@@ -176,7 +177,7 @@ void RunInitialization()
 			if(m_gameInfo.playerOnline[i])
 				t_playerOnline++;
 		}
-		m_gameScreen = new GameScreen(m_gameInfo.playerColor, m_gameInfo.shipModell, m_levelNames[m_gameInfo.map], t_playerOnline, m_GraphicHandle);
+		m_gameScreen = new GameScreen(m_gameInfo.playerColor, m_gameInfo.shipModell, m_levelNames[m_gameInfo.map], t_playerOnline, m_GraphicHandle, m_audioManager);
 		break;
 	case JOIN_GAME_SCREEN:
 		m_joinGameScreen->Initialize();

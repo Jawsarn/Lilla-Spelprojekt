@@ -5,8 +5,8 @@ GameScreen::GameScreen(void)
 {
 }
 
-GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4], std::string p_mapName, int p_numberOfPlayers, GraphicHandle* p_graphicHandle )
-	:Screen(p_graphicHandle)
+GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4], std::string p_mapName, int p_numberOfPlayers, GraphicHandle* p_graphicHandle, AudioManager* p_audioManager )
+	:Screen(p_graphicHandle, p_audioManager)
 {
 	m_state = COUNTDOWN;
 	m_mapLoader = new MapLoader();
@@ -105,7 +105,12 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 		}
 		if (m_lastNodeIndex != m_players[i]->GetCurrentMapNode()->m_Index)
 		{
-
+			if (p_userCMDS->at(i).leftBumberPressed)
+			{
+				m_audioManager->PlaySpecificSound("honk.wav",false);
+			}
+		
+			
 			bool collision = false;
 			PlayerWall* t_newWall = m_players[i]->GetLastPlacedWall(); //
 
