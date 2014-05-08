@@ -62,14 +62,14 @@ private:
 
 	//important for actual world position stuff
 	XMFLOAT3 m_logicalPosition;
-	XMFLOAT3 m_upVector;
+	XMFLOAT3 m_up;
 	XMFLOAT4X4 m_cameraMatrix;
 	XMFLOAT4X4 m_worldMatrix;
 
 	//bounding box creation stuff
 	XMFLOAT3 m_wallBoxExtents;
 	XMFLOAT3 m_playerShipBoxExtents;
-
+	XMFLOAT3 m_wallPlacementDirection;
 
 	//other stuff
 	std::vector<PlayerWall*> m_placedWalls;
@@ -86,11 +86,16 @@ private:
 
 	float m_cameraAngle;
 	float m_cameraFollowSpeed;
+	float m_cameraTrailDistanceUp;
+	float m_cameraTrailDistanceTarget;
 
 	float m_deathShakeMaxIntensity;
 	float m_deathShakeIntensityDrop;
 
 	bool m_hasWon;
+
+	float m_gravityShiftProgress;
+	bool m_gravityShifting;
 
 	//unused but perhaps needed stuff
 	XMFLOAT3 m_color;
@@ -147,6 +152,7 @@ private:
 	void MovementAlongLogicalMap(float p_dt);
 	void SetDirection();
 	void FixWorldPosition();
+	
 	void UpdateCollisionBox();
 	int WallPlacement(float p_dt);
 	void UpdateTimers(float p_dt);
@@ -161,6 +167,8 @@ private:
 	void UpdateWallMeter(float p_dt);
 	void BobOffset();
 	void DeathShake();
+
+	void GravityShift(float p_progress);
 
 
 	//this really does deserve its own class. Or something
