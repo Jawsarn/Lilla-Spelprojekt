@@ -166,7 +166,7 @@ private:
 	ShaderLoader* m_ShaderLoader;
 
 	//particleSystem
-	//ParticleSystem* m_ParticleSystem;
+	ParticleSystem* m_ParticleSystem;
 
 	//objects lights camarsas
 	std::map<UINT, DrawObject*> m_DrawObjects;

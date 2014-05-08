@@ -79,10 +79,10 @@ HRESULT GraphicEngine::Initialize( UINT p_Width, UINT p_Height, HWND handleWindo
 	if( FAILED( hr) )
 		return hr;
 
-	/*particleSystem = particleSystem->GetInstance();
-	hr = particleSystem->Initialize(device,deviceContext,depthStateOn,depthStateOff, blendStateOn, blendStateOff,perObjectBuffer);
+	m_ParticleSystem = m_ParticleSystem->GetInstance();
+	hr = m_ParticleSystem->Initialize(m_Device, m_DeviceContext, m_DepthStateOn, m_DepthStateOff, m_BlendStateOn, m_BlendStateOff);
 	if( FAILED( hr ) )
-		return hr;*/
+		return hr;
 	
 	return hr;
 }
@@ -1395,7 +1395,7 @@ void GraphicEngine::DrawOpaqueObjects()
 	UINT offsets = 0;
 
 	//std::map<UINT, DrawObject*>::iterator it;
-	for (std::map<UINT, DrawObject*>::iterator it = m_ObjectsOnDrawingScheme.begin(); it != m_ObjectsOnDrawingScheme.end(); ++it)
+	for (std::map<UINT, DrawObject*>::iterator it = m_ObjectsOnDrawingScheme.begin(); it != m_ObjectsOnDrawingScheme.end(); it++)
 	{
 		//update the object buffer
 		PerObjectBuffer t_PerObjBuff;
