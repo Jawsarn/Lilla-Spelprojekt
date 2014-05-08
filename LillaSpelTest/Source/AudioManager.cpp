@@ -1,6 +1,7 @@
 //Working just coment back
 
 #include "AudioManager.h"
+AudioManager* AudioManager::m_Singleton = nullptr;
 
 AudioManager::AudioManager(void)
 {
@@ -10,6 +11,17 @@ AudioManager::AudioManager(void)
 AudioManager::~AudioManager(void)
 {
 }
+
+AudioManager* AudioManager::GetInstance()
+{
+	if(m_Singleton == nullptr)
+	{
+		m_Singleton = new AudioManager();
+		m_Singleton->Initialize();
+	}
+	return m_Singleton;
+}
+
 
 void AudioManager::Initialize()
 {
@@ -27,6 +39,8 @@ void AudioManager::Initialize()
 	}
 
 	m_system->init(36,FMOD_INIT_NORMAL,NULL);
+	
+	m_masterVolume=1;
 }
 
 void AudioManager::CreateSound(std::string p_fileName)
@@ -77,6 +91,35 @@ void AudioManager::PlaySpecificSound(std::string p_soundToPlay, bool p_loop)
 void AudioManager::StopSpecificSound(std::string p_soundToStop)
 {
 	m_sounds[p_soundToStop].channel->stop();
+}
+
+void AudioManager::SetSpecificSoundVolume(std::string p_soundToIncrease, float p_volumeBetween0and1)
+{
+	m_result = m_sounds[p_soundToIncrease].channel->setPaused(true);
+	m_result = m_sounds[p_soundToIncrease].channel->setVolume(m_masterVolume*p_volumeBetween0and1);
+	m_result = m_sounds[p_soundToIncrease].channel->setPaused(false);
+}
+
+void AudioManager::SetMasterVolume(float p_volumeBetween0and1)
+{
+	float t_volume;
+	for (std::map<std::string, AudioHolder>::iterator it = m_sounds.begin(); it != m_sounds.end(); it++)
+	{
+		it->second.channel->setPaused(true);
+		it->second.channel->getVolume(&t_volume);
+		if (t_volume != 0)
+		{
+			t_volume = t_volume/m_masterVolume;
+			m_result = it->second.channel->setVolume(p_volumeBetween0and1* t_volume);
+		}
+		else
+		{
+			m_result = it->second.channel->setVolume(p_volumeBetween0and1);
+		}
+		
+		it->second.channel->setPaused(false);
+	}
+	m_masterVolume = p_volumeBetween0and1;
 }
 
 

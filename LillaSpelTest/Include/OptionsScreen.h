@@ -1,7 +1,7 @@
 #pragma once
 #include "menuscreen.h"
-#define MAX_VOLUME 10
-#define VOLUME_CHANGE 0.1
+#define MAX_VOLUME 1
+#define VOLUME_CHANGE 0.05
 
 class OptionsScreen :
 	public MenuScreen
@@ -12,6 +12,7 @@ private:
 	DirectX::XMFLOAT2 m_resolution;
 	unsigned int m_hudHandle;
 	bool m_fullScreen;
+	unsigned int m_volumeSlideHandle;
 private:
 	////////////FUNCTIONS/////////////
 	void AlterVolume(UserCMD& p_userCMD);

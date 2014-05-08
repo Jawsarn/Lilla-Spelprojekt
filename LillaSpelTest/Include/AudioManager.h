@@ -19,13 +19,19 @@ private:
 	FMOD_CAPS m_caps;
 	char m_name[256];
 	std::map<std::string,AudioHolder> m_sounds;
-public:
+	static AudioManager* m_Singleton;
+	float m_masterVolume;
+
 	AudioManager(void);
 	~AudioManager(void);
 	void Initialize();
+public:
+	AudioManager* GetInstance();
 	void CreateSound(std::string p_fileName);
 	void PlaySpecificSound(std::string p_soundToPlay, bool p_loop);
 	void StopSpecificSound(std::string p_soundToStop);
+	void SetSpecificSoundVolume(std::string p_soundToIncrease, float p_volumeBetween0and1);
+	void SetMasterVolume(float p_volumeBetween0and1);
 	void CleanUpCrew();
 };
 
