@@ -43,6 +43,7 @@ private:
 
 	//boost stuff
 	float m_boostDecay;
+	float m_boostGain;
 	float m_maxBoost;
 	float m_boostMeter;
 
@@ -128,6 +129,7 @@ public:
 	void Start();
 	void SetPlayerBoost(float p_boost);
 	void SetPlayerRacePosition(int p_pos);
+	void IncreaseBoost(int p_nrOfWallsClose, float p_dt);
 
 private:
 

@@ -42,7 +42,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_bobOffset = XMFLOAT3(0,0,0);
 	m_upVector = XMFLOAT3(0,1,0);
 	m_distance = 0.0f;
-	m_boostMeter = 20000;//test value
+	m_boostMeter = 0;//test value
 	m_direction = DirectX::XMFLOAT3(0,0,1);
 	m_lastPlacedWall = nullptr;
 	m_speed = 0;
@@ -51,13 +51,13 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 
 	////BALANCING VARIABLES
 
-	//speed  stuff
+
+	//max boost meter
 	m_maxBoost = 20000;
+	m_boostGain = 1;
 	m_boostDecay = 100;//probably not gonna be used
 
-	//ordinary speed when not boosting
 	m_maxSpeed = 5;
-	//max speed whilst boosting
 	m_maxBoostSpeed = 10;
 
 	m_acceleration = 8;
@@ -71,7 +71,6 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_maxWalls = 10;
 	m_wallGain = 1;
 	m_maxCooldown = 2;
-
 
 	//timers
 	m_maxImmortalTimer = 5;
@@ -578,6 +577,12 @@ void Player::SetPlayerBoost(float p_boost)
 {
 	m_boostMeter = p_boost;
 }
+
+void Player::IncreaseBoost(int p_nrOfWallsClose, float p_dt)
+{
+	m_boostMeter += p_nrOfWallsClose*p_dt*m_boostGain;
+}
+
 void Player::Start()
 {
 	m_speed = (float)(m_aButtonPressedAtStart)/2;

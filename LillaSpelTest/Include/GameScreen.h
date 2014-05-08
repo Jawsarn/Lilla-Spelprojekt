@@ -29,10 +29,30 @@ public:
 	~GameScreen(void);
 	int Update(float p_dt, std::vector<UserCMD>* p_userCMDS); //shouldnt be here
 	void PreUpdate(float p_dt, std::vector<UserCMD>* p_userCMDS, int p_Player);
-	void Draw();
+	
 private:
+
+	//big methods
+
+	int PauseCheck(int p_currentPlayer, UserCMD p_userCmd);
+	int UpdatePlayer(int p_currentPlayer, float p_dt, UserCMD p_userCmd);
+	void PlacePlayerWall(int p_currentPlayer);
+	void CollisionCheck(int p_currentPlayer, float p_dt);
+	void UpdatePlayerRacePosition(int p_currentPlayer);
+	void DrawPlayerHUD(int p_player);
+	void DrawPlayer(int p_currentPlayer);
+
+	//help methods
+	void PlayerDieStaticObj(int p_currentPlayer);
+	void PlayerDiePlayerWall(int p_currentPlayer);
+	void PlayerCloseToWall(int p_currentPlayer, int p_wallsCloseTo, float p_dt);
+
 	void CreatePlayerHUDs(int p_numberOfPlayers,int p_color[4]);
-	void UpdatePlayerHUD(int p_player);
+
 	void CountDownHudUpdate(float p_dt);
+
+
+	//unused
+		void Draw();
 };
 

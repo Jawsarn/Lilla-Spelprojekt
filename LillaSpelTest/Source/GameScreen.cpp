@@ -76,7 +76,7 @@ void GameScreen::PreUpdate(float p_dt, std::vector<UserCMD>* p_userCMDS, int p_P
 			m_graphicHandle->ChangeHudObjectTexture(m_hudID[i],3,4);
 			m_players[i]->Start();
 		}
-		
+
 
 		m_state = PLAY;
 	}
@@ -89,142 +89,43 @@ void GameScreen::PreUpdate(float p_dt, std::vector<UserCMD>* p_userCMDS, int p_P
 
 int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS) 
 {
-	////////////////JOHNS TEST MÖS!!! kommentera bort så fungerar allt som en neger på en bomullsfarm
-
-
-
-	for (int i = 0; i < m_players.size(); i++)			//i<1 for test purposes. Make sure to change later
+	for (int i = 0; i < m_players.size(); i++)
 	{
-
-
-
-		if(p_userCMDS->at(i).backButtonPressed)
-		{
-			m_pauseDudeIndex = i;
+		if(PauseCheck(i, p_userCMDS->at(i)) == PAUSE_SCREEN)
 			return PAUSE_SCREEN;
-		}
+		//first, semi-underdeveloped win condition check
 		if (m_lastNodeIndex != m_players[i]->GetCurrentMapNode()->m_Index)
 		{
+			//i don't even..
 			if (p_userCMDS->at(i).leftBumberPressed)
 			{
 				m_audioManager->PlaySpecificSound("honk.wav",false);
 			}
-		
-			
-			bool collision = false;
-			PlayerWall* t_newWall = m_players[i]->GetLastPlacedWall(); //
 
-			//fixes the position, direction, sets up world matrix, drops wall, etc.
-			/////////////////UPDATE PLAYER POSITION AND DROP WALLS/////////////////
-			//Update player and check if he placed a wall
-			if(m_players[i]->ProperUpdatePosition(p_dt, p_userCMDS->at(i)) == 1)
+
+			//ACTUAL PROPER UPDATE BEGINS
+			int t_playerUpdateResult = UpdatePlayer(i, p_dt, p_userCMDS->at(i));
+			if(t_playerUpdateResult ==1) //checks if a new wall is placed
 			{
-
-				PlayerWall* t_newWall = m_players[i]->GetLastPlacedWall();
-				t_newWall->m_wallIndex = m_graphicHandle->CreateWall(0, t_newWall->GetWorldMatrix(), i);			//PUBLIC VARIALBE!!! MAKE FIX BEFORE JAWS DISCOVERS!!!t_newWall->GetWorldMatrix()
+				PlacePlayerWall(i);
 			}
-			//gets the world matrix
-			m_graphicHandle->JohnSetCamera(m_players[i]->GetWorldMatrix(), i);
-			m_graphicHandle->UpdatePlayer(i, m_players[i]->GetWorldMatrix(), m_players[i]->GetCamMatrix());
-			MapNode* t_currMapNode = m_players[i]->GetCurrentMapNode();    //för att slippa getta flera gånger i denna forsats
+
 			switch(m_state)
 			{
 			case COUNTDOWN:
 				PreUpdate(p_dt, p_userCMDS,i);
 				break;
-
 			case PLAY:
-				////////COLLISION CHECKS///////////
 				if(!m_players[i]->GetImmortal())
 				{
-					//check collision for player i against all wall objects in his mapnode
-					vector<StaticObj*>* m_wallsToCheck = &t_currMapNode->m_staticObjs;			///Create list of all the static objs in the currmapNode
-					if(m_collisionManager->PlayerVsObj(m_players[i]->GetCollisionBox(), m_wallsToCheck)!=1)    ///PLAYER VS STATIC Collisionmanager checks for hit and returns int representing the object you collided with
-					{
-						////////////////INSERT PLAYER VS SATIC OBJECT CODE//////////////////
-						//p_userCMDS->at(i).controller.Vibrate(64000,64000);										
-						//collision = true;
-						m_players[i]->Die();
-					}
-					//Check for wincondition
-
-					////PLAYER VS PLAYERWALL
-					///check collision for play i against all playerwall objects in his mapnode
-					//gets the walls for the current mapnode
-					vector<PlayerWall*> t_playerWallsToCheck = t_currMapNode->m_playerWalls;
-					//ensures that collision check is not made against the last wall placed by the player
-					if (t_playerWallsToCheck.size()>0)
-					{
-						if(t_newWall == t_currMapNode->m_playerWalls.at(t_currMapNode->m_playerWalls.size()-1))		
-						{
-							t_playerWallsToCheck.pop_back();														
-						}
-					}
-
-					///checks collision for the playet against all walls in the current mapnode
-					//returns -1 if player hits a wall. Returns the number of spheres hit (used for boost calculation) otherwise
-					int t_collisionResult = m_collisionManager->PlayerVsPlayerWall(m_players[i]->GetCollisionBox(), t_playerWallsToCheck, i);
-					if(t_collisionResult == -1)	
-					{
-						//Collided with playerwall
-						///////////////////////INSERT PLAYER VS PLAYERWALL CODE///////////////////
-						p_userCMDS->at(i).controller.Vibrate(64000,64000);	
-						m_players[i]->Die();
-						collision = true;														
-					}
-					else if (t_collisionResult>0)
-					{
-						//went close to wall and got boost
-						float t_boostPerWallPerUpdate = 10000;
-						float t_currentBoost = m_players[i]->GetPlayerBoost();
-						m_players[i]->SetPlayerBoost(t_currentBoost+p_dt*t_collisionResult*t_boostPerWallPerUpdate);
-						p_userCMDS->at(i).controller.Vibrate(10000,10000);
-					}
-
-
-					if (!collision)
-					{
-						//did not collide
-						p_userCMDS->at(i).controller.Vibrate(0,0);
-					}
-					UpdatePlayerHUD(i);
+					CollisionCheck(i, p_dt);
 				}
+				UpdatePlayerRacePosition(i);
+				DrawPlayerHUD(i);
 				break;
-				}
-				//Give all players their respective racePosition by checking ever player vs every other player
-
-				for (int i = 0; i < m_players.size(); i++)
-				{
-					float t_currPlayerDistance = m_players[i]->GetDistanceTraveled();
-					int t_racePos = 1;
-					for (int j = 0; j < m_players.size(); j++)
-
-						UpdatePlayerHUD(i);
-				}
-
-				//Give all players their respective racePosition by checking ever player vs every other player
-
-				for (int i = 0; i < m_players.size(); i++)
-				{
-					float t_currPlayerDistance = m_players[i]->GetDistanceTraveled();
-					int t_racePos = 1;
-					for (int j = 0; j < m_players.size(); j++)
-					{
-						if(i!=j)
-						{
-							float t_distanceToCheck = m_players[j]->GetDistanceTraveled();
-							if(t_currPlayerDistance < t_distanceToCheck)
-							{
-								t_racePos++;
-							}
-
-						}
-					}
-					m_players[i]->SetPlayerRacePosition(t_racePos);
-				}
-			
+			}
+			DrawPlayer(i);
 		}
-		
 	}
 	return GAME_SCREEN;
 }
@@ -232,6 +133,100 @@ void GameScreen::Draw()
 {
 
 }
+
+
+int GameScreen::PauseCheck(int p_currentPlayer, UserCMD p_userCmd)
+{
+	if(p_userCmd.backButtonPressed)
+	{
+		m_pauseDudeIndex = p_currentPlayer;
+		return PAUSE_SCREEN;
+	}
+}
+
+int GameScreen::UpdatePlayer(int p_currentPlayer, float p_dt, UserCMD p_userCmd)
+{
+	return m_players[p_currentPlayer]->ProperUpdatePosition(p_dt, p_userCmd);
+}
+
+void GameScreen::PlacePlayerWall(int p_currentPlayer)
+{
+	PlayerWall* t_newWall = m_players[p_currentPlayer]->GetLastPlacedWall();
+	t_newWall->m_wallIndex = m_graphicHandle->CreateWall(0, t_newWall->GetWorldMatrix(), p_currentPlayer);
+}
+
+void GameScreen::CollisionCheck(int p_currentPlayer, float p_dt)
+{
+	MapNode* t_currMapNode = m_players[p_currentPlayer]->GetCurrentMapNode(); 
+	//player vs static obj
+	vector<StaticObj*>* m_wallsToCheck = &t_currMapNode->m_staticObjs;		
+	if(m_collisionManager->PlayerVsObj(m_players[p_currentPlayer]->GetCollisionBox(), m_wallsToCheck)!=1)    
+	{
+		PlayerDieStaticObj(p_currentPlayer);
+	}
+
+	//player vs playerwall
+	vector<PlayerWall*> t_playerWallsToCheck = t_currMapNode->m_playerWalls;
+	int t_collisionResult = m_collisionManager->PlayerVsPlayerWall(m_players[p_currentPlayer]->GetCollisionBox(), t_playerWallsToCheck, p_currentPlayer);
+	if(t_collisionResult == -1)	
+	{
+		PlayerDiePlayerWall(p_currentPlayer);
+	}
+	else if (t_collisionResult>0)
+	{
+		PlayerCloseToWall(p_currentPlayer, t_collisionResult, p_dt);
+	}
+
+}
+
+void GameScreen::UpdatePlayerRacePosition(int p_currentPlayer)
+{
+	int t_racePos = 1;
+	float t_currPlayerDistance = m_players.at(p_currentPlayer)->GetDistanceTraveled();
+	for (int j = 0; j < m_players.size(); j++)
+	{
+		if(p_currentPlayer!=j)
+		{
+			float t_distanceToCheck = m_players[j]->GetDistanceTraveled();
+			if(t_currPlayerDistance < t_distanceToCheck)
+			{
+				t_racePos++;
+			}
+		}
+		m_players[p_currentPlayer]->SetPlayerRacePosition(t_racePos);
+	}
+}
+
+void GameScreen::DrawPlayer(int p_currentPlayer)
+{
+	m_graphicHandle->JohnSetCamera(m_players[p_currentPlayer]->GetWorldMatrix(), p_currentPlayer);
+	m_graphicHandle->UpdatePlayer(p_currentPlayer, m_players[p_currentPlayer]->GetWorldMatrix(), m_players[p_currentPlayer]->GetCamMatrix());
+}
+
+void GameScreen::DrawPlayerHUD(int p_player)
+{
+	m_graphicHandle->ChangeHudObjectTexture(m_hudID[p_player],0,m_players[p_player]->GetRacePosition()-1);
+	m_graphicHandle->UpdateHudBarOffset(m_hudID[p_player],1,DirectX::XMFLOAT2(m_players[p_player]->GetHudBoosterInfo(),0));
+	m_graphicHandle->UpdateHudBarOffset(m_hudID[p_player],2,DirectX::XMFLOAT2(m_players[p_player]->GetHudWallInfo(),0));
+}
+
+
+void GameScreen::PlayerDieStaticObj(int p_currentPlayer)
+{
+	m_players.at(p_currentPlayer)->Die();
+}
+
+void GameScreen::PlayerDiePlayerWall(int p_currentPlayer)
+{
+	m_players.at(p_currentPlayer)->Die();
+}
+
+void GameScreen::PlayerCloseToWall(int p_currentPlayer, int p_wallsCloseTo, float p_dt)
+{
+	m_players.at(p_currentPlayer)->IncreaseBoost(p_wallsCloseTo, p_dt);
+}
+
+
 
 void GameScreen::CreatePlayerHUDs(int p_numberOfPlayers, int p_color[4])
 {
@@ -298,12 +293,6 @@ void GameScreen::CreatePlayerHUDs(int p_numberOfPlayers, int p_color[4])
 
 }
 float testaren = 1;
-void GameScreen::UpdatePlayerHUD(int p_player)
-{
-	m_graphicHandle->ChangeHudObjectTexture(m_hudID[p_player],0,m_players[p_player]->GetRacePosition()-1);
-	m_graphicHandle->UpdateHudBarOffset(m_hudID[p_player],1,DirectX::XMFLOAT2(m_players[p_player]->GetHudBoosterInfo(),0));
-	m_graphicHandle->UpdateHudBarOffset(m_hudID[p_player],2,DirectX::XMFLOAT2(m_players[p_player]->GetHudWallInfo(),0));
-}
 
 int GameScreen::GetPauseDudeIndex()
 {
