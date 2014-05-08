@@ -49,9 +49,9 @@ private:
 	//wall stuff
 	float m_wallMeter;
 	float m_maxWalls;
-	float m_coolDown;
-	float m_coolDownDecay;
 	float m_wallGain;
+	float m_coolDown;
+	float m_maxCooldown;
 
 	///Timers///
 	float m_deathTimer;

@@ -12,59 +12,76 @@ Player::Player()
 Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 {
 
-	m_cameraFollowSpeed = 0.1;
 
-	m_cameraAngle = 0;
+
+	////MACRO STUFF
 	m_state = STARTING;
-	m_deltaAngle = 0;
-	MapLoader t_mapLoader = MapLoader(); //might need to explicitly call constructor to get member variable set. Dunno about this one...
 	m_mathHelper = MathHelper();
 	m_previousUserCmd = UserCMD(p_playerIndex);
 	m_currentUserCmd = UserCMD(p_playerIndex);
-	//gets the corners from the maploader. Yes. This works
+	m_playerIndex = p_playerIndex;
+	m_racePos = 1;
+	m_mapNode = p_startNode;
+	m_position = m_mapNode->m_position;
+	m_angle = p_startAngle;
+
+	//collision box stuff
+	MapLoader t_mapLoader = MapLoader(); //might need to explicitly call constructor to get member variable set. Dunno about this one...
+	//gets the corners from the map loader. Yes. This works
 	vector<XMFLOAT3> t_wallBoxCorners = t_mapLoader.LoadLogicalObj("walls/firstwall/mesh.obj").at(0);
 	vector <XMFLOAT3> t_playerShipBoxCorners = t_mapLoader.LoadLogicalObj("ships/pajfighter/mesh.obj").at(0);
-
-	m_aButtonPressedAtStart=0;
-
 	m_wallBoxExtents = SetBoxExtents(t_wallBoxCorners);
 	m_playerShipBoxExtents = SetBoxExtents(t_playerShipBoxCorners);
 
-	m_playerIndex = p_playerIndex;
 
+
+	////VARIABLE INITIALIZATION (not relevant for game balancing)
+	m_wallMeter = 0;
+	m_coolDown = 0;	
+	m_aButtonPressedAtStart=0;
 	m_bobOffset = XMFLOAT3(0,0,0);
-	m_maxBoost = 20000;
-	m_maxWalls = 100;
-	m_boostDecay = 100;
-	m_racePos = 1;
-	m_coolDownDecay = 0.03;
-	m_mapNode = p_startNode;
 	m_upVector = XMFLOAT3(0,1,0);
-
-	m_maxImmortalTimer = 5;
-	m_maxDeathTimer = 1;
-
 	m_distance = 0.0f;
 	m_boostMeter = 20000;//test value
-
-	m_position = m_mapNode->m_position;
 	m_direction = DirectX::XMFLOAT3(0,0,1);
 	m_lastPlacedWall = nullptr;
-
-	//speed stuff
 	m_speed = 0;
+	m_cameraAngle = 0;
+	m_deltaAngle = 0;
+
+	////BALANCING VARIABLES
+
+	//speed  stuff
+	m_maxBoost = 20000;
+	m_boostDecay = 100;//probably not gonna be used
+
+	//ordinary speed when not boosting
 	m_maxSpeed = 5;
-	m_maxBoostSpeed = 10;//
+	//max speed whilst boosting
+	m_maxBoostSpeed = 10;
 
 	m_acceleration = 8;
 	m_boostAcceleration = 25;
 	m_deceleration = 16;
 
-	//rotation stuff
+	//how quickly you rotate
 	m_rotateSpeed = 0.05;
-	m_angle = p_startAngle;
 
-	//initilaize world matrix stuff
+	//wall stuff
+	m_maxWalls = 10;
+	m_wallGain = 1;
+	m_maxCooldown = 2;
+
+
+	//timers
+	m_maxImmortalTimer = 5;
+	m_maxDeathTimer = 1;//currently unused
+
+	//the speed at which camera follows the ship when turning
+	m_cameraFollowSpeed = 0.1;
+
+
+	////FINAL WORLD MATRIX INITIALIZATION
 	FixUpVectorRotation(m_angle);
 	FixOffsetFromCenterSpline();
 	UpdateWorldMatrix();
@@ -84,7 +101,7 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 	m_currentUserCmd = p_userCMD;
 	MathHelper t_mathHelper;
 
-	//not sure if entierly needed...
+	//not sure if entirely needed...
 	m_direction = XMFLOAT3(0,0,1);
 
 	if(m_state ==STARTING)
@@ -229,11 +246,23 @@ void Player::UpdateCollisionBox()
 int Player::WallPlacement(float p_dt)
 {
 	m_coolDown -= p_dt;
-	if(m_currentUserCmd.rightTriggerPressed && m_coolDown <=0 && m_wallMeter < 1)
+	//if the players wants to poop out walls
+	if(m_currentUserCmd.rightTriggerPressed && m_coolDown <=0 && m_wallMeter >= 1)
 	{
 		m_wallMeter-=1;
 		PlaceWall();
-		m_coolDown = 1;
+		m_coolDown = m_maxCooldown/2;
+		return  1;
+	}
+	//if the players meter is full
+	//yes, this could also have been one hell of a long if statement but fuggit
+	else if(m_coolDown<= 0 && m_wallMeter > m_maxWalls)
+	{
+		m_wallMeter = m_maxWalls;
+		m_wallMeter-=1;
+		m_coolDown = m_maxCooldown;
+
+		PlaceWall();
 		return  1;
 	}
 	return 0;
@@ -247,6 +276,8 @@ void Player::UpdateTimers(float p_dt)
 	if(m_immortalTimer<0)
 		m_state = NORMAL;
 	m_deathTimer -=p_dt;
+
+	m_wallMeter+= p_dt*m_wallGain*(4-m_racePos);
 
 }
 
@@ -348,8 +379,8 @@ void Player::UpdateWorldMatrix()
 
 	m_cameraFollowSpeed = 0.0005;
 	//update camera angle
-	
-	//TIME FOR RETARD HAXX!!
+
+	//TIME FOR RETARD HAXX!! makes the camera chase after the angle
 	int t_intBuffer = 1000000;
 	int t_deltaAngleInt = (int)(m_deltaAngle * t_intBuffer);
 	int t_cameraAngleInt = (int)(m_cameraAngle * t_intBuffer);
@@ -365,7 +396,7 @@ void Player::UpdateWorldMatrix()
 	//pushes the camera back a tad
 	//t_cameraEyeVector = t_vehicleEyeVector+t_vehicleUpVector*t_vehicleTargetVector+t_cameraTargetTrailDistance*t_vehicleTargetVector*-1;
 
-	XMMATRIX t_cameraRotationMatrix = XMMatrixRotationAxis(t_vehicleUnmoddedTargetVector, -m_deltaAngle-m_cameraAngle* 20);
+	XMMATRIX t_cameraRotationMatrix = XMMatrixRotationAxis(t_vehicleUnmoddedTargetVector, -m_deltaAngle-m_cameraAngle* 10);
 	t_cameraUpVector = XMVector3Transform(t_cameraUpVector, t_cameraRotationMatrix);
 	t_cameraUpVector = XMVector3Normalize(t_cameraUpVector);
 
