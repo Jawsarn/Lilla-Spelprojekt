@@ -25,6 +25,7 @@ public:
 	void Initialize();
 	void CreateSound(std::string p_fileName);
 	void PlaySpecificSound(std::string p_soundToPlay, bool p_loop);
+	void StopSpecificSound(std::string p_soundToStop);
 	void CleanUpCrew();
 };
 

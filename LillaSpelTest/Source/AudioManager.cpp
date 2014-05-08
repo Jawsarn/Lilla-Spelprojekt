@@ -57,11 +57,12 @@ void AudioManager::PlaySpecificSound(std::string p_soundToPlay, bool p_loop)
 
 		bool t_isPlaying;
 		m_sounds[p_soundToPlay].channel->isPlaying(&t_isPlaying);
-		if (t_isPlaying)
+		if (!t_isPlaying)
 		{
 			//m_soundChannels[t_index]->stop();
+			m_result = m_system->playSound(FMOD_CHANNEL_FREE,m_sounds[p_soundToPlay].sound,false,&m_sounds[p_soundToPlay].channel);
 		}	
-		m_result = m_system->playSound(FMOD_CHANNEL_FREE,m_sounds[p_soundToPlay].sound,false,&m_sounds[p_soundToPlay].channel);
+		
 	}
 	else
 	{
@@ -72,6 +73,12 @@ void AudioManager::PlaySpecificSound(std::string p_soundToPlay, bool p_loop)
 		}
 	}
 }
+
+void AudioManager::StopSpecificSound(std::string p_soundToStop)
+{
+	m_sounds[p_soundToStop].channel->stop();
+}
+
 
 void AudioManager::CleanUpCrew()
 {

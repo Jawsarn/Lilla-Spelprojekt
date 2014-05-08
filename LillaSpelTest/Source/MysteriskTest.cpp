@@ -15,7 +15,7 @@ MenuScreen* joinGame;
 MenuScreen* mainMenu;
 MenuScreen* options;
 
-AudioManager au;
+//AudioManager au;
 
 int soundNumber1 = 5647;
 int soundNumber2 = 0;
@@ -40,11 +40,7 @@ MysteriskTest::MysteriskTest(GraphicHandle* grphandle)
 	//joinGame = new JoinGameScreen(&gameInfo, grphandle);
 	//mainMenu = new MainMenuScreen(grphandle);
 	//options = new OptionsScreen(&gameInfo,grphandle);
-	au = AudioManager();
-	au.Initialize();
-	au.CreateSound("main.wav");
-	au.PlaySpecificSound("main.wav",true);
-	au.PlaySpecificSound("main.wav",true);
+
 	//state = MAIN_MENU_SCREEN;
 }
 
