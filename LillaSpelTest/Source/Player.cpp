@@ -300,12 +300,8 @@ void Player::UpdateTimers(float p_dt)
 	if(m_immortalTimer<0)
 		m_state = NORMAL;
 	m_deathTimer -=p_dt;
-	m_gravityShiftProgress += p_dt*0.5;
-	if(m_gravityShiftProgress>1)
-	{
-		m_gravityShiftProgress = 0;
-		m_gravityShifting = false;
-	}
+	if(m_gravityShifting)
+		m_gravityShiftProgress += p_dt*0.5;
 	m_wallMeter+= p_dt*m_wallGain*(4-m_racePos);
 
 }
@@ -443,7 +439,7 @@ void Player::GravityShift(float p_progress)
 	XMVECTOR t_upVector = XMLoadFloat3(&m_up);
 	XMVECTOR t_targetVector = XMLoadFloat3(&m_direction);
 	float t_radius = m_mapNode->m_radius;
-	float t_targetAngle = 3.14;
+	float t_targetAngle = 3.14; //pi
 
 
 	t_eyeVector += t_upVector*t_radius*p_progress*2;
@@ -451,17 +447,6 @@ void Player::GravityShift(float p_progress)
 	XMMATRIX t_directionRotationMatrixTarget = XMMatrixRotationAxis(t_targetVector, p_progress*t_targetAngle);					//////////////////////////MAKE SURE YOU CHANGE THIS HARDCODED 10 CRAP////////////////
 	t_upVector = XMVector3Transform(t_upVector, t_directionRotationMatrixTarget);
 	t_upVector = XMVector3Normalize(t_upVector);
-
-
-
-	//XMMATRIX t_directionRotationMatrixTarget = XMMatrixRotationAxis(t_targetVector, m_deltaAngle * 8);					//////////////////////////MAKE SURE YOU CHANGE THIS HARDCODED 10 CRAP////////////////
-	//t_upVector = XMVector3Transform(t_upVector, t_directionRotationMatrixTarget);
-	//t_upVector = XMVector3Normalize(t_upVector);
-
-	////roate along new up vector
-	//XMMATRIX t_directionRotationMatrixUp = XMMatrixRotationAxis(t_upVector, m_deltaAngle * 10);					//////////////////////////MAKE SURE YOU CHANGE THIS HARDCODED 10 CRAP////////////////
-	//t_targetVector = XMVector3Transform(t_targetVector, t_directionRotationMatrixUp);
-	//t_targetVector = XMVector3Normalize(t_targetVector);
 
 
 
