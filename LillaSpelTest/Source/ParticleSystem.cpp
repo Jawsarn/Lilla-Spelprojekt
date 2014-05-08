@@ -14,9 +14,7 @@ ParticleSystem* ParticleSystem::GetInstance()
 
 ParticleSystem::ParticleSystem()
 {
-	/*perEffectBuffer = nullptr;
-	perFrameBuffer = nullptr;
-	firstRun = true;*/
+
 }
 
 
@@ -229,21 +227,21 @@ HRESULT ParticleSystem::CreateStartParticlesBuffer(std::vector<Particle> p_Start
 	return hr;
 }
 
-//void ParticleSystem::CreateCBsetup(XMFLOAT3 worldAcceler, float flareEmitNumber, XMFLOAT3 emitDirection, float initSpawnAmount, float particleLifeSpan, XMFLOAT2 initialSize, UINT &dataID)
-//{
-//	CPerEffectBuffer newBuf;
-//	newBuf.worldAcceler = worldAcceler;
-//	newBuf.flareEmitNumber = flareEmitNumber;
-//	newBuf.emitDirection = emitDirection;
-//	newBuf.initSpawnAmount = initSpawnAmount;
-//	newBuf.particleLifeSpan = particleLifeSpan;
-//	newBuf.initialSize = initialSize;
-//	newBuf.filler = 0;
-//	
-//	perEffectData.push_back(newBuf);
-//
-//	dataID = perEffectData.size() -1;
-//}
+void ParticleSystem::CreateCBsetup(XMFLOAT3 p_WorldAcceler, float p_FlareEmitNumber, XMFLOAT3 p_EmitDirection, float p_InitSpawnAmount, float p_ParticleLifeSpan, XMFLOAT2 p_InitialSize, UINT &o_DataID)
+{
+	CPerEffectBuffer t_NewCBSetup;
+	t_NewCBSetup.worldAcceler = p_WorldAcceler;
+	t_NewCBSetup.flareEmitNumber = p_FlareEmitNumber;
+	t_NewCBSetup.emitDirection = p_EmitDirection;
+	t_NewCBSetup.initSpawnAmount = p_InitSpawnAmount;
+	t_NewCBSetup.particleLifeSpan = p_ParticleLifeSpan;
+	t_NewCBSetup.initialSize = p_InitialSize;
+	t_NewCBSetup.filler = 0;
+
+	m_PerEffectData.push_back(t_NewCBSetup);
+
+	o_DataID = m_PerEffectData.size() -1;
+}
 
 HRESULT ParticleSystem::CreateConstantBuffer()
 {

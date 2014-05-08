@@ -28,7 +28,7 @@ public:
 	HRESULT Initialize( ID3D11Device* p_Device, ID3D11DeviceContext* p_DeviceContext, ID3D11DepthStencilState* p_OnDepthState, ID3D11DepthStencilState* p_OffDepthState, ID3D11BlendState* p_OnBlendState, ID3D11BlendState* p_OffBlendState );
 
 	HRESULT CreateStartParticlesBuffer(std::vector<Particle> startParticles, UINT &bufferID);
-//	void CreateCBsetup(XMFLOAT3 worldAcceler, float flareEmitNumber, XMFLOAT3 emitDirection, float initSpawnAmount, float particleLifeSpan, XMFLOAT2 initialSize, UINT &dataID);
+	void CreateCBsetup(XMFLOAT3 worldAcceler, float flareEmitNumber, XMFLOAT3 emitDirection, float initSpawnAmount, float particleLifeSpan, XMFLOAT2 initialSize, UINT &dataID);
 	HRESULT ParticleSystem::CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName , UINT p_StartBufferID, CXMMATRIX p_World, UINT p_DataID, UINT p_MaxParticles, UINT &systemID);
 //	HRESULT LoadTexture(const wchar_t * fileName, UINT &outID);
 //	void Reset(UINT systemID);

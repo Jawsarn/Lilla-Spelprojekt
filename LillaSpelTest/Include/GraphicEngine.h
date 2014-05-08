@@ -74,7 +74,10 @@ public:
 	//viewport function
 	void SetViewportAmount(int p_NumOfViewports);
 
-	void CreateParticleSystem();
+	//particlesystem functions
+	void CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName, UINT p_StartBufferID, CXMMATRIX p_World, UINT p_Data, UINT p_MaxParticles, UINT &o_SystemID );
+	void CreateParticleCBSetup(XMFLOAT3 p_WorldAcceler, float p_FlareEmitNumber, XMFLOAT3 p_EmitDirection, float p_InitSpawnAmount, float p_ParticleLifeSpan, XMFLOAT2 p_InitialSize, UINT &o_DataID);
+
 	
 	
 	void LoadPipeTerrain();

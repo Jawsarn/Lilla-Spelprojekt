@@ -1644,3 +1644,12 @@ void GraphicEngine::Cleanup()
 	SetFullscreenState(false);
 }
 
+void GraphicEngine::CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName, UINT p_StartBufferID, CXMMATRIX p_World, UINT p_Data, UINT p_MaxParticles, UINT &o_SystemID )
+{
+	m_ParticleSystem->CreateParticleSystem(p_EffectType, p_FileName, p_StartBufferID, p_World, p_Data, p_MaxParticles, o_SystemID);
+}
+
+void GraphicEngine::CreateParticleCBSetup(XMFLOAT3 p_WorldAcceler, float p_FlareEmitNumber, XMFLOAT3 p_EmitDirection, float p_InitSpawnAmount, float p_ParticleLifeSpan, XMFLOAT2 p_InitialSize, UINT &o_DataID)
+{
+	m_ParticleSystem->CreateCBsetup( p_WorldAcceler, p_FlareEmitNumber, p_EmitDirection, p_InitSpawnAmount, p_ParticleLifeSpan, p_InitialSize, o_DataID);
+}
