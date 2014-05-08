@@ -54,8 +54,8 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 
 	//max boost meter
 	m_maxBoost = 100;
-	m_boostGain = 1;
-	m_boostDecay = 2;//probably not gonna be used
+	m_boostGain = 20;
+	m_boostDecay = 1;//probably not gonna be used
 
 	m_maxSpeed = 5;
 	m_maxBoostSpeed = 10;
@@ -440,15 +440,15 @@ XMFLOAT3 Player::SetBoxExtents(vector<XMFLOAT3> p_corners)
 
 		//gets max and min y
 		if(p_corners[i].x > t_maxY)
-			t_maxY=p_corners[i].x;
-		else if(p_corners[i].x < t_minY)
-			t_minY = p_corners[i].x;
+			t_maxY=p_corners[i].y;
+		else if(p_corners[i].y < t_minY)
+			t_minY = p_corners[i].y;
 
 		//gets max and min Z
 		if(p_corners[i].x > t_maxZ)
-			t_maxZ = p_corners[i].x ;
-		else if(p_corners[i].x < t_minZ)
-			t_minZ=p_corners[i].x ;
+			t_maxZ = p_corners[i].z ;
+		else if(p_corners[i].z < t_minZ)
+			t_minZ=p_corners[i].z ;
 	}
 
 	//checks if absolute value of min values is greater than max values (really unnecessary if models are symetric, but can TA really be trusted?
