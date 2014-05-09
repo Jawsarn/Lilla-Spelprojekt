@@ -37,7 +37,7 @@ private:
 	int PauseCheck(int p_currentPlayer, UserCMD p_userCmd);
 	int UpdatePlayer(int p_currentPlayer, float p_dt, UserCMD p_userCmd);
 	void PlacePlayerWall(int p_currentPlayer);
-	void CollisionCheck(int p_currentPlayer, float p_dt);
+	void CollisionCheck(int p_currentPlayer, float p_dt,UserCMD& p_userCMD);
 	void UpdatePlayerRacePosition(int p_currentPlayer);
 	void DrawPlayerHUD(int p_player);
 	void DrawPlayer(int p_currentPlayer);

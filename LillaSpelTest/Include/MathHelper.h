@@ -16,6 +16,7 @@ public:
 	XMFLOAT3 MathHelper::VecAddVec(XMFLOAT3 p_fl31, XMFLOAT3 p_fl32);
 	float MathHelper::Abs(XMFLOAT3 p_fl3);
 	XMFLOAT3 MathHelper::CrossProduct(XMFLOAT3 p_fl31, XMFLOAT3 p_fl32);
+	XMFLOAT3 MathHelper::Projection(XMFLOAT3 p_float3, XMFLOAT3 p_projectontothis);
 
 };
 

@@ -119,9 +119,9 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 			case PLAY:
 				if(!m_players[i]->GetImmortal())
 				{
-					CollisionCheck(i, p_dt);
-					
-				}
+					CollisionCheck(i, p_dt,p_userCMDS->at(i) );/*
+																m_collisionManager->PlayerVsPlayer(m_players);*/
+				}	
 				UpdatePlayerRacePosition(i);
 				DrawPlayerHUD(i);
 				break;
@@ -160,7 +160,7 @@ void GameScreen::PlacePlayerWall(int p_currentPlayer)
 	t_newWall->m_wallIndex = m_graphicHandle->CreateWall(0, t_newWall->GetWorldMatrix(), p_currentPlayer);
 }
 
-void GameScreen::CollisionCheck(int p_currentPlayer, float p_dt)
+void GameScreen::CollisionCheck(int p_currentPlayer, float p_dt, UserCMD& p_userCMD)
 {
 	MapNode* t_currMapNode = m_players[p_currentPlayer]->GetCurrentMapNode(); 
 	//player vs static obj
@@ -182,8 +182,10 @@ void GameScreen::CollisionCheck(int p_currentPlayer, float p_dt)
 		PlayerCloseToWall(p_currentPlayer, t_collisionResult, p_dt);
 	}
 	//player vs player
-	m_collisionManager->PlayerVsPlayer(m_players);
-
+	/*if (p_userCMD.yButtonPressed)
+	{
+		m_collisionManager->ShockWaveCollision(m_players,p_currentPlayer);
+	}*/
 }
 
 void GameScreen::UpdatePlayerRacePosition(int p_currentPlayer)

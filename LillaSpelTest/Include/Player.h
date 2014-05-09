@@ -56,6 +56,9 @@ private:
 	float m_coolDown;
 	float m_maxCooldown;
 
+	//Powerup stuff
+	bool m_Shockwave;
+
 	///Timers///
 	float m_deathTimer;
 	float m_maxDeathTimer;

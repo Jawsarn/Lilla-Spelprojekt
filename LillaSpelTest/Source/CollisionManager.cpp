@@ -52,47 +52,28 @@ void CollisionManager::PlayerVsPlayer(std::vector<Player*> p_playerList)
 		{
 			if(p_playerList[i]->GetCollisionBox()->Intersects(*p_playerList[j]->GetCollisionBox()))
 			{
-				m_physMan->SetPlayerCollisions(p_playerList[i],p_playerList[j]);
+				m_physMan->SetPlayerCollisions(p_playerList[i],p_playerList[j], 1, 1);
 			}
 		}
 	}
-
-
-
-
-
-
-
-
-
-	//std::vector<int> r_return;
-	//if(p_p1->GetCollisionBox()->Intersects(*p_p2->GetCollisionBox())==true)
-	//{
-	//	m_physMan->SetPlayerCollisions(p_p1, p_p2);	
-	//}
-	//if(p_p1->GetCollisionBox()->Intersects(*p_p3->GetCollisionBox())==true)
-	//{
-	//	m_physMan->SetPlayerCollisions(p_p1, p_p3);	
-	//}
-	//if(p_p1->GetCollisionBox()->Intersects(*p_p4->GetCollisionBox())==true)
-	//{
-	//	m_physMan->SetPlayerCollisions(p_p1, p_p4);	
-	//}
-	//if(p_p2->GetCollisionBox()->Intersects(*p_p3->GetCollisionBox())==true)
-	//{
-	//	m_physMan->SetPlayerCollisions(p_p2, p_p3);	
-	//}
-	//if(p_p2->GetCollisionBox()->Intersects(*p_p4->GetCollisionBox())==true)
-	//{
-	//	m_physMan->SetPlayerCollisions(p_p2, p_p4);	
-	//}
-	//if(p_p3->GetCollisionBox()->Intersects(*p_p4->GetCollisionBox())==true)
-	//{
-	//	m_physMan->SetPlayerCollisions(p_p3, p_p4);	
-	//}
 }
 
 bool CollisionManager::IntersectionTest(BoundingOrientedBox* a, BoundingOrientedBox* b)
 {
 	return true;
+}
+
+void CollisionManager::ShockWaveCollision(std::vector<Player*> p_playerList, int p_playerWithShockwave)
+{
+	BoundingSphere t_shockWaveSphere = BoundingSphere(p_playerList[p_playerWithShockwave]->GetPos(), 1.5);
+	for (int i = 0; i < p_playerList.size(); i++)
+	{
+		if(i!=p_playerWithShockwave)
+		{
+			if(p_playerList[i]->GetCollisionBox()->Intersects(t_shockWaveSphere))
+			{
+				m_physMan->SetPlayerCollisions(p_playerList[p_playerWithShockwave],p_playerList[i], 0, 2);
+			}
+		}
+	}
 }

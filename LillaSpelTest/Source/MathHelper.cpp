@@ -10,6 +10,15 @@ MathHelper::~MathHelper(void)
 {
 }
 
+XMFLOAT3 MathHelper::Projection(XMFLOAT3 p_float3, XMFLOAT3 p_projectOnToThis)
+{
+	float t_skalar = DotProduct(p_float3, p_projectOnToThis);
+	float t_dividerAbs = DotProduct(p_projectOnToThis, p_projectOnToThis);
+	t_dividerAbs *= t_dividerAbs;
+	XMFLOAT3 r_float3 = FloatMultiVec(t_skalar/t_dividerAbs, p_projectOnToThis);
+	return r_float3;
+}
+
 float MathHelper::DotProduct(XMFLOAT3 p_vec1, XMFLOAT3 p_vec2)
 {
 	float r_skalar;
