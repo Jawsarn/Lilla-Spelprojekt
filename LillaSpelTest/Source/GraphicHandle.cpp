@@ -314,13 +314,13 @@ void GraphicHandle::SelectVehicle()
 		for (int i = 0; i < m_MeshShips.size(); i++)
 		{
 
-			XMMATRIX t_Rot = XMMatrixRotationY(2*XM_PI/m_MeshShips.size()*i);
+			XMMATRIX t_Rot = XMMatrixRotationY(2*XM_PI/m_MeshShips.size()*k);
 
 			t_Rot = XMMatrixMultiply(t_WorldMat, t_Rot);
 			
 
 			XMMATRIX t_OffSetTheCircleMat = XMMatrixTranslation(0,0,4);
-			XMMATRIX t_OffSetTheCircleMatRotation = XMMatrixRotationY(XM_PIDIV2*k);
+			XMMATRIX t_OffSetTheCircleMatRotation = XMMatrixRotationY((2*XM_PI*i/m_MeshShips.size()));
 			XMMATRIX t_SafteyMeasureMat = XMMatrixMultiply(t_OffSetTheCircleMat,t_OffSetTheCircleMatRotation);
 
 			t_Rot = XMMatrixMultiply( t_SafteyMeasureMat,t_Rot);
