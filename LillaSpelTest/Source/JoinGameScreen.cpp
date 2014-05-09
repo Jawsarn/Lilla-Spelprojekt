@@ -26,8 +26,8 @@ JoinGameScreen::JoinGameScreen(GameInfo* p_gameInfo,GraphicHandle* p_graphicsHan
 
 	MakeHud(L"Connect.dds", DISCONNECTED);
 	MakeHud(L"ChooseModellButton.dds",CHOOSE_MODELL);
-	MakeHud(L"ChooseColorButton.dds",CHOOSE_COLOR);
-	MakeHud(L"StartToStartButton.dds",READY);
+	//MakeHud(L"ChooseColorButton.dds",CHOOSE_COLOR);
+	MakeHud(L"StartGame2.dds",READY);
 	
 }
 
@@ -47,20 +47,24 @@ int JoinGameScreen::Update(float p_dt,std::vector<UserCMD>* userCMD)
 			if (userCMD->at(i).aButtonPressed)
 			{
 				timeSinceLastChange[i] = 0;
-				if (m_playerStatus[i] == CHOOSE_MODELL)
+				if (m_playerStatus[i] < READY)
 				{
-					m_playerStatus[i]=CHOOSE_COLOR;
-					m_graphicHandle->UseHud(i,m_hudIDs[CHOOSE_COLOR]);
+					m_playerStatus[i] = (PlayerStatus)(m_playerStatus[i]+1);
+					m_graphicHandle->UseHud(i,m_hudIDs[m_playerStatus[i]]);
 				}
-				else if (m_playerStatus[i] == CHOOSE_COLOR)
+				
+			}
+			else if (userCMD->at(i).bButtonPressed)
+			{
+				timeSinceLastChange[i] = 0;
+				if (m_playerStatus[i]>0)
 				{
-					m_playerStatus[i]=READY;
-					m_graphicHandle->UseHud(i,m_hudIDs[READY]);
-				}
-				else if (m_playerStatus[i] == DISCONNECTED)
-				{
-					m_playerStatus[i]=CHOOSE_MODELL;
-					m_graphicHandle->UseHud(i,m_hudIDs[CHOOSE_MODELL]);
+					m_playerStatus[i] = (PlayerStatus)(m_playerStatus[i]-1);
+					m_graphicHandle->UseHud(i,m_hudIDs[m_playerStatus[i]]);
+					if (m_playerStatus[i] == DISCONNECTED)
+					{
+						m_graphicHandle->SetCameraVehicleSelection(i);
+					}
 				}
 			}
 			else if (userCMD->at(i).backButtonPressed)
@@ -69,54 +73,17 @@ int JoinGameScreen::Update(float p_dt,std::vector<UserCMD>* userCMD)
 				m_graphicHandle->RemoveSelectionDraw();
 				return GAME_SETUP_SCREEN;
 			}
-			if (userCMD->at(i).xButtonPressed && (m_playerStatus[i] == CHOOSE_MODELL || m_playerStatus[i] == CHOOSE_COLOR))
+			if (userCMD->at(i).xButtonPressed && (m_playerStatus[i] == CHOOSE_MODELL))
 			{
 				timeSinceLastChange[i] = 0;
 				m_playerStatus[i] = READY;
 			}
-			if (userCMD->at(i).bButtonPressed)
-			{
-				timeSinceLastChange[i] = 0;
-				if (m_playerStatus[i] == READY)
-				{
-					m_playerStatus[i]=CHOOSE_COLOR;
-					m_graphicHandle->UseHud(i,m_hudIDs[CHOOSE_COLOR]);
-				}
-				else if (m_playerStatus[i] == CHOOSE_COLOR)
-				{
-					m_graphicHandle->UseHud(i,m_hudIDs[CHOOSE_MODELL]);
-					m_playerStatus[i]=CHOOSE_MODELL;
-				}
-				else if (m_playerStatus[i] == CHOOSE_MODELL)
-				{
-					m_graphicHandle->SetCameraVehicleSelection(i);
-					m_graphicHandle->UseHud(i,m_hudIDs[DISCONNECTED]);
-					m_playerStatus[i] = DISCONNECTED;
-				}
-			}
+		
 
 			if (userCMD->at(i).startButtonPressed)
 			{
-				timeSinceLastChange[i] = 0;
-				int t_numberOfPlayersReady = 0;
-				int t_numberOfPlayersDisconnected = 0;
-				for (int i = 0; i < 4; i++)
-				{
-					if (m_playerStatus[i]== READY)
-					{
-						t_numberOfPlayersReady++;
-					}
-					else if (m_playerStatus[i]== DISCONNECTED)
-					{
-						t_numberOfPlayersReady++;
-						t_numberOfPlayersDisconnected++;
-					}
-					else
-					{
-						break;
-					}
-				}
-				if (t_numberOfPlayersReady == 4 && t_numberOfPlayersDisconnected != 4)
+
+				if (ReadyCheck(i))
 				{
 					SaveInfo();
 					return GAME_SCREEN;
@@ -126,11 +93,11 @@ int JoinGameScreen::Update(float p_dt,std::vector<UserCMD>* userCMD)
 		if (m_playerStatus[i]==CHOOSE_MODELL)
 		{
 			ModellChanger(i,p_dt,userCMD);
-		}
-		if (m_playerStatus[i]==CHOOSE_COLOR)
-		{
 			ColorChanger(i,p_dt,userCMD);
 		}
+	
+			
+		
 	}
 
 	return JOIN_GAME_SCREEN;
@@ -154,8 +121,8 @@ void JoinGameScreen::Initialize()
 
 void JoinGameScreen::MakeHud(const wchar_t* p_textureNames, int p_hudIndex)
 {
-	DirectX::XMFLOAT2 t_centerPoint = DirectX::XMFLOAT2(0,-0.8);
-	DirectX::XMFLOAT2 t_offset = DirectX::XMFLOAT2(0.3,0.1);
+	DirectX::XMFLOAT2 t_centerPoint = DirectX::XMFLOAT2(0.5,-0.8);
+	DirectX::XMFLOAT2 t_offset = DirectX::XMFLOAT2(0.7,0.8);
 	std::vector<unsigned int> t_objHandles;
 	std::vector<DirectX::XMFLOAT2> t_barOffsets;
 	t_barOffsets.push_back(DirectX::XMFLOAT2(0,0));
@@ -234,19 +201,47 @@ void JoinGameScreen::ModellChanger(int i, float p_dt, std::vector<UserCMD>* user
 }
 void JoinGameScreen::ColorChanger(int i, float p_dt, std::vector<UserCMD>* userCMD)
 {
-	if (userCMD->at(i).Joystick.x < -0.8)
+	if (timeSinceLastChange[i]>0.1)
 	{
-		if (m_color[i] > 0)
+		if (userCMD->at(i).Joystick.y < -0.8)
 		{
-			m_color[i]--;
+			if (m_color[i] > 0)
+			{
+				m_color[i]--;
+			}
+			timeSinceLastChange[i]=0;
 		}
-				
-	}
-	else if (userCMD->at(i).Joystick.x > 0.8)
-	{
-		if (m_color[i] < NUMBER_OF_COLORS - 1)
+		else if (userCMD->at(i).Joystick.y > 0.8)
 		{
-			m_color[i]++;
-		}	
+			if (m_color[i] < NUMBER_OF_COLORS - 1)
+			{
+				m_color[i]++;
+			}	
+			timeSinceLastChange[i]=0;
+		} 
 	}
+}
+
+bool JoinGameScreen::ReadyCheck(int p_whoChecked)
+{
+	timeSinceLastChange[p_whoChecked] = 0;
+	int t_numberOfPlayersReady = 0;
+	int t_numberOfPlayersDisconnected = 0;
+	for (int i = 0; i < 4; i++)
+	{
+		if (m_playerStatus[i]== READY)
+		{
+			t_numberOfPlayersReady++;
+		}
+		else if (m_playerStatus[i]== DISCONNECTED)
+		{
+			t_numberOfPlayersReady++;
+			t_numberOfPlayersDisconnected++;
+		}
+		else
+		{
+			break;
+		}
+	}
+	return t_numberOfPlayersReady == 4 && t_numberOfPlayersDisconnected != 4;
 }
