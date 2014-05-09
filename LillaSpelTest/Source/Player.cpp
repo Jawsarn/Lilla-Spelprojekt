@@ -32,18 +32,18 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_wallBoxExtents = SetBoxExtents(t_wallBoxCorners);
 	m_playerShipBoxExtents = SetBoxExtents(t_playerShipBoxCorners);
 
-	m_wallBoxExtents.y*=0.6;
-	m_playerShipBoxExtents.y*=0.6;
+	m_wallBoxExtents.y *= 0.6;
+	m_playerShipBoxExtents.y *= 0.6;
 
 	////VARIABLE INITIALIZATION (not relevant for game balancing)
 	m_wallMeter = 0;
-	m_coolDown = 0;	
-	m_aButtonPressedAtStart=0;
-	m_bobOffset = XMFLOAT3(0,0,0);
-	m_up = XMFLOAT3(0,1,0);
+	m_coolDown = 0;
+	m_aButtonPressedAtStart = 0;
+	m_bobOffset = XMFLOAT3(0, 0, 0);
+	m_up = XMFLOAT3(0, 1, 0);
 	m_distance = 0.0f;
 	m_boostMeter = 0;//test value
-	m_direction = DirectX::XMFLOAT3(0,0,1);
+	m_direction = DirectX::XMFLOAT3(0, 0, 1);
 	m_lastPlacedWall = nullptr;
 	m_speed = 0;
 	m_cameraAngle = 0;
@@ -87,6 +87,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	//how high above the vehicle the camera is
 	m_cameraTrailDistanceUp = 1;
 
+	m_gravityShiftCameraMoveSpeed = 1;
 
 	m_deathShakeMaxIntensity = 8;//reversed intensity: higher number means lower intensity. Because logic
 	m_deathShakeIntensityDrop = 4;
@@ -112,7 +113,7 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 	m_currentUserCmd = p_userCMD;
 	MathHelper t_mathHelper;
 
-	if(p_userCMD.bButtonPressed)
+	if (p_userCMD.bButtonPressed)
 	{
 		m_gravityShifting = true;
 		m_gravityShiftProgress = 0;
@@ -120,18 +121,18 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 
 
 	//not sure if entirely needed...
-	m_direction = XMFLOAT3(0,0,1);
+	m_direction = XMFLOAT3(0, 0, 1);
 
-	if(m_state ==STARTING)
+	if (m_state == STARTING)
 		StartupSpam();
-	if(m_state == NORMAL || m_state == IMMORTAL)
+	if (m_state == NORMAL || m_state == IMMORTAL)
 	{
 		Acceleration(p_dt);
 		Rotation(p_dt);
 		MovementAlongLogicalMap(p_dt);
 		SetDirection();
 		FixWorldPosition();
-		if(m_gravityShifting)
+		if (m_gravityShifting)
 			GravityShift(m_gravityShiftProgress);
 
 		UpdateCollisionBox();
@@ -153,7 +154,7 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 //////BIG FAT ARISTOCRAT METHODS
 void Player::StartupSpam()
 {
-	if(m_previousUserCmd.aButtonPressed && !m_currentUserCmd.aButtonPressed)
+	if (m_previousUserCmd.aButtonPressed && !m_currentUserCmd.aButtonPressed)
 	{
 		m_aButtonPressedAtStart++;
 	}
@@ -163,10 +164,10 @@ void Player::Acceleration(float p_dt)
 {
 	////Acceleration
 	//boost acceleration
-	if(m_currentUserCmd.rightBumberPressed && m_boostMeter>0)
+	if (m_currentUserCmd.rightBumberPressed && m_boostMeter > 0)
 	{
 		//check if max boost speed is attained, otherwise accelerate
-		if(m_maxBoostSpeed>m_speed)
+		if (m_maxBoostSpeed > m_speed)
 		{
 			m_speed += p_dt*m_boostAcceleration;
 		}
@@ -181,18 +182,18 @@ void Player::Acceleration(float p_dt)
 	//ordinary acceleration
 	else
 	{
-		if(m_maxSpeed >m_speed)
+		if (m_maxSpeed > m_speed)
 		{
-			m_speed+=p_dt*m_acceleration;
+			m_speed += p_dt*m_acceleration;
 		}
 		//decelerate if you're above ordinary max speed
 		else
 		{
-			m_speed-=p_dt*m_deceleration;
+			m_speed -= p_dt*m_deceleration;
 		}
 	}
-	if(m_currentUserCmd.xButtonPressed)
-		m_speed+= 2*m_boostAcceleration*p_dt;
+	if (m_currentUserCmd.xButtonPressed)
+		m_speed += 2 * m_boostAcceleration*p_dt;
 }
 
 void Player::Rotation(float p_dt)
@@ -206,9 +207,9 @@ void Player::MovementAlongLogicalMap(float p_dt)
 {
 	////movement along logical map
 	//adds distance from the current node based on speed and time since last update
-	m_distance+=m_speed*p_dt;
+	m_distance += m_speed*p_dt;
 	//Checks of distance exceeds distance to new node. In other words, if the player "overshoots" the next node
-	while(m_distance >= m_mathHelper.Abs(m_mapNode->m_normal))
+	while (m_distance >= m_mathHelper.Abs(m_mapNode->m_normal))
 	{
 		float t_remainingDistance = m_distance - m_mathHelper.Abs(m_mapNode->m_normal);
 		m_distance = t_remainingDistance;
@@ -227,10 +228,10 @@ void Player::SetDirection()
 	///SETS DIRECTION OF PLAYER
 	//interpolate normals between current and previous
 	float t_interpolation;
-	t_interpolation = m_distance/m_mathHelper.Abs(m_mapNode->m_normal);
+	t_interpolation = m_distance / m_mathHelper.Abs(m_mapNode->m_normal);
 	XMFLOAT3 t_frontNormalComponent = m_mathHelper.FloatMultiVec(t_interpolation, m_mathHelper.Normalize(m_mapNode->m_nextNode->m_normal));
-	XMFLOAT3 t_currentNormalComponent = m_mathHelper.FloatMultiVec(1-t_interpolation,m_mathHelper.Normalize(m_mapNode->m_normal));
-	m_direction = m_mathHelper.Normalize( m_mathHelper.VecAddVec(t_frontNormalComponent, t_currentNormalComponent));
+	XMFLOAT3 t_currentNormalComponent = m_mathHelper.FloatMultiVec(1 - t_interpolation, m_mathHelper.Normalize(m_mapNode->m_normal));
+	m_direction = m_mathHelper.Normalize(m_mathHelper.VecAddVec(t_frontNormalComponent, t_currentNormalComponent));
 
 	//now looking along the interpolated normal between current node and next node 
 }
@@ -253,8 +254,8 @@ void Player::UpdateCollisionBox()
 {
 	MathHelper t_mathHelper = MathHelper();
 	//XMFLOAT3 t_vector = t_mathHelper.CrossProduct(m_direction, m_upVector); kanske inte behövs
-	XMFLOAT4 t_quarternion = XMFLOAT4(0,0,0,1);
-	XMMATRIX t_boxOrientationMatrix = XMMatrixLookToLH(XMLoadFloat3(&m_position), XMLoadFloat3(&m_direction),XMLoadFloat3(&m_up)); //matrixyo
+	XMFLOAT4 t_quarternion = XMFLOAT4(0, 0, 0, 1);
+	XMMATRIX t_boxOrientationMatrix = XMMatrixLookToLH(XMLoadFloat3(&m_position), XMLoadFloat3(&m_direction), XMLoadFloat3(&m_up)); //matrixyo
 	XMVECTOR t_boxOrientationVector = XMLoadFloat4(&t_quarternion);
 	t_boxOrientationVector = XMVector4Transform(t_boxOrientationVector, XMLoadFloat4x4(&m_worldMatrix));
 	t_boxOrientationVector = XMVector4Normalize(t_boxOrientationVector);
@@ -271,19 +272,19 @@ int Player::WallPlacement(float p_dt)
 {
 	m_coolDown -= p_dt;
 	//if the players wants to poop out walls
-	if(m_currentUserCmd.rightTriggerPressed && m_coolDown <=0 && m_wallMeter >= 1)
+	if (m_currentUserCmd.rightTriggerPressed && m_coolDown <= 0 && m_wallMeter >= 1)
 	{
-		m_wallMeter-=1;
+		m_wallMeter -= 1;
 		PlaceWall();
-		m_coolDown = m_maxCooldown/2;
+		m_coolDown = m_maxCooldown / 2;
 		return  1;
 	}
 	//if the players meter is full
 	//yes, this could also have been one hell of a long if statement but fuggit
-	else if(m_coolDown<= 0 && m_wallMeter > m_maxWalls)
+	else if (m_coolDown <= 0 && m_wallMeter > m_maxWalls)
 	{
 		m_wallMeter = m_maxWalls;
-		m_wallMeter-=1;
+		m_wallMeter -= 1;
 		m_coolDown = m_maxCooldown;
 
 		PlaceWall();
@@ -296,13 +297,13 @@ int Player::WallPlacement(float p_dt)
 void Player::UpdateTimers(float p_dt)
 {
 	////immortal and death timers
-	m_immortalTimer-=p_dt;
-	if(m_immortalTimer<0)
+	m_immortalTimer -= p_dt;
+	if (m_immortalTimer < 0)
 		m_state = NORMAL;
-	m_deathTimer -=p_dt;
-	if(m_gravityShifting)
+	m_deathTimer -= p_dt;
+	if (m_gravityShifting)
 		m_gravityShiftProgress += p_dt*0.5;
-	m_wallMeter+= p_dt*m_wallGain*(4-m_racePos);
+	m_wallMeter += p_dt*m_wallGain*(4 - m_racePos);
 
 }
 
@@ -317,7 +318,7 @@ void Player::UpdateTimers(float p_dt)
 
 void Player::PlaceWall()
 {
-	m_lastPlacedWall = new PlayerWall(XMFLOAT3(0,0,1), &m_position, &m_wallPlacementDirection , &m_up, m_playerIndex, m_wallBoxExtents);
+	m_lastPlacedWall = new PlayerWall(XMFLOAT3(0, 0, 1), &m_position, &m_wallPlacementDirection, &m_up, m_playerIndex, m_wallBoxExtents);
 	m_placedWalls.push_back(m_lastPlacedWall);
 	m_mapNode->AddWall(m_lastPlacedWall);
 }
@@ -327,7 +328,7 @@ void Player::FixUpVectorRotation(float p_angle)
 	MathHelper t_mathHelper = MathHelper();
 
 	//Rotates the radius vector with angle around the normal/direction. Sets it to the up vector. Azooka made uber-hax.
-	XMMATRIX t_rotationmatrix = XMMatrixRotationAxis(XMLoadFloat3(&t_mathHelper.Normalize( m_mapNode->m_normal)), p_angle);
+	XMMATRIX t_rotationmatrix = XMMatrixRotationAxis(XMLoadFloat3(&t_mathHelper.Normalize(m_mapNode->m_normal)), p_angle);
 	XMVECTOR t_upVector = XMLoadFloat3(&m_mapNode->m_radiusVector);
 	t_upVector = XMVector3Transform(t_upVector, t_rotationmatrix);
 	XMStoreFloat3(&m_up, t_upVector);
@@ -336,7 +337,7 @@ void Player::FixUpVectorRotation(float p_angle)
 
 void Player::FixOffsetFromCenterSpline()
 {
-	m_position = m_mathHelper.VecAddVec(m_position, m_mathHelper.FloatMultiVec(-m_mapNode->m_radius+(m_mapNode->m_radius/4), m_up)); 
+	m_position = m_mathHelper.VecAddVec(m_position, m_mathHelper.FloatMultiVec(-m_mapNode->m_radius + (m_mapNode->m_radius / 4), m_up));
 }
 
 void Player::BobOffset()
@@ -349,7 +350,7 @@ void Player::BobOffset()
 	t_bobY = distribution(m_randomGenerator);
 	t_bobZ = distribution(m_randomGenerator);
 
-	m_bobOffset = m_mathHelper.VecAddVec(m_bobOffset, m_mathHelper.FloatMultiVec(1,XMFLOAT3(t_bobX, t_bobY, t_bobZ)));
+	m_bobOffset = m_mathHelper.VecAddVec(m_bobOffset, m_mathHelper.FloatMultiVec(1, XMFLOAT3(t_bobX, t_bobY, t_bobZ)));
 
 }
 
@@ -362,7 +363,7 @@ void Player::DeathShake()
 	t_bobY = distribution(m_randomGenerator);
 	t_bobZ = distribution(m_randomGenerator);
 
-	m_bobOffset = m_mathHelper.VecAddVec(m_bobOffset, m_mathHelper.FloatMultiVec(pow(m_immortalTimer/m_deathShakeMaxIntensity, m_deathShakeIntensityDrop),XMFLOAT3(t_bobX, t_bobY, t_bobZ)));
+	m_bobOffset = m_mathHelper.VecAddVec(m_bobOffset, m_mathHelper.FloatMultiVec(pow(m_immortalTimer / m_deathShakeMaxIntensity, m_deathShakeIntensityDrop), XMFLOAT3(t_bobX, t_bobY, t_bobZ)));
 }
 
 void Player::UpdateWorldMatrix()
@@ -408,60 +409,77 @@ void Player::UpdateWorldMatrix()
 
 	if (t_deltaAngleInt > t_cameraAngleInt)
 		m_cameraAngle += m_cameraFollowSpeed;
-	else if (t_cameraAngleInt  > t_deltaAngleInt)
+	else if (t_cameraAngleInt > t_deltaAngleInt)
 		m_cameraAngle -= m_cameraFollowSpeed;
 
 
 
-	XMMATRIX t_cameraRotationMatrix = XMMatrixRotationAxis(t_vehicleUnmoddedTargetVector, -m_deltaAngle-m_cameraAngle* 10);
+	XMMATRIX t_cameraRotationMatrix = XMMatrixRotationAxis(t_vehicleUnmoddedTargetVector, -m_deltaAngle - m_cameraAngle * 10);
 	t_cameraUpVector = XMVector3Transform(t_cameraUpVector, t_cameraRotationMatrix);
 	t_cameraUpVector = XMVector3Normalize(t_cameraUpVector);
 
 
 
-	XMStoreFloat4x4(&m_cameraMatrix , XMMatrixLookAtLH(t_cameraEyeVector, t_cameraTargetVector, t_cameraUpVector));
+	XMStoreFloat4x4(&m_cameraMatrix, XMMatrixLookAtLH(t_cameraEyeVector, t_cameraTargetVector, t_cameraUpVector));
 
 
 	XMVECTOR t_bobOffsetVector = XMLoadFloat3(&m_bobOffset);
-	XMStoreFloat4x4( &m_worldMatrix, XMMatrixLookToLH(t_vehicleEyeVector+t_bobOffsetVector, t_vehicleTargetVector, t_vehicleUpVector));
+	XMStoreFloat4x4(&m_worldMatrix, XMMatrixLookToLH(t_vehicleEyeVector + t_bobOffsetVector, t_vehicleTargetVector, t_vehicleUpVector));
 
 	//store direction of car for wall placement
 	XMStoreFloat3(&m_wallPlacementDirection, t_vehicleTargetVector);
 
 
-	m_bobOffset = XMFLOAT3 (0,0,0);
+	m_bobOffset = XMFLOAT3(0, 0, 0);
 }
 
 void Player::GravityShift(float p_progress)
 {
 
 	//time for reversing
+	XMVECTOR t_unmodifiedUpVector = XMLoadFloat3(&m_up);
+
 	XMVECTOR t_eyeVector = XMLoadFloat3(&m_position);
 	XMVECTOR t_upVector = XMLoadFloat3(&m_up);
 	XMVECTOR t_targetVector = XMLoadFloat3(&m_direction);
-	float t_radius = m_mapNode->m_radius;
-	float t_targetAngle = 3.14; //pi
+	float t_radius = (m_mapNode->m_radius + (m_mapNode->m_radius / 4)) / 2;
+	float t_targetAngle = 3.14; //pi, half a circle
+
+	//makes the camera work faster than the car
+	float t_cameraProgress = m_gravityShiftCameraMoveSpeed * p_progress;
+	if (t_cameraProgress > 1)
+		t_cameraProgress = 1;
 
 
+	XMVECTOR t_cameraEyeVector = t_eyeVector + t_upVector*m_cameraTrailDistanceUp + m_cameraTrailDistanceTarget*t_targetVector*-1;
+	XMVECTOR t_cameraUpVector = t_upVector;
+	XMVECTOR t_cameraTargetVector = t_eyeVector-t_cameraEyeVector;
 
-	if (p_progress > 1)
-	{
-		m_gravityShiftProgress = 0;
-		m_gravityShifting = false;
-		PostGravityShiftFix();
-
-	}
-
-
-	t_eyeVector += t_upVector*t_radius*p_progress*2;
+	//move up from the car
+	t_eyeVector += t_upVector*t_radius*p_progress * 2;
+	t_cameraEyeVector += t_upVector*t_radius*t_cameraProgress * 2;
 
 	XMMATRIX t_directionRotationMatrixTarget = XMMatrixRotationAxis(t_targetVector, p_progress*t_targetAngle);					//////////////////////////MAKE SURE YOU CHANGE THIS HARDCODED 10 CRAP////////////////
 	t_upVector = XMVector3Transform(t_upVector, t_directionRotationMatrixTarget);
 	t_upVector = XMVector3Normalize(t_upVector);
 
+	XMMATRIX t_cameraDirectionRotationMatrixTarget = XMMatrixRotationAxis(t_targetVector, t_cameraProgress*t_targetAngle);
+	t_cameraUpVector = XMVector3Transform(t_cameraUpVector, t_cameraDirectionRotationMatrixTarget);
+	t_cameraUpVector = XMVector3Normalize(t_cameraUpVector);
 
-
-	XMStoreFloat4x4( &m_worldMatrix, XMMatrixLookToLH(t_eyeVector, t_targetVector, t_upVector));
+	if (p_progress > 1)
+	{
+		m_gravityShiftProgress = 0;
+		m_gravityShifting = false;
+		XMStoreFloat3(&m_position, t_eyeVector);
+		XMStoreFloat3(&m_up, t_upVector);
+		m_angle += 3.14;
+	}
+	//sin(t_cameraProgress*3.14)*
+	t_cameraEyeVector += cos(t_cameraProgress*3.14)*t_unmodifiedUpVector*m_cameraTrailDistanceUp + t_cameraProgress*(t_radius - m_cameraTrailDistanceUp)*t_unmodifiedUpVector;
+	//t_cameraEyeVector += m_cameraTrailDistanceTarget*t_cameraTargetVector + m_cameraTrailDistanceUp*t_cameraUpVector;
+	XMStoreFloat4x4(&m_worldMatrix, XMMatrixLookToLH(t_eyeVector, t_targetVector, t_upVector));
+	XMStoreFloat4x4(&m_cameraMatrix, XMMatrixLookAtLH(t_cameraEyeVector, t_eyeVector, t_cameraUpVector));
 }
 
 
@@ -482,32 +500,32 @@ XMFLOAT3 Player::SetBoxExtents(vector<XMFLOAT3> p_corners)
 	for (int i = 0; i < p_corners.size(); i++)
 	{
 		//gets max and min x
-		if(p_corners[i].x > t_maxX)
+		if (p_corners[i].x > t_maxX)
 			t_maxX = p_corners[i].x;
-		else if(p_corners[i].x < t_minX)
+		else if (p_corners[i].x < t_minX)
 			t_minX = p_corners[i].x;
 
 		//gets max and min y
-		if(p_corners[i].y > t_maxY)
-			t_maxY=p_corners[i].y;
-		else if(p_corners[i].y < t_minY)
+		if (p_corners[i].y > t_maxY)
+			t_maxY = p_corners[i].y;
+		else if (p_corners[i].y < t_minY)
 			t_minY = p_corners[i].y;
 
 		//gets max and min Z
-		if(p_corners[i].z > t_maxZ)
-			t_maxZ = p_corners[i].z ;
-		else if(p_corners[i].z < t_minZ)
-			t_minZ=p_corners[i].z ;
+		if (p_corners[i].z > t_maxZ)
+			t_maxZ = p_corners[i].z;
+		else if (p_corners[i].z < t_minZ)
+			t_minZ = p_corners[i].z;
 	}
 
 	//checks if absolute value of min values is greater than max values (really unnecessary if models are symetric, but can TA really be trusted?
-	if(t_maxX < -t_minX)
+	if (t_maxX < -t_minX)
 		t_maxX = -t_minX;
 
-	if(t_maxY < -t_minY)
+	if (t_maxY < -t_minY)
 		t_maxY = -t_minY;
 
-	if(t_maxZ < -t_minZ)
+	if (t_maxZ < -t_minZ)
 		t_maxZ = -t_minZ;
 
 	return XMFLOAT3(t_maxX, t_maxY, t_maxZ);
@@ -526,7 +544,7 @@ XMMATRIX Player::GetWorldMatrix()
 
 XMMATRIX Player::GetCamMatrix()
 {
-	return XMLoadFloat4x4( &m_cameraMatrix);
+	return XMLoadFloat4x4(&m_cameraMatrix);
 }
 MapNode* Player::GetCurrentMapNode()
 {
@@ -540,7 +558,7 @@ BoundingOrientedBox* Player::GetCollisionBox()
 
 PlayerWall* Player::GetLastPlacedWall()
 {
-	return m_lastPlacedWall;	
+	return m_lastPlacedWall;
 }
 
 std::vector<BoundingOrientedBox*> Player::GetWallsToCheck()
@@ -569,7 +587,7 @@ float Player::GetPlayerBoost()
 float Player::GetDistanceTraveled()
 {
 	float t_distance = (float)m_mapNode->m_Index;
-	t_distance += m_distance/100; //SÅ att du kan skilja på positioner även om fler spelare är i samma mapnode
+	t_distance += m_distance / 100; //SÅ att du kan skilja på positioner även om fler spelare är i samma mapnode
 	return t_distance;
 }
 
@@ -580,16 +598,21 @@ int Player::GetRacePosition()
 	return m_racePos;
 }
 
+XMFLOAT3 Player::GetRadiusVector()
+{
+	return m_mathHelper.CrossProduct(m_direction, m_up);
+}
+
 float Player::GetHudBoosterInfo()
 {
 	//apparently wants 0 to be alot of boost, and 1 to be empty
-	return 1-(m_boostMeter/m_maxBoost);
+	return 1 - (m_boostMeter / m_maxBoost);
 }
 
 float Player::GetHudWallInfo()
 {
 	//apparently wants 0 to be alot of walls, and 1 to be empty
-	return 1-(m_maxWalls/m_wallMeter);
+	return 1 - (m_maxWalls / m_wallMeter);
 }
 
 bool Player::GetImmortal()
@@ -636,7 +659,7 @@ void Player::SetFinalDirection()
 {
 	if (!m_hasWon)
 	{
-		m_direction = m_mathHelper.FloatMultiVec(-1,m_mapNode->m_previousNode->m_normal);
+		m_direction = m_mathHelper.FloatMultiVec(-1, m_mapNode->m_previousNode->m_normal);
 		m_direction = m_mathHelper.Normalize(m_direction);
 		m_position = m_mapNode->m_position;
 		FixWorldPosition();
@@ -646,8 +669,13 @@ void Player::SetFinalDirection()
 
 void Player::Start()
 {
-	m_speed = (float)(m_aButtonPressedAtStart)/2;
+	m_speed = (float)(m_aButtonPressedAtStart) / 2;
 	m_state = NORMAL;
+}
+
+void Player::SetSpeed(float p_speed)
+{
+	m_speed = p_speed;
 }
 
 
@@ -667,7 +695,7 @@ void Player::UpdatePosition(float p_dt, UserCMD p_userCMD)
 	m_direction.y += p_userCMD.Joystick.y;
 	m_direction = t_mathHelper.Normalize(m_direction);
 
-	m_position = t_mathHelper.FloatMultiVec(p_dt,t_mathHelper.FloatMultiVec(m_speed,m_direction));
+	m_position = t_mathHelper.FloatMultiVec(p_dt, t_mathHelper.FloatMultiVec(m_speed, m_direction));
 }
 
 
@@ -679,7 +707,7 @@ void Player::ChangeState(PlayerState p_state)
 	case NORMAL:
 		break;
 	case DEAD:
-		m_deathTimer =  DEATH_TIME;
+		m_deathTimer = DEATH_TIME;
 		break;
 	case IMMORTAL:
 		m_immortalTimer = IMMORTAL_TIME;
@@ -692,6 +720,6 @@ void Player::ChangeState(PlayerState p_state)
 void Player::BumpedIntoPlayer(XMFLOAT3 p_force)
 {
 	MathHelper t_mathHelper = MathHelper();
-	m_speed -= t_mathHelper.Abs(t_mathHelper.FloatMultiVec(t_mathHelper.Abs(t_mathHelper.VecAddVec(m_direction, p_force)),m_mapNode->m_normal)); //VETTEFANOMDETT
+	m_speed -= t_mathHelper.Abs(t_mathHelper.FloatMultiVec(t_mathHelper.Abs(t_mathHelper.VecAddVec(m_direction, p_force)), m_mapNode->m_normal)); //VETTEFANOMDETT
 	//Angle ska bli p_force projicerad på m_direction cross m_upvector och sen absolutbelopp på den vectorn
 }
