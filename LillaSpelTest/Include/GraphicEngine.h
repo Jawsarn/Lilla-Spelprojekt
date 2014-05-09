@@ -40,6 +40,7 @@ public:
 	HRESULT AddTextureToDrawPiece(UINT p_DrawPieceID, UINT p_TextureID,TextureType p_TextureType);
 	HRESULT CreateDrawObject(std::vector<UINT> p_DrawPieceIDs, CXMMATRIX p_World, XMFLOAT3 p_Color, bool addToDrawNow, UINT &o_ObjectID);
 	HRESULT AddObjectLight(UINT p_ObjectID ,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float radius, UINT &o_LightID);
+	void AddObjectParticleSystem(UINT p_Object, UINT p_ParticleSystem);
 	HRESULT ChangeObjectsLight(UINT p_ObjectID, UINT p_LightID,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius);
 	HRESULT MoveObject(UINT p_ObjectID, CXMMATRIX p_Matrix);
 	HRESULT UpdateDrawObjectColor(UINT p_ObjectID, XMFLOAT3 p_Color);

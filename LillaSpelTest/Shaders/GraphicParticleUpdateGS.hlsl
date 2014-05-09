@@ -28,7 +28,7 @@ void GS( point Particle input[1],  inout PointStream< Particle > ptStream )
 				p.Lifespan = particleLifeSpan;
 				p.Type = input[0].Type - 1;
 
-				ptStream.Append(p);
+				//ptStream.Append(p);
 			}
 
 			input[0].Age = 0;

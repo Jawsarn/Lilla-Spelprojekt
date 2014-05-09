@@ -96,7 +96,7 @@ struct DrawObject
 	std::vector<UINT> lightID;
 	std::vector<Light> lightWorld;	//lighteruuu
 	//std::vector<transparentID>?
-	//std::vector<ParticleEffectID>
+	std::vector<UINT> particleSystem;
 	XMFLOAT3 color;
 	XMFLOAT4X4 worldMatrix;
 };

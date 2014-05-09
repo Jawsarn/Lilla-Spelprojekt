@@ -85,19 +85,7 @@ HRESULT GraphicEngine::Initialize( UINT p_Width, UINT p_Height, HWND handleWindo
 		return hr;
 	
 
-	//JAWS TEST YES MEGA TEST YES YSE MHHHYEEEEZZZ
-	std::vector<Particle> t_InitParticles;
-	t_InitParticles.push_back(Particle(XMFLOAT3(0,0,0),XMFLOAT3(0,0,0),XMFLOAT2(1,1),0.0f,100.0f,1));
-
-	UINT t_InitParticleID;
-	m_ParticleSystem->CreateInitParticlesBuffer(t_InitParticles, t_InitParticleID);
-
-	UINT t_ParticleBufferDataID;
-	m_ParticleSystem->CreateCBsetup(XMFLOAT3(0,0,0), 100, XMFLOAT3(0,0,0), 100, 100.0f, XMFLOAT2(1,1), t_ParticleBufferDataID);
-
-	UINT t_ParticleSystemID;
-	m_ParticleSystem->CreateParticleSystem(0, L"",t_InitParticleID, XMFLOAT3(0,0,0), t_ParticleBufferDataID, 100, t_ParticleSystemID );
-
+	
 	return hr;
 }
 
@@ -889,6 +877,11 @@ HRESULT GraphicEngine::AddObjectLight(UINT p_ObjectID ,XMFLOAT3 p_Position, XMFL
 	{
 		return E_FAIL;
 	}
+}
+
+void GraphicEngine::AddObjectParticleSystem(UINT p_Object, UINT p_ParticleSystem)
+{
+	m_DrawObjects[p_Object]->particleSystem.push_back(p_ParticleSystem);
 }
 
 HRESULT GraphicEngine::ChangeObjectsLight(UINT p_ObjectID, UINT p_LightID,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius)
