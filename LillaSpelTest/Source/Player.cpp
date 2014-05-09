@@ -453,7 +453,7 @@ void Player::GravityShift(float p_progress)
 
 	XMVECTOR t_cameraEyeVector = t_eyeVector + t_upVector*m_cameraTrailDistanceUp + m_cameraTrailDistanceTarget*t_targetVector*-1;
 	XMVECTOR t_cameraUpVector = t_upVector;
-	XMVECTOR t_cameraTargetVector = t_targetVector;
+	XMVECTOR t_cameraTargetVector = t_eyeVector-t_cameraEyeVector;
 
 	//move up from the car
 	t_eyeVector += t_upVector*t_radius*p_progress * 2;
@@ -476,10 +476,10 @@ void Player::GravityShift(float p_progress)
 		m_angle += 3.14;
 	}
 	//sin(t_cameraProgress*3.14)*
-	t_cameraEyeVector += t_unmodifiedUpVector*m_cameraTrailDistanceUp + t_cameraProgress*(t_radius - m_cameraTrailDistanceUp)*t_unmodifiedUpVector;
+	t_cameraEyeVector += cos(t_cameraProgress*3.14)*t_unmodifiedUpVector*m_cameraTrailDistanceUp + t_cameraProgress*(t_radius - m_cameraTrailDistanceUp)*t_unmodifiedUpVector;
 	//t_cameraEyeVector += m_cameraTrailDistanceTarget*t_cameraTargetVector + m_cameraTrailDistanceUp*t_cameraUpVector;
 	XMStoreFloat4x4(&m_worldMatrix, XMMatrixLookToLH(t_eyeVector, t_targetVector, t_upVector));
-	XMStoreFloat4x4(&m_cameraMatrix, XMMatrixLookAtLH(t_cameraEyeVector, t_cameraTargetVector, t_cameraUpVector));
+	XMStoreFloat4x4(&m_cameraMatrix, XMMatrixLookAtLH(t_cameraEyeVector, t_eyeVector, t_cameraUpVector));
 }
 
 
