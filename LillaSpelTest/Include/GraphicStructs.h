@@ -171,3 +171,42 @@ struct HudConstantBuffer
 	XMFLOAT2 barOffset; 
 	XMFLOAT2 filler2;
 };
+
+
+//particle struct
+
+struct Particle //change in the input layout
+{
+	XMFLOAT3 InitialPosW;
+	XMFLOAT3 InitialVelW;
+	XMFLOAT2 SizeW;
+	float Age;
+	float Lifespan;
+	UINT Type;
+	
+	Particle()
+	{}
+	Particle(XMFLOAT3 p_InitPos, XMFLOAT3 p_InitVel, XMFLOAT2 p_SizeW, float p_age, float p_Lifespan, UINT p_Type)
+	{
+		InitialPosW = p_InitPos;
+		InitialVelW = p_InitVel;
+		SizeW = p_SizeW;
+		Age = p_age;
+		Lifespan = p_Lifespan;
+		Type = p_Type;
+	}
+	Particle operator=(Particle &p_in)
+	{
+		InitialPosW = p_in.InitialPosW;
+		InitialVelW = p_in.InitialVelW;
+		SizeW = p_in.SizeW;
+		Age = p_in.Age;
+		Lifespan = p_in.Lifespan;
+		Type = p_in.Type;
+	}
+};
+
+struct CBEyePosition
+{
+	XMFLOAT4 EyePosition[4];
+};
