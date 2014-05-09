@@ -53,7 +53,6 @@ private:
 
 	UINT m_CameraID[4];
 
-	XMMATRIX t_Mats;
 	std::vector<XMFLOAT4X4> m_SelectionShipMatrix;
 	static GraphicHandle* m_Singleton;
 	//void CreateShip(int p_PlayerIndex, XMFLOAT3 p_Color, CXMMATRIX p_PlayerWorld,int p_ShipIndex);

@@ -434,12 +434,23 @@ void Player::UpdateWorldMatrix()
 
 void Player::GravityShift(float p_progress)
 {
+
 	//time for reversing
 	XMVECTOR t_eyeVector = XMLoadFloat3(&m_position);
 	XMVECTOR t_upVector = XMLoadFloat3(&m_up);
 	XMVECTOR t_targetVector = XMLoadFloat3(&m_direction);
 	float t_radius = m_mapNode->m_radius;
 	float t_targetAngle = 3.14; //pi
+
+
+
+	if (p_progress > 1)
+	{
+		m_gravityShiftProgress = 0;
+		m_gravityShifting = false;
+		PostGravityShiftFix();
+
+	}
 
 
 	t_eyeVector += t_upVector*t_radius*p_progress*2;
@@ -453,6 +464,11 @@ void Player::GravityShift(float p_progress)
 	XMStoreFloat4x4( &m_worldMatrix, XMMatrixLookToLH(t_eyeVector, t_targetVector, t_upVector));
 }
 
+
+void Player::PostGravityShiftFix()
+{
+
+}
 
 XMFLOAT3 Player::SetBoxExtents(vector<XMFLOAT3> p_corners)
 {

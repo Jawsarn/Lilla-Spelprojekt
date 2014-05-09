@@ -169,6 +169,7 @@ private:
 	void DeathShake();
 
 	void GravityShift(float p_progress);
+	void PostGravityShiftFix();
 
 
 	//this really does deserve its own class. Or something
