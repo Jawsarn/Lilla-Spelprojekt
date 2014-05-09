@@ -34,9 +34,10 @@ private:
 	
 	
 	
-	 std::vector<UINT> m_SelectionShips;
-
-	std::vector<UINT> m_Buttons;
+	 std::vector<UINT> m_SelectionShips[4];
+	std::vector<XMFLOAT4X4> m_SelectionShipMatrix[4];
+	
+	//std::vector<UINT> m_Buttons;
 
 	std::vector <std::vector<UINT>>m_MeshPlayerWall;//borde kunna ha olika väggar(olika meshar då) om man vill
 	std::vector <std::vector<UINT>> m_MeshLevels;
@@ -53,7 +54,7 @@ private:
 
 	UINT m_CameraID[4];
 
-	std::vector<XMFLOAT4X4> m_SelectionShipMatrix;
+
 	static GraphicHandle* m_Singleton;
 	//void CreateShip(int p_PlayerIndex, XMFLOAT3 p_Color, CXMMATRIX p_PlayerWorld,int p_ShipIndex);
 	void CreateLight(int p_PlayerIndex,XMFLOAT3 p_Color,UINT p_ObjectId, LightStruct &p_LightStruct);
@@ -69,7 +70,7 @@ public:
 	void UpdateDynamicLight(UINT p_LightID,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius);
 	void UpdatePlayer(int p_playerID,CXMMATRIX p_PlayerMatrix,CXMMATRIX p_CameraMatrix);
 	void UpdateCamera(UINT p_CameraID,float p_Walk, float p_Strafe, float p_Hover, float p_Pitch, float p_RotateY); //for change if we are to use quaternions, else just need to add the "jaw"s =D=D
-	void UpdateSelectVehicle(float p_DeltaTime);
+	void UpdateSelectVehicle(float p_DeltaTime, int p_PlayerID);
 	void CreatePlayer(std::vector<UINT> p_DrawPieceIDs, CXMMATRIX p_World, bool addToDrawNow, UINT &o_ObjectID,XMFLOAT3 p_Pos, XMFLOAT3 p_At, XMFLOAT3 p_Up, float p_FieldOfView, float p_Width, float p_Height, float p_NearZ, float p_FarZ, UINT &o_CameraID); //inte klar alls
 	void CreateShipForGame(std::vector<XMMATRIX> p_PlayerWorld);
 	void SelectVehicle();
@@ -85,9 +86,9 @@ public:
 	void ChangeTexture(UINT p_HUDIDObj);
 	void SetAmountOfPlayers(int p_NrOfPlayers);
 	void SetCameraVehicleSelection(UINT p_CameraLogicID);
-	void InitializeShip(std::string p_ShipStringName, UINT p_TextureDiffuseSpec, UINT p_TextureNormGlow);
+	/*void InitializeShip(std::string p_ShipStringName, UINT p_TextureDiffuseSpec, UINT p_TextureNormGlow);
 	void InitializeLevel(std::string p_LevelStringName, UINT p_Texture,UINT p_TextureNormGlow);
-	void InitializeWall(std::string p_PlayerWallStringName, UINT p_Texture,UINT p_TextureNormGlow);
+	void InitializeWall(std::string p_PlayerWallStringName, UINT p_Texture,UINT p_TextureNormGlow);*/
 	std::vector <UINT> InitializeObj(std::string p_ObjectStringName);
 	void RemoveLevelDraw(int p_RemoveLevelDraw);
 	void AddLevelDraw(int p_AddLevelDraw);

@@ -51,14 +51,18 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	//init skepp
 	std::vector<std::string> t_ShipNames;
 	t_ShipNames.push_back("Ships/MilleniumKalk");
-	t_ShipNames.push_back("Ships/PajFighter");
+	//t_ShipNames.push_back("Ships/PajFighter");
+	t_ShipNames.push_back("Walls/FirstWall");
 	t_ShipNames.push_back("Ships/SpazMnik");
 
 	for (int i = 0; i < t_ShipNames.size(); i++)
 	{
 		m_MeshShips.push_back(InitializeObj(t_ShipNames[i]));
 	}
-	m_SelectionShips.resize( m_MeshShips.size(), 0);
+	for (int i = 0; i < 4; i++)
+	{
+	m_SelectionShips[i].resize( m_MeshShips.size(), 0);
+	}
 
 
 	///init Levels
@@ -156,6 +160,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	//}
 
 	SelectVehicle(); // ska vara där för att initialize selectgrejen
+	//CreateWall(
 }
 
 void GraphicHandle::ChangeLevelSelection(int p_WhatLevel)
@@ -181,17 +186,17 @@ void GraphicHandle::UpdatePlayer(int p_playerID,CXMMATRIX p_PlayerMatrix,CXMMATR
 	JohnSetCamera(p_CameraMatrix,p_playerID);//ska vänta 180grader o backa lite med den!!!!
 	//uppdatera spelarens mätare cooldownbars(HUD)
 }
-void GraphicHandle::UpdateSelectVehicle(float p_DeltaTime)
+void GraphicHandle::UpdateSelectVehicle(float p_DeltaTime, int p_PlayerID)
 {
 	XMMATRIX t_Rotii = XMMatrixRotationY(p_DeltaTime);
 
-	for (int i = 0; i < m_SelectionShipMatrix.size(); i++)
+	for (int i = 0; i < m_SelectionShipMatrix[p_PlayerID].size(); i++)
 	{
-		XMMATRIX t_Tempii = XMMatrixMultiply(t_Rotii,XMLoadFloat4x4(&m_SelectionShipMatrix[i]));
-		m_GraphicEngine->MoveObject(m_SelectionShips[i],t_Tempii);
+		XMMATRIX t_Tempii = XMMatrixMultiply(t_Rotii,XMLoadFloat4x4(&m_SelectionShipMatrix[p_PlayerID][i]));
+		m_GraphicEngine->MoveObject(m_SelectionShips[p_PlayerID][i],t_Tempii);
 		XMFLOAT4X4 t_Storii;
 		XMStoreFloat4x4(&t_Storii,t_Tempii);
-		m_SelectionShipMatrix[i] = t_Storii;
+		m_SelectionShipMatrix[p_PlayerID][i] = t_Storii;
 	}
 
 }
@@ -300,30 +305,38 @@ void GraphicHandle::CreateShipForGame(std::vector<XMMATRIX> p_PlayerWorld)//4123
 }
 void GraphicHandle::SelectVehicle()
 {
-	XMMATRIX t_WorldMat = XMMatrixTranslation(0,0,5*m_MeshShips.size());
 
+	XMMATRIX t_WorldMat = XMMatrixTranslation(0,0,6*m_MeshShips.size());
 	XMFLOAT3 t_Color = XMFLOAT3(1,1,1);
-
-	for (int i = 0; i < m_MeshShips.size(); i++)
+	
+	for (int k = 0; k < 4; k++)
 	{
-		XMMATRIX t_Rot = XMMatrixRotationY(2*XM_PI/m_MeshShips.size()*i);
+		for (int i = 0; i < m_MeshShips.size(); i++)
+		{
 
-		t_Rot = XMMatrixMultiply(t_WorldMat, t_Rot);
-		CreateDrawObject(m_MeshShips[i],
-			t_Rot,
-			t_Color, 
-			m_SelectionShips[i],false);
+			XMMATRIX t_Rot = XMMatrixRotationY(2*XM_PI/m_MeshShips.size()*i);
 
-		//m_GraphicEngine->CreateDrawObject(m_MeshShips[i],
-		//t_Rot,
-		//t_Color,
-		//true, 
-		//m_SelectionShips[i]);
+			t_Rot = XMMatrixMultiply(t_WorldMat, t_Rot);
+			
 
-		XMFLOAT4X4 t_Tempus;
-		XMStoreFloat4x4(&t_Tempus, t_Rot);
-		m_SelectionShipMatrix.push_back(t_Tempus);
+			XMMATRIX t_OffSetTheCircleMat = XMMatrixTranslation(0,0,4);
+			XMMATRIX t_OffSetTheCircleMatRotation = XMMatrixRotationY(XM_PIDIV2*k);
+			XMMATRIX t_SafteyMeasureMat = XMMatrixMultiply(t_OffSetTheCircleMat,t_OffSetTheCircleMatRotation);
+
+			t_Rot = XMMatrixMultiply( t_SafteyMeasureMat,t_Rot);
+			
+
+			CreateDrawObject(m_MeshShips[i],
+				t_Rot,
+				t_Color, 
+				m_SelectionShips[k][i],false);
+
+			XMFLOAT4X4 t_Tempus;
+			XMStoreFloat4x4(&t_Tempus, t_Rot);
+			m_SelectionShipMatrix[k].push_back(t_Tempus);
+		}
 	}
+
 }
 int GraphicHandle::GetAmountOfVehicles()
 {
@@ -373,56 +386,56 @@ void GraphicHandle::SetAmountOfPlayers(int p_NrOfPlayers)
 		m_PlayerLight.resize(p_NrOfPlayers,0);
 	}
 }
-void GraphicHandle::InitializeShip(std::string p_ShipStringName, UINT p_TextureDiffuseSpec, UINT p_TextureNormGlow)
-{
-	std::vector<UINT> t_ObjTemp;
-	t_ObjTemp.clear();
-	m_GraphicEngine->LoadMesh(p_ShipStringName,t_ObjTemp);
-	m_MeshShips.push_back(t_ObjTemp);	
-	for (int i = 0; i < t_ObjTemp.size(); i++)
-	{
-		m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[0],p_TextureDiffuseSpec, GraphicEngine::TextureType::DIFFUSE);
-		m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[0],p_TextureNormGlow, GraphicEngine::TextureType::NORMAL);
-	}
-
-}
-void GraphicHandle::InitializeLevel(std::string p_LevelStringName, UINT p_Texture,UINT p_TextureNormGlow)
-{
-	std::vector<UINT> t_ObjTemp;
-	t_ObjTemp.clear();
-	m_GraphicEngine->LoadMesh(p_LevelStringName,t_ObjTemp);
-	m_MeshLevels.push_back(t_ObjTemp);	
-	for (int i = 0; i < t_ObjTemp.size(); i++)
-	{
-		m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[0],p_Texture,GraphicEngine::TextureType::DIFFUSE);
-		m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[0],p_TextureNormGlow, GraphicEngine::TextureType::NORMAL);
-	}
-}
-void GraphicHandle::InitializeWall(std::string p_PlayerWallStringName, UINT p_Texture,UINT p_TextureNormGlow)
-{
-	std::vector<UINT> t_ObjTemp;
-	t_ObjTemp.clear();
-	m_GraphicEngine->LoadMesh(p_PlayerWallStringName,t_ObjTemp);
-	m_MeshPlayerWall.push_back(t_ObjTemp);	
-	for (int i = 0; i < t_ObjTemp.size(); i++)
-	{
-		m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[0],p_Texture,GraphicEngine::TextureType::DIFFUSE);
-		m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[0],p_TextureNormGlow, GraphicEngine::TextureType::NORMAL);
-	}
-}
+//void GraphicHandle::InitializeShip(std::string p_ShipStringName, UINT p_TextureDiffuseSpec, UINT p_TextureNormGlow)
+//{
+//	std::vector<UINT> t_ObjTemp;
+//	t_ObjTemp.clear();
+//	m_GraphicEngine->LoadMesh(p_ShipStringName,t_ObjTemp);
+//	m_MeshShips.push_back(t_ObjTemp);	
+//	for (int i = 0; i < t_ObjTemp.size(); i++)
+//	{
+//		m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[0],p_TextureDiffuseSpec, GraphicEngine::TextureType::DIFFUSE);
+//		m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[0],p_TextureNormGlow, GraphicEngine::TextureType::NORMAL);
+//	}
+//
+//}
+//void GraphicHandle::InitializeLevel(std::string p_LevelStringName, UINT p_Texture,UINT p_TextureNormGlow)
+//{
+//	std::vector<UINT> t_ObjTemp;
+//	t_ObjTemp.clear();
+//	m_GraphicEngine->LoadMesh(p_LevelStringName,t_ObjTemp);
+//	m_MeshLevels.push_back(t_ObjTemp);	
+//	for (int i = 0; i < t_ObjTemp.size(); i++)
+//	{
+//		m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[0],p_Texture,GraphicEngine::TextureType::DIFFUSE);
+//		m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[0],p_TextureNormGlow, GraphicEngine::TextureType::NORMAL);
+//	}
+//}
+//void GraphicHandle::InitializeWall(std::string p_PlayerWallStringName, UINT p_Texture,UINT p_TextureNormGlow)
+//{
+//	std::vector<UINT> t_ObjTemp;
+//	t_ObjTemp.clear();
+//	m_GraphicEngine->LoadMesh(p_PlayerWallStringName,t_ObjTemp);
+//	m_MeshPlayerWall.push_back(t_ObjTemp);	
+//	for (int i = 0; i < t_ObjTemp.size(); i++)
+//	{
+//		m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[0],p_Texture,GraphicEngine::TextureType::DIFFUSE);
+//		m_GraphicEngine->AddTextureToDrawPiece(t_ObjTemp[0],p_TextureNormGlow, GraphicEngine::TextureType::NORMAL);
+//	}
+//}
 
 std::vector <UINT> GraphicHandle::InitializeObj(std::string p_ObjectStringName)
 {
 	std::string t_TemplateString =p_ObjectStringName;
 
-	
+
 	UINT t_TempurTextur;
 	std::string t_TextString = t_TemplateString;
 	t_TextString += "/Texture.dds";
 	std::wstring t_LoadTextString = std::wstring(t_TextString.begin(),t_TextString.end());
 	m_GraphicEngine->LoadTexture(t_LoadTextString.c_str(), t_TempurTextur);
 
-	
+
 	UINT t_TempurTexturNG;
 	std::string t_TextNGString =t_TemplateString;
 	t_TextNGString +="/NG.dds";
@@ -479,17 +492,25 @@ void GraphicHandle::AddLevelDraw(int p_AddLevelDraw)//4123
 }
 void GraphicHandle::RemoveSelectionDraw()
 {
-	for (int i = 0; i < m_SelectionShips.size(); i++)
+	for (int k = 0; k < 4; k++)
 	{
-		m_GraphicEngine->RemoveObjectFromDrawing(m_SelectionShips[i]);
+		for (int i = 0; i < m_SelectionShips[k].size(); i++)
+		{
+			m_GraphicEngine->RemoveObjectFromDrawing(m_SelectionShips[k][i]);
+		}
 	}
+
 }
 void GraphicHandle::AddSelectionDraw()
 {
-	for (int i = 0; i < m_SelectionShips.size(); i++)
+	for (int k = 0; k < 4; k++)
 	{
-		m_GraphicEngine->AddObjectToDrawing(m_SelectionShips[i]);
+		for (int i = 0; i < m_SelectionShips[k].size(); i++)
+		{
+			m_GraphicEngine->AddObjectToDrawing(m_SelectionShips[k][i]);
+		}
 	}
+
 }
 void GraphicHandle::LoadTexture(const wchar_t* p_FileName, UINT &o_TextureID)
 {
