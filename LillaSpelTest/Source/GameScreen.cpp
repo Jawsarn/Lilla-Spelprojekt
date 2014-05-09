@@ -32,6 +32,7 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4], std::string p_mapNa
 	m_graphicHandle->SetAmountOfPlayers(p_numberOfPlayers);
 	m_graphicHandle->SetColourAndVehicle(t_colors, t_whichVehicles);
 	m_graphicHandle->CreateShipForGame(t_shipWorldMatrices);
+	m_collisionManager = new CollisionManager();
 
 	CreatePlayerHUDs(p_numberOfPlayers,p_color);
 }
@@ -119,6 +120,7 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 				if(!m_players[i]->GetImmortal())
 				{
 					CollisionCheck(i, p_dt);
+					
 				}
 				UpdatePlayerRacePosition(i);
 				DrawPlayerHUD(i);
@@ -179,6 +181,8 @@ void GameScreen::CollisionCheck(int p_currentPlayer, float p_dt)
 	{
 		PlayerCloseToWall(p_currentPlayer, t_collisionResult, p_dt);
 	}
+	//player vs player
+	m_collisionManager->PlayerVsPlayer(m_players);
 
 }
 

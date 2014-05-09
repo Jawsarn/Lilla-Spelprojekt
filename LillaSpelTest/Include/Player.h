@@ -40,6 +40,8 @@ private:
 	float m_rotateSpeed;
 	float m_angle;
 	float m_deltaAngle;
+	float m_collisionAngleOffset;
+	bool m_collisionAfterMath;
 
 	//boost stuff
 	float m_boostDecay;
@@ -59,6 +61,7 @@ private:
 	float m_maxDeathTimer;
 	float m_immortalTimer;
 	float m_maxImmortalTimer;
+	float m_collisionAfterMathTimer;
 
 	//important for actual world position stuff
 	XMFLOAT3 m_logicalPosition;
@@ -140,6 +143,7 @@ public:
 	void Die();
 	void Start();
 	void SetSpeed(float p_speed);
+	void StartCollisionAftermath(float p_angle);
 	void SetPlayerBoost(float p_boost);
 	void SetPlayerRacePosition(int p_pos);
 	void IncreaseBoost(int p_nrOfWallsClose, float p_dt);
@@ -165,7 +169,7 @@ private:
 	void FixOffsetFromCenterSpline();
 	
 	void PlaceWall();
-	void BumpedIntoPlayer(XMFLOAT3 p_force);
+	void CollisionAftermath(float p_dt);
 	void UpdateWorldMatrix();
 	void UpdateWallMeter(float p_dt);
 	void BobOffset();

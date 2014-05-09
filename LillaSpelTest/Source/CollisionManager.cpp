@@ -3,6 +3,7 @@
 
 CollisionManager::CollisionManager(void)
 {
+	m_physMan = new PhysicsManager();
 }
 
 
@@ -43,41 +44,52 @@ int CollisionManager::PlayerVsPlayerWall(BoundingOrientedBox* p_player, std::vec
 	return t_wallSpheresHit;
 }
 
-std::vector<int> CollisionManager::PlayerVsPlayer(BoundingOrientedBox* p_p1, BoundingOrientedBox* p_p2,BoundingOrientedBox* p_p3,BoundingOrientedBox* p_p4)
+void CollisionManager::PlayerVsPlayer(std::vector<Player*> p_playerList)
 {
-	std::vector<int> r_return;
-	if(p_p1->Intersects(*p_p2)==true)
+	for (int i = 0; i <	p_playerList.size()-1; i++)
 	{
-		r_return.push_back(1);
-		r_return.push_back(2);
-	}
-	if(p_p1->Intersects(*p_p3)==true)
-	{
-		r_return.push_back(1);
-		r_return.push_back(3);
-	}
-	if(p_p1->Intersects(*p_p4)==true) //detta är rätt fult ändra om nån känner för
-	{
-		r_return.push_back(1);
-		r_return.push_back(4);
-	}
-	if(p_p2->Intersects(*p_p3)==true)
-	{
-		r_return.push_back(2);
-		r_return.push_back(3);
-	}
-	if(p_p2->Intersects(*p_p4)==true)
-	{
-		r_return.push_back(2);
-		r_return.push_back(4);
-	}
-	if(p_p3->Intersects(*p_p4)==true)
-	{
-		r_return.push_back(3);
-		r_return.push_back(4);
+		for (int j = i+1; j < p_playerList.size(); j++)
+		{
+			if(p_playerList[i]->GetCollisionBox()->Intersects(*p_playerList[j]->GetCollisionBox()))
+			{
+				m_physMan->SetPlayerCollisions(p_playerList[i],p_playerList[j]);
+			}
+		}
 	}
 
-	return r_return;
+
+
+
+
+
+
+
+
+	//std::vector<int> r_return;
+	//if(p_p1->GetCollisionBox()->Intersects(*p_p2->GetCollisionBox())==true)
+	//{
+	//	m_physMan->SetPlayerCollisions(p_p1, p_p2);	
+	//}
+	//if(p_p1->GetCollisionBox()->Intersects(*p_p3->GetCollisionBox())==true)
+	//{
+	//	m_physMan->SetPlayerCollisions(p_p1, p_p3);	
+	//}
+	//if(p_p1->GetCollisionBox()->Intersects(*p_p4->GetCollisionBox())==true)
+	//{
+	//	m_physMan->SetPlayerCollisions(p_p1, p_p4);	
+	//}
+	//if(p_p2->GetCollisionBox()->Intersects(*p_p3->GetCollisionBox())==true)
+	//{
+	//	m_physMan->SetPlayerCollisions(p_p2, p_p3);	
+	//}
+	//if(p_p2->GetCollisionBox()->Intersects(*p_p4->GetCollisionBox())==true)
+	//{
+	//	m_physMan->SetPlayerCollisions(p_p2, p_p4);	
+	//}
+	//if(p_p3->GetCollisionBox()->Intersects(*p_p4->GetCollisionBox())==true)
+	//{
+	//	m_physMan->SetPlayerCollisions(p_p3, p_p4);	
+	//}
 }
 
 bool CollisionManager::IntersectionTest(BoundingOrientedBox* a, BoundingOrientedBox* b)

@@ -8,6 +8,6 @@ class PhysicsManager
 public:
 	PhysicsManager(void);
 	~PhysicsManager(void);
-	std::vector<DirectX::XMFLOAT3> GetForceInCollision(Player* p_p1, Player* p_p2);
+	void SetPlayerCollisions(Player* p_p1, Player* p_p2);
 };
 

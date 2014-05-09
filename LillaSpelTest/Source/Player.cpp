@@ -51,6 +51,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_hasWon = false;
 	m_gravityShifting = false;
 	m_gravityShiftProgress = 0;
+	m_collisionAfterMath = false;
 
 	////BALANCING VARIABLES
 
@@ -78,6 +79,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	//timers
 	m_maxImmortalTimer = 5;
 	m_maxDeathTimer = 1;//currently unused
+	m_collisionAfterMathTimer = 0;
 
 	//the speed at which camera follows the ship when turning
 	m_cameraFollowSpeed = 0.0005;
@@ -118,7 +120,11 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 		m_gravityShifting = true;
 		m_gravityShiftProgress = 0;
 	}
-
+	//Code for playervsplayercollisionaftermath
+	if(m_collisionAfterMath)
+	{
+		CollisionAftermath(p_dt);
+	}
 
 	//not sure if entirely needed...
 	m_direction = XMFLOAT3(0, 0, 1);
@@ -675,9 +681,13 @@ void Player::Start()
 
 void Player::SetSpeed(float p_speed)
 {
-	m_speed = p_speed;
+	m_speed += p_speed;
 }
-
+void Player::StartCollisionAftermath(float p_angle)
+{
+	m_collisionAngleOffset = p_angle+m_angle;
+	m_collisionAfterMath = true;
+}
 
 
 
@@ -717,9 +727,13 @@ void Player::ChangeState(PlayerState p_state)
 	}
 }
 
-void Player::BumpedIntoPlayer(XMFLOAT3 p_force)
+void Player::CollisionAftermath(float p_dt)
 {
-	MathHelper t_mathHelper = MathHelper();
-	m_speed -= t_mathHelper.Abs(t_mathHelper.FloatMultiVec(t_mathHelper.Abs(t_mathHelper.VecAddVec(m_direction, p_force)), m_mapNode->m_normal)); //VETTEFANOMDETT
-	//Angle ska bli p_force projicerad på m_direction cross m_upvector och sen absolutbelopp på den vectorn
+	m_collisionAfterMathTimer+=p_dt;
+	m_angle += (2-m_collisionAfterMathTimer)*m_collisionAngleOffset;
+	if(m_collisionAfterMathTimer >= 1)
+	{
+		m_collisionAfterMath=false;
+		m_collisionAfterMathTimer = 0;
+	}
 }
