@@ -385,9 +385,9 @@ void CS( uint3 threadID		: SV_DispatchThreadID,
 
 	
 	float3 matColor = DiffuseColor_Spec[threadID.xy].xyz;
-	float3 finalColor = float3(0,0,0) + DiffuseColor_Spec[threadID.xy].xyz*0.1f;
+	float3 finalColor = float3(0,0,0) + DiffuseColor_Spec[threadID.xy].xyz*0.2f;
 
-	float inSpec = DiffuseColor_Spec[threadID.xy].z/255;
+	float inSpec = DiffuseColor_Spec[threadID.xy].z;
 
 	//if(all(globalCord < screenDimensions)) //checks for all components if blow zero, uses this for checking if outside screendim
 	//{

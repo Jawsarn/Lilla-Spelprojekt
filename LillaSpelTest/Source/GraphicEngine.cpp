@@ -80,9 +80,11 @@ HRESULT GraphicEngine::Initialize( UINT p_Width, UINT p_Height, HWND handleWindo
 		return hr;
 
 	m_ParticleSystem = m_ParticleSystem->GetInstance();
-	hr = m_ParticleSystem->Initialize(m_Device, m_DeviceContext, m_DepthStateOn, m_DepthStateOff, m_BlendStateOn, m_BlendStateOff);
+	hr = m_ParticleSystem->Initialize(m_Device, m_DeviceContext, m_DepthStateNoWrite, m_DepthStateOff, m_BlendStateOn, m_BlendStateOff);
 	if( FAILED( hr ) )
 		return hr;
+	
+
 	
 	return hr;
 }
@@ -347,8 +349,8 @@ HRESULT GraphicEngine::InitializeDepthAndDepthStates()
         return hr;
 
 	t_DsDesc.DepthEnable = true;
-	t_DsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	t_DsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+	t_DsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+	t_DsDesc.DepthFunc = D3D11_COMPARISON_LESS;
 
 	hr = m_Device->CreateDepthStencilState(&t_DsDesc, &m_DepthStateNoWrite);
 
@@ -560,6 +562,11 @@ HRESULT GraphicEngine::InitializeConstantBuffers()
 	if ( FAILED( hr ) )
 		return hr;
 
+	t_BufferDesc.ByteWidth = sizeof(CBEyePosition);
+	hr = m_Device->CreateBuffer( &t_BufferDesc, nullptr, &m_ParticleEyePosBuffer) ;
+	if ( FAILED ( hr ) )
+		return hr;
+
 	//light buffer
 	m_StaticLights.resize(MAX_NUM_OF_LIGHTS);
 	/*bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
@@ -591,6 +598,7 @@ HRESULT GraphicEngine::InitializeConstantBuffers()
 	m_DeviceContext->GSSetConstantBuffers(0,1, &m_PerFrameBuffer);
 	m_DeviceContext->GSSetConstantBuffers(1,1,&m_PerObjectBuffer);
 	//m_DeviceContext->GSSetConstantBuffers(2,1,&m_HudConstantBuffer);
+	m_DeviceContext->GSSetConstantBuffers(4,1,&m_ParticleEyePosBuffer);
 
 	m_DeviceContext->PSSetConstantBuffers(0,1,&m_PerObjectBuffer);
 
@@ -869,6 +877,11 @@ HRESULT GraphicEngine::AddObjectLight(UINT p_ObjectID ,XMFLOAT3 p_Position, XMFL
 	{
 		return E_FAIL;
 	}
+}
+
+void GraphicEngine::AddObjectParticleSystem(UINT p_Object, UINT p_ParticleSystem)
+{
+	m_DrawObjects[p_Object]->particleSystem.push_back(p_ParticleSystem);
 }
 
 HRESULT GraphicEngine::ChangeObjectsLight(UINT p_ObjectID, UINT p_LightID,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius)
@@ -1356,6 +1369,12 @@ void GraphicEngine::DrawGame()
 	//compute tiled lighting
 	ComputeTileDeferredLightning();
 
+	m_DeviceContext->OMSetRenderTargets(1, &m_RenderTargetView, m_DepthStencilView);
+	
+	//draw particle system
+	m_ParticleSystem->Draw(0.01f,0);
+
+
 	////draw hud
 	DrawHud();
 
@@ -1661,9 +1680,9 @@ void GraphicEngine::Cleanup()
 //==========Particle Effect functions========//
 ///////////////////////////////////////////////
 
-void GraphicEngine::CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName, UINT p_StartBufferID, CXMMATRIX p_World, UINT p_Data, UINT p_MaxParticles, UINT &o_SystemID )
+void GraphicEngine::CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName, UINT p_StartBufferID, XMFLOAT3 p_WorldPos, UINT p_Data, UINT p_MaxParticles, UINT &o_SystemID )
 {
-	m_ParticleSystem->CreateParticleSystem(p_EffectType, p_FileName, p_StartBufferID, p_World, p_Data, p_MaxParticles, o_SystemID);
+	m_ParticleSystem->CreateParticleSystem(p_EffectType, p_FileName, p_StartBufferID, p_WorldPos, p_Data, p_MaxParticles, o_SystemID);
 }
 
 void GraphicEngine::CreateParticleCBSetup(XMFLOAT3 p_WorldAcceler, float p_FlareEmitNumber, XMFLOAT3 p_EmitDirection, float p_InitSpawnAmount, float p_ParticleLifeSpan, XMFLOAT2 p_InitialSize, UINT &o_DataID)
@@ -1676,7 +1695,7 @@ void GraphicEngine::UpdateParticleCB(UINT p_DataID, XMFLOAT3 p_WorldAcceler, flo
 
 }
 
-void GraphicEngine::CreateInitParticleBuffer(std::vector<ParticleSystem::Particle> p_StartParticles, UINT &o_BufferID)
+void GraphicEngine::CreateInitParticleBuffer(std::vector<Particle> p_StartParticles, UINT &o_BufferID)
 {
 	m_ParticleSystem->CreateInitParticlesBuffer(p_StartParticles, o_BufferID);
 }

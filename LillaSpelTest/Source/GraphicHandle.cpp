@@ -301,6 +301,21 @@ void GraphicHandle::CreateShipForGame(std::vector<XMMATRIX> p_PlayerWorld)//4123
 		//t_LightStruct.m_LightID=m_PlayerLight[i];//samma här xD
 		//t_LightStruct.m_Position=XMFLOAT3(//ta varje startnissesposition o bajsa lite under dem
 		//CreateLight(m_Player[i],m_Colours[m_PlayerColour[i]],m_PlayerLight[i],);//
+		//JAWS TEST YES MEGA TEST YES YSE MHHHYEEEEZZZ
+
+		//create a particle system for engines , techis make this sum fun func
+		std::vector<Particle> t_InitParticles;
+		t_InitParticles.push_back(Particle(XMFLOAT3(0,0,0),XMFLOAT3(0,0,0),XMFLOAT2(1,1),0.0f,100.0f,1));
+
+		UINT t_InitParticleID;
+		m_GraphicEngine->CreateInitParticleBuffer(t_InitParticles, t_InitParticleID);
+
+		UINT t_ParticleBufferDataID;
+		m_GraphicEngine->CreateParticleCBSetup(XMFLOAT3(0,0,0), 100, XMFLOAT3(0,0,0), 100, 100.0f, XMFLOAT2(1,1), t_ParticleBufferDataID);
+
+		UINT t_ParticleSystemID;
+		m_GraphicEngine->CreateParticleSystem(0, L"",t_InitParticleID, XMFLOAT3(0,0,0), t_ParticleBufferDataID, 100, t_ParticleSystemID );
+
 	}
 }
 void GraphicHandle::SelectVehicle()

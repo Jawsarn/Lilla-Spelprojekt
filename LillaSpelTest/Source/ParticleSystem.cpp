@@ -23,14 +23,14 @@ ParticleSystem::~ParticleSystem(void)
 
 }
 
-HRESULT ParticleSystem::Initialize( ID3D11Device* p_Device, ID3D11DeviceContext* p_DeviceContext, ID3D11DepthStencilState* p_DepthOn, ID3D11DepthStencilState* p_DepthOff, ID3D11BlendState* p_BlendOn, ID3D11BlendState* p_BlendOff )
+HRESULT ParticleSystem::Initialize( ID3D11Device* p_Device, ID3D11DeviceContext* p_DeviceContext, ID3D11DepthStencilState* p_NoWriteDepthState, ID3D11DepthStencilState* p_DepthOff, ID3D11BlendState* p_BlendOn, ID3D11BlendState* p_BlendOff )
 {
 	HRESULT hr = S_OK;
 	m_ShaderLoader = new ShaderLoader();
 	m_Device = p_Device;
 	m_DeviceContext = p_DeviceContext;
 
-	m_DepthOn = p_DepthOn;
+	m_NoWriteDepthState = p_NoWriteDepthState;
 	m_DepthOff = p_DepthOff;
 	m_BlendOn = p_BlendOn;
 	m_BlendOff = p_BlendOff;
@@ -142,7 +142,7 @@ HRESULT ParticleSystem::CreateShaders()
 	return hr;
 }
 
-HRESULT ParticleSystem::CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName , UINT p_StartBufferID, CXMMATRIX p_World, UINT p_DataID, UINT p_MaxParticles, UINT &systemID)
+HRESULT ParticleSystem::CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName , UINT p_StartBufferID, XMFLOAT3 p_WorldPos, UINT p_DataID, UINT p_MaxParticles, UINT &systemID)
 {
 	HRESULT hr = S_OK;
 
@@ -157,7 +157,7 @@ HRESULT ParticleSystem::CreateParticleSystem(UINT p_EffectType, const wchar_t * 
 
 	t_NewSystem.textureID = m_TextureViews.size() -1;
 	t_NewSystem.startBufferID = p_StartBufferID;
-	XMStoreFloat4x4(&t_NewSystem.world, p_World); //shouldn't save matrixes
+	t_NewSystem.worldPos = p_WorldPos; 
 	t_NewSystem.perEffectDataID = p_DataID;
 
 	t_NewSystem.firstrun = true;
@@ -260,11 +260,11 @@ HRESULT ParticleSystem::CreateConstantBuffer()
 
 	hr = m_Device->CreateBuffer( &bd, nullptr, &m_PerFrameBuffer); 
 
-	m_DeviceContext->VSSetConstantBuffers(4,1,&m_PerEffectBuffer);
-	m_DeviceContext->VSSetConstantBuffers(5,1,&m_PerFrameBuffer);
+	m_DeviceContext->VSSetConstantBuffers(2,1,&m_PerEffectBuffer);
+	m_DeviceContext->VSSetConstantBuffers(3,1,&m_PerFrameBuffer);
 											   
-	m_DeviceContext->GSSetConstantBuffers(4,1,&m_PerEffectBuffer);
-	m_DeviceContext->GSSetConstantBuffers(5,1,&m_PerFrameBuffer);
+	m_DeviceContext->GSSetConstantBuffers(2,1,&m_PerEffectBuffer);
+	m_DeviceContext->GSSetConstantBuffers(3,1,&m_PerFrameBuffer);
 
 	return hr;
 }
@@ -359,66 +359,69 @@ XMVECTOR ParticleSystem::RandUnitVec3()
 
 void ParticleSystem::Draw(float dt, float gt)
 {
+	// make the OM to the backbuffer RENDER TARGET MAKE FIX OMG LULZ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NOT FIXED YET LULZ
 	m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 
-	CPerFrameParticleBuffer cpfpb;
-	cpfpb.deltaTime = dt;
-	cpfpb.gametime = gt;
+	CPerFrameParticleBuffer t_Cpfpb;
+	t_Cpfpb.deltaTime = dt;
+	t_Cpfpb.gametime = gt;
 
-	m_DeviceContext->UpdateSubresource( m_PerFrameBuffer, 0, nullptr, &cpfpb, 0, 0 );
+	m_DeviceContext->UpdateSubresource( m_PerFrameBuffer, 0, nullptr, &t_Cpfpb, 0, 0 );
 	m_DeviceContext->HSSetShader(nullptr,nullptr,0);
 	m_DeviceContext->DSSetShader(nullptr,nullptr,0);
 
 	for (int i = 0; i < m_ParticleEffectSystems.size(); i++)
 	{
-		ParticleEffectSystem curSys = m_ParticleEffectSystems[i];
+		ParticleEffectSystem t_CurSys = m_ParticleEffectSystems[i];
 		
 
-		//update buffer
+		//update effect buffer data
+		m_DeviceContext->UpdateSubresource( m_PerEffectBuffer, 0, nullptr, &m_PerEffectData[t_CurSys.perEffectDataID], 0, 0 );
 
-		
-		m_DeviceContext->UpdateSubresource( m_PerEffectBuffer, 0, nullptr, &m_PerEffectData[curSys.perEffectDataID], 0, 0 );
-
-		//turn off depth
+		//turn off depth 
 		m_DeviceContext->OMSetDepthStencilState(m_DepthOff, 0);
 
 		//turn blend on
-		float blendFactors[] = {0.0f, 0.0f, 0.0f, 0.0f};
-		m_DeviceContext->OMSetBlendState(m_BlendOn,blendFactors,0xffffffff);
+		float t_BlendFactors[] = {0.0f, 0.0f, 0.0f, 0.0f};
+		m_DeviceContext->OMSetBlendState(m_BlendOn,t_BlendFactors,0xffffffff);
 
+		//update the particles
 		UpdateParticles(i);
 
+		//now swap buffers
 		ID3D11Buffer* bufferArray[1] = {0};
 		UINT offset = 0;
 
 		m_DeviceContext->SOSetTargets(1,bufferArray,&offset);
 		//swap buffers
-		std::swap( m_ParticleVertexBuffer[curSys.drawVertexBufferID],m_ParticleVertexBuffer[curSys.updateVertexBufferID]);
+		std::swap( m_ParticleVertexBuffer[t_CurSys.drawVertexBufferID],m_ParticleVertexBuffer[t_CurSys.updateVertexBufferID]);
 
-		//turn on depth
-		m_DeviceContext->OMSetDepthStencilState(m_DepthOn,0);
-		
+		//turn on depth with depth check but no write  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NOT FIXED YET
+		m_DeviceContext->OMSetDepthStencilState(m_NoWriteDepthState,0);
 
 		DrawParticles(i);
 
 		//turn blend off
-		float blendFactors2[] = {0.0f, 0.0f, 0.0f, 0.0f};
-		m_DeviceContext->OMSetBlendState(m_BlendOff, blendFactors2,0xffffffff);
+		m_DeviceContext->OMSetBlendState(m_BlendOff, t_BlendFactors,0xffffffff);
 	}
 }
 
 void ParticleSystem::UpdateParticles(UINT id)
 {
-	ParticleShaderProgram sys = m_ParticleShaderPrograms[m_ParticleEffectSystems[id].programID];
-	m_DeviceContext->VSSetShader(m_VertexShaders[sys.updateVertexShader],nullptr,0);
-	m_DeviceContext->GSSetShader(m_GeometryShaders[sys.updateGeometryShader],nullptr,0);
+	ParticleShaderProgram t_CurSysProgram = m_ParticleShaderPrograms[m_ParticleEffectSystems[id].programID];
+	
+	//set shaders
+	m_DeviceContext->VSSetShader(m_VertexShaders[t_CurSysProgram.updateVertexShader],nullptr,0);
+	m_DeviceContext->GSSetShader(m_GeometryShaders[t_CurSysProgram.updateGeometryShader],nullptr,0);
 	m_DeviceContext->PSSetShader(nullptr,nullptr,0);
 	
-	m_DeviceContext->IASetInputLayout(m_InputLayouts[sys.updateInputLayout]);
+	//set input layout
+	m_DeviceContext->IASetInputLayout(m_InputLayouts[t_CurSysProgram.updateInputLayout]);
 
 	UINT stride = sizeof( Particle );
 	UINT offset = 0;
 
+	//set the input vertex buffer
 	if(m_ParticleEffectSystems[id].firstrun)
 	{
 		m_DeviceContext->IASetVertexBuffers( 0, 1, &m_InitParticleVertexBuffersWithNum[m_ParticleEffectSystems[id].startBufferID].vertexBuffer, &stride, &offset );
@@ -427,9 +430,11 @@ void ParticleSystem::UpdateParticles(UINT id)
 	{
 		m_DeviceContext->IASetVertexBuffers( 0, 1, &m_ParticleVertexBuffer[m_ParticleEffectSystems[id].drawVertexBufferID], &stride, &offset );
 	}
-
+	
+	//set the output vertex buffer
 	m_DeviceContext->SOSetTargets(1, &m_ParticleVertexBuffer[m_ParticleEffectSystems[id].updateVertexBufferID], &offset);
 
+	//make the draw call based on firstrun
 	if(m_ParticleEffectSystems[id].firstrun)
 	{
 		m_DeviceContext->Draw(m_InitParticleVertexBuffersWithNum[m_ParticleEffectSystems[id].startBufferID].numOfVertices, 0);
@@ -443,17 +448,23 @@ void ParticleSystem::UpdateParticles(UINT id)
 
 void ParticleSystem::DrawParticles(UINT id)
 {
-	ParticleShaderProgram sys = m_ParticleShaderPrograms[m_ParticleEffectSystems[id].programID];
-	m_DeviceContext->VSSetShader(m_VertexShaders[sys.drawVertexShader],nullptr,0);
-	m_DeviceContext->GSSetShader(m_GeometryShaders[sys.drawGeometryShader],nullptr,0);
-	m_DeviceContext->PSSetShader(m_PixelShaders[sys.drawPixelShader],nullptr,0);
+	ParticleShaderProgram t_CurSysProgram = m_ParticleShaderPrograms[m_ParticleEffectSystems[id].programID];
+	
+	//Set shaders 
+	m_DeviceContext->VSSetShader(m_VertexShaders[t_CurSysProgram.drawVertexShader],nullptr,0);
+	m_DeviceContext->GSSetShader(m_GeometryShaders[t_CurSysProgram.drawGeometryShader],nullptr,0);
+	m_DeviceContext->PSSetShader(m_PixelShaders[t_CurSysProgram.drawPixelShader],nullptr,0);
 
+	//set input layout
 	m_DeviceContext->IASetInputLayout(m_InputLayouts[m_ParticleShaderPrograms[m_ParticleEffectSystems[id].programID].drawInputLayout]);
 
 	UINT stride = sizeof( Particle );
 	UINT offset = 0;
+
+	//set input vertex buffer
 	m_DeviceContext->IASetVertexBuffers( 0, 1, &m_ParticleVertexBuffer[m_ParticleEffectSystems[id].drawVertexBufferID], &stride, &offset);
 
+	//draw the particles form memory
 	m_DeviceContext->DrawAuto();
 }
 

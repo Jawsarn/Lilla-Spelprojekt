@@ -6,7 +6,7 @@ class JoinGameScreen :
 	public MenuScreen
 {
 private:
-	enum PlayerStatus{DISCONNECTED,CHOOSE_MODELL, CHOOSE_COLOR, READY};
+	enum PlayerStatus{DISCONNECTED,CHOOSE_MODELL, READY};
 	PlayerStatus m_playerStatus[4];
 	int numberOfModells;
 	int m_modell[4];
@@ -27,5 +27,6 @@ private:
 	void ModellChanger(int i, float p_dt, std::vector<UserCMD>* userCMD);
 	void ColorChanger(int i, float p_dt, std::vector<UserCMD>* userCMD);
 	void MakeHud(const wchar_t* p_textureName, int p_hudIndex);
+	bool ReadyCheck(int p_whoChecked);
 };
 

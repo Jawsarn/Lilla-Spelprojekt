@@ -8,9 +8,9 @@ PauseScreen::PauseScreen(void)
 PauseScreen::PauseScreen(GraphicHandle* p_graphicHandle, AudioManager* p_audioManager)
 	:MenuScreen(nullptr,p_graphicHandle, p_audioManager)
 {
-	AddButton("Continue", DirectX::XMFLOAT2(0,0.5),0.5,0.2,L"continue1.dds",L"continue2.dds");
-	AddButton("Main Menu",DirectX::XMFLOAT2(0,0),0.5,0.2,L"MainMenu1.dds",L"MainMenu2.dds");
-	AddButton("Quit",DirectX::XMFLOAT2(0,-0.5),0.5,0.2,L"Quit1.dds",L"Quit2.dds");
+	AddButton("Continue", DirectX::XMFLOAT2(0,0.5),0.5,1,L"continue1.dds",L"continue2.dds");
+	AddButton("Main Menu",DirectX::XMFLOAT2(0,0),0.5,1,L"MainMenu1.dds",L"MainMenu2.dds");
+	AddButton("Quit",DirectX::XMFLOAT2(0,-0.5),0.5,1,L"Quit1.dds",L"Quit2.dds");
 
 	FixButtonPointers();
 	MakeHud(m_hudHandle);
@@ -45,6 +45,7 @@ void PauseScreen::Draw()
 void PauseScreen::Initialize(int p_whoPaused)	
 {
 	m_graphicHandle->UseHud(p_whoPaused,m_hudHandle);
+	//m_graphicHandle->ChangeHudObjectTexture(m_hudHandle,currentButton->buttonHandle,0);
 	currentButton = buttonList[0];
 	m_graphicHandle->ChangeHudObjectTexture(m_hudHandle,currentButton->buttonHandle,1);
 	m_whoPaused = p_whoPaused;
