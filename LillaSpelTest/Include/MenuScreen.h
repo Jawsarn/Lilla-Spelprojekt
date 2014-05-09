@@ -31,5 +31,6 @@ protected:
 	void FixButtonPointers();
 private:
 	bool FloatBetweenValues(float floatToCheck, float min, float max); 
+	bool CheckIfButtonIsClosest(DirectX::XMFLOAT2 p_currentButtonsCenter,DirectX::XMFLOAT2 p_buttonToCheckCenter,Button* p_previousConnectedButton);
 };
 

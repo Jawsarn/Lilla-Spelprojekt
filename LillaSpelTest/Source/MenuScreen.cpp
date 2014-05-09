@@ -138,7 +138,7 @@ void MenuScreen::FixButtonPointers()
 			{
 				DirectX::XMFLOAT2 t_buttonToCheckCenter = buttonList[j]->centerPoint;
 
-				if (t_buttonToFixCenter.x < t_buttonToCheckCenter.x+0.1f && t_buttonToFixCenter.x > t_buttonToCheckCenter.x-0.1f)
+				if (t_buttonToFixCenter.x < t_buttonToCheckCenter.x+0.05f && t_buttonToFixCenter.x > t_buttonToCheckCenter.x-0.05f)
 				{
 					if (t_buttonToFixCenter.y > t_buttonToCheckCenter.y)
 					{
@@ -146,7 +146,7 @@ void MenuScreen::FixButtonPointers()
 						{
 							buttonList[i]->downButton = buttonList[j];
 						}
-						else if (std::abs(t_buttonToFixCenter.y- t_buttonToCheckCenter.y) < std::abs(t_buttonToFixCenter.y - buttonList[i]->downButton->centerPoint.y))
+						else if (CheckIfButtonIsClosest(t_buttonToFixCenter,t_buttonToCheckCenter,buttonList[i]->downButton))
 						{
 							buttonList[i]->downButton = buttonList[j];
 						}
@@ -157,7 +157,7 @@ void MenuScreen::FixButtonPointers()
 						{
 							buttonList[i]->upButton = buttonList[j];
 						}
-							else if (std::abs(t_buttonToFixCenter.y- t_buttonToCheckCenter.y) < std::abs(t_buttonToFixCenter.y - buttonList[i]->upButton->centerPoint.y))
+							else if (CheckIfButtonIsClosest(t_buttonToFixCenter,t_buttonToCheckCenter,buttonList[i]->upButton))
 						{
 							buttonList[i]->upButton = buttonList[j];
 						}
@@ -172,9 +172,9 @@ void MenuScreen::FixButtonPointers()
 							buttonList[i]->leftButton = buttonList[j];
 						}
 					
-						else if (std::abs(t_buttonToFixCenter.x- t_buttonToCheckCenter.x) < std::abs(t_buttonToFixCenter.x - buttonList[i]->leftButton->centerPoint.x))
-						{
-							buttonList[i]->leftButton = buttonList[j];
+						else if (CheckIfButtonIsClosest(t_buttonToFixCenter,t_buttonToCheckCenter,buttonList[i]->leftButton))
+						{						
+							buttonList[i]->leftButton = buttonList[j];										
 						}
 					}
 					else
@@ -183,9 +183,11 @@ void MenuScreen::FixButtonPointers()
 						{
 							buttonList[i]->rightButton = buttonList[j];
 						}
-							else if (std::abs(t_buttonToFixCenter.x- t_buttonToCheckCenter.x) < std::abs(t_buttonToFixCenter.x - buttonList[i]->rightButton->centerPoint.x))
+						else if (CheckIfButtonIsClosest(t_buttonToFixCenter,t_buttonToCheckCenter,buttonList[i]->rightButton))
 						{
-							buttonList[i]->rightButton = buttonList[j];
+							
+								buttonList[i]->rightButton = buttonList[j];
+							
 						}
 					}
 				}
@@ -193,3 +195,14 @@ void MenuScreen::FixButtonPointers()
 		}
 	}
 }
+
+bool MenuScreen::CheckIfButtonIsClosest(DirectX::XMFLOAT2 p_buttonToFixCenter,DirectX::XMFLOAT2 p_buttonToCheckCenter ,Button* p_previousConnectedButton)
+{
+	bool r_shouldConnect = std::abs(p_buttonToFixCenter.x- p_buttonToCheckCenter.x) < std::abs(p_buttonToFixCenter.x - p_previousConnectedButton->centerPoint.x)|| std::abs(p_buttonToFixCenter.y- p_buttonToCheckCenter.y) < std::abs(p_buttonToFixCenter.y - p_previousConnectedButton->centerPoint.y);
+	return r_shouldConnect;
+}
+
+
+
+
+
