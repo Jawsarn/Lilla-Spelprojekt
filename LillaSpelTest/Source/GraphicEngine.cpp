@@ -919,6 +919,19 @@ HRESULT GraphicEngine::MoveObject(UINT p_ObjectID, CXMMATRIX p_Matrix)
 	}
 }
 
+HRESULT GraphicEngine::UpdateDrawObjectColor(UINT p_ObjectID, XMFLOAT3 p_Color)
+{
+	if (m_DrawObjects[p_ObjectID] != nullptr)
+	{
+		m_DrawObjects[p_ObjectID]->color = p_Color;
+		return S_OK;
+	}
+	else
+	{
+		E_FAIL;
+	}
+}
+
 void GraphicEngine::RemoveObject(UINT p_ObjectID)
 {
 	delete m_DrawObjects[p_ObjectID];
@@ -1644,6 +1657,10 @@ void GraphicEngine::Cleanup()
 	SetFullscreenState(false);
 }
 
+///////////////////////////////////////////////
+//==========Particle Effect functions========//
+///////////////////////////////////////////////
+
 void GraphicEngine::CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName, UINT p_StartBufferID, CXMMATRIX p_World, UINT p_Data, UINT p_MaxParticles, UINT &o_SystemID )
 {
 	m_ParticleSystem->CreateParticleSystem(p_EffectType, p_FileName, p_StartBufferID, p_World, p_Data, p_MaxParticles, o_SystemID);
@@ -1652,4 +1669,14 @@ void GraphicEngine::CreateParticleSystem(UINT p_EffectType, const wchar_t * p_Fi
 void GraphicEngine::CreateParticleCBSetup(XMFLOAT3 p_WorldAcceler, float p_FlareEmitNumber, XMFLOAT3 p_EmitDirection, float p_InitSpawnAmount, float p_ParticleLifeSpan, XMFLOAT2 p_InitialSize, UINT &o_DataID)
 {
 	m_ParticleSystem->CreateCBsetup( p_WorldAcceler, p_FlareEmitNumber, p_EmitDirection, p_InitSpawnAmount, p_ParticleLifeSpan, p_InitialSize, o_DataID);
+}
+
+void GraphicEngine::UpdateParticleCB(UINT p_DataID, XMFLOAT3 p_WorldAcceler, float p_FlareEmitNumber, XMFLOAT3 p_EmitDirection, float p_InitSpawnAmount, float p_ParticleLifeSpan, XMFLOAT2 p_InitialSize)
+{
+
+}
+
+void GraphicEngine::CreateInitParticleBuffer(std::vector<ParticleSystem::Particle> p_StartParticles, UINT &o_BufferID)
+{
+	m_ParticleSystem->CreateInitParticlesBuffer(p_StartParticles, o_BufferID);
 }

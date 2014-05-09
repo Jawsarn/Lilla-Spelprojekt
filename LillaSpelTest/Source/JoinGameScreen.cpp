@@ -38,9 +38,10 @@ JoinGameScreen::~JoinGameScreen(void)
 int JoinGameScreen::Update(float p_dt,std::vector<UserCMD>* userCMD)
 {
 	MenuScreen::Update(p_dt,userCMD);
-	m_graphicHandle->UpdateSelectVehicle(p_dt);
+	
 	for (int i = 0; i < 4; i++)
 	{
+		m_graphicHandle->UpdateSelectVehicle(p_dt,i);
 		if (timeSinceLastChange[i]>0.1)
 		{
 			if (userCMD->at(i).aButtonPressed)

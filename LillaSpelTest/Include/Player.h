@@ -96,6 +96,7 @@ private:
 
 	float m_gravityShiftProgress;
 	bool m_gravityShifting;
+	float m_gravityShiftCameraMoveSpeed;
 
 	//unused but perhaps needed stuff
 	XMFLOAT3 m_color;
@@ -128,6 +129,7 @@ public:
 	float GetPlayerBoost();
 
 	int GetRacePosition();
+	XMFLOAT3 GetRadiusVector();
 	float GetHudBoosterInfo();
 	float GetHudWallInfo();
 	bool GetImmortal();
@@ -137,6 +139,7 @@ public:
 	//modifiers
 	void Die();
 	void Start();
+	void SetSpeed(float p_speed);
 	void SetPlayerBoost(float p_boost);
 	void SetPlayerRacePosition(int p_pos);
 	void IncreaseBoost(int p_nrOfWallsClose, float p_dt);

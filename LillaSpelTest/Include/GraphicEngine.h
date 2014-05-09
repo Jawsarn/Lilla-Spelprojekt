@@ -42,6 +42,7 @@ public:
 	HRESULT AddObjectLight(UINT p_ObjectID ,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float radius, UINT &o_LightID);
 	HRESULT ChangeObjectsLight(UINT p_ObjectID, UINT p_LightID,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius);
 	HRESULT MoveObject(UINT p_ObjectID, CXMMATRIX p_Matrix);
+	HRESULT UpdateDrawObjectColor(UINT p_ObjectID, XMFLOAT3 p_Color);
 	void RemoveObject(UINT p_ObjectID);
 	void RemoveObjectFromDrawing(UINT p_ObjectID);
 	void AddObjectToDrawing(UINT p_ObjectID);
@@ -77,8 +78,8 @@ public:
 	//particlesystem functions
 	void CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName, UINT p_StartBufferID, CXMMATRIX p_World, UINT p_Data, UINT p_MaxParticles, UINT &o_SystemID );
 	void CreateParticleCBSetup(XMFLOAT3 p_WorldAcceler, float p_FlareEmitNumber, XMFLOAT3 p_EmitDirection, float p_InitSpawnAmount, float p_ParticleLifeSpan, XMFLOAT2 p_InitialSize, UINT &o_DataID);
-
-	
+	void UpdateParticleCB(UINT p_DataID, XMFLOAT3 p_WorldAcceler, float p_FlareEmitNumber, XMFLOAT3 p_EmitDirection, float p_InitSpawnAmount, float p_ParticleLifeSpan, XMFLOAT2 p_InitialSize);
+	void CreateInitParticleBuffer(std::vector<ParticleSystem::Particle> startParticles, UINT &bufferID);
 	
 	void LoadPipeTerrain();
 	

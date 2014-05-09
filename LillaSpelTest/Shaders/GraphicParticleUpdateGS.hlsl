@@ -42,6 +42,6 @@ void GS( point Particle input[1],  inout PointStream< Particle > ptStream )
 	//{
 	//	ptStream.Append(input[0]);
 	//}
+
 	ptStream.Append(input[0]);
-	
 }
