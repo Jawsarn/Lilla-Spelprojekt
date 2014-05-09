@@ -195,7 +195,7 @@ HRESULT ParticleSystem::CreateParticleSystem(UINT p_EffectType, const wchar_t * 
 	return hr;
 }
 
-HRESULT ParticleSystem::CreateStartParticlesBuffer(std::vector<Particle> p_StartParticles, UINT &o_BufferID)
+HRESULT ParticleSystem::CreateInitParticlesBuffer(std::vector<Particle> p_StartParticles, UINT &o_BufferID)
 {
 	HRESULT hr = S_OK;
 
