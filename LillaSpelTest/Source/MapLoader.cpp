@@ -23,10 +23,11 @@ vector<MapNode*>* MapLoader::LoadMap(string p_mapName)
 {
 
 	//silly stuff. Apparently one does not simply add strings together
-	string t_TempMan = "Levels/";
+	//string t_TempMan = "Levels/";//
 	string t_SideTemp;
-
-	t_SideTemp = AddStrings(t_TempMan,p_mapName);
+	
+	//t_SideTemp = AddStrings(t_TempMan,p_mapName);
+	t_SideTemp = p_mapName;
 
 	string t_centerSplineString = AddStrings(t_SideTemp, "/CenterSpline.obj");
 	string t_edgeSplineString = AddStrings(t_SideTemp, "/EdgeSpline.obj");

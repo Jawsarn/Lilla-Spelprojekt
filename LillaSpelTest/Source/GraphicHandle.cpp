@@ -24,19 +24,6 @@ GraphicHandle::~GraphicHandle()
 void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::vector <std::string> p_LevelNames)
 {
 
-	//en generell metod för all bajsar	//en generell metod för all bajsar	//en generell metod för all bajsar	//en generell metod för all bajsar	//en generell metod för all bajsar	//en generell metod för all bajsar	//en generell metod för all bajsar	//en generell metod för all bajsar	//en generell metod för all bajsar	//en generell metod för all bajsar
-	//en generell metod för all bajsar	//en generell metod för all bajsar
-	//en generell metod för all bajsar
-	//en generell metod för all bajsar
-	//en generell metod för all bajsar
-	//en generell metod för all bajsar
-	//en generell metod för all bajsar
-	//en generell metod för all bajsar
-	//en generell metod för all bajsar
-	//en generell metod för all bajsar
-	//en generell metod för all bajsar
-	//en generell metod för all bajsar
-	//en generell metod för all bajsar
 
 	m_GraphicEngine = m_GraphicEngine->GetInstance();
 	m_GraphicEngine->Initialize(p_Width, p_Height, p_Handle);
@@ -54,107 +41,40 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 
 
 	////initWallTextures
-	m_GraphicEngine->LoadTexture(L"Walls/FirstWall/Texture.dds",t_TempurTextur);//en generell metod för all bajsa
-	m_GraphicEngine->LoadTexture(L"Walls/FirstWall/NG.dds",t_TempurTexturNG);
 
+	m_WallNames.push_back("Walls/FirstWall");
+	for (int i = 0; i < m_WallNames.size(); i++)
+	{
+		m_MeshPlayerWall.push_back(InitializeObj(m_WallNames[i]));
+	}
 
-
-	InitializeWall("Walls/FirstWall/Mesh.obj",t_TempurTextur,t_TempurTexturNG);
-	//m_PlayerWallTexture.push_back(t_TempurTextur);
-
-
-	////Init alla skepp
-	//m_GraphicEngine->LoadTexture(L"Ships/MilleniumKalk/Texture.dds", t_TempurTextur);
-	//m_ShipTexture.push_back(t_TempurTextur);
-	//m_GraphicEngine->LoadTexture(L"Ships/PajFighter/Texture.dds", t_TempurTextur);
-	//m_ShipTexture.push_back(t_TempurTextur);
-
-
-
-	//m_GraphicEngine->LoadTexture(L"Ships/MilleniumKalk/NG.dds", t_TempurTextur);
-	//m_ShipNormalGlow.push_back(t_TempurTextur);
-	//m_GraphicEngine->LoadTexture(L"Ships/PajFighter/NG.dds", t_TempurTextur);
-	//m_ShipNormalGlow.push_back(t_TempurTextur);
-
-
-	//InitializeShip("Ships/MilleniumKalk/Mesh.obj",m_ShipTexture[0], m_ShipNormalGlow[0] ); //normalGlow texture is same for all ship, fix to 4123
-	//InitializeShip("Ships/PajFighter/Mesh.obj",m_ShipTexture[1], m_ShipNormalGlow[1] );
-
-	//InitializeShip("spaceship2.obj",m_ShipTexture[2],m_ShipNormalGlow[0]);
-
+	//init skepp
 	std::vector<std::string> t_ShipNames;
-	t_ShipNames.push_back("MilleniumKalk");
-	t_ShipNames.push_back("PajFighter");
-	t_ShipNames.push_back("SpazMnik");
+	t_ShipNames.push_back("Ships/MilleniumKalk");
+	t_ShipNames.push_back("Ships/PajFighter");
+	t_ShipNames.push_back("Ships/SpazMnik");
+
 	for (int i = 0; i < t_ShipNames.size(); i++)
 	{
-
-		std::string t_stTompa ="Ships/";
-		t_stTompa +=t_ShipNames[i];
-		t_stTompa +="/Texture.dds";
-		std::wstring t_sTompa = std::wstring(t_stTompa.begin(),t_stTompa.end());
-
-		m_GraphicEngine->LoadTexture(t_sTompa.c_str(), t_TempurTextur);
-
-		//m_ShipTexture.push_back(t_TempurTextur);
-
-
-		std::string t_Tompa ="Ships/";
-		t_Tompa+=t_ShipNames[i];
-		t_Tompa += "/Mesh.obj";
-
-
-
-		std::string t_aTompa ="Ships/";
-		t_aTompa +=t_ShipNames[i];
-		t_aTompa +="/NG.dds";
-		std::wstring t_saTompa = std::wstring(t_aTompa.begin(),t_aTompa.end());
-
-		m_GraphicEngine->LoadTexture(t_saTompa.c_str(), t_TempurTexturNG);
-
-		InitializeShip(t_Tompa,t_TempurTextur,t_TempurTexturNG);
+		m_MeshShips.push_back(InitializeObj(t_ShipNames[i]));
 	}
 	m_SelectionShips.resize( m_MeshShips.size(), 0);
 
 
-
-
 	///init Levels
 	m_Levels.resize(p_LevelNames.size(),0);
-	for (int i = 0; i < p_LevelNames.size(); i++)
+	for (int i = 0; i < m_Levels.size(); i++)
 	{
-		std::string t_stTompa ="Levels/";
-		t_stTompa +=p_LevelNames[i];
-		t_stTompa +="/Texture.dds";
-		std::wstring t_sTompa = std::wstring(t_stTompa.begin(),t_stTompa.end());
+		m_MeshLevels.push_back(InitializeObj(p_LevelNames[i]));
 
-		m_GraphicEngine->LoadTexture(t_sTompa.c_str(),t_TempurTextur);
-
-		std::string t_Tompa ="Levels/";
-		t_Tompa+=p_LevelNames[i];
-		t_Tompa += "/Tube.obj";
-
-		std::string t_astTompa ="Levels/";
-		t_astTompa +=p_LevelNames[i];
-		t_astTompa +="/NG.dds";
-		std::wstring t_aasTompa = std::wstring(t_astTompa.begin(),t_astTompa.end());
-
-		m_GraphicEngine->LoadTexture(t_aasTompa.c_str(),t_TempurTexturNG);
-
-		InitializeLevel(t_Tompa,t_TempurTextur,t_TempurTexturNG);
 	}
+
 
 	m_Levels.resize(m_MeshLevels.size(),0);
 	for (int i = 0; i < m_MeshLevels.size(); i++)
 	{
 		CreateDrawObject(m_MeshLevels[i],XMMatrixIdentity(),XMFLOAT3(1,1,1),m_Levels[i],false);
 	}
-
-
-
-
-
-
 
 
 	///Laddar inte colours att välja på
@@ -165,67 +85,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	m_Colours.push_back(XMFLOAT3(0,0,1));
 	m_Colours.push_back(XMFLOAT3(0,1,0));
 	m_Colours.push_back(XMFLOAT3(1,1,1));
-	//creating a ship that the player is going to use, move to other place when we've done testing
 
-
-
-
-	//////////////////////////////////////////////////////////////TEST!!!!!!!!!!!!!!!!!!!///////////////////////////
-	//XMMATRIX t_Mat = XMMatrixTranslation(0,0,0)* XMMatrixScaling(1,1,1);
-	//XMMATRIX t_World=t_Mat;
-	//XMFLOAT3 t_Color = XMFLOAT3(0,1,0);
-	//std::vector<int>VilkenVehicle;
-	//std::vector <XMMATRIX> plajerwurld;
-
-	//std::vector <XMFLOAT3> plajercullur;
-	//plajercullur.push_back(t_Color);
-	//t_Color = XMFLOAT3(1,1,0);
-	//plajercullur.push_back(t_Color);
-	//t_Color = XMFLOAT3(1,0,0);
-	//plajercullur.push_back(t_Color);
-	//t_Color = XMFLOAT3(0,0,1);
-	//plajercullur.push_back(t_Color);
-	//t_Color = XMFLOAT3(1,0,1);
-	//plajercullur.push_back(t_Color);
-	//t_Mat = XMMatrixTranslation(0,0,5); 
-	//plajerwurld.push_back(t_Mat);
-
-	//t_Mat = XMMatrixTranslation(0,0,0);
-	//plajerwurld.push_back(t_Mat);
-	//t_Mat = XMMatrixTranslation(20,20,20);
-	//plajerwurld.push_back(t_Mat);
-	//t_Mat = XMMatrixTranslation(30,30,30);
-	//plajerwurld.push_back(t_Mat);
-	//t_Mat = XMMatrixTranslation(40,40,40);
-	//plajerwurld.push_back(t_Mat);
-
-	//VilkenVehicle.push_back(0);
-
-	//VilkenVehicle.push_back(0);
-	//VilkenVehicle.push_back(0);
-	//VilkenVehicle.push_back(0);
-	//t_Mat = XMMatrixTranslation(10,10,10); 
-	//StartGame(0,VilkenVehicle,plajerwurld,plajercullur,t_World,t_Color);
-
-
-
-
-	//test 
-	//UINT t_temptest;
-	//t_temptest=CreateWall(0,plajerwurld[0],0);
-	//m_GraphicEngine->RemoveObjectFromDrawing(t_temptest);
-	//m_GraphicEngine->AddObjectToDrawing(t_temptest);
-	//SelectVehicle();
-
-
-
-
-
-
-	//add light to an already existing ship, (note to self maybe, if we have two ships that are the same for two players, same textures will be used, but not same lights, this is ok)
-	//second note, add light is in object space
-	//UINT playerLightOne; //add to a player light array maybe?
-	//m_GraphicEngine->AddObjectLight(objectID, XMFLOAT3(0,-2,0),XMFLOAT3(1,0,0),3, playerLightOne);
 
 
 
@@ -296,8 +156,6 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	//}
 
 	SelectVehicle(); // ska vara där för att initialize selectgrejen
-
-	//	UpdatePlayer(0,t_Mat);
 }
 
 void GraphicHandle::ChangeLevelSelection(int p_WhatLevel)
@@ -553,6 +411,38 @@ void GraphicHandle::InitializeWall(std::string p_PlayerWallStringName, UINT p_Te
 	}
 }
 
+std::vector <UINT> GraphicHandle::InitializeObj(std::string p_ObjectStringName)
+{
+	std::string t_TemplateString =p_ObjectStringName;
+
+	
+	UINT t_TempurTextur;
+	std::string t_TextString = t_TemplateString;
+	t_TextString += "/Texture.dds";
+	std::wstring t_LoadTextString = std::wstring(t_TextString.begin(),t_TextString.end());
+	m_GraphicEngine->LoadTexture(t_LoadTextString.c_str(), t_TempurTextur);
+
+	
+	UINT t_TempurTexturNG;
+	std::string t_TextNGString =t_TemplateString;
+	t_TextNGString +="/NG.dds";
+	std::wstring t_LoadTextNGString = std::wstring(t_TextNGString.begin(),t_TextNGString.end());
+	m_GraphicEngine->LoadTexture(t_LoadTextNGString.c_str(), t_TempurTexturNG);
+
+	std::vector<UINT> r_Mesh;
+	r_Mesh.clear();
+	std::string t_TempurMeshString =t_TemplateString;
+	t_TempurMeshString +="/Mesh.obj";
+	m_GraphicEngine->LoadMesh(t_TempurMeshString,r_Mesh);
+
+	for (int i = 0; i < r_Mesh.size(); i++)
+	{
+		m_GraphicEngine->AddTextureToDrawPiece(r_Mesh[0],t_TempurTextur, GraphicEngine::TextureType::DIFFUSE);
+		m_GraphicEngine->AddTextureToDrawPiece(r_Mesh[0],t_TempurTexturNG, GraphicEngine::TextureType::NORMAL);
+	}
+	return r_Mesh;
+}
+
 UINT GraphicHandle::CreateWall(int p_WhatWall,CXMMATRIX p_PlayerWallWorld,int p_WhatPlayer)
 {
 	UINT r_WhatWall;
@@ -632,7 +522,7 @@ void GraphicHandle::CreateMapLights(std::vector<XMFLOAT3> p_CenterSpline)
 		UINT id;
 		m_GraphicEngine->CreateStaticLight(p_CenterSpline[counter],XMFLOAT3(r,g,b), 10.0f,id);
 
-		
+
 		if (colChanger == 0) //här blir det gult
 		{
 			g += t_ColChanger;
@@ -687,7 +577,7 @@ void GraphicHandle::CreateMapLights(std::vector<XMFLOAT3> p_CenterSpline)
 				b = 0;
 			}
 		}
-		
+
 
 		counter += 10;
 	}

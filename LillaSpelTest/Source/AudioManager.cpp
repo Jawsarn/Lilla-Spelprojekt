@@ -43,6 +43,12 @@ void AudioManager::Initialize()
 	m_masterVolume=1;
 }
 
+void AudioManager::Update()
+{
+	m_system->update();
+}
+
+
 void AudioManager::CreateSound(std::string p_fileName)
 {
 	FMOD::Sound* sound;	
@@ -121,7 +127,10 @@ void AudioManager::SetMasterVolume(float p_volumeBetween0and1)
 	}
 	m_masterVolume = p_volumeBetween0and1;
 }
-
+void AudioManager::PitchSpecificSound(std::string p_soundToPitch, float p_pitchValue)
+{
+	m_sounds[p_soundToPitch].channel->setFrequency(p_pitchValue);
+}
 
 void AudioManager::CleanUpCrew()
 {
