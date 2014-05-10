@@ -89,7 +89,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	//how high above the vehicle the camera is
 	m_cameraTrailDistanceUp = 1;
 
-	m_gravityShiftCameraMoveSpeed = 1;
+	m_gravityShiftCameraMoveSpeed = 3;
 
 	m_deathShakeMaxIntensity = 8;//reversed intensity: higher number means lower intensity. Because logic
 	m_deathShakeIntensityDrop = 4;
@@ -121,7 +121,7 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 		m_gravityShiftProgress = 0;
 	}
 	//Code for playervsplayercollisionaftermath
-	if(m_collisionAfterMath)
+	if (m_collisionAfterMath)
 	{
 		CollisionAftermath(p_dt);
 	}
@@ -142,8 +142,8 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 			GravityShift(m_gravityShiftProgress);
 
 		UpdateCollisionBox();
-
-		r_returnInt = WallPlacement(p_dt);
+		if (!m_gravityShifting)
+			r_returnInt = WallPlacement(p_dt);
 		UpdateTimers(p_dt);
 
 	}
@@ -442,16 +442,15 @@ void Player::UpdateWorldMatrix()
 void Player::GravityShift(float p_progress)
 {
 
-	m_gravityShiftCameraMoveSpeed = 3;
-
 	//time for reversing
 	XMVECTOR t_unmodifiedEyeVector = XMLoadFloat3(&m_position);
 	XMVECTOR t_unmodifiedUpVector = XMLoadFloat3(&m_up);
+	XMVECTOR t_unomdifiedTargetVector = XMLoadFloat3(&m_direction);
 
 	XMVECTOR t_eyeVector = XMLoadFloat3(&m_position);
 	XMVECTOR t_upVector = XMLoadFloat3(&m_up);
 	XMVECTOR t_targetVector = XMLoadFloat3(&m_direction);
-	float t_radius = m_mapNode->m_radius + cos(p_progress*3.14)*(m_mapNode->m_radius / 4);
+
 
 	float t_targetAngle = 3.14; //pi, half a circle
 
@@ -460,17 +459,23 @@ void Player::GravityShift(float p_progress)
 	if (t_cameraProgress > 1)
 		t_cameraProgress = 1;
 
+	float t_radius = m_mapNode->m_radius + cos(p_progress*3.14)*(m_mapNode->m_radius / 4);
+	float t_cameraRadius = m_mapNode->m_radius + cos(t_cameraProgress*3.14)*(m_mapNode->m_radius / 4);
+
 
 	//XMVECTOR t_cameraEyeVector = t_eyeVector + t_upVector*m_cameraTrailDistanceUp + m_cameraTrailDistanceTarget*t_targetVector*-1;
 	XMVECTOR t_cameraEyeVector = t_eyeVector;
 	XMVECTOR t_cameraUpVector = t_upVector;
-	XMVECTOR t_cameraTargetVector = t_targetVector;
+	XMVECTOR t_cameraTargetVector = t_eyeVector;
 
 	//move up from the car
 	t_eyeVector += t_upVector*t_radius*p_progress * 2;
+
+	//gets the camera
+	t_cameraTargetVector += t_upVector*t_cameraRadius*t_cameraProgress * 2;
 	//t_cameraEyeVector += t_upVector*t_radius*t_cameraProgress * 2;
 
-	XMMATRIX t_directionRotationMatrixTarget = XMMatrixRotationAxis(t_targetVector, p_progress*t_targetAngle);					//////////////////////////MAKE SURE YOU CHANGE THIS HARDCODED 10 CRAP////////////////
+	XMMATRIX t_directionRotationMatrixTarget = XMMatrixRotationAxis(t_targetVector, p_progress*t_targetAngle);
 	t_upVector = XMVector3Transform(t_upVector, t_directionRotationMatrixTarget);
 	t_upVector = XMVector3Normalize(t_upVector);
 
@@ -487,19 +492,15 @@ void Player::GravityShift(float p_progress)
 		m_angle += 3.14;
 	}
 	t_unmodifiedUpVector = XMVector3Normalize(t_unmodifiedUpVector);
-	//sin(t_cameraProgress*3.14)*
 
 
-	//t_cameraEyeVector += t_unmodifiedUpVector*t_radius;
-
-	//t_cameraEyeVector += -t_cameraProgress*t_unmodifiedUpVector*m_cameraTrailDistanceUp + t_cameraProgress*(t_radius - m_cameraTrailDistanceUp)*t_unmodifiedUpVector;
-
-	t_cameraEyeVector += t_unmodifiedUpVector*t_radius * 2 * t_cameraProgress + cos(t_cameraProgress*3.14)*t_unmodifiedUpVector*m_cameraTrailDistanceUp;
+	//offsets the camera's position. THIS IS FRIGGIN PERFECT!!
+	t_cameraEyeVector += t_unmodifiedUpVector*t_cameraRadius * 2 * t_cameraProgress + cos(t_cameraProgress*3.14)*t_unmodifiedUpVector*m_cameraTrailDistanceUp;
 
 	//offsets behind
-	t_cameraEyeVector += -m_cameraTrailDistanceTarget*t_cameraTargetVector;
+	t_cameraEyeVector += -m_cameraTrailDistanceTarget*t_unomdifiedTargetVector;
 	XMStoreFloat4x4(&m_worldMatrix, XMMatrixLookToLH(t_eyeVector, t_targetVector, t_upVector));
-	XMStoreFloat4x4(&m_cameraMatrix, XMMatrixLookAtLH(t_cameraEyeVector, t_eyeVector, t_cameraUpVector));
+	XMStoreFloat4x4(&m_cameraMatrix, XMMatrixLookAtLH(t_cameraEyeVector, t_cameraTargetVector, t_cameraUpVector));
 }
 
 
@@ -699,7 +700,7 @@ void Player::SetSpeed(float p_speed)
 }
 void Player::StartCollisionAftermath(float p_angle)
 {
-	m_collisionAngleOffset = p_angle+m_angle;
+	m_collisionAngleOffset = p_angle + m_angle;
 	m_collisionAfterMath = true;
 }
 
@@ -743,11 +744,11 @@ void Player::ChangeState(PlayerState p_state)
 
 void Player::CollisionAftermath(float p_dt)
 {
-	m_collisionAfterMathTimer+=p_dt;
-	m_angle += (2-m_collisionAfterMathTimer)*m_collisionAngleOffset;
-	if(m_collisionAfterMathTimer >= 1)
+	m_collisionAfterMathTimer += p_dt;
+	m_angle += (2 - m_collisionAfterMathTimer)*m_collisionAngleOffset;
+	if (m_collisionAfterMathTimer >= 1)
 	{
-		m_collisionAfterMath=false;
+		m_collisionAfterMath = false;
 		m_collisionAfterMathTimer = 0;
 	}
 }
