@@ -442,13 +442,17 @@ void Player::UpdateWorldMatrix()
 void Player::GravityShift(float p_progress)
 {
 
+	m_gravityShiftCameraMoveSpeed = 3;
+
 	//time for reversing
+	XMVECTOR t_unmodifiedEyeVector = XMLoadFloat3(&m_position);
 	XMVECTOR t_unmodifiedUpVector = XMLoadFloat3(&m_up);
 
 	XMVECTOR t_eyeVector = XMLoadFloat3(&m_position);
 	XMVECTOR t_upVector = XMLoadFloat3(&m_up);
 	XMVECTOR t_targetVector = XMLoadFloat3(&m_direction);
-	float t_radius = (m_mapNode->m_radius + (m_mapNode->m_radius / 4)) / 2;
+	float t_radius = m_mapNode->m_radius + cos(p_progress*3.14)*(m_mapNode->m_radius / 4);
+
 	float t_targetAngle = 3.14; //pi, half a circle
 
 	//makes the camera work faster than the car
@@ -457,13 +461,14 @@ void Player::GravityShift(float p_progress)
 		t_cameraProgress = 1;
 
 
-	XMVECTOR t_cameraEyeVector = t_eyeVector + t_upVector*m_cameraTrailDistanceUp + m_cameraTrailDistanceTarget*t_targetVector*-1;
+	//XMVECTOR t_cameraEyeVector = t_eyeVector + t_upVector*m_cameraTrailDistanceUp + m_cameraTrailDistanceTarget*t_targetVector*-1;
+	XMVECTOR t_cameraEyeVector = t_eyeVector;
 	XMVECTOR t_cameraUpVector = t_upVector;
-	XMVECTOR t_cameraTargetVector = t_eyeVector-t_cameraEyeVector;
+	XMVECTOR t_cameraTargetVector = t_targetVector;
 
 	//move up from the car
 	t_eyeVector += t_upVector*t_radius*p_progress * 2;
-	t_cameraEyeVector += t_upVector*t_radius*t_cameraProgress * 2;
+	//t_cameraEyeVector += t_upVector*t_radius*t_cameraProgress * 2;
 
 	XMMATRIX t_directionRotationMatrixTarget = XMMatrixRotationAxis(t_targetVector, p_progress*t_targetAngle);					//////////////////////////MAKE SURE YOU CHANGE THIS HARDCODED 10 CRAP////////////////
 	t_upVector = XMVector3Transform(t_upVector, t_directionRotationMatrixTarget);
@@ -481,9 +486,18 @@ void Player::GravityShift(float p_progress)
 		XMStoreFloat3(&m_up, t_upVector);
 		m_angle += 3.14;
 	}
+	t_unmodifiedUpVector = XMVector3Normalize(t_unmodifiedUpVector);
 	//sin(t_cameraProgress*3.14)*
-	t_cameraEyeVector += cos(t_cameraProgress*3.14)*t_unmodifiedUpVector*m_cameraTrailDistanceUp + t_cameraProgress*(t_radius - m_cameraTrailDistanceUp)*t_unmodifiedUpVector;
-	//t_cameraEyeVector += m_cameraTrailDistanceTarget*t_cameraTargetVector + m_cameraTrailDistanceUp*t_cameraUpVector;
+
+
+	//t_cameraEyeVector += t_unmodifiedUpVector*t_radius;
+
+	//t_cameraEyeVector += -t_cameraProgress*t_unmodifiedUpVector*m_cameraTrailDistanceUp + t_cameraProgress*(t_radius - m_cameraTrailDistanceUp)*t_unmodifiedUpVector;
+
+	t_cameraEyeVector += t_unmodifiedUpVector*t_radius * 2 * t_cameraProgress + cos(t_cameraProgress*3.14)*t_unmodifiedUpVector*m_cameraTrailDistanceUp;
+
+	//offsets behind
+	t_cameraEyeVector += -m_cameraTrailDistanceTarget*t_cameraTargetVector;
 	XMStoreFloat4x4(&m_worldMatrix, XMMatrixLookToLH(t_eyeVector, t_targetVector, t_upVector));
 	XMStoreFloat4x4(&m_cameraMatrix, XMMatrixLookAtLH(t_cameraEyeVector, t_eyeVector, t_cameraUpVector));
 }
