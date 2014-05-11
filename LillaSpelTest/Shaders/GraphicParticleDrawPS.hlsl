@@ -15,8 +15,8 @@ float4 PS(GS_OUTPUT input) : SV_TARGET
 {
 	float4 finalColor;
 	
-	finalColor = diffuseTexture.Sample(wrapSampler, input.Tex);
-
+	//finalColor = diffuseTexture.Sample(wrapSampler, input.Tex);
+	finalColor = float4(1,1,1,1);
 
 	return finalColor;
 }

@@ -311,7 +311,7 @@ void GraphicHandle::CreateShipForGame(std::vector<XMMATRIX> p_PlayerWorld)//4123
 		m_GraphicEngine->CreateInitParticleBuffer(t_InitParticles, t_InitParticleID);
 
 		UINT t_ParticleBufferDataID;
-		m_GraphicEngine->CreateParticleCBSetup(XMFLOAT3(0,0,0), 100, XMFLOAT3(0,0,0), 100, 100.0f, XMFLOAT2(1,1), t_ParticleBufferDataID);
+		m_GraphicEngine->CreateParticleCBSetup(XMFLOAT3(0,0,0), 100, XMFLOAT3(0,0,0), 50, 100.0f, XMFLOAT2(1,1), t_ParticleBufferDataID);
 
 		UINT t_ParticleSystemID;
 		m_GraphicEngine->CreateParticleSystem(0, L"",t_InitParticleID, XMFLOAT3(0,0,0), t_ParticleBufferDataID, 100, t_ParticleSystemID );

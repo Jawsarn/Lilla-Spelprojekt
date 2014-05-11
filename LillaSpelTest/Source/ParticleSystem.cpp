@@ -142,7 +142,7 @@ HRESULT ParticleSystem::CreateShaders()
 	return hr;
 }
 
-HRESULT ParticleSystem::CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName , UINT p_StartBufferID, XMFLOAT3 p_WorldPos, UINT p_DataID, UINT p_MaxParticles, UINT &systemID)
+HRESULT ParticleSystem::CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName , UINT p_StartBufferID, XMFLOAT3 p_ObjectPosition, UINT p_DataID, UINT p_MaxParticles, UINT &systemID)
 {
 	HRESULT hr = S_OK;
 
@@ -157,7 +157,7 @@ HRESULT ParticleSystem::CreateParticleSystem(UINT p_EffectType, const wchar_t * 
 
 	t_NewSystem.textureID = m_TextureViews.size() -1;
 	t_NewSystem.startBufferID = p_StartBufferID;
-	t_NewSystem.worldPos = p_WorldPos; 
+	t_NewSystem.objectPosition = p_ObjectPosition; 
 	t_NewSystem.perEffectDataID = p_DataID;
 
 	t_NewSystem.firstrun = true;
@@ -227,10 +227,10 @@ HRESULT ParticleSystem::CreateInitParticlesBuffer(std::vector<Particle> p_StartP
 	return hr;
 }
 
-void ParticleSystem::CreateCBsetup(XMFLOAT3 p_WorldAcceler, float p_FlareEmitNumber, XMFLOAT3 p_EmitDirection, float p_InitSpawnAmount, float p_ParticleLifeSpan, XMFLOAT2 p_InitialSize, UINT &o_DataID)
+void ParticleSystem::CreateCBsetup(XMFLOAT3 p_SpawnPosition, float p_FlareEmitNumber, XMFLOAT3 p_EmitDirection, float p_InitSpawnAmount, float p_ParticleLifeSpan, XMFLOAT2 p_InitialSize, UINT &o_DataID)
 {
 	CPerEffectBuffer t_NewCBSetup;
-	t_NewCBSetup.worldAcceler = p_WorldAcceler;
+	t_NewCBSetup.spawnPosition = p_SpawnPosition;
 	t_NewCBSetup.flareEmitNumber = p_FlareEmitNumber;
 	t_NewCBSetup.emitDirection = p_EmitDirection;
 	t_NewCBSetup.initSpawnAmount = p_InitSpawnAmount;
@@ -318,7 +318,20 @@ HRESULT ParticleSystem::CreateRandomTexture1DSRV()
 	if( FAILED(hr) )
 		return hr;
 
-	m_DeviceContext->GSSetShaderResources(9,1,&m_RandomTexSRV);
+	m_DeviceContext->GSSetShaderResources(0,1,&m_RandomTexSRV);
+
+	return hr;
+}
+
+HRESULT ParticleSystem::UpdatePositionOnCBsetup(UINT p_ParticleSystemID, CXMMATRIX p_WorldMatrix)
+{
+	HRESULT hr = S_OK;
+
+	XMVECTOR t_PosVector = XMLoadFloat3(&m_ParticleEffectSystems[p_ParticleSystemID].objectPosition);
+	
+	t_PosVector = XMVector3Transform(t_PosVector, p_WorldMatrix);
+
+	XMStoreFloat3( &m_PerEffectData[m_ParticleEffectSystems[p_ParticleSystemID].perEffectDataID].spawnPosition, t_PosVector);
 
 	return hr;
 }
@@ -438,7 +451,7 @@ void ParticleSystem::UpdateParticles(UINT id)
 	if(m_ParticleEffectSystems[id].firstrun)
 	{
 		m_DeviceContext->Draw(m_InitParticleVertexBuffersWithNum[m_ParticleEffectSystems[id].startBufferID].numOfVertices, 0);
-		m_ParticleEffectSystems[id].firstrun = false;
+		//m_ParticleEffectSystems[id].firstrun = false;
 	}
 	else
 	{

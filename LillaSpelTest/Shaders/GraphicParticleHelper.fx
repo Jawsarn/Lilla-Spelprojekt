@@ -8,7 +8,7 @@
 
 cbuffer CPerEffectBuffer	:register(b2)
 {
-	float3 worldAcceler;
+	float3 spawnPosition;
 	float flareEmitNumber;
 
 	float3 emitDirection;
@@ -44,23 +44,23 @@ struct Particle //change in the input layout
 
 
 
-//Texture1D gRandomTex :register(t1);
-//
-//
-//float3 RandUnitVec3(float offset)
-//{
-//	// Use game time plus offset to sample random texture.
-//	float u = (deltaTime + offset);
-//	// coordinates in [-1,1]
-//	float3 v = gRandomTex.SampleLevel(meshSampler, u, 0).xyz;
-//	// project onto unit sphere
-//	return normalize(v);
-//}
-//float3 RandVec3(float offset)
-//{
-//	// Use game time plus offset to sample random texture.
-//	float u = (deltaTime + offset);
-//	// coordinates in [-1,1]
-//	float3 v = gRandomTex.SampleLevel(meshSampler, u, 0).xyz;
-//	return v;
-//}
+Texture1D gRandomTex :register(t0);
+
+
+float3 RandUnitVec3(float offset)
+{
+	// Use game time plus offset to sample random texture.
+	float u = (deltaTime + offset);
+	// coordinates in [-1,1]
+	float3 v = gRandomTex.SampleLevel(wrapSampler, u, 0).xyz;
+	// project onto unit sphere
+	return normalize(v);
+}
+float3 RandVec3(float offset)
+{
+	// Use game time plus offset to sample random texture.
+	float u = (deltaTime + offset);
+	// coordinates in [-1,1]
+	float3 v = gRandomTex.SampleLevel(wrapSampler, u, 0).xyz;
+	return v;
+}

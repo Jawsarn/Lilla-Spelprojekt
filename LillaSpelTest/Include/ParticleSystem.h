@@ -18,9 +18,10 @@ public:
 	HRESULT Initialize( ID3D11Device* p_Device, ID3D11DeviceContext* p_DeviceContext, ID3D11DepthStencilState* p_NoWriteDepthState, ID3D11DepthStencilState* p_OffDepthState, ID3D11BlendState* p_OnBlendState, ID3D11BlendState* p_OffBlendState );
 
 	HRESULT CreateInitParticlesBuffer(std::vector<Particle> p_StartParticles, UINT &o_BufferID);
-	void CreateCBsetup(XMFLOAT3 worldAcceler, float flareEmitNumber, XMFLOAT3 emitDirection, float initSpawnAmount, float particleLifeSpan, XMFLOAT2 initialSize, UINT &dataID);
-	HRESULT CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName , UINT p_StartBufferID, XMFLOAT3 p_WorldPos, UINT p_DataID, UINT p_MaxParticles, UINT &systemID);
+	void CreateCBsetup(XMFLOAT3 p_SpawnPosition, float flareEmitNumber, XMFLOAT3 emitDirection, float initSpawnAmount, float particleLifeSpan, XMFLOAT2 initialSize, UINT &dataID);
+	HRESULT CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName , UINT p_StartBufferID, XMFLOAT3 p_ObjectPosition, UINT p_DataID, UINT p_MaxParticles, UINT &systemID);
 //	void Reset(UINT systemID);
+	HRESULT UpdatePositionOnCBsetup(UINT p_ParticleSystemID, CXMMATRIX p_WorldMatrix);
 	void Draw(float dt, float gt);
 
 
@@ -83,7 +84,7 @@ private:
 		UINT startBufferID;
 		UINT drawVertexBufferID;
 		UINT updateVertexBufferID;
-		XMFLOAT3 worldPos;
+		XMFLOAT3 objectPosition;
 		UINT perEffectDataID; //maybe place data  here anyway?
 		bool firstrun;
 		// add here
@@ -93,7 +94,7 @@ private:
 	struct CPerEffectBuffer
 	{
 		// for when the emit position/direction is varying
-		XMFLOAT3 worldAcceler;
+		XMFLOAT3 spawnPosition;
 		float flareEmitNumber;
 		
 		XMFLOAT3 emitDirection;
