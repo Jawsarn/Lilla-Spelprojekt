@@ -51,7 +51,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	//init skepp
 	std::vector<std::string> t_ShipNames;
 	t_ShipNames.push_back("Ships/MilleniumKalk");
-	//t_ShipNames.push_back("Ships/PajFighter");
+	t_ShipNames.push_back("Ships/PajFighter");
 	t_ShipNames.push_back("Walls/FirstWall");
 	t_ShipNames.push_back("Ships/SpazMnik");
 
@@ -67,9 +67,22 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 
 	///init Levels
 	m_Levels.resize(p_LevelNames.size(),0);
+	//m_MeshLevelWall.resize(p_LevelNames.size(),0);
+	//m_MeshLevelWall[0].resize(p_LevelNames.size(),0);
+	//m_MeshLevelWall[1].resize(p_LevelNames.size(),0);
+	//m_MeshLevelWall[2].resize(p_LevelNames.size(),0);
 	for (int i = 0; i < m_Levels.size(); i++)
 	{
 		m_MeshLevels.push_back(InitializeObj(p_LevelNames[i]));
+
+		std::string t_TempStringForWall;
+		//for (int k = 0; k < length; k++) //så vi kan ha flera olika väggar per bana.
+		//{
+			
+		/////t_TempStringForWall =p_LevelNames[i];
+		//////////t_TempStringForWall += "/LevelWalls";
+		/////här e för att fixa in levelskiten men den fackar ur bror vettefan varför kan vara en grej i obj att en skit hade 1 rad med shit men borde inte göra så att skiten fackar ur................................................................................................................................................................................................../////////////m_MeshLevelWall.push_back(InitializeObj(t_TempStringForWall));
+		//}
 
 	}
 
@@ -99,10 +112,12 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 
 	//create a camera, just for testing and stuff, think you'll want to create it later with players tho, because the hud wont rely on camera at first
 
+	//(250,0,-100)			0,0,1					0,1,0                     4123
 	for (int i = 0; i < 4; i++)
 	{
 		m_GraphicEngine->CreateCamera(XMFLOAT3(250,0,-100),XMFLOAT3(0,0,1),XMFLOAT3(0,1,0),XM_PIDIV4,p_Width/2,p_Height/2,1.0f,10000, m_CameraID[i]);
 	}
+	//m_GraphicEngine->CreateCamera(
 
 	//set cameras
 	for (int i = 0; i < 4; i++)
@@ -161,6 +176,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 
 	SelectVehicle(); // ska vara där för att initialize selectgrejen
 	//CreateWall(
+	//AddSelectionDraw();// bajsa på detta innan man lägger upp 4123
 }
 
 void GraphicHandle::ChangeLevelSelection(int p_WhatLevel)
@@ -178,7 +194,7 @@ void GraphicHandle::ChangeLevelSelection(int p_WhatLevel)
 }
 void GraphicHandle::UpdateCameraSelectLevel(int p_WhatLevel,int p_TheRotation)
 {
-
+	
 }
 void GraphicHandle::UpdatePlayer(int p_playerID,CXMMATRIX p_PlayerMatrix,CXMMATRIX p_CameraMatrix)
 {
@@ -213,7 +229,7 @@ void GraphicHandle::UpdateCameraVehicleSelection(UINT p_CameraLogicID, float p_L
 	if (p_CameraLogicID < 5)
 	{	
 		/////////////////////////////////fungerande
-		XMMATRIX t_Tempura = XMMatrixTranslation(0,1,8*m_MeshShips.size());
+		XMMATRIX t_Tempura = XMMatrixTranslation(0,1,40);
 		XMMATRIX t_Rot = XMMatrixRotationY(2*XM_PI/m_MeshShips.size()*p_LookingAtWhatVehicle);
 		XMMATRIX t_Rot2 = XMMatrixRotationX(-XM_PIDIV4/10);
 
@@ -279,7 +295,7 @@ void GraphicHandle::CreateLight(int p_PlayerIndex,XMFLOAT3 p_Color,UINT p_Object
 	m_GraphicEngine->AddObjectLight(p_ObjectId,p_LightStruct.m_Position,p_LightStruct.m_Color,p_LightStruct.m_Radius,p_LightStruct.m_LightID);
 }
 
-void GraphicHandle::CreateShipForGame(std::vector<XMMATRIX> p_PlayerWorld)//4123
+void GraphicHandle::CreateShipForGame(std::vector<XMMATRIX> p_PlayerWorld)
 {
 	for (int i = 0; i < m_Player.size(); i++)
 	{
@@ -321,7 +337,7 @@ void GraphicHandle::CreateShipForGame(std::vector<XMMATRIX> p_PlayerWorld)//4123
 void GraphicHandle::SelectVehicle()
 {
 
-	XMMATRIX t_WorldMat = XMMatrixTranslation(0,0,6*m_MeshShips.size());
+	XMMATRIX t_WorldMat = XMMatrixTranslation(0,0,30);
 	XMFLOAT3 t_Color = XMFLOAT3(1,1,1);
 	
 	for (int k = 0; k < 4; k++)
@@ -329,7 +345,7 @@ void GraphicHandle::SelectVehicle()
 		for (int i = 0; i < m_MeshShips.size(); i++)
 		{
 
-			XMMATRIX t_Rot = XMMatrixRotationY(2*XM_PI/m_MeshShips.size()*k);
+			XMMATRIX t_Rot = XMMatrixRotationY(2*XM_PI/4*k);
 
 			t_Rot = XMMatrixMultiply(t_WorldMat, t_Rot);
 			
@@ -350,6 +366,7 @@ void GraphicHandle::SelectVehicle()
 			XMStoreFloat4x4(&t_Tempus, t_Rot);
 			m_SelectionShipMatrix[k].push_back(t_Tempus);
 		}
+
 	}
 
 }
@@ -361,8 +378,17 @@ int GraphicHandle::GetAmountOfLevels()
 {
 	return m_MeshLevels.size();
 }
-
-
+int GraphicHandle::GetAmountOfColours()
+{
+	return m_Colours.size();
+}
+void  GraphicHandle::SetSelectionColour(int p_WhatPlayer, int p_ColourSelected)
+{
+	for (int i = 0; i < m_MeshShips.size(); i++)
+	{		
+		m_GraphicEngine->UpdateDrawObjectColor(m_SelectionShips[p_WhatPlayer][i],m_Colours[p_ColourSelected]);
+	}
+}
 
 void GraphicHandle::Cleanup()
 {
@@ -462,6 +488,7 @@ std::vector <UINT> GraphicHandle::InitializeObj(std::string p_ObjectStringName)
 	std::string t_TempurMeshString =t_TemplateString;
 	t_TempurMeshString +="/Mesh.obj";
 	m_GraphicEngine->LoadMesh(t_TempurMeshString,r_Mesh);
+	
 
 	for (int i = 0; i < r_Mesh.size(); i++)
 	{
@@ -500,10 +527,12 @@ void GraphicHandle::CreateDrawObject(std::vector <UINT> p_UINTMeshLista, CXMMATR
 void GraphicHandle::RemoveLevelDraw(int p_RemoveLevelDraw)
 {
 	m_GraphicEngine->RemoveObjectFromDrawing(m_Levels[p_RemoveLevelDraw]);
+	//m_GraphicEngine->AddObjectToDrawing();//ta bort skit ffs. levelväggarna
 }
-void GraphicHandle::AddLevelDraw(int p_AddLevelDraw)//4123
+void GraphicHandle::AddLevelDraw(int p_AddLevelDraw)
 {
 	m_GraphicEngine->AddObjectToDrawing(m_Levels[p_AddLevelDraw]);
+	//m_GraphicEngine->AddObjectToDrawing();//ta bort skit ffs. levelväggarna o lägg till här iaf
 }
 void GraphicHandle::RemoveSelectionDraw()
 {
