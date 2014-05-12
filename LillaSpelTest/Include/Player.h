@@ -108,6 +108,10 @@ private:
 	bool m_gravityShifting;
 	float m_gravityShiftCameraMoveSpeed;
 
+
+	float m_bobTimer;
+	float m_bobFrequency;
+	float m_bobIntensity;
 	//unused but perhaps needed stuff
 	XMFLOAT3 m_color;
 	PlayerState m_state;
@@ -137,6 +141,7 @@ public:
 	PlayerWall* GetLastPlacedWall();
 	float GetDistanceTraveled(); 
 	float GetPlayerBoost();
+	float GetAngle();
 
 	int GetRacePosition();
 	XMFLOAT3 GetRadiusVector();

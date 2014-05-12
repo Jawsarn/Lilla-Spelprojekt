@@ -53,6 +53,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_collisionAfterMath = false;
 	m_unmodifiedTarget = XMFLOAT3(0,0,0);
 	m_unmodifiedUp = XMFLOAT3(0,0,0);
+	m_bobTimer = 0;
 
 	////BALANCING VARIABLES
 
@@ -95,6 +96,9 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_deathShakeMaxIntensity = 8;//reversed intensity: higher number means lower intensity. Because logic
 	m_deathShakeIntensityDrop = 4;
 
+
+	m_bobFrequency = 1;
+	m_bobIntensity = 0.1;
 
 	////FINAL WORLD MATRIX INITIALIZATION
 	FixUpVectorRotation(m_angle);
@@ -146,7 +150,7 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 		FixOffsetFromCenterSpline();
 		//now offset from the center, following the tube edge
 
-		//BobOffset();
+		BobOffset();
 
 
 		UpdateWorldMatrix();
@@ -264,7 +268,8 @@ void Player::FixWorldPosition()
 	FixOffsetFromCenterSpline();
 	//now offset from the center, following the tube edge
 
-	//BobOffset();
+	BobOffset();
+
 	UpdateWorldMatrix();
 	//Matrix now updates. Ready to be grabbed from the gamescreen
 }
@@ -347,6 +352,7 @@ void Player::UpdateTimers(float p_dt)
 	if (m_gravityShifting)
 		m_gravityShiftProgress += p_dt*0.5;
 	m_wallMeter += p_dt*m_wallGain*(4 - m_racePos);
+	m_bobTimer += p_dt*m_bobFrequency;
 
 }
 
@@ -386,15 +392,25 @@ void Player::FixOffsetFromCenterSpline()
 
 void Player::BobOffset()
 {
+	float t_bob = sin(m_bobTimer*3.1415);
+	XMVECTOR t_bobVector = XMLoadFloat3(&m_bobOffset);
+	XMVECTOR t_unmodifidiedUpVector = XMLoadFloat3(&m_unmodifiedUp);
+	t_bobVector+=t_bob*t_unmodifidiedUpVector*m_bobIntensity;
+	XMStoreFloat3(&m_bobOffset, t_bobVector);
+
+
+
+
+	////OLD BOB OFFSET STUFF. SCREW THAT
 	//declaring offset variables
-	float t_bobX, t_bobY, t_bobZ;
+	//float t_bobX, t_bobY, t_bobZ;
 
-	uniform_real_distribution<float> distribution(-1, 1);
-	t_bobX = distribution(m_randomGenerator);
-	t_bobY = distribution(m_randomGenerator);
-	t_bobZ = distribution(m_randomGenerator);
+	//uniform_real_distribution<float> distribution(-1, 1);
+	//t_bobX = distribution(m_randomGenerator);
+	//t_bobY = distribution(m_randomGenerator);
+	//t_bobZ = distribution(m_randomGenerator);
 
-	m_bobOffset = m_mathHelper.VecAddVec(m_bobOffset, m_mathHelper.FloatMultiVec(1, XMFLOAT3(t_bobX, t_bobY, t_bobZ)));
+	//m_bobOffset = m_mathHelper.VecAddVec(m_bobOffset, m_mathHelper.FloatMultiVec(1, XMFLOAT3(t_bobX, t_bobY, t_bobZ)));
 
 }
 
@@ -677,6 +693,10 @@ XMFLOAT3 Player::GetUnmodifiedUpVector()
 	return m_unmodifiedUp;
 }
 
+float Player::GetAngle()
+{
+	return m_angle;
+}
 float Player::GetHudBoosterInfo()
 {
 	//apparently wants 0 to be alot of boost, and 1 to be empty
