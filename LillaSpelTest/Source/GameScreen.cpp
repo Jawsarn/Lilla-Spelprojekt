@@ -119,8 +119,8 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 			case PLAY:
 				if(!m_players[i]->GetImmortal())
 				{
-					CollisionCheck(i, p_dt,p_userCMDS->at(i) );/*
-																m_collisionManager->PlayerVsPlayer(m_players);*/
+					CollisionCheck(i, p_dt,p_userCMDS->at(i) );
+					m_collisionManager->PlayerVsPlayer(m_players);
 				}	
 				UpdatePlayerRacePosition(i);
 				DrawPlayerHUD(i);
@@ -129,7 +129,7 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 
 		}
 		else
-		m_players[i]->SetFinalDirection();
+			m_players[i]->SetFinalDirection();
 		DrawPlayer(i);
 	}
 	return GAME_SCREEN;
@@ -182,10 +182,10 @@ void GameScreen::CollisionCheck(int p_currentPlayer, float p_dt, UserCMD& p_user
 		PlayerCloseToWall(p_currentPlayer, t_collisionResult, p_dt);
 	}
 	//player vs player
-	/*if (p_userCMD.yButtonPressed)
-	{
-		m_collisionManager->ShockWaveCollision(m_players,p_currentPlayer);
-	}*/
+	//if (p_userCMD.yButtonPressed)
+	//{
+	//	m_collisionManager->ShockWaveCollision(m_players,p_currentPlayer);
+	//}
 }
 
 void GameScreen::UpdatePlayerRacePosition(int p_currentPlayer)

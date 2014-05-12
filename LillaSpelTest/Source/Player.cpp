@@ -32,8 +32,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_wallBoxExtents = SetBoxExtents(t_wallBoxCorners);
 	m_playerShipBoxExtents = SetBoxExtents(t_playerShipBoxCorners);
 
-	m_wallBoxExtents.y *= 0.6;
-	m_playerShipBoxExtents.y *= 0.6;
+	//m_wallBoxExtents.y *= 0.1;
 
 	////VARIABLE INITIALIZATION (not relevant for game balancing)
 	m_wallMeter = 0;
@@ -258,18 +257,37 @@ void Player::FixWorldPosition()
 
 void Player::UpdateCollisionBox()
 {
-	MathHelper t_mathHelper = MathHelper();
+
+
 	//XMFLOAT3 t_vector = t_mathHelper.CrossProduct(m_direction, m_upVector); kanske inte behövs
+
+	//XMVECTOR t_eyeVector = XMLoadFloat3(&m_position);
+	//XMVECTOR t_targetVector = XMLoadFloat3(&m_direction);
+	//XMVECTOR t_upVector = XMLoadFloat3(&m_up);
+
+	//XMMATRIX t_boxOrientationMatrix = XMMatrixLookToLH(XMLoadFloat3(&m_position), XMLoadFloat3(&m_direction), XMLoadFloat3(&m_up)); //matrixyo
+
+
 	XMFLOAT4 t_quarternion = XMFLOAT4(0, 0, 0, 1);
-	XMMATRIX t_boxOrientationMatrix = XMMatrixLookToLH(XMLoadFloat3(&m_position), XMLoadFloat3(&m_direction), XMLoadFloat3(&m_up)); //matrixyo
 	XMVECTOR t_boxOrientationVector = XMLoadFloat4(&t_quarternion);
-	t_boxOrientationVector = XMVector4Transform(t_boxOrientationVector, XMLoadFloat4x4(&m_worldMatrix));
+	t_boxOrientationVector = XMVector4Transform(t_boxOrientationVector, XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_worldMatrix)));
 	t_boxOrientationVector = XMVector4Normalize(t_boxOrientationVector);
 	XMStoreFloat4(&t_quarternion, t_boxOrientationVector);
 
+
+
 	m_box.Center = m_position;
-	m_box.Extents = m_playerShipBoxExtents; //////TEMPEXTENTSLOL
+	m_box.Extents = m_playerShipBoxExtents; 
 	m_box.Orientation = t_quarternion;
+
+
+
+	//XMFLOAT3 t_position = XMFLOAT3 (0,0,0);
+	//XMFLOAT4 t_quarternion = XMFLOAT4(0,0,0,1);
+	//BoundingOrientedBox t_box = BoundingOrientedBox(t_position, m_playerShipBoxExtents, t_quarternion);
+	//XMMATRIX t_worldMatrix = XMLoadFloat4x4(&m_worldMatrix);
+	//t_box.Transform(t_box, t_worldMatrix);
+	//m_box = t_box;
 
 
 }
@@ -698,12 +716,6 @@ void Player::SetSpeed(float p_speed)
 {
 	m_speed += p_speed;
 }
-void Player::StartCollisionAftermath(float p_angle)
-{
-	m_collisionAngleOffset = p_angle + m_angle;
-	m_collisionAfterMath = true;
-}
-
 
 
 
@@ -752,3 +764,10 @@ void Player::CollisionAftermath(float p_dt)
 		m_collisionAfterMathTimer = 0;
 	}
 }
+
+void Player::StartCollisionAftermath(float p_angle)
+{
+	m_collisionAngleOffset = p_angle;
+	m_collisionAfterMath = true;
+}
+
