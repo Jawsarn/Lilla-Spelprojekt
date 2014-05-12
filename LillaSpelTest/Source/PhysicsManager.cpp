@@ -29,13 +29,13 @@ void PhysicsManager::SetPlayerCollisions(Player* p_p1, Player* p_p2, float p_p1M
 	XMFLOAT3 t_p1Projection = t_mHelp.Projection(p_p1->GetDirection(),t_collisionVec);
 	XMFLOAT3 t_p2Projection = t_mHelp.Projection(p_p2->GetDirection(),t_collisionVec);
 	//vänder på ena vectorn, ena offret ska åka tvärt om mot vad den andra gör
-	t_p2Projection.x = -t_p2Projection.x; t_p2Projection.y = -t_p2Projection.y;  t_p2Projection.z = -t_p2Projection.z; 
+	t_p2Projection.x = -t_p2Projection.x; t_p2Projection.y = -t_p2Projection.y;  t_p2Projection.z = -t_p2Projection.z; //kanskeinte ska göras
 
 	//skapar ett värde över hur "stor" kollisionen är
 	float t_magnitude = t_mHelp.Abs(t_mHelp.VecSubVec(t_p1Projection, t_p2Projection));
 
 	//Skapar 2 vectorer från projiceringsvectorerna gånger hur stark krocken var
-	XMFLOAT3 t_p1Magnitude = XMFLOAT3 (t_mHelp.FloatMultiVec(t_magnitude* p_p1MagnitudeMultiplier, t_mHelp.VecSubVec(t_p1Pos, t_p2Pos)));
+	XMFLOAT3 t_p1Magnitude = XMFLOAT3 (t_mHelp.FloatMultiVec(t_magnitude* p_p1MagnitudeMultiplier, t_mHelp.VecSubVec(t_p1Pos, t_p2Pos))); //kanske add om jag tar bort att jag vänder ^
 	XMFLOAT3 t_p2Magnitude = XMFLOAT3 (t_mHelp.FloatMultiVec(t_magnitude* p_p2MagnitudeMultiplier, t_mHelp.VecSubVec(t_p2Pos, t_p1Pos)));
 	
 
@@ -59,8 +59,8 @@ void PhysicsManager::SetPlayerCollisions(Player* p_p1, Player* p_p2, float p_p1M
 	XMFLOAT3 t_p1RadiusProjection = t_mHelp.Projection(t_p1Magnitude, t_p1Radius); 
 	XMFLOAT3 t_p2RadiusProjection = t_mHelp.Projection(t_p2Magnitude, t_p2Radius);
 
-	float t_p1Angle = t_mHelp.DotProduct(t_p1RadiusProjection,t_p1RadiusProjection);
-	float t_p2Angle = t_mHelp.DotProduct(t_p2RadiusProjection,t_p2RadiusProjection);
+	float t_p1Angle = t_mHelp.Abs(t_p1RadiusProjection);
+	float t_p2Angle = t_mHelp.Abs(t_p2RadiusProjection);
 	p_p1->StartCollisionAftermath(t_p1Angle/100);
 	p_p2->StartCollisionAftermath(t_p2Angle/100);
 }

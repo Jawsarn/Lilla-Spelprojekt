@@ -13,7 +13,7 @@ MathHelper::~MathHelper(void)
 XMFLOAT3 MathHelper::Projection(XMFLOAT3 p_float3, XMFLOAT3 p_projectOnToThis)
 {
 	float t_skalar = DotProduct(p_float3, p_projectOnToThis);
-	float t_dividerAbs = sqrt(p_projectOnToThis.x*p_projectOnToThis.x + p_projectOnToThis.y*p_projectOnToThis.y + p_projectOnToThis.z * p_projectOnToThis.z);
+	float t_dividerAbs = Abs(p_projectOnToThis);
 	t_dividerAbs *= t_dividerAbs;
 	XMFLOAT3 r_float3 = FloatMultiVec(t_skalar/t_dividerAbs, p_projectOnToThis);
 	return r_float3;
