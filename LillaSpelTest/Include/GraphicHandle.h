@@ -31,6 +31,7 @@ private:
 	UINT m_WhatLevelBefore;
 	std::vector <UINT> m_Levels;
 	std::vector <std::string> m_WallNames;
+
 	
 	
 	
@@ -38,7 +39,7 @@ private:
 	std::vector<XMFLOAT4X4> m_SelectionShipMatrix[4];
 	
 	//std::vector<UINT> m_Buttons;
-
+	std::vector <std::vector<UINT>> m_MeshLevelWall;
 	std::vector <std::vector<UINT>>m_MeshPlayerWall;//borde kunna ha olika väggar(olika meshar då) om man vill
 	std::vector <std::vector<UINT>> m_MeshLevels;
 	std::vector<std::vector<UINT>> m_MeshShips;
@@ -80,6 +81,7 @@ public:
 	void JohnSetCamera(CXMMATRIX p_World, UINT p_CameraLogicID);
 	int GetAmountOfVehicles();
 	int GetAmountOfLevels();
+	int GetAmountOfColours();
 	void SetFullScreen(bool p_IsFullScreen);
 	void Cleanup();
 	void SetColourAndVehicle(std::vector<UINT> p_PlayerColour,std::vector<UINT> p_PlayerVehicle);
@@ -94,6 +96,8 @@ public:
 	void AddLevelDraw(int p_AddLevelDraw);
 	void AddSelectionDraw();
 	void RemoveSelectionDraw();
+	void SetSelectionColour(int p_WhatPlayer, int p_ColourSelected);
+
 	
 	UINT CreateWall(int p_WhatWall,CXMMATRIX p_PlayerWallWorld,int p_WhatPlayer);
 

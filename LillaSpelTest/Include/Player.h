@@ -108,6 +108,14 @@ private:
 	bool m_gravityShifting;
 	float m_gravityShiftCameraMoveSpeed;
 
+
+	float m_bobTimer;
+	float m_bobFrequency;
+	float m_bobIntensity;
+
+
+	float m_previousAngle;
+
 	//unused but perhaps needed stuff
 	XMFLOAT3 m_color;
 	PlayerState m_state;
@@ -137,6 +145,7 @@ public:
 	PlayerWall* GetLastPlacedWall();
 	float GetDistanceTraveled(); 
 	float GetPlayerBoost();
+	float GetAngle();
 
 	int GetRacePosition();
 	XMFLOAT3 GetRadiusVector();
@@ -158,6 +167,7 @@ public:
 	void SetPlayerRacePosition(int p_pos);
 	void IncreaseBoost(int p_nrOfWallsClose, float p_dt);
 	void SetFinalDirection();
+	void AngleMoveBack();
 
 private:
 
