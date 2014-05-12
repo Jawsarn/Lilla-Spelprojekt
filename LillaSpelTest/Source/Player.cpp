@@ -650,6 +650,16 @@ XMFLOAT3 Player::GetRadiusVector()
 	return m_mathHelper.CrossProduct(m_unmodifiedTarget, m_unmodifiedUp);
 }
 
+XMFLOAT3 Player::GetUnmodifiedTargetVector()
+{
+	return m_unmodifiedTarget;
+}
+
+XMFLOAT3 Player::GetUnmodifiedUpVector()
+{
+	return m_unmodifiedUp;
+}
+
 float Player::GetHudBoosterInfo()
 {
 	//apparently wants 0 to be alot of boost, and 1 to be empty
