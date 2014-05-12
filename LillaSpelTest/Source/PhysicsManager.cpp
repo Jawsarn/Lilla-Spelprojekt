@@ -37,7 +37,7 @@ void PhysicsManager::SetPlayerCollisions(Player* p_p1, Player* p_p2, float p_p1M
 	//Skapar 2 vectorer från projiceringsvectorerna gånger hur stark krocken var
 	//XMFLOAT3 t_p1Magnitude = XMFLOAT3 (t_mHelp.FloatMultiVec(t_magnitude* p_p1MagnitudeMultiplier, t_mHelp.VecSubVec(t_p1Pos, t_p2Pos))); //kanske add om jag tar bort att jag vänder ^
 	//XMFLOAT3 t_p2Magnitude = XMFLOAT3 (t_mHelp.FloatMultiVec(t_magnitude* p_p2MagnitudeMultiplier, t_mHelp.VecSubVec(t_p2Pos, t_p1Pos)));
-	
+
 
 	//Här startar uppdelningen av magnitudevektorerna till angle och speed (playerradius & Playerdirection )
 	///////Här börjar projicering på playersens dirvectorer!
@@ -61,7 +61,7 @@ void PhysicsManager::SetPlayerCollisions(Player* p_p1, Player* p_p2, float p_p1M
 
 	float t_p1CheckAngle = fmod(p_p1->GetAngle(), 2*3.1415);
 	float t_p2CheckAngle = fmod(p_p2->GetAngle(), 2*3.1415);
-	
+
 	float t_p1AngleDirection = t_p1CheckAngle - t_p2CheckAngle;
 	float t_p2AngleDirection = t_p2CheckAngle - t_p1CheckAngle;
 	t_p1AngleDirection /= abs(t_p1AngleDirection);
@@ -69,6 +69,11 @@ void PhysicsManager::SetPlayerCollisions(Player* p_p1, Player* p_p2, float p_p1M
 
 	float t_p1Angle = t_mHelp.Abs(t_p1RadiusProjection);
 	float t_p2Angle = t_mHelp.Abs(t_p2RadiusProjection);
+	//p_p1->StartCollisionAftermath(t_p1AngleDirection*t_p1Angle);
+	//p_p2->StartCollisionAftermath(t_p2AngleDirection*t_p2Angle);
 	p_p1->StartCollisionAftermath(t_p1AngleDirection*t_p1Angle);
 	p_p2->StartCollisionAftermath(t_p2AngleDirection*t_p2Angle);
+
+	p_p1->AngleMoveBack();
+	p_p2->AngleMoveBack();
 }
