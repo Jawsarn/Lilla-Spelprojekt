@@ -112,6 +112,10 @@ private:
 	float m_bobTimer;
 	float m_bobFrequency;
 	float m_bobIntensity;
+
+
+	float m_previousAngle;
+
 	//unused but perhaps needed stuff
 	XMFLOAT3 m_color;
 	PlayerState m_state;
@@ -163,6 +167,7 @@ public:
 	void SetPlayerRacePosition(int p_pos);
 	void IncreaseBoost(int p_nrOfWallsClose, float p_dt);
 	void SetFinalDirection();
+	void AngleMoveBack();
 
 private:
 
