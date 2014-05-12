@@ -31,7 +31,7 @@ public:
 	void Update();
 	void CreateSound(std::string p_fileName);
 	// the sound name is the files name: if the sound hasn't been created yet it will be created, if that fails the sound wont play
-	void PlaySpecificSound(std::string p_soundToPlay, bool p_loop);
+	void PlaySpecificSound(std::string p_soundToPlay, bool p_loop,bool p_multipleSoundsOfSameSource);
 	// the sound name is the files name
 	void StopSpecificSound(std::string p_soundToStop);
 	// the sound name is the files name
