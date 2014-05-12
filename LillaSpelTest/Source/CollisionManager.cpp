@@ -53,6 +53,7 @@ void CollisionManager::PlayerVsPlayer(std::vector<Player*> p_playerList)
 			if(p_playerList[i]->GetCollisionBox()->Intersects(*p_playerList[j]->GetCollisionBox()))
 			{
 				m_physMan->SetPlayerCollisions(p_playerList[i],p_playerList[j], 1, 1);
+				break;
 			}
 		}
 	}

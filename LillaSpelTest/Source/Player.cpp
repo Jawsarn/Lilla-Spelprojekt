@@ -32,8 +32,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_wallBoxExtents = SetBoxExtents(t_wallBoxCorners);
 	m_playerShipBoxExtents = SetBoxExtents(t_playerShipBoxCorners);
 
-	m_wallBoxExtents.y *= 0.6;
-	m_playerShipBoxExtents.y *= 0.6;
+	//m_wallBoxExtents.y *= 0.1;
 
 	////VARIABLE INITIALIZATION (not relevant for game balancing)
 	m_wallMeter = 0;
@@ -48,10 +47,14 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_speed = 0;
 	m_cameraAngle = 0;
 	m_deltaAngle = 0;
+	m_previousAngle = 0;
 	m_hasWon = false;
 	m_gravityShifting = false;
 	m_gravityShiftProgress = 0;
 	m_collisionAfterMath = false;
+	m_unmodifiedTarget = XMFLOAT3(0,0,0);
+	m_unmodifiedUp = XMFLOAT3(0,0,0);
+	m_bobTimer = 0;
 
 	////BALANCING VARIABLES
 
@@ -94,6 +97,10 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_deathShakeMaxIntensity = 8;//reversed intensity: higher number means lower intensity. Because logic
 	m_deathShakeIntensityDrop = 4;
 
+	m_bumpIntensity = 10;
+
+	m_bobFrequency = 1;
+	m_bobIntensity = 0.1;
 
 	////FINAL WORLD MATRIX INITIALIZATION
 	FixUpVectorRotation(m_angle);
@@ -137,9 +144,21 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 		Rotation(p_dt);
 		MovementAlongLogicalMap(p_dt);
 		SetDirection();
-		FixWorldPosition();
-		if (m_gravityShifting)
+
+		////Fix from logical map to actual world position and orientation
+		FixUpVectorRotation(m_angle);
+		//now rotating around the normal
+
+		FixOffsetFromCenterSpline();
+		//now offset from the center, following the tube edge
+
+		BobOffset();
+
+
+		UpdateWorldMatrix();
+		if(m_gravityShifting)
 			GravityShift(m_gravityShiftProgress);
+		//matrices now updated. Ready to be grabbed from the GameScreen
 
 		UpdateCollisionBox();
 		if (!m_gravityShifting)
@@ -204,6 +223,7 @@ void Player::Acceleration(float p_dt)
 
 void Player::Rotation(float p_dt)
 {
+	m_previousAngle = m_angle;
 	m_deltaAngle = 0;
 	m_deltaAngle = m_currentUserCmd.Joystick.x*m_rotateSpeed;
 	m_angle += m_deltaAngle;
@@ -238,7 +258,7 @@ void Player::SetDirection()
 	XMFLOAT3 t_frontNormalComponent = m_mathHelper.FloatMultiVec(t_interpolation, m_mathHelper.Normalize(m_mapNode->m_nextNode->m_normal));
 	XMFLOAT3 t_currentNormalComponent = m_mathHelper.FloatMultiVec(1 - t_interpolation, m_mathHelper.Normalize(m_mapNode->m_normal));
 	m_direction = m_mathHelper.Normalize(m_mathHelper.VecAddVec(t_frontNormalComponent, t_currentNormalComponent));
-
+	m_unmodifiedTarget = m_direction;
 	//now looking along the interpolated normal between current node and next node 
 }
 
@@ -251,25 +271,50 @@ void Player::FixWorldPosition()
 	FixOffsetFromCenterSpline();
 	//now offset from the center, following the tube edge
 
-	//BobOffset();
+	BobOffset();
+
 	UpdateWorldMatrix();
 	//Matrix now updates. Ready to be grabbed from the gamescreen
 }
 
 void Player::UpdateCollisionBox()
 {
-	MathHelper t_mathHelper = MathHelper();
+
+
 	//XMFLOAT3 t_vector = t_mathHelper.CrossProduct(m_direction, m_upVector); kanske inte behövs
+
+	//XMVECTOR t_eyeVector = XMLoadFloat3(&m_position);
+	//XMVECTOR t_targetVector = XMLoadFloat3(&m_direction);
+	//XMVECTOR t_upVector = XMLoadFloat3(&m_up);
+
+	//XMMATRIX t_boxOrientationMatrix = XMMatrixLookToLH(XMLoadFloat3(&m_position), XMLoadFloat3(&m_direction), XMLoadFloat3(&m_up)); //matrixyo
+
+
 	XMFLOAT4 t_quarternion = XMFLOAT4(0, 0, 0, 1);
-	XMMATRIX t_boxOrientationMatrix = XMMatrixLookToLH(XMLoadFloat3(&m_position), XMLoadFloat3(&m_direction), XMLoadFloat3(&m_up)); //matrixyo
 	XMVECTOR t_boxOrientationVector = XMLoadFloat4(&t_quarternion);
-	t_boxOrientationVector = XMVector4Transform(t_boxOrientationVector, XMLoadFloat4x4(&m_worldMatrix));
-	t_boxOrientationVector = XMVector4Normalize(t_boxOrientationVector);
-	XMStoreFloat4(&t_quarternion, t_boxOrientationVector);
+
+
+	XMStoreFloat4(&t_quarternion, XMQuaternionRotationMatrix(XMMatrixInverse(nullptr,XMLoadFloat4x4(&m_worldMatrix))));
+
+
+	//t_boxOrientationVector = XMVector4Transform(t_boxOrientationVector, XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_worldMatrix)));
+	//t_boxOrientationVector = XMVector4Normalize(t_boxOrientationVector);
+	//XMStoreFloat4(&t_quarternion, t_boxOrientationVector);
+
+
 
 	m_box.Center = m_position;
-	m_box.Extents = m_playerShipBoxExtents; //////TEMPEXTENTSLOL
+	m_box.Extents = m_playerShipBoxExtents; 
 	m_box.Orientation = t_quarternion;
+
+
+
+	//XMFLOAT3 t_position = XMFLOAT3 (0,0,0);
+	//XMFLOAT4 t_quarternion = XMFLOAT4(0,0,0,1);
+	//BoundingOrientedBox t_box = BoundingOrientedBox(t_position, m_playerShipBoxExtents, t_quarternion);
+	//XMMATRIX t_worldMatrix = XMLoadFloat4x4(&m_worldMatrix);
+	//t_box.Transform(t_box, t_worldMatrix);
+	//m_box = t_box;
 
 
 }
@@ -310,6 +355,7 @@ void Player::UpdateTimers(float p_dt)
 	if (m_gravityShifting)
 		m_gravityShiftProgress += p_dt*0.5;
 	m_wallMeter += p_dt*m_wallGain*(4 - m_racePos);
+	m_bobTimer += p_dt*m_bobFrequency;
 
 }
 
@@ -339,6 +385,7 @@ void Player::FixUpVectorRotation(float p_angle)
 	t_upVector = XMVector3Transform(t_upVector, t_rotationmatrix);
 	XMStoreFloat3(&m_up, t_upVector);
 	m_up = t_mathHelper.Normalize(m_up);
+	m_unmodifiedUp = m_up;
 }
 
 void Player::FixOffsetFromCenterSpline()
@@ -348,15 +395,25 @@ void Player::FixOffsetFromCenterSpline()
 
 void Player::BobOffset()
 {
+	float t_bob = sin(m_bobTimer*3.1415);
+	XMVECTOR t_bobVector = XMLoadFloat3(&m_bobOffset);
+	XMVECTOR t_unmodifidiedUpVector = XMLoadFloat3(&m_unmodifiedUp);
+	t_bobVector+=t_bob*t_unmodifidiedUpVector*m_bobIntensity;
+	XMStoreFloat3(&m_bobOffset, t_bobVector);
+
+
+
+
+	////OLD BOB OFFSET STUFF. SCREW THAT
 	//declaring offset variables
-	float t_bobX, t_bobY, t_bobZ;
+	//float t_bobX, t_bobY, t_bobZ;
 
-	uniform_real_distribution<float> distribution(-1, 1);
-	t_bobX = distribution(m_randomGenerator);
-	t_bobY = distribution(m_randomGenerator);
-	t_bobZ = distribution(m_randomGenerator);
+	//uniform_real_distribution<float> distribution(-1, 1);
+	//t_bobX = distribution(m_randomGenerator);
+	//t_bobY = distribution(m_randomGenerator);
+	//t_bobZ = distribution(m_randomGenerator);
 
-	m_bobOffset = m_mathHelper.VecAddVec(m_bobOffset, m_mathHelper.FloatMultiVec(1, XMFLOAT3(t_bobX, t_bobY, t_bobZ)));
+	//m_bobOffset = m_mathHelper.VecAddVec(m_bobOffset, m_mathHelper.FloatMultiVec(1, XMFLOAT3(t_bobX, t_bobY, t_bobZ)));
 
 }
 
@@ -436,6 +493,11 @@ void Player::UpdateWorldMatrix()
 	XMStoreFloat3(&m_wallPlacementDirection, t_vehicleTargetVector);
 
 
+	if(!m_gravityShifting)
+	{
+		XMStoreFloat3(&m_direction, t_vehicleTargetVector);
+		XMStoreFloat3(&m_up, t_vehicleUpVector);
+	}
 	m_bobOffset = XMFLOAT3(0, 0, 0);
 }
 
@@ -621,9 +683,23 @@ int Player::GetRacePosition()
 
 XMFLOAT3 Player::GetRadiusVector()
 {
-	return m_mathHelper.CrossProduct(m_direction, m_up);
+	return m_mathHelper.CrossProduct(m_unmodifiedTarget, m_unmodifiedUp);
 }
 
+XMFLOAT3 Player::GetUnmodifiedTargetVector()
+{
+	return m_unmodifiedTarget;
+}
+
+XMFLOAT3 Player::GetUnmodifiedUpVector()
+{
+	return m_unmodifiedUp;
+}
+
+float Player::GetAngle()
+{
+	return m_angle;
+}
 float Player::GetHudBoosterInfo()
 {
 	//apparently wants 0 to be alot of boost, and 1 to be empty
@@ -688,6 +764,11 @@ void Player::SetFinalDirection()
 	}
 }
 
+void Player::AngleMoveBack()
+{
+	m_angle = m_previousAngle;
+}
+
 void Player::Start()
 {
 	m_speed = (float)(m_aButtonPressedAtStart) / 2;
@@ -698,12 +779,6 @@ void Player::SetSpeed(float p_speed)
 {
 	m_speed += p_speed;
 }
-void Player::StartCollisionAftermath(float p_angle)
-{
-	m_collisionAngleOffset = p_angle + m_angle;
-	m_collisionAfterMath = true;
-}
-
 
 
 
@@ -752,3 +827,10 @@ void Player::CollisionAftermath(float p_dt)
 		m_collisionAfterMathTimer = 0;
 	}
 }
+
+void Player::StartCollisionAftermath(float p_angle)
+{
+	m_collisionAngleOffset = p_angle/m_bumpIntensity;
+	m_collisionAfterMath = true;
+}
+

@@ -15,11 +15,13 @@ JoinGameScreen::JoinGameScreen(void)
 JoinGameScreen::JoinGameScreen(GameInfo* p_gameInfo,GraphicHandle* p_graphicsHandle, AudioManager* p_audioManager)
 	:MenuScreen(p_gameInfo,p_graphicsHandle, p_audioManager)
 {
-	numberOfModells = m_graphicHandle->GetAmountOfVehicles();
+	m_numberOfModells = m_graphicHandle->GetAmountOfVehicles();
+	m_numberOfColors = 6;
 	for (int i = 0; i < 4; i++)
 	{
 		m_modell[i] = 0;
 		m_color[i] = 0;
+		m_selectedTauntSound[i] = 0;
 		m_playerStatus[i] = DISCONNECTED;
 		m_modellIncrease[i] = 0;
 	}
@@ -27,8 +29,11 @@ JoinGameScreen::JoinGameScreen(GameInfo* p_gameInfo,GraphicHandle* p_graphicsHan
 	MakeHud(L"Connect.dds", DISCONNECTED);
 	MakeHud(L"ChooseModellButton.dds",CHOOSE_MODELL);
 	//MakeHud(L"ChooseColorButton.dds",CHOOSE_COLOR);
-	MakeHud(L"StartGame2.dds",READY);
-	
+	MakeHud(L"Ready.dds",READY);
+
+	m_tauntSounds.push_back("taunt1.wav");
+	m_tauntSounds.push_back("taunt2.wav");
+	m_numberOfTaunts = m_tauntSounds.size();
 }
 
 JoinGameScreen::~JoinGameScreen(void)
@@ -82,7 +87,6 @@ int JoinGameScreen::Update(float p_dt,std::vector<UserCMD>* userCMD)
 
 			if (userCMD->at(i).startButtonPressed)
 			{
-
 				if (ReadyCheck(i))
 				{
 					SaveInfo();
@@ -94,6 +98,7 @@ int JoinGameScreen::Update(float p_dt,std::vector<UserCMD>* userCMD)
 		{
 			ModellChanger(i,p_dt,userCMD);
 			ColorChanger(i,p_dt,userCMD);
+			TauntChanger(i,p_dt,userCMD);
 		}
 	
 			
@@ -121,8 +126,8 @@ void JoinGameScreen::Initialize()
 
 void JoinGameScreen::MakeHud(const wchar_t* p_textureNames, int p_hudIndex)
 {
-	DirectX::XMFLOAT2 t_centerPoint = DirectX::XMFLOAT2(0.5,-0.8);
-	DirectX::XMFLOAT2 t_offset = DirectX::XMFLOAT2(0.7,0.8);
+	DirectX::XMFLOAT2 t_centerPoint = DirectX::XMFLOAT2(0,-0.8);
+	DirectX::XMFLOAT2 t_offset = DirectX::XMFLOAT2(0.2,0.2);
 	std::vector<unsigned int> t_objHandles;
 	std::vector<DirectX::XMFLOAT2> t_barOffsets;
 	t_barOffsets.push_back(DirectX::XMFLOAT2(0,0));
@@ -182,14 +187,14 @@ void JoinGameScreen::ModellChanger(int i, float p_dt, std::vector<UserCMD>* user
 		}
 		else
 		{
-			m_modell[i] = numberOfModells - 1;
+			m_modell[i] = m_numberOfModells - 1;
 		}
 	}
 	else if (userCMD->at(i).Joystick.x > 0.8)
 	{
 		timeSinceLastChange[i]=0;
 		m_modellIncrease[i] = 1;
-		if (m_modell[i] < numberOfModells - 1)
+		if (m_modell[i] < m_numberOfModells - 1)
 		{
 			m_modell[i]++;
 		}
@@ -199,6 +204,7 @@ void JoinGameScreen::ModellChanger(int i, float p_dt, std::vector<UserCMD>* user
 		}
 	}
 }
+
 void JoinGameScreen::ColorChanger(int i, float p_dt, std::vector<UserCMD>* userCMD)
 {
 	if (timeSinceLastChange[i]>0.1)
@@ -209,14 +215,55 @@ void JoinGameScreen::ColorChanger(int i, float p_dt, std::vector<UserCMD>* userC
 			{
 				m_color[i]--;
 			}
+			else
+			{
+				m_color[i] = m_numberOfColors-1;
+			}
 			timeSinceLastChange[i]=0;
 		}
 		else if (userCMD->at(i).Joystick.y > 0.8)
 		{
-			if (m_color[i] < NUMBER_OF_COLORS - 1)
+			if (m_color[i] < m_numberOfColors - 1)//should be a value u get from graphichandle
 			{
 				m_color[i]++;
 			}	
+			else
+			{
+				m_color[i] = 0;
+			}
+			timeSinceLastChange[i]=0;
+		} 
+	}
+}
+
+void JoinGameScreen::TauntChanger(int i, float p_dt, std::vector<UserCMD>* userCMD)
+{
+	if (timeSinceLastChange[i]>0.5)
+	{
+		if (userCMD->at(i).rightJoystick.x < -0.8)
+		{
+			if (m_selectedTauntSound[i] > 0)
+			{
+				m_selectedTauntSound[i]--;
+			}
+			else
+			{
+				m_selectedTauntSound[i] = m_numberOfTaunts-1;
+			}
+			m_audioManager->PlaySpecificSound(m_tauntSounds[m_selectedTauntSound[i]],false,true);
+			timeSinceLastChange[i]=0;
+		}
+		else if (userCMD->at(i).rightJoystick.x >0.8)
+		{
+			if (m_selectedTauntSound[i] < m_numberOfTaunts - 1)
+			{
+				m_selectedTauntSound[i]++;
+			}	
+			else
+			{
+				m_selectedTauntSound[i] = 0;
+			}
+			m_audioManager->PlaySpecificSound(m_tauntSounds[m_selectedTauntSound[i]],false,true);
 			timeSinceLastChange[i]=0;
 		} 
 	}

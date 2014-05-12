@@ -17,6 +17,7 @@ protected:
 	GameInfo* m_gameInfo;
 	float timeSinceLastChange[4];
 	int m_changedButtonSound;
+	DirectX::XMFLOAT2 m_buttonOffset;
 public:
 	MenuScreen(void);
 	MenuScreen(GameInfo* p_gameInfo, GraphicHandle* p_graphicsHandle, AudioManager* p_audioManager);

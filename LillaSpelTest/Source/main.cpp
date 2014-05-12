@@ -64,20 +64,21 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	m_levelNames.push_back("Levels/Assault");
 	m_levelNames.push_back("Levels/Dust2");
 	m_levelNames.push_back("Levels/Aztec");
+	m_levelNames.push_back("Levels/Aztec2");
 
 
 	m_GraphicHandle = m_GraphicHandle->GetInstance();
 	m_GraphicHandle->Initialize(1920, 1080, m_HandleWindow,m_levelNames); //fix this ipnleagut variables right
 	m_GraphicHandle->SetFullScreen(false);
 	m_audioManager = m_audioManager->GetInstance();
-	m_audioManager->PlaySpecificSound("main.wav",true);
+	m_audioManager->PlaySpecificSound("main.wav",true,false);
 
 
 	m_mainMenuScreen = new MainMenuScreen(m_GraphicHandle, m_audioManager);
 	m_gameSetupScreen = new GameSetupScreen(&m_gameInfo,m_GraphicHandle, m_audioManager);
 	m_optionsScreen = new OptionsScreen(&m_gameInfo,m_GraphicHandle, m_audioManager);
 	m_joinGameScreen = new JoinGameScreen(&m_gameInfo,m_GraphicHandle, m_audioManager);
-	m_pauseScreen = new PauseScreen(m_GraphicHandle, m_audioManager);
+	m_pauseScreen = new PauseScreen(&m_gameInfo,m_GraphicHandle, m_audioManager);
 
 
 	//m_gameScreen = new GameScreen("dust2", 4, m_GraphicHandle);
