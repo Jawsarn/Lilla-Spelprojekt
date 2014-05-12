@@ -17,6 +17,7 @@ MenuScreen::~MenuScreen(void)
 MenuScreen::MenuScreen(GameInfo* p_gameInfo, GraphicHandle* p_graphicsHandle, AudioManager* p_audioManager)
 	:Screen(p_graphicsHandle, p_audioManager)
 {
+	m_buttonOffset = DirectX::XMFLOAT2(0.5,0.2);
 	m_gameInfo = p_gameInfo;
 	for (int i = 0; i < 4; i++)
 	{
@@ -89,7 +90,7 @@ void MenuScreen::AddButton(std::string p_buttonName, DirectX::XMFLOAT2 p_centerP
 {
 	Button t_button;
 	t_button.centerPoint = p_centerPoint;
-	t_button.offset = DirectX::XMFLOAT2(offsetX,offsetY);
+	t_button.offset = m_buttonOffset;
 	t_button.buttonName = p_buttonName;
 	buttonList.push_back(new Button(t_button));
 	int t_index = buttonList.size()-1;

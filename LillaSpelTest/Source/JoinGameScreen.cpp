@@ -27,7 +27,7 @@ JoinGameScreen::JoinGameScreen(GameInfo* p_gameInfo,GraphicHandle* p_graphicsHan
 	MakeHud(L"Connect.dds", DISCONNECTED);
 	MakeHud(L"ChooseModellButton.dds",CHOOSE_MODELL);
 	//MakeHud(L"ChooseColorButton.dds",CHOOSE_COLOR);
-	MakeHud(L"StartGame2.dds",READY);
+	MakeHud(L"Ready.dds",READY);
 	
 }
 
@@ -82,7 +82,6 @@ int JoinGameScreen::Update(float p_dt,std::vector<UserCMD>* userCMD)
 
 			if (userCMD->at(i).startButtonPressed)
 			{
-
 				if (ReadyCheck(i))
 				{
 					SaveInfo();
@@ -121,8 +120,8 @@ void JoinGameScreen::Initialize()
 
 void JoinGameScreen::MakeHud(const wchar_t* p_textureNames, int p_hudIndex)
 {
-	DirectX::XMFLOAT2 t_centerPoint = DirectX::XMFLOAT2(0.5,-0.8);
-	DirectX::XMFLOAT2 t_offset = DirectX::XMFLOAT2(0.7,0.8);
+	DirectX::XMFLOAT2 t_centerPoint = DirectX::XMFLOAT2(0,-0.8);
+	DirectX::XMFLOAT2 t_offset = DirectX::XMFLOAT2(0.2,0.2);
 	std::vector<unsigned int> t_objHandles;
 	std::vector<DirectX::XMFLOAT2> t_barOffsets;
 	t_barOffsets.push_back(DirectX::XMFLOAT2(0,0));
