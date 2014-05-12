@@ -5,8 +5,8 @@ PauseScreen::PauseScreen(void)
 {
 }
 
-PauseScreen::PauseScreen(GraphicHandle* p_graphicHandle, AudioManager* p_audioManager)
-	:MenuScreen(nullptr,p_graphicHandle, p_audioManager)
+PauseScreen::PauseScreen(GameInfo* p_gameInfo ,GraphicHandle* p_graphicHandle, AudioManager* p_audioManager)
+	:MenuScreen(p_gameInfo,p_graphicHandle, p_audioManager)
 {
 	AddButton("Continue", DirectX::XMFLOAT2(0,0.5),0.5,1,L"continue1.dds",L"continue2.dds");
 	AddButton("Main Menu",DirectX::XMFLOAT2(0,0),0.5,1,L"MainMenu1.dds",L"MainMenu2.dds");
@@ -30,6 +30,8 @@ int PauseScreen::Update(float p_dt,std::vector<UserCMD>* userCMD )
 	}
 	else if (t_menuChoice == "Main Menu")
 	{
+		m_graphicHandle->RemoveLevelDraw(m_gameInfo->map);
+		//remove player and playerwalls too
 		return MAIN_MENU_SCREEN;
 	}
 	else if (t_menuChoice == "Quit")
