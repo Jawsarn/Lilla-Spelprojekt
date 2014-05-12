@@ -5,9 +5,13 @@ GameScreen::GameScreen(void)
 {
 }
 
-GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4], std::string p_mapName, int p_numberOfPlayers, GraphicHandle* p_graphicHandle, AudioManager* p_audioManager )
+GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4],string p_tauntSound[4], std::string p_mapName, int p_numberOfPlayers, GraphicHandle* p_graphicHandle, AudioManager* p_audioManager )
 	:Screen(p_graphicHandle, p_audioManager)
 {
+	m_engineSound[0] = "Engine1.wav";
+	m_engineSound[1] = "Engine2.wav";
+	m_engineSound[2] = "Engine3.wav";
+	m_engineSound[3] = "Engine4.wav";
 	m_state = COUNTDOWN;
 	m_mapLoader = new MapLoader();
 	m_mapNodes = m_mapLoader->LoadMap(p_mapName);
@@ -27,6 +31,7 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4], std::string p_mapNa
 		t_shipWorldMatrices.push_back(m_players[i]->GetWorldMatrix());
 		t_colors.push_back(p_color[i]);
 		t_whichVehicles.push_back(p_whatVehicle[i]);
+		m_tauntSound[i] = p_tauntSound[i];
 	}
 
 	m_graphicHandle->SetAmountOfPlayers(p_numberOfPlayers);
@@ -100,7 +105,7 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 			//i don't even..
 			if (p_userCMDS->at(i).leftBumberPressed)
 			{
-				m_audioManager->PlaySpecificSound("honk.wav",false,false);
+				m_audioManager->PlaySpecificSound(m_tauntSound[i],false,false);
 			}
 
 

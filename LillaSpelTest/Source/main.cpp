@@ -178,7 +178,7 @@ void RunInitialization()
 			if(m_gameInfo.playerOnline[i])
 				t_playerOnline++;
 		}
-		m_gameScreen = new GameScreen(m_gameInfo.playerColor, m_gameInfo.shipModell, m_levelNames[m_gameInfo.map], t_playerOnline, m_GraphicHandle, m_audioManager);
+		m_gameScreen = new GameScreen(m_gameInfo.playerColor, m_gameInfo.shipModell,m_gameInfo.tauntSound, m_levelNames[m_gameInfo.map], t_playerOnline, m_GraphicHandle, m_audioManager);
 		break;
 	case JOIN_GAME_SCREEN:
 		m_joinGameScreen->Initialize();

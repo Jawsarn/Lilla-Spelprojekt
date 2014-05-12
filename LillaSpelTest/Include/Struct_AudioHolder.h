@@ -1,4 +1,5 @@
 #include "fmod.hpp"
+#include <vector>
 
 struct AudioHolder
 {

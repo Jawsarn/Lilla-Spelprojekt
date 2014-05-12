@@ -21,6 +21,7 @@ private:
 	std::map<std::string,AudioHolder> m_sounds;
 	static AudioManager* m_Singleton;
 	float m_masterVolume;
+	FMOD::Channel* m_engineChannels[4];
 
 	AudioManager(void);
 	~AudioManager(void);
