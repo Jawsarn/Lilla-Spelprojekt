@@ -32,11 +32,11 @@ void PhysicsManager::SetPlayerCollisions(Player* p_p1, Player* p_p2, float p_p1M
 	t_p2Projection.x = -t_p2Projection.x; t_p2Projection.y = -t_p2Projection.y;  t_p2Projection.z = -t_p2Projection.z; //kanskeinte ska göras
 
 	//skapar ett värde över hur "stor" kollisionen är
-	float t_magnitude = t_mHelp.Abs(t_mHelp.VecSubVec(t_p1Projection, t_p2Projection));
+	//float t_magnitude = t_mHelp.Abs(t_mHelp.VecSubVec(t_p1Projection, t_p2Projection));
 
 	//Skapar 2 vectorer från projiceringsvectorerna gånger hur stark krocken var
-	XMFLOAT3 t_p1Magnitude = XMFLOAT3 (t_mHelp.FloatMultiVec(t_magnitude* p_p1MagnitudeMultiplier, t_mHelp.VecSubVec(t_p1Pos, t_p2Pos))); //kanske add om jag tar bort att jag vänder ^
-	XMFLOAT3 t_p2Magnitude = XMFLOAT3 (t_mHelp.FloatMultiVec(t_magnitude* p_p2MagnitudeMultiplier, t_mHelp.VecSubVec(t_p2Pos, t_p1Pos)));
+	//XMFLOAT3 t_p1Magnitude = XMFLOAT3 (t_mHelp.FloatMultiVec(t_magnitude* p_p1MagnitudeMultiplier, t_mHelp.VecSubVec(t_p1Pos, t_p2Pos))); //kanske add om jag tar bort att jag vänder ^
+	//XMFLOAT3 t_p2Magnitude = XMFLOAT3 (t_mHelp.FloatMultiVec(t_magnitude* p_p2MagnitudeMultiplier, t_mHelp.VecSubVec(t_p2Pos, t_p1Pos)));
 	
 
 	//Här startar uppdelningen av magnitudevektorerna till angle och speed (playerradius & Playerdirection )
@@ -44,20 +44,20 @@ void PhysicsManager::SetPlayerCollisions(Player* p_p1, Player* p_p2, float p_p1M
 	XMFLOAT3 t_p1Direction = p_p1->GetUnmodifiedTargetVector();
 	XMFLOAT3 t_p2Direction = p_p2->GetUnmodifiedTargetVector();
 	//Klar projecering av kraftvektor på p1s direction.. Den här ska översättas till m_speed
-	XMFLOAT3 t_p1DirectionProjection = t_mHelp.Projection(t_p1Direction, t_p1Magnitude); 
+	XMFLOAT3 t_p1DirectionProjection = t_mHelp.Projection(t_p1Direction, t_p1Projection); 
 	//HÄR ÄR TWEEEEEEEKZZZZ
 	p_p1->SetSpeed( t_mHelp.DotProduct(t_p1DirectionProjection, t_p1DirectionProjection));
 	//Klar Projecering av kraftvektor på p2s direction samma som för p1 ^^^^ där uppe
-	XMFLOAT3 t_p2DirectionProjection = t_mHelp.Projection(t_p2Direction,t_p2Magnitude); 
+	XMFLOAT3 t_p2DirectionProjection = t_mHelp.Projection(t_p2Direction,t_p2Projection); 
 	//TWEEEEEKZZZZZZ
 	p_p2->SetSpeed( t_mHelp.DotProduct(t_p2DirectionProjection, t_p2DirectionProjection));
 
 	//////Projecering på Radiusvectorn!!!!! används för angle påplusning
 	XMFLOAT3 t_p1Radius = p_p1->GetRadiusVector();
-	XMFLOAT3 t_p2Radius = p_p2->GetRadiusVector();
+	//XMFLOAT3 t_p2Radius = p_p2->GetRadiusVector();
 	//Klar Projecering av Kraftvektorn på p1s Radius, ska översättas till m_angle
-	XMFLOAT3 t_p1RadiusProjection = t_mHelp.Projection(t_p1Magnitude, t_p1Radius); 
-	XMFLOAT3 t_p2RadiusProjection = t_mHelp.Projection(t_p2Magnitude, t_p2Radius);
+	XMFLOAT3 t_p1RadiusProjection = t_mHelp.Projection(t_p1Projection, t_p1Radius); 
+	XMFLOAT3 t_p2RadiusProjection = t_mHelp.Projection(t_p2Projection, t_p1Radius);
 
 	float t_p1Angle = t_mHelp.Abs(t_p1RadiusProjection);
 	float t_p2Angle = t_mHelp.Abs(t_p2RadiusProjection);
