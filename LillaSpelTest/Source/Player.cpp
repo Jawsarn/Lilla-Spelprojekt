@@ -138,9 +138,21 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 		Rotation(p_dt);
 		MovementAlongLogicalMap(p_dt);
 		SetDirection();
-		FixWorldPosition();
-		if (m_gravityShifting)
+
+		////Fix from logical map to actual world position and orientation
+		FixUpVectorRotation(m_angle);
+		//now rotating around the normal
+
+		FixOffsetFromCenterSpline();
+		//now offset from the center, following the tube edge
+
+		//BobOffset();
+
+		if(!m_gravityShifting)
+			UpdateWorldMatrix();
+		else
 			GravityShift(m_gravityShiftProgress);
+		//matrices now updated. Ready to be grabbed from the GameScreen
 
 		UpdateCollisionBox();
 		if (!m_gravityShifting)
@@ -462,6 +474,8 @@ void Player::UpdateWorldMatrix()
 	XMStoreFloat3(&m_wallPlacementDirection, t_vehicleTargetVector);
 
 
+	XMStoreFloat3(&m_direction, t_vehicleTargetVector);
+	XMStoreFloat3(&m_up, t_vehicleUpVector);
 	m_bobOffset = XMFLOAT3(0, 0, 0);
 }
 
