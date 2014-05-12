@@ -220,6 +220,7 @@ void JoinGameScreen::ColorChanger(int i, float p_dt, std::vector<UserCMD>* userC
 				m_color[i] = m_numberOfColors-1;
 			}
 			timeSinceLastChange[i]=0;
+			m_graphicHandle->SetSelectionColour(i,m_color[i]);
 		}
 		else if (userCMD->at(i).Joystick.y > 0.8)
 		{
@@ -232,6 +233,7 @@ void JoinGameScreen::ColorChanger(int i, float p_dt, std::vector<UserCMD>* userC
 				m_color[i] = 0;
 			}
 			timeSinceLastChange[i]=0;
+			m_graphicHandle->SetSelectionColour(i,m_color[i]);
 		} 
 	}
 }
