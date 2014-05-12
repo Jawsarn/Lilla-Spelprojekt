@@ -54,13 +54,21 @@ void PhysicsManager::SetPlayerCollisions(Player* p_p1, Player* p_p2, float p_p1M
 
 	//////Projecering på Radiusvectorn!!!!! används för angle påplusning
 	XMFLOAT3 t_p1Radius = p_p1->GetRadiusVector();
-	//XMFLOAT3 t_p2Radius = p_p2->GetRadiusVector();
+	XMFLOAT3 t_p2Radius = p_p2->GetRadiusVector();
 	//Klar Projecering av Kraftvektorn på p1s Radius, ska översättas till m_angle
 	XMFLOAT3 t_p1RadiusProjection = t_mHelp.Projection(t_p1Projection, t_p1Radius); 
-	XMFLOAT3 t_p2RadiusProjection = t_mHelp.Projection(t_p2Projection, t_p1Radius);
+	XMFLOAT3 t_p2RadiusProjection = t_mHelp.Projection(t_p2Projection, t_p2Radius);
+
+	float t_p1CheckAngle = fmod(p_p1->GetAngle(), 2*3.1415);
+	float t_p2CheckAngle = fmod(p_p2->GetAngle(), 2*3.1415);
+	
+	float t_p1AngleDirection = t_p1CheckAngle - t_p2CheckAngle;
+	float t_p2AngleDirection = t_p2CheckAngle - t_p1CheckAngle;
+	t_p1AngleDirection /= abs(t_p1AngleDirection);
+	t_p2AngleDirection /= abs(t_p2AngleDirection);
 
 	float t_p1Angle = t_mHelp.Abs(t_p1RadiusProjection);
 	float t_p2Angle = t_mHelp.Abs(t_p2RadiusProjection);
-	p_p1->StartCollisionAftermath(t_p1Angle/10);
-	p_p2->StartCollisionAftermath(t_p2Angle/10);
+	p_p1->StartCollisionAftermath(t_p1AngleDirection*t_p1Angle);
+	p_p2->StartCollisionAftermath(t_p2AngleDirection*t_p2Angle);
 }

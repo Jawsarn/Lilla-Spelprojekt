@@ -96,6 +96,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_deathShakeMaxIntensity = 8;//reversed intensity: higher number means lower intensity. Because logic
 	m_deathShakeIntensityDrop = 4;
 
+	m_bumpIntensity = 10;
 
 	m_bobFrequency = 1;
 	m_bobIntensity = 0.1;
@@ -822,7 +823,7 @@ void Player::CollisionAftermath(float p_dt)
 
 void Player::StartCollisionAftermath(float p_angle)
 {
-	m_collisionAngleOffset = p_angle;
+	m_collisionAngleOffset = p_angle/m_bumpIntensity;
 	m_collisionAfterMath = true;
 }
 
