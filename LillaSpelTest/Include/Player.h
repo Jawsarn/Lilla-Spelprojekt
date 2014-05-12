@@ -90,7 +90,7 @@ private:
 	XMFLOAT3 m_bobOffset;
 	default_random_engine m_randomGenerator;
 
-
+	float m_bumpIntensity;
 	XMFLOAT3 m_unmodifiedTarget;
 	XMFLOAT3 m_unmodifiedUp;
 
