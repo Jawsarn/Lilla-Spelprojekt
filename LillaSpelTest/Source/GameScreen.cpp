@@ -100,7 +100,7 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 			//i don't even..
 			if (p_userCMDS->at(i).leftBumberPressed)
 			{
-				m_audioManager->PlaySpecificSound("honk.wav",false);
+				m_audioManager->PlaySpecificSound("honk.wav",false,false);
 			}
 
 

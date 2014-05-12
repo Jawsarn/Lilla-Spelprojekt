@@ -47,6 +47,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_speed = 0;
 	m_cameraAngle = 0;
 	m_deltaAngle = 0;
+	m_previousAngle = 0;
 	m_hasWon = false;
 	m_gravityShifting = false;
 	m_gravityShiftProgress = 0;
@@ -222,6 +223,7 @@ void Player::Acceleration(float p_dt)
 
 void Player::Rotation(float p_dt)
 {
+	m_previousAngle = m_angle;
 	m_deltaAngle = 0;
 	m_deltaAngle = m_currentUserCmd.Joystick.x*m_rotateSpeed;
 	m_angle += m_deltaAngle;
@@ -760,6 +762,11 @@ void Player::SetFinalDirection()
 		FixWorldPosition();
 		m_hasWon = true;
 	}
+}
+
+void Player::AngleMoveBack()
+{
+	m_angle = m_previousAngle;
 }
 
 void Player::Start()

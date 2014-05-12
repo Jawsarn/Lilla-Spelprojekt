@@ -80,7 +80,7 @@ std::string MenuScreen::NavigateMenu(UserCMD& p_userCMD, unsigned int p_hudHandl
 		{
 			return ""; 
 		}
-		m_audioManager->PlaySpecificSound("waca.wav", false);
+		m_audioManager->PlaySpecificSound("waca.wav", false,false);
 		timeSinceLastChange[0]=0;
 	}
 	return ""; 
