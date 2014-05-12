@@ -10,14 +10,14 @@ OptionsScreen::OptionsScreen(GameInfo* p_gameInfo, GraphicHandle* p_graphicsHand
 {
 	AddButton("Volume", DirectX::XMFLOAT2(0,0.6),0.5,1, L"Volume1.dds",L"Volume2.dds");
 	AddButton("Resolution", DirectX::XMFLOAT2(0,0.2),0.5,1,L"Resolution1.dds",L"Resolution2.dds");
-	AddButton("Full screen",DirectX::XMFLOAT2(0,-0.2),0.5,1,L"FullScreen1.dds",L"FullScreen2.dds");
-	AddButton("Back", DirectX::XMFLOAT2(0,-0.6),0.5,1,L"Back1.dds",L"Back2.dds");
+	AddButton("Full screen",DirectX::XMFLOAT2(0,-0.2),0.5,1,L"fullScreen1.dds",L"FullScreen2.dds");
+	AddButton("Back", DirectX::XMFLOAT2(0,-0.6),0.5,0.2,L"Back1.dds",L"Back2.dds");
 	std::vector<UINT> t_volumeSlideTextures;
 	UINT t_volumeSlideTexture;
 	UINT t_volumeSlideHandle;
 	m_graphicHandle->LoadTexture(L"VolumeSlide.dds",t_volumeSlideTexture);
 	t_volumeSlideTextures.push_back(t_volumeSlideTexture);
-	m_graphicHandle->CreateHUDObject(DirectX::XMFLOAT2(0,0.8),DirectX::XMFLOAT2(0.5,0.5),t_volumeSlideTextures,t_volumeSlideHandle);
+	m_graphicHandle->CreateHUDObject(DirectX::XMFLOAT2(0,0.85),DirectX::XMFLOAT2(0.5,0.07),t_volumeSlideTextures,t_volumeSlideHandle);
 
 
 	FixButtonPointers();
