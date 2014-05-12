@@ -18,11 +18,11 @@ public:
 	HRESULT Initialize( ID3D11Device* p_Device, ID3D11DeviceContext* p_DeviceContext, ID3D11DepthStencilState* p_NoWriteDepthState, ID3D11DepthStencilState* p_OffDepthState, ID3D11BlendState* p_OnBlendState, ID3D11BlendState* p_OffBlendState );
 
 	HRESULT CreateInitParticlesBuffer(std::vector<Particle> p_StartParticles, UINT &o_BufferID);
-	void CreateCBsetup(XMFLOAT3 p_SpawnPosition, float flareEmitNumber, XMFLOAT3 emitDirection, float initSpawnAmount, float particleLifeSpan, XMFLOAT2 initialSize, UINT &dataID);
+	void CreateCBsetup(XMFLOAT3 p_SpawnPosition, float flareEmitNumber, XMFLOAT3 emitDirection, float initSpawnAmount, float particleLifeSpan, XMFLOAT2 initialSize, float p_SpawnTime, UINT &dataID);
 	HRESULT CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName , UINT p_StartBufferID, XMFLOAT3 p_ObjectPosition, UINT p_DataID, UINT p_MaxParticles, UINT &systemID);
 //	void Reset(UINT systemID);
 	HRESULT UpdatePositionOnCBsetup(UINT p_ParticleSystemID, CXMMATRIX p_WorldMatrix);
-	void Draw(float dt, float gt);
+	void Draw(float dt);
 
 
 private:
@@ -101,15 +101,14 @@ private:
 		float initSpawnAmount;
 
 		float particleLifeSpan;
+		float spawnTime;
 		XMFLOAT2 initialSize;
-		float filler;
 	};
 
 	struct CPerFrameParticleBuffer
 	{
 		float deltaTime;
-		float gametime;
-		XMFLOAT2 fillers;
+		XMFLOAT3 fillers;
 	};
 
 

@@ -151,7 +151,7 @@ void Run()
 
 			///UPDATE & DRAW TEMPDRAAWWWWW
 			//m_GraphicHandle->UpdateSelectVehicle(m_DeltaTime);
-			m_GraphicHandle->DrawGame();
+			m_GraphicHandle->DrawGame(m_DeltaTime);
 		}
 	}
 
