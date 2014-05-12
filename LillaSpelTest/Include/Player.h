@@ -90,6 +90,10 @@ private:
 	XMFLOAT3 m_bobOffset;
 	default_random_engine m_randomGenerator;
 
+
+	XMFLOAT3 m_unmodifiedTarget;
+	XMFLOAT3 m_unmodifiedUp;
+
 	float m_cameraAngle;
 	float m_cameraFollowSpeed;
 	float m_cameraTrailDistanceUp;

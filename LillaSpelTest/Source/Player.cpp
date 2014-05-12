@@ -51,6 +51,8 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_gravityShifting = false;
 	m_gravityShiftProgress = 0;
 	m_collisionAfterMath = false;
+	m_unmodifiedTarget = XMFLOAT3(0,0,0);
+	m_unmodifiedUp = XMFLOAT3(0,0,0);
 
 	////BALANCING VARIABLES
 
@@ -237,7 +239,7 @@ void Player::SetDirection()
 	XMFLOAT3 t_frontNormalComponent = m_mathHelper.FloatMultiVec(t_interpolation, m_mathHelper.Normalize(m_mapNode->m_nextNode->m_normal));
 	XMFLOAT3 t_currentNormalComponent = m_mathHelper.FloatMultiVec(1 - t_interpolation, m_mathHelper.Normalize(m_mapNode->m_normal));
 	m_direction = m_mathHelper.Normalize(m_mathHelper.VecAddVec(t_frontNormalComponent, t_currentNormalComponent));
-
+	m_unmodifiedTarget = m_direction;
 	//now looking along the interpolated normal between current node and next node 
 }
 
@@ -270,9 +272,14 @@ void Player::UpdateCollisionBox()
 
 	XMFLOAT4 t_quarternion = XMFLOAT4(0, 0, 0, 1);
 	XMVECTOR t_boxOrientationVector = XMLoadFloat4(&t_quarternion);
-	t_boxOrientationVector = XMVector4Transform(t_boxOrientationVector, XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_worldMatrix)));
-	t_boxOrientationVector = XMVector4Normalize(t_boxOrientationVector);
-	XMStoreFloat4(&t_quarternion, t_boxOrientationVector);
+
+
+	XMStoreFloat4(&t_quarternion, XMQuaternionRotationMatrix(XMMatrixInverse(nullptr,XMLoadFloat4x4(&m_worldMatrix))));
+
+
+	//t_boxOrientationVector = XMVector4Transform(t_boxOrientationVector, XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_worldMatrix)));
+	//t_boxOrientationVector = XMVector4Normalize(t_boxOrientationVector);
+	//XMStoreFloat4(&t_quarternion, t_boxOrientationVector);
 
 
 
@@ -357,6 +364,7 @@ void Player::FixUpVectorRotation(float p_angle)
 	t_upVector = XMVector3Transform(t_upVector, t_rotationmatrix);
 	XMStoreFloat3(&m_up, t_upVector);
 	m_up = t_mathHelper.Normalize(m_up);
+	m_unmodifiedUp = m_up;
 }
 
 void Player::FixOffsetFromCenterSpline()
@@ -639,7 +647,7 @@ int Player::GetRacePosition()
 
 XMFLOAT3 Player::GetRadiusVector()
 {
-	return m_mathHelper.CrossProduct(m_direction, m_up);
+	return m_mathHelper.CrossProduct(m_unmodifiedTarget, m_unmodifiedUp);
 }
 
 float Player::GetHudBoosterInfo()
