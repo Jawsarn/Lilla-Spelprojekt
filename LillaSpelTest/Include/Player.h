@@ -140,11 +140,14 @@ public:
 
 	int GetRacePosition();
 	XMFLOAT3 GetRadiusVector();
+	XMFLOAT3 GetUnmodifiedUpVector();
+	XMFLOAT3 GetUnmodifiedTargetVector();
 	float GetHudBoosterInfo();
 	float GetHudWallInfo();
 	bool GetImmortal();
 	int GetPlayerIndex();
 	int GetNrOfAPressedAtStart();
+
 
 	//modifiers
 	void Die();
