@@ -1236,6 +1236,16 @@ HRESULT GraphicEngine::SetCamera(UINT p_CameraID, CXMMATRIX p_Matrix)
 	if (m_Cameras[p_CameraID] != nullptr)
 	{
 		m_Cameras[p_CameraID]->SetView(p_Matrix);
+		
+		XMFLOAT4X4 t_PosMatrix;
+		XMMATRIX t_Tempii = XMMatrixInverse(nullptr, p_Matrix);
+
+		XMStoreFloat4x4( &t_PosMatrix ,t_Tempii);
+
+		XMFLOAT3 t_CamPos = XMFLOAT3(t_PosMatrix._41, t_PosMatrix._42, t_PosMatrix._43);
+
+		m_Cameras[p_CameraID]->SetPosition(t_CamPos);
+
 		return S_OK;
 	}
 	else
@@ -1344,7 +1354,7 @@ void GraphicEngine::SetViewportAmount(int p_NumOfViewports)
 //==========Draw functions===================//
 ///////////////////////////////////////////////
 
-void GraphicEngine::DrawGame()
+void GraphicEngine::DrawGame(float p_DeltaTime)
 {
 	//clear the render target
 	m_DeviceContext->ClearRenderTargetView(m_RenderTargetView, Colors::Black );
@@ -1379,7 +1389,7 @@ void GraphicEngine::DrawGame()
 	m_DeviceContext->OMSetRenderTargets(1, &m_RenderTargetView, m_DepthStencilView);
 	
 	//draw particle system
-	m_ParticleSystem->Draw(0.01f,0);
+	m_ParticleSystem->Draw(p_DeltaTime);
 
 
 	////draw hud
@@ -1405,6 +1415,7 @@ void GraphicEngine::UpdateFrameBuffer()
 			t_PerFrame.View[i] = XMMatrixTranspose( m_ActiveCameras[i]->View() );
 			
 			t_PerFrame.fillers3 = XMFLOAT3(0,0,0);
+
 			t_CBEyeyPosition.EyePosition[i] = XMFLOAT4(t_Pos.x, t_Pos.y, t_Pos.z, 1);
 		}
 		else
@@ -1695,9 +1706,9 @@ void GraphicEngine::CreateParticleSystem(UINT p_EffectType, const wchar_t * p_Fi
 	m_ParticleSystem->CreateParticleSystem(p_EffectType, p_FileName, p_StartBufferID, p_WorldPos, p_Data, p_MaxParticles, o_SystemID);
 }
 
-void GraphicEngine::CreateParticleCBSetup(XMFLOAT3 p_ObjectPosition, float p_FlareEmitNumber, XMFLOAT3 p_EmitDirection, float p_InitSpawnAmount, float p_ParticleLifeSpan, XMFLOAT2 p_InitialSize, UINT &o_DataID)
+void GraphicEngine::CreateParticleCBSetup(XMFLOAT3 p_ObjectPosition, float p_FlareEmitNumber, XMFLOAT3 p_EmitDirection, float p_InitSpawnAmount, float p_ParticleLifeSpan, XMFLOAT2 p_InitialSize, float p_SpawnTime,UINT &o_DataID)
 {
-	m_ParticleSystem->CreateCBsetup( p_ObjectPosition, p_FlareEmitNumber, p_EmitDirection, p_InitSpawnAmount, p_ParticleLifeSpan, p_InitialSize, o_DataID);
+	m_ParticleSystem->CreateCBsetup( p_ObjectPosition, p_FlareEmitNumber, p_EmitDirection, p_InitSpawnAmount, p_ParticleLifeSpan, p_InitialSize, p_SpawnTime, o_DataID);
 }
 
 void GraphicEngine::UpdateParticleCB(UINT p_DataID, XMFLOAT3 p_WorldAcceler, float p_FlareEmitNumber, XMFLOAT3 p_EmitDirection, float p_InitSpawnAmount, float p_ParticleLifeSpan, XMFLOAT2 p_InitialSize)

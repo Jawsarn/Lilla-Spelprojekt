@@ -6,6 +6,7 @@ struct GS_OUTPUT
 	float3 Norm : NORMAL;
 	float2 Tex : TEXCOORD;
 	float Age : AGE;
+	float Lifespan :LIFESPAN;
 	uint Viewport	: SV_ViewportArrayIndex;
 };
 
@@ -15,8 +16,13 @@ float4 PS(GS_OUTPUT input) : SV_TARGET
 {
 	float4 finalColor;
 	
-	//finalColor = diffuseTexture.Sample(wrapSampler, input.Tex);
-	finalColor = float4(1,1,1,1);
+	finalColor = diffuseTexture.Sample(wrapSampler, input.Tex);
+	//finalColor = float4(1,1,1,1);
+	
+	
+	finalColor.w -= 1 - (input.Age / input.Lifespan);
+	
+	
 
 	return finalColor;
 }

@@ -15,15 +15,15 @@ cbuffer CPerEffectBuffer	:register(b2)
 	float initSpawnAmount;
 
 	float particleLifeSpan;
+	float spawnTime;
 	float2 initialSize;
-	float filler6;
+	
 }
 
 cbuffer CPerFrameParticleBuffer	:register(b3)
 {
 	float deltaTime;
-	float gameTime;
-	float2 fillers2;
+	float3 fillers2;
 }
 
 cbuffer EyePosition : register(b4)

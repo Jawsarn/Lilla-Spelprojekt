@@ -5,6 +5,7 @@ struct VS_OUTPUT
 	float3 PosW : POSITION;
 	float2 Size : SIZE;
 	float Age : AGE;
+	float Lifespan :LIFESPAN;
 	uint Type : TYPE; 
 };
 
@@ -14,6 +15,7 @@ struct GS_OUTPUT
 	float3 Norm : NORMAL;
 	float2 Tex : TEXCOORD;
 	float Age : AGE;
+	float Lifespan :LIFESPAN;
 	uint Viewport	: SV_ViewportArrayIndex;
 };
 
@@ -25,7 +27,7 @@ void GS( point VS_OUTPUT gin[1], inout TriangleStream< GS_OUTPUT > tristreamStre
 	for (int i = 0; i < 4; i++)
 	{
 		float3 p = gin[0].PosW;
-		float2 d = gin[0].Size;
+		float2 d = gin[0].Size*(1 + (gin[0].Age/gin[0].Lifespan));
 
 		/*GS_OUTPUT v0;
 		v0.PosH.xyz = p;
@@ -71,6 +73,7 @@ void GS( point VS_OUTPUT gin[1], inout TriangleStream< GS_OUTPUT > tristreamStre
 		v0.Viewport = i;
 		v0.Tex = float2(0.0f, 0.0f);
 		v0.Age = gin[0].Age;
+		v0.Lifespan = gin[0].Lifespan;
 		tristreamStream.Append(v0);
 
 		GS_OUTPUT v1;
@@ -81,6 +84,7 @@ void GS( point VS_OUTPUT gin[1], inout TriangleStream< GS_OUTPUT > tristreamStre
 		v1.Viewport = i;
 		v1.Tex = float2(1.0f, 0.0f);
 		v1.Age = gin[0].Age;
+		v1.Lifespan = gin[0].Lifespan;
 		tristreamStream.Append(v1);
 
 		GS_OUTPUT v2;
@@ -91,6 +95,7 @@ void GS( point VS_OUTPUT gin[1], inout TriangleStream< GS_OUTPUT > tristreamStre
 		v2.Viewport = i;
 		v2.Tex = float2(0.0f, 1.0f);
 		v2.Age = gin[0].Age;
+		v2.Lifespan = gin[0].Lifespan;
 		tristreamStream.Append(v2);
 		tristreamStream.RestartStrip();
 
@@ -102,6 +107,7 @@ void GS( point VS_OUTPUT gin[1], inout TriangleStream< GS_OUTPUT > tristreamStre
 		v3.Viewport = i;
 		v3.Tex = float2(0.0f, 1.0f);
 		v3.Age = gin[0].Age;
+		v3.Lifespan = gin[0].Lifespan;
 		tristreamStream.Append(v3);
 
 		GS_OUTPUT v4;
@@ -112,6 +118,7 @@ void GS( point VS_OUTPUT gin[1], inout TriangleStream< GS_OUTPUT > tristreamStre
 		v4.Viewport = i;
 		v4.Tex = float2(1.0f, 0.0f);
 		v4.Age = gin[0].Age;
+		v4.Lifespan = gin[0].Lifespan;
 		tristreamStream.Append(v4);
 
 		GS_OUTPUT v5;
@@ -122,6 +129,7 @@ void GS( point VS_OUTPUT gin[1], inout TriangleStream< GS_OUTPUT > tristreamStre
 		v5.Viewport = i;
 		v5.Tex = float2(1.0f, 1.0f);
 		v5.Age = gin[0].Age;
+		v5.Lifespan = gin[0].Lifespan;
 		tristreamStream.Append(v5);
 		tristreamStream.RestartStrip();
 	/*}*/

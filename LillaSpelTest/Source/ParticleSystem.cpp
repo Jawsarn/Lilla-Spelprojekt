@@ -152,7 +152,7 @@ HRESULT ParticleSystem::CreateParticleSystem(UINT p_EffectType, const wchar_t * 
 
 	ID3D11ShaderResourceView* t_NewTexture;
 
-	CreateDDSTextureFromFile(m_Device, p_FileName,nullptr, &t_NewTexture);
+	hr = CreateDDSTextureFromFile(m_Device, p_FileName,nullptr, &t_NewTexture);
 	m_TextureViews.push_back(t_NewTexture);
 
 	t_NewSystem.textureID = m_TextureViews.size() -1;
@@ -227,7 +227,7 @@ HRESULT ParticleSystem::CreateInitParticlesBuffer(std::vector<Particle> p_StartP
 	return hr;
 }
 
-void ParticleSystem::CreateCBsetup(XMFLOAT3 p_SpawnPosition, float p_FlareEmitNumber, XMFLOAT3 p_EmitDirection, float p_InitSpawnAmount, float p_ParticleLifeSpan, XMFLOAT2 p_InitialSize, UINT &o_DataID)
+void ParticleSystem::CreateCBsetup(XMFLOAT3 p_SpawnPosition, float p_FlareEmitNumber, XMFLOAT3 p_EmitDirection, float p_InitSpawnAmount, float p_ParticleLifeSpan, XMFLOAT2 p_InitialSize, float p_SpawnTime, UINT &o_DataID)
 {
 	CPerEffectBuffer t_NewCBSetup;
 	t_NewCBSetup.spawnPosition = p_SpawnPosition;
@@ -236,7 +236,7 @@ void ParticleSystem::CreateCBsetup(XMFLOAT3 p_SpawnPosition, float p_FlareEmitNu
 	t_NewCBSetup.initSpawnAmount = p_InitSpawnAmount;
 	t_NewCBSetup.particleLifeSpan = p_ParticleLifeSpan;
 	t_NewCBSetup.initialSize = p_InitialSize;
-	t_NewCBSetup.filler = 0;
+	t_NewCBSetup.spawnTime = p_SpawnTime;
 
 	m_PerEffectData.push_back(t_NewCBSetup);
 
@@ -370,19 +370,23 @@ XMVECTOR ParticleSystem::RandUnitVec3()
 }
 
 
-void ParticleSystem::Draw(float dt, float gt)
+void ParticleSystem::Draw(float dt)
 {
 	// make the OM to the backbuffer RENDER TARGET MAKE FIX OMG LULZ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NOT FIXED YET LULZ
 	m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 
 	CPerFrameParticleBuffer t_Cpfpb;
 	t_Cpfpb.deltaTime = dt;
-	t_Cpfpb.gametime = gt;
+	t_Cpfpb.fillers = XMFLOAT3(0,0,0);
 
 	m_DeviceContext->UpdateSubresource( m_PerFrameBuffer, 0, nullptr, &t_Cpfpb, 0, 0 );
 	m_DeviceContext->HSSetShader(nullptr,nullptr,0);
 	m_DeviceContext->DSSetShader(nullptr,nullptr,0);
 
+
+
+
+	//old way
 	for (int i = 0; i < m_ParticleEffectSystems.size(); i++)
 	{
 		ParticleEffectSystem t_CurSys = m_ParticleEffectSystems[i];
@@ -451,7 +455,7 @@ void ParticleSystem::UpdateParticles(UINT id)
 	if(m_ParticleEffectSystems[id].firstrun)
 	{
 		m_DeviceContext->Draw(m_InitParticleVertexBuffersWithNum[m_ParticleEffectSystems[id].startBufferID].numOfVertices, 0);
-		//m_ParticleEffectSystems[id].firstrun = false;
+		m_ParticleEffectSystems[id].firstrun = false;
 	}
 	else
 	{
@@ -476,6 +480,9 @@ void ParticleSystem::DrawParticles(UINT id)
 
 	//set input vertex buffer
 	m_DeviceContext->IASetVertexBuffers( 0, 1, &m_ParticleVertexBuffer[m_ParticleEffectSystems[id].drawVertexBufferID], &stride, &offset);
+	
+	//update texture
+	m_DeviceContext->PSSetShaderResources(0, 1, &m_TextureViews[m_ParticleEffectSystems[id].textureID]);
 
 	//draw the particles form memory
 	m_DeviceContext->DrawAuto();

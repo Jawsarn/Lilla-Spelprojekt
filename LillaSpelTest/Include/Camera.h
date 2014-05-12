@@ -16,6 +16,7 @@ public:
 	// Get/Set world camera position.
 	XMVECTOR GetPositionXM()const;
 	XMFLOAT3 GetPosition()const;
+	void SetPosition(XMFLOAT3 p_Position);
 
 	float GetFieldOfViewX()const;
 

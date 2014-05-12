@@ -286,9 +286,9 @@ void GraphicHandle::CreatePlayer(std::vector<UINT> p_DrawPieceIDs, CXMMATRIX p_W
 	//m_GraphicEngine->CreateParticleSystem();//ej klar
 }
 
-void GraphicHandle::DrawGame() //test 
+void GraphicHandle::DrawGame(float p_DeltaTime) //test 
 {
-	m_GraphicEngine->DrawGame();
+	m_GraphicEngine->DrawGame(p_DeltaTime);
 }
 void GraphicHandle::CreateLight(int p_PlayerIndex,XMFLOAT3 p_Color,UINT p_ObjectId, LightStruct &p_LightStruct)
 {
@@ -323,15 +323,22 @@ void GraphicHandle::CreateShipForGame(std::vector<XMMATRIX> p_PlayerWorld)
 		std::vector<Particle> t_InitParticles;
 		t_InitParticles.push_back(Particle(XMFLOAT3(0,0,0),XMFLOAT3(0,0,0),XMFLOAT2(1,1),0.0f,100.0f,1));
 
-		UINT t_InitParticleID;
-		m_GraphicEngine->CreateInitParticleBuffer(t_InitParticles, t_InitParticleID);
+		UINT t_InitParticleID1, t_InitParticleID2;
+		m_GraphicEngine->CreateInitParticleBuffer(t_InitParticles, t_InitParticleID1);
+		m_GraphicEngine->CreateInitParticleBuffer(t_InitParticles, t_InitParticleID2);
 
-		UINT t_ParticleBufferDataID;
-		m_GraphicEngine->CreateParticleCBSetup(XMFLOAT3(0,0,0), 100, XMFLOAT3(0,0,0), 50, 100.0f, XMFLOAT2(1,1), t_ParticleBufferDataID);
+		UINT t_ParticleBufferDataID1, t_ParticleBufferDataID2;
+		//the position here will be updated if object is updated
+		m_GraphicEngine->CreateParticleCBSetup(XMFLOAT3(0,0,0), 1, XMFLOAT3(0,0,0), 5, 2.0f, XMFLOAT2(0.2f,0.2f), 0.05f, t_ParticleBufferDataID1);
+		m_GraphicEngine->CreateParticleCBSetup(XMFLOAT3(0,0,0), 1, XMFLOAT3(0,0,0), 5, 2.0f, XMFLOAT2(0.2f,0.2f), 0.05f, t_ParticleBufferDataID2);
 
 		UINT t_ParticleSystemID;
-		m_GraphicEngine->CreateParticleSystem(0, L"",t_InitParticleID, XMFLOAT3(0,0,0), t_ParticleBufferDataID, 100, t_ParticleSystemID );
+		m_GraphicEngine->CreateParticleSystem(0, L"ParticleSmoke.dds",t_InitParticleID1, XMFLOAT3(0.5f,0.3f,0), t_ParticleBufferDataID1, 10000, t_ParticleSystemID );
+		m_GraphicEngine->AddObjectParticleSystem(m_Player[i], t_ParticleSystemID);
 
+		m_GraphicEngine->CreateParticleSystem(0, L"ParticleSmoke.dds",t_InitParticleID2, XMFLOAT3(-0.5f,0.3f,0), t_ParticleBufferDataID2, 10000, t_ParticleSystemID );
+		m_GraphicEngine->AddObjectParticleSystem(m_Player[i], t_ParticleSystemID);
+		
 	}
 }
 void GraphicHandle::SelectVehicle()
