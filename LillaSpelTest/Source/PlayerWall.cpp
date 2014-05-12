@@ -18,16 +18,20 @@ PlayerWall::PlayerWall(XMFLOAT3 p_color, XMFLOAT3* p_wallPos, XMFLOAT3* p_wallDi
 	XMVECTOR t_up = XMLoadFloat3(p_wallUp);
 	
 	XMMATRIX t_matrix = XMMatrixInverse(nullptr,XMMatrixLookToLH(t_eye,t_target , t_up));
-	//XMMATRIX t_matrix = XMMatrixLookToLH(t_eye,t_target , t_up);
+
+
+
 	XMStoreFloat4x4( &m_worldMatrix , t_matrix);
-	
-
-
 	XMFLOAT4 t_quarternion = XMFLOAT4(0,0,0,1);
-	XMVECTOR t_orientationVector = XMLoadFloat4(&t_quarternion);
-	t_orientationVector = XMVector4Transform(t_orientationVector, t_matrix);
-	t_orientationVector = XMVector4Normalize(t_orientationVector);
-	XMStoreFloat4(&t_quarternion, t_orientationVector);
+	
+	//XMStoreFloat4(&t_quarternion, XMQuaternionRotationMatrix(XMMatrixInverse(nullptr,XMLoadFloat4x4(&m_worldMatrix))));
+	XMStoreFloat4(&t_quarternion, XMQuaternionRotationMatrix(XMLoadFloat4x4(&m_worldMatrix)));
+
+
+	//XMVECTOR t_orientationVector = XMLoadFloat4(&t_quarternion);
+	//t_orientationVector = XMVector4Transform(t_orientationVector, t_matrix);
+	//t_orientationVector = XMVector4Normalize(t_orientationVector);
+	//XMStoreFloat4(&t_quarternion, t_orientationVector);
 
 //	p_extents.y = p_extents.y -0.17; needs some fixing, made the problem a bit less noticable
 
