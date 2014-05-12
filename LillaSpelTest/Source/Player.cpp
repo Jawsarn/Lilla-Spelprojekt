@@ -148,9 +148,9 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 
 		//BobOffset();
 
-		if(!m_gravityShifting)
-			UpdateWorldMatrix();
-		else
+
+		UpdateWorldMatrix();
+		if(m_gravityShifting)
 			GravityShift(m_gravityShiftProgress);
 		//matrices now updated. Ready to be grabbed from the GameScreen
 
@@ -474,8 +474,11 @@ void Player::UpdateWorldMatrix()
 	XMStoreFloat3(&m_wallPlacementDirection, t_vehicleTargetVector);
 
 
-	XMStoreFloat3(&m_direction, t_vehicleTargetVector);
-	XMStoreFloat3(&m_up, t_vehicleUpVector);
+	if(!m_gravityShifting)
+	{
+		XMStoreFloat3(&m_direction, t_vehicleTargetVector);
+		XMStoreFloat3(&m_up, t_vehicleUpVector);
+	}
 	m_bobOffset = XMFLOAT3(0, 0, 0);
 }
 
