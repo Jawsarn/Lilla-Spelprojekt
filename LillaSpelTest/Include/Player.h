@@ -90,6 +90,10 @@ private:
 	XMFLOAT3 m_bobOffset;
 	default_random_engine m_randomGenerator;
 
+
+	XMFLOAT3 m_unmodifiedTarget;
+	XMFLOAT3 m_unmodifiedUp;
+
 	float m_cameraAngle;
 	float m_cameraFollowSpeed;
 	float m_cameraTrailDistanceUp;
@@ -136,11 +140,14 @@ public:
 
 	int GetRacePosition();
 	XMFLOAT3 GetRadiusVector();
+	XMFLOAT3 GetUnmodifiedUpVector();
+	XMFLOAT3 GetUnmodifiedTargetVector();
 	float GetHudBoosterInfo();
 	float GetHudWallInfo();
 	bool GetImmortal();
 	int GetPlayerIndex();
 	int GetNrOfAPressedAtStart();
+
 
 	//modifiers
 	void Die();
