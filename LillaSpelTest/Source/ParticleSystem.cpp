@@ -277,9 +277,9 @@ HRESULT ParticleSystem::CreateRandomTexture1DSRV()
 
 	//
 	// Create the random data.
-	XMFLOAT4 randVal[1024];
+	XMFLOAT4 randVal[512];
 
-	for(int i = 0; i < 1024; ++i)
+	for(int i = 0; i < 512; ++i)
 	{
 		randVal[i].x = RandF(-1.0f, 1.0f);
 		randVal[i].y = RandF(-1.0f, 1.0f);
@@ -289,12 +289,12 @@ HRESULT ParticleSystem::CreateRandomTexture1DSRV()
 
 	D3D11_SUBRESOURCE_DATA initData;
 	initData.pSysMem = randVal;
-	initData.SysMemPitch = 1024*sizeof(XMFLOAT4);
+	initData.SysMemPitch = 512*sizeof(XMFLOAT4);
 	initData.SysMemSlicePitch = 0;
 	
 	// Create the texture.
 	D3D11_TEXTURE1D_DESC texDesc;
-	texDesc.Width = 1024;
+	texDesc.Width = 512;
 	texDesc.MipLevels = 1;
 	texDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 	texDesc.Usage = D3D11_USAGE_IMMUTABLE;

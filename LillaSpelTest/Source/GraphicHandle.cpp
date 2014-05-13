@@ -227,14 +227,14 @@ void GraphicHandle::UpdateSelectVehicle(float p_DeltaTime, int p_PlayerID)
 
 void GraphicHandle::UpdateCamera(UINT p_CameraLogicID,float p_Walk, float p_Strafe, float p_Hover, float p_Pitch, float p_RotateY)
 {
-	if (p_CameraLogicID < 5)
+	if (p_CameraLogicID < 4)
 	{
 		m_GraphicEngine->MoveCamera(m_CameraID[p_CameraLogicID],p_Walk,p_Strafe,p_Hover,p_Pitch,p_RotateY);
 	}
 }
 void GraphicHandle::UpdateCameraVehicleSelection(UINT p_CameraLogicID, float p_LookingAtWhatVehicle)
 {
-	if (p_CameraLogicID < 5)
+	if (p_CameraLogicID < 4)
 	{	
 		/////////////////////////////////fungerande
 		XMMATRIX t_Tempura = XMMatrixTranslation(0,1,40);
@@ -258,7 +258,7 @@ void GraphicHandle::UpdateCameraVehicleSelection(UINT p_CameraLogicID, float p_L
 }
 void GraphicHandle::UpdateCameraVehicleSelectionSeperate(UINT p_CameraLogicID, float p_LookingAtWhatVehicle)
 {
-	if (p_CameraLogicID < 5)
+	if (p_CameraLogicID < 4)
 	{	
 		/////////////////////////////////fungerande
 		XMMATRIX t_Tempura = XMMatrixTranslation(0,1,100);
@@ -288,7 +288,7 @@ void GraphicHandle::UpdateCameraVehicleSelectionSeperate(UINT p_CameraLogicID, f
 }
 void GraphicHandle::SetCameraVehicleSelection(UINT p_CameraLogicID)
 {
-	if (p_CameraLogicID < 5)
+	if (p_CameraLogicID < 4)
 	{	
 		/////////////////////////////////fungerande
 		//XMMATRIX t_Tempura = XMMatrixTranslation(0,1,25*m_MeshShips.size());
@@ -374,10 +374,10 @@ void GraphicHandle::CreateShipForGame(std::vector<XMFLOAT4X4> p_PlayerWorld)
 
 	
 		UINT t_ParticleSystemID;
-		m_GraphicEngine->CreateParticleSystem(0, L"ParticleEngineCircle.dds",t_InitParticleID1, XMFLOAT3(0.5f,0.3f,0), t_ParticleBufferDataID1, 1000, m_Colours[m_PlayerColour[i]], t_ParticleSystemID );
+		m_GraphicEngine->CreateParticleSystem(0, L"ParticleEngineCircle.dds",t_InitParticleID1, XMFLOAT3(0.5f,0.3f,0), t_ParticleBufferDataID1, 30, m_Colours[m_PlayerColour[i]], t_ParticleSystemID );
 		m_GraphicEngine->AddObjectParticleSystem(m_Player[i], t_ParticleSystemID);
 
-		m_GraphicEngine->CreateParticleSystem(0, L"ParticleEngineCircle.dds",t_InitParticleID2, XMFLOAT3(-0.5f,0.3f,0), t_ParticleBufferDataID2, 1000, m_Colours[m_PlayerColour[i]], t_ParticleSystemID );
+		m_GraphicEngine->CreateParticleSystem(0, L"ParticleEngineCircle.dds",t_InitParticleID2, XMFLOAT3(-0.5f,0.3f,0), t_ParticleBufferDataID2, 30, m_Colours[m_PlayerColour[i]], t_ParticleSystemID );
 		m_GraphicEngine->AddObjectParticleSystem(m_Player[i], t_ParticleSystemID);
 		
 		

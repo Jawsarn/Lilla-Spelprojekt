@@ -14,8 +14,8 @@ void GS( point Particle input[1],  inout PointStream< Particle > ptStream )
 
 	if (input[0].Type > 0)
 	{
-		//if (t >= 0.05f) //may swap this to something
-		//{
+		if (t >= 0.1f) //may swap this to something
+		{
 			for (int i = 0; i < 1; i++) //something
 			{
 				//float3 random = 50*RandUnitVec3((float)i/(input[0].InitialPosW.x/10));
@@ -34,11 +34,11 @@ void GS( point Particle input[1],  inout PointStream< Particle > ptStream )
 
 			input[0].Age = 0;
 			ptStream.Append(input[0]);
-		/*}
+		}
 		else
 		{
 			ptStream.Append(input[0]);
-		}*/
+		}
 	}
 	else if(t <= d) //may swap this to a buffered stop or a Particle wise stop
 	{
