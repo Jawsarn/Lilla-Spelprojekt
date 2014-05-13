@@ -31,6 +31,7 @@ int PauseScreen::Update(float p_dt,std::vector<UserCMD>* userCMD )
 	else if (t_menuChoice == "Main Menu")
 	{
 		m_graphicHandle->RemoveLevelDraw(m_gameInfo->map);
+		
 		//remove player and playerwalls too
 		return MAIN_MENU_SCREEN;
 	}
