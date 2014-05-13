@@ -156,6 +156,7 @@ void JoinGameScreen::SaveInfo()
 		}
 		m_gameInfo->shipModell[i] = m_modell[i];
 		m_gameInfo->playerColor[i] = m_color[i];
+		m_gameInfo->tauntSound[i] = m_selectedTauntSound[i];
 	}
 }
 
