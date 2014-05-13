@@ -21,14 +21,15 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4],string p_tauntSound[
 	m_graphicHandle->CreateMapLights(t_centerSplinePositions);
 
 	m_lastNodeIndex = m_mapNodes->at(m_mapNodes->size()-1)->m_Index;
-	vector<XMMATRIX> t_shipWorldMatrices;
+	vector<XMFLOAT4X4> t_shipWorldMatrices;
 	vector<UINT> t_colors;
 	vector<UINT> t_whichVehicles;
 	for (int i = 0; i < p_numberOfPlayers; i++)
 	{
-
 		m_players.push_back(new Player(m_mapNodes->at(0),0.5*3.1415*i, i));
-		t_shipWorldMatrices.push_back(m_players[i]->GetWorldMatrix());
+		XMFLOAT4X4 t_TempWorld;
+		XMStoreFloat4x4( &t_TempWorld, m_players[i]->GetWorldMatrix());
+		t_shipWorldMatrices.push_back(t_TempWorld);
 		t_colors.push_back(p_color[i]);
 		t_whichVehicles.push_back(p_whatVehicle[i]);
 		m_tauntSound[i] = p_tauntSound[i];
@@ -38,8 +39,9 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4],string p_tauntSound[
 	m_graphicHandle->SetColourAndVehicle(t_colors, t_whichVehicles);
 	m_graphicHandle->CreateShipForGame(t_shipWorldMatrices);
 	m_collisionManager = new CollisionManager();
-
-	CreatePlayerHUDs(p_numberOfPlayers,p_color);
+	m_preUpdateCountdown = 0;
+	PlaySounds();
+	CreatePlayerHUDs(p_numberOfPlayers,p_color, p_mapName);
 }
 
 GameScreen::~GameScreen(void)
@@ -51,28 +53,35 @@ void GameScreen::Initialize()
 	{
 		m_graphicHandle->UseHud(i,m_hudID[i]);
 	}
+	PlaySounds();
 }
 
 void GameScreen::PreUpdate(float p_dt, std::vector<UserCMD>* p_userCMDS, int p_Player)
 {
 	m_timeSpentDuringPreUpdate +=(p_dt/m_players.size());
-
+	if (m_preUpdateCountdown != (int)m_timeSpentDuringPreUpdate && !(m_timeSpentDuringPreUpdate >=4))
+	{
+		m_audioManager->PlaySpecificSound("countdown.wav",false,false);
+	}
 	if(m_timeSpentDuringPreUpdate>=1 && m_timeSpentDuringPreUpdate <2)
 	{
-
+		m_preUpdateCountdown = 1;
 		m_graphicHandle->ChangeHudObjectTexture(m_hudID[p_Player],3,1); 
+	
 
 	}
 	else if(m_timeSpentDuringPreUpdate >=2 && m_timeSpentDuringPreUpdate <3)
 	{
-
+		m_preUpdateCountdown = 2;
 		m_graphicHandle->ChangeHudObjectTexture(m_hudID[p_Player],3,2);
+	
 
 	}
 	else if(m_timeSpentDuringPreUpdate >=3 && m_timeSpentDuringPreUpdate <4)
 	{
-
+		m_preUpdateCountdown = 3;
 		m_graphicHandle->ChangeHudObjectTexture(m_hudID[p_Player],3,3);
+	
 
 	}
 	else if(m_timeSpentDuringPreUpdate >=4)
@@ -85,9 +94,10 @@ void GameScreen::PreUpdate(float p_dt, std::vector<UserCMD>* p_userCMDS, int p_P
 
 
 		m_state = PLAY;
+		m_audioManager->PlaySpecificSound("go.wav",false,false);
 	}
 
-
+	
 
 
 
@@ -98,15 +108,15 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 	for (int i = 0; i < m_players.size(); i++)
 	{
 		if(PauseCheck(i, p_userCMDS->at(i)) == PAUSE_SCREEN)
+		{
+			StopSounds();
 			return PAUSE_SCREEN;
+		}
 		//first, semi-underdeveloped win condition check
 		if (m_lastNodeIndex != m_players[i]->GetCurrentMapNode()->m_Index)
 		{
 			//i don't even..
-			if (p_userCMDS->at(i).leftBumberPressed)
-			{
-				m_audioManager->PlaySpecificSound(m_tauntSound[i],false,false);
-			}
+
 
 
 			//ACTUAL PROPER UPDATE BEGINS
@@ -124,6 +134,7 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 			case PLAY:
 				UpdatePlayerRacePosition(i);
 				DrawPlayerHUD(i);
+				UpdateSounds(i,p_userCMDS);
 				break;
 			}
 
@@ -245,9 +256,34 @@ void GameScreen::PlayerCloseToWall(int p_currentPlayer, int p_wallsCloseTo, floa
 	m_players.at(p_currentPlayer)->IncreaseBoost(p_wallsCloseTo, p_dt);
 }
 
+void GameScreen::UpdateSounds(int p_player,std::vector<UserCMD>* p_userCMDS)
+{
+	if (p_userCMDS->at(p_player).leftBumberPressed)
+	{
+		m_audioManager->PlaySpecificSound(m_tauntSound[p_player],false,false);
+	}
+	float t_pitchCoefficient = (m_players[p_player]->GetSpeed() < 25 ? m_players[p_player]->GetSpeed() : 25);
+	m_audioManager->PitchSpecificSound(m_engineSound[p_player], std::sqrt( t_pitchCoefficient) * 15000);
+}
 
+void GameScreen::PlaySounds()
+{
+	for (int i = 0; i < m_players.size(); i++)
+	{
+		m_audioManager->PlaySpecificSound(m_engineSound[i],true,false);
+		m_audioManager->PitchSpecificSound(m_engineSound[i],0);
+	}
+}
 
-void GameScreen::CreatePlayerHUDs(int p_numberOfPlayers, int p_color[4])
+void GameScreen::StopSounds()
+{
+	for (int i = 0; i < m_players.size(); i++)
+	{
+		m_audioManager->StopSpecificSound(m_engineSound[i]);
+	}
+}
+
+void GameScreen::CreatePlayerHUDs(int p_numberOfPlayers, int p_color[4], std::string p_mapName)
 {
 	m_hudID.resize(p_numberOfPlayers,0);
 	UINT t_placementHandle;
@@ -286,13 +322,15 @@ void GameScreen::CreatePlayerHUDs(int p_numberOfPlayers, int p_color[4])
 	t_hudParts.push_back(t_wallBarHandle);
 	t_barOffsets.push_back(DirectX::XMFLOAT2(0,0));
 
-	m_graphicHandle->LoadTexture(L"CountDown_Three.dds",t_texture);
+	std::wstring t_countdownTexture;
+	t_countdownTexture = wstring(p_mapName.begin(),p_mapName.end());
+	m_graphicHandle->LoadTexture((t_countdownTexture + L"/3.dds").c_str(),t_texture);
 	t_textureCountDownID.push_back(t_texture);
-	m_graphicHandle->LoadTexture(L"CountDown_Two.dds",t_texture);
+	m_graphicHandle->LoadTexture((t_countdownTexture + L"/2.dds").c_str(),t_texture);
 	t_textureCountDownID.push_back(t_texture);
-	m_graphicHandle->LoadTexture(L"CountDown_One.dds",t_texture);
+	m_graphicHandle->LoadTexture((t_countdownTexture + L"/1.dds").c_str(),t_texture);
 	t_textureCountDownID.push_back(t_texture);
-	m_graphicHandle->LoadTexture(L"CountDown_Go.dds",t_texture);
+	m_graphicHandle->LoadTexture((t_countdownTexture + L"/gu.dds").c_str(),t_texture);
 	t_textureCountDownID.push_back(t_texture);
 	m_graphicHandle->LoadTexture(L"Nothing.dds",t_texture);
 	t_textureCountDownID.push_back(t_texture);

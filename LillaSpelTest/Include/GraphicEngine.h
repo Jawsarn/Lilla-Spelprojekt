@@ -38,7 +38,7 @@ public:
 	//object
 	HRESULT LoadMesh(std::string p_FileName, std::vector<UINT> &o_DrawPieceIDs);
 	HRESULT AddTextureToDrawPiece(UINT p_DrawPieceID, UINT p_TextureID,TextureType p_TextureType);
-	HRESULT CreateDrawObject(std::vector<UINT> p_DrawPieceIDs, CXMMATRIX p_World, XMFLOAT3 p_Color, bool addToDrawNow, UINT &o_ObjectID);
+	HRESULT CreateDrawObject(std::vector<UINT> p_DrawPieceIDs, XMFLOAT4X4 p_World, XMFLOAT3 p_Color, bool addToDrawNow, UINT &o_ObjectID);
 	HRESULT AddObjectLight(UINT p_ObjectID ,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float radius, UINT &o_LightID);
 	void AddObjectParticleSystem(UINT p_Object, UINT p_ParticleSystem);
 	HRESULT ChangeObjectsLight(UINT p_ObjectID, UINT p_LightID,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius);
@@ -77,7 +77,7 @@ public:
 	void SetViewportAmount(int p_NumOfViewports);
 
 	//particlesystem functions
-	void CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName, UINT p_StartBufferID, XMFLOAT3 p_WorldPos, UINT p_Data, UINT p_MaxParticles, UINT &o_SystemID );
+	void CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName, UINT p_StartBufferID, XMFLOAT3 p_WorldPos, UINT p_Data, UINT p_MaxParticles, XMFLOAT3 p_Color, UINT &o_SystemID );
 	void CreateParticleCBSetup(XMFLOAT3 p_ObjectPosition, float p_FlareEmitNumber, XMFLOAT3 p_EmitDirection, float p_InitSpawnAmount, float p_ParticleLifeSpan, XMFLOAT2 p_InitialSize, float p_SpawnTime, UINT &o_DataID);
 	void UpdateParticleCB(UINT p_DataID, XMFLOAT3 p_WorldAcceler, float p_FlareEmitNumber, XMFLOAT3 p_EmitDirection, float p_InitSpawnAmount, float p_ParticleLifeSpan, XMFLOAT2 p_InitialSize);
 	void CreateInitParticleBuffer(std::vector<Particle> startParticles, UINT &bufferID);
