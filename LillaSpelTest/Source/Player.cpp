@@ -729,6 +729,12 @@ int Player::GetNrOfAPressedAtStart()
 	return m_aButtonPressedAtStart;
 }
 
+float Player::GetSpeed()
+{
+	return m_speed;
+}
+
+
 //Modifiers
 void Player::Die()
 {
