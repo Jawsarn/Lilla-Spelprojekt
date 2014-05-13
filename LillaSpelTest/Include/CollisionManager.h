@@ -20,6 +20,7 @@ public:
 	int PlayerVsPlayerWall(BoundingOrientedBox* p_player, std::vector<PlayerWall*>p_collisionBoxes, int p_playerIndex); //Ändra för playerwall?
 	void PlayerVsPlayer(std::vector<Player*>p_playerList);
 	void CollisionManager::ShockWaveCollision(std::vector<Player*> p_playerList, int p_playerWithShockwave);
+	void CollisionManager::SetPlayerVsPlayer(Player* p_currentPlayer, Player* p_intersectingPlayer);
 
 private:
 	bool IntersectionTest(BoundingOrientedBox* a, BoundingOrientedBox* b);
