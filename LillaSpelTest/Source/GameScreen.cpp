@@ -131,17 +131,10 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 		else
 			m_players[i]->SetFinalDirection();
 	}
-	//for (int i = 0; i < m_players.size(); i++)
-	//{
 	switch(m_state)
 	{
 	case PLAY:
-		//if(!m_players[i]->GetImmortal())
-		//{
-
 		m_collisionManager->PlayerVsPlayer(m_players);
-		//}
-		//}
 		for (int i = 0; i < m_players.size(); i++)
 		{
 			CollisionCheck(i, p_dt,p_userCMDS->at(i) );

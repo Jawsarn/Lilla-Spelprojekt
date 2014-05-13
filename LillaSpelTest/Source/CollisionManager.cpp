@@ -67,20 +67,53 @@ bool CollisionManager::IntersectionTest(BoundingOrientedBox* a, BoundingOriented
 void CollisionManager::SetPlayerVsPlayer(Player* p_currentPlayer, Player* p_intersectingPlayer)
 {
 	//current player is the one to get sent off. intersecting players is current player in another method call. epic explonation yo
+	//float t_currentPlayerAngle = fmod(p_currentPlayer->GetAngle()+3.1415, 3.1415);
+	//float t_intersectingPlayerAngle = fmod(p_intersectingPlayer->GetAngle(), 3.1415);
+
+	//float t_direction = -1*(t_currentPlayerAngle-t_intersectingPlayerAngle);
+	////get direction -1 or 1
+	//t_direction /= abs(t_direction);
+	//float t_bumpIntensity = abs(p_intersectingPlayer->GetDeltaAngle());
+
+
+	//p_currentPlayer->StartCollisionAftermath(t_bumpIntensity*t_direction,t_direction);
+	//p_currentPlayer->AngleMoveBack();
+
+
+	float t_circle = 2*3.1415;
+
+	float t_direction = 0;
+
+	if(p_intersectingPlayer->GetDeltaAngle()>0)
+		t_direction = 1;
+	else if(p_intersectingPlayer->GetDeltaAngle()<0)
+		t_direction = -1;
+	else
+	{
+		if(p_currentPlayer->GetDeltaAngle()>0)
+			t_direction = -1;
+		else if(p_currentPlayer->GetDeltaAngle()<0)
+			t_direction = 1;
+	}
+
+	/*
+
 	float t_currentPlayerAngle = fmod(p_currentPlayer->GetAngle(), 2*3.1415);
 	float t_intersectingPlayerAngle = fmod(p_intersectingPlayer->GetAngle(), 2*3.1415);
 
-	float t_direction = t_currentPlayerAngle-t_intersectingPlayerAngle;
-	//get direction -1 or 1
-	t_direction /= abs(t_direction);
-	//p_intersectingPlayer->get
+	t_currentPlayerAngle -= 3.1415;
+	t_intersectingPlayerAngle -= 3.1415;
 
-	float t_testBumpAngle = 0.1;
 
-	p_currentPlayer->StartCollisionAftermath(t_testBumpAngle*t_direction);
+
+	float t_direction = 0;
+	if(t_intersectingPlayerAngle>3.1415)
+	t_direction = 1;
+	else t_direction = -1;*/
+	float t_bumpIntensity = abs(p_intersectingPlayer->GetDeltaAngle());
+
+	p_currentPlayer->StartCollisionAftermath(t_bumpIntensity*t_direction,t_direction);
 	p_currentPlayer->AngleMoveBack();
-
-
 
 }
 void CollisionManager::ShockWaveCollision(std::vector<Player*> p_playerList, int p_playerWithShockwave)

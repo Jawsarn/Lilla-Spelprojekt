@@ -97,9 +97,10 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_deathShakeMaxIntensity = 8;//reversed intensity: higher number means lower intensity. Because logic
 	m_deathShakeIntensityDrop = 4;
 
-	m_bumpIntensity = 10;
+	m_bumpIntensity = 1;
+	m_baseBumpIntensity = 3;
 
-	m_bobFrequency = 1;
+	m_bobFrequency = 0.01;
 	m_bobIntensity = 0.1;
 
 	////FINAL WORLD MATRIX INITIALIZATION
@@ -734,6 +735,10 @@ float Player::GetSpeed()
 	return m_speed;
 }
 
+float Player::GetDeltaAngle()
+{
+	return m_deltaAngle;
+}
 
 //Modifiers
 void Player::Die()
@@ -835,9 +840,9 @@ void Player::CollisionAftermath(float p_dt)
 	}
 }
 
-void Player::StartCollisionAftermath(float p_angle)
+void Player::StartCollisionAftermath(float p_angle, int p_direction)
 {
-	m_collisionAngleOffset = p_angle/m_bumpIntensity;
+	m_collisionAngleOffset = p_angle/m_bumpIntensity+p_direction*(m_baseBumpIntensity/300);
 	m_collisionAfterMath = true;
 }
 
