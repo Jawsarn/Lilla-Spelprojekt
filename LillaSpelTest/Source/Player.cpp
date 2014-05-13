@@ -773,6 +773,7 @@ void Player::SetFinalDirection()
 void Player::AngleMoveBack()
 {
 	m_angle = m_previousAngle;
+	//UpdateCollisionBox();
 }
 
 void Player::Start()

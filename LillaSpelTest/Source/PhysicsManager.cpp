@@ -46,11 +46,11 @@ void PhysicsManager::SetPlayerCollisions(Player* p_p1, Player* p_p2, float p_p1M
 	//Klar projecering av kraftvektor på p1s direction.. Den här ska översättas till m_speed
 	XMFLOAT3 t_p1DirectionProjection = t_mHelp.Projection(t_p1Projection, t_p1Direction); 
 	//HÄR ÄR TWEEEEEEEKZZZZ
-	p_p1->SetSpeed( t_mHelp.DotProduct(t_p1DirectionProjection, t_p1DirectionProjection));
+	//p_p1->SetSpeed( t_mHelp.DotProduct(t_p1DirectionProjection, t_p1DirectionProjection));
 	//Klar Projecering av kraftvektor på p2s direction samma som för p1 ^^^^ där uppe
 	XMFLOAT3 t_p2DirectionProjection = t_mHelp.Projection(t_p2Projection,t_p2Direction); 
 	//TWEEEEEKZZZZZZ
-	p_p2->SetSpeed( t_mHelp.DotProduct(t_p2DirectionProjection, t_p2DirectionProjection));
+	//p_p2->SetSpeed( t_mHelp.DotProduct(t_p2DirectionProjection, t_p2DirectionProjection));
 
 	//////Projecering på Radiusvectorn!!!!! används för angle påplusning
 	XMFLOAT3 t_p1Radius = p_p1->GetRadiusVector();
@@ -76,4 +76,9 @@ void PhysicsManager::SetPlayerCollisions(Player* p_p1, Player* p_p2, float p_p1M
 
 	p_p1->AngleMoveBack();
 	p_p2->AngleMoveBack();
+}
+
+void PhysicsManager::SetPlayerCollisions(Player* p_p1, Player* p_p2)
+{
+
 }
