@@ -40,7 +40,7 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4],string p_tauntSound[
 	m_collisionManager = new CollisionManager();
 	m_preUpdateCountdown = 0;
 	PlaySounds();
-	CreatePlayerHUDs(p_numberOfPlayers,p_color);
+	CreatePlayerHUDs(p_numberOfPlayers,p_color, p_mapName);
 }
 
 GameScreen::~GameScreen(void)
@@ -107,7 +107,10 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 	for (int i = 0; i < m_players.size(); i++)
 	{
 		if(PauseCheck(i, p_userCMDS->at(i)) == PAUSE_SCREEN)
+		{
+			StopSounds();
 			return PAUSE_SCREEN;
+		}
 		//first, semi-underdeveloped win condition check
 		if (m_lastNodeIndex != m_players[i]->GetCurrentMapNode()->m_Index)
 		{
@@ -281,7 +284,7 @@ void GameScreen::StopSounds()
 	}
 }
 
-void GameScreen::CreatePlayerHUDs(int p_numberOfPlayers, int p_color[4])
+void GameScreen::CreatePlayerHUDs(int p_numberOfPlayers, int p_color[4], std::string p_mapName)
 {
 	m_hudID.resize(p_numberOfPlayers,0);
 	UINT t_placementHandle;
@@ -320,13 +323,15 @@ void GameScreen::CreatePlayerHUDs(int p_numberOfPlayers, int p_color[4])
 	t_hudParts.push_back(t_wallBarHandle);
 	t_barOffsets.push_back(DirectX::XMFLOAT2(0,0));
 
-	m_graphicHandle->LoadTexture(L"CountDown_Three.dds",t_texture);
+	std::wstring t_countdownTexture;
+	t_countdownTexture = wstring(p_mapName.begin(),p_mapName.end());
+	m_graphicHandle->LoadTexture((t_countdownTexture + L"/3.dds").c_str(),t_texture);
 	t_textureCountDownID.push_back(t_texture);
-	m_graphicHandle->LoadTexture(L"CountDown_Two.dds",t_texture);
+	m_graphicHandle->LoadTexture((t_countdownTexture + L"/2.dds").c_str(),t_texture);
 	t_textureCountDownID.push_back(t_texture);
-	m_graphicHandle->LoadTexture(L"CountDown_One.dds",t_texture);
+	m_graphicHandle->LoadTexture((t_countdownTexture + L"/1.dds").c_str(),t_texture);
 	t_textureCountDownID.push_back(t_texture);
-	m_graphicHandle->LoadTexture(L"CountDown_Go.dds",t_texture);
+	m_graphicHandle->LoadTexture((t_countdownTexture + L"/gu.dds").c_str(),t_texture);
 	t_textureCountDownID.push_back(t_texture);
 	m_graphicHandle->LoadTexture(L"Nothing.dds",t_texture);
 	t_textureCountDownID.push_back(t_texture);
