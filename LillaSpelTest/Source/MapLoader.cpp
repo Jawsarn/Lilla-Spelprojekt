@@ -34,7 +34,7 @@ vector<MapNode*>* MapLoader::LoadMap(string p_mapName)
 
 
 	string t_holeBoxString = AddStrings(t_SideTemp, "/HoleBoxes.obj");
-	string t_wallBoxString = AddStrings(t_SideTemp, "/WallBoxes.obj");		///////////TO BE CHANGED. RATHER SILLY AS IT IS//////////////
+	string t_wallBoxString = AddStrings(t_SideTemp, "/WallBoundingBoxes.obj");		///////////TO BE CHANGED. RATHER SILLY AS IT IS//////////////
 
 	//Load all information necessary for node creation
 	vector<vector<XMFLOAT3>> t_centerPositions = LoadLogicalObj(t_centerSplineString);
