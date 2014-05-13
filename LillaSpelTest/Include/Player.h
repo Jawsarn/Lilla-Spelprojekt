@@ -156,6 +156,7 @@ public:
 	bool GetImmortal();
 	int GetPlayerIndex();
 	int GetNrOfAPressedAtStart();
+	float GetSpeed();
 
 
 	//modifiers
