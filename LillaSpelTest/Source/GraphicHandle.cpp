@@ -467,10 +467,10 @@ void GraphicHandle::ChangeTexture(UINT p_HUDIDObj)
 }
 void GraphicHandle::SetAmountOfPlayers(int p_NrOfPlayers)
 {
+	m_GraphicEngine->SetViewportAmount(p_NrOfPlayers);//not fixed yet, just for testing
 	if(m_Player.size()!=p_NrOfPlayers)
 	{
 		m_Player.clear();	
-		m_GraphicEngine->SetViewportAmount(p_NrOfPlayers);//not fixed yet, just for testing
 		m_Player.resize(p_NrOfPlayers,0);
 		m_PlayerVehicle.resize(p_NrOfPlayers, 0);
 		m_PlayerColour.resize(p_NrOfPlayers,0);
@@ -626,7 +626,13 @@ void GraphicHandle::RemoveObject(UINT p_RemoveAt)
 {
 	m_GraphicEngine->RemoveObject(p_RemoveAt);
 }
-
+void GraphicHandle::RemovePlayers()
+{
+	for (int i = 0; i < m_Player.size(); i++)
+	{
+		RemoveObject(m_Player[i]);
+	}
+}
 //light functions
 
 void GraphicHandle::CreateMapLights(std::vector<XMFLOAT3> p_CenterSpline)

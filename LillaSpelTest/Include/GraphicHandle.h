@@ -110,6 +110,7 @@ public:
 	
 	void CreateDrawObject(std::vector <UINT> p_UINTMeshLista, CXMMATRIX p_World,XMFLOAT3 p_Colour,UINT & o_ObjectID,bool p_ShouldItBeDrawn);
 	void RemoveObject(UINT p_RemoveAt);
+	void RemovePlayers();
 
 	//light functions
 	void CreateMapLights(std::vector<XMFLOAT3> p_CenterSpline);
