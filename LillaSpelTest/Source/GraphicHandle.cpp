@@ -626,7 +626,6 @@ void GraphicHandle::RemovePlayers()
 		RemoveObject(m_Player[i]);
 	}
 }
-void GraphicHandle::
 //light functions
 
 void GraphicHandle::CreateMapLights(std::vector<XMFLOAT3> p_CenterSpline)
