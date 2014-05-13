@@ -91,6 +91,7 @@ private:
 	default_random_engine m_randomGenerator;
 
 	float m_bumpIntensity;
+	float m_baseBumpIntensity;
 	XMFLOAT3 m_unmodifiedTarget;
 	XMFLOAT3 m_unmodifiedUp;
 
@@ -157,13 +158,14 @@ public:
 	int GetPlayerIndex();
 	int GetNrOfAPressedAtStart();
 	float GetSpeed();
+	float GetDeltaAngle();
 
 
 	//modifiers
 	void Die();
 	void Start();
 	void SetSpeed(float p_speed);
-	void StartCollisionAftermath(float p_angle);
+	void StartCollisionAftermath(float p_angle, int p_direction);
 	void SetPlayerBoost(float p_boost);
 	void SetPlayerRacePosition(int p_pos);
 	void IncreaseBoost(int p_nrOfWallsClose, float p_dt);

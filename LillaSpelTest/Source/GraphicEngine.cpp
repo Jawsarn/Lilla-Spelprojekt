@@ -80,7 +80,7 @@ HRESULT GraphicEngine::Initialize( UINT p_Width, UINT p_Height, HWND handleWindo
 		return hr;
 
 	m_ParticleSystem = m_ParticleSystem->GetInstance();
-	hr = m_ParticleSystem->Initialize(m_Device, m_DeviceContext, m_DepthStateNoWrite, m_DepthStateOff, m_BlendStateOn, m_BlendStateOff);
+	hr = m_ParticleSystem->Initialize(m_Device, m_DeviceContext, m_DepthStateNoWrite, m_DepthStateOff, m_BlendStateOn, m_BlendStateOff, m_PerObjectBuffer);
 	if( FAILED( hr ) )
 		return hr;
 	
@@ -817,13 +817,13 @@ HRESULT GraphicEngine::AddTextureToDrawPiece(UINT p_DrawPieceID,UINT p_TextureID
 	return S_OK;
 }
 
-HRESULT GraphicEngine::CreateDrawObject(std::vector<UINT> p_DrawPieceIDs, CXMMATRIX p_World, XMFLOAT3 p_Color, bool addToDrawNow, UINT &o_ObjectID)
+HRESULT GraphicEngine::CreateDrawObject(std::vector<UINT> p_DrawPieceIDs, XMFLOAT4X4 p_World, XMFLOAT3 p_Color, bool addToDrawNow, UINT &o_ObjectID)
 {
 	try
 	{
 		DrawObject* t_NewDrawObject = new DrawObject();
 		t_NewDrawObject->piecesID = p_DrawPieceIDs;
-		XMStoreFloat4x4( &t_NewDrawObject->worldMatrix,p_World );
+		t_NewDrawObject->worldMatrix = p_World;
 		t_NewDrawObject->color = p_Color;
 
 		//hash object
@@ -1701,9 +1701,9 @@ void GraphicEngine::Cleanup()
 //==========Particle Effect functions========//
 ///////////////////////////////////////////////
 
-void GraphicEngine::CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName, UINT p_StartBufferID, XMFLOAT3 p_WorldPos, UINT p_Data, UINT p_MaxParticles, UINT &o_SystemID )
+void GraphicEngine::CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName, UINT p_StartBufferID, XMFLOAT3 p_WorldPos, UINT p_Data, UINT p_MaxParticles, XMFLOAT3 p_Color ,UINT &o_SystemID )
 {
-	m_ParticleSystem->CreateParticleSystem(p_EffectType, p_FileName, p_StartBufferID, p_WorldPos, p_Data, p_MaxParticles, o_SystemID);
+	m_ParticleSystem->CreateParticleSystem(p_EffectType, p_FileName, p_StartBufferID, p_WorldPos, p_Data, p_MaxParticles, p_Color, o_SystemID);
 }
 
 void GraphicEngine::CreateParticleCBSetup(XMFLOAT3 p_ObjectPosition, float p_FlareEmitNumber, XMFLOAT3 p_EmitDirection, float p_InitSpawnAmount, float p_ParticleLifeSpan, XMFLOAT2 p_InitialSize, float p_SpawnTime,UINT &o_DataID)
