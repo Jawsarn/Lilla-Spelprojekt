@@ -46,6 +46,28 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4],string p_tauntSound[
 
 GameScreen::~GameScreen(void)
 {
+	////Remove Graphic Things////
+	m_graphicHandle->RemoveLevelDraw();
+	m_graphicHandle->RemovePlayers();
+	std::vector<PlayerWall*>* t_playerWalls;
+	int t_wallListSize;
+	for (int i = 0; i < m_players.size(); i++)
+	{
+		t_playerWalls = m_players[i]->GetPlacedWalls();
+		t_wallListSize = t_playerWalls->size();
+		for (int j = 0; j < t_wallListSize; j++)
+		{
+			unsigned int t_wallToRemove = t_playerWalls->at(j)->GetWallIndex();
+			m_graphicHandle->RemoveObject(t_wallToRemove);
+		}
+	}
+
+	////Remove logical stuff for reduced memory leakage////
+	for (int i = 0; i < m_players.size(); i++)
+	{
+		delete m_players[i];
+		m_players[i] = nullptr;
+	}
 }
 void GameScreen::Initialize()
 {

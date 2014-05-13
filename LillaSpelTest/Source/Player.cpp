@@ -741,6 +741,12 @@ float Player::GetDeltaAngle()
 	return m_deltaAngle;
 }
 
+std::vector<PlayerWall*>* Player::GetPlacedWalls()
+{
+	return &m_placedWalls;
+}
+
+
 //Modifiers
 void Player::Die()
 {

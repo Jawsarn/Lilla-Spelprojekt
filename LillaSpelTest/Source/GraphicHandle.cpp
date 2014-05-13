@@ -578,10 +578,14 @@ void GraphicHandle::CreateDrawObject(std::vector <UINT> p_UINTMeshLista, CXMMATR
 	m_GraphicEngine->CreateDrawObject(p_UINTMeshLista,t_Tempi,p_Colour,p_ShouldItBeDrawn, o_ObjectID);
 }
 
-void GraphicHandle::RemoveLevelDraw(int p_RemoveLevelDraw)
+void GraphicHandle::RemoveLevelDraw()
 {
-	m_GraphicEngine->RemoveObjectFromDrawing(m_Levels[p_RemoveLevelDraw]);
-	m_GraphicEngine->RemoveObjectFromDrawing(m_LevelWalls[p_RemoveLevelDraw]);
+	for (int i = 0; i < m_Levels.size(); i++)
+	{
+		m_GraphicEngine->RemoveObjectFromDrawing(m_Levels[i]);
+		m_GraphicEngine->RemoveObjectFromDrawing(m_LevelWalls[i]);
+	}
+
 	//m_GraphicEngine->AddObjectToDrawing();//ta bort skit ffs. levelväggarna
 }
 void GraphicHandle::AddLevelDraw(int p_AddLevelDraw)

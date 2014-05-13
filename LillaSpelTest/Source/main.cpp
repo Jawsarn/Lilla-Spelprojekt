@@ -172,7 +172,6 @@ void RunInitialization()
 		m_pauseScreen->Initialize(m_gameScreen->GetPauseDudeIndex());
 		break;
 	case GAME_SCREEN:
-		delete m_gameScreen;
 		for (int i = 0; i < 4; i++)
 		{
 			if(m_gameInfo.playerOnline[i])
@@ -213,6 +212,7 @@ void Update(std::vector<UserCMD>* p_userCMDs)
 		{
 			if (m_state != GAME_SCREEN)
 			{
+				delete m_gameScreen;
 				RunInitialization();
 			}
 			else
@@ -225,6 +225,10 @@ void Update(std::vector<UserCMD>* p_userCMDs)
 		m_state = (ApplicationState)m_gameScreen->Update(m_DeltaTime,p_userCMDs);
 		if (m_state != GAME_SCREEN)
 		{
+			if (m_state != PAUSE_SCREEN)
+			{
+				delete m_gameScreen;
+			}
 			RunInitialization();
 		}
 		break;

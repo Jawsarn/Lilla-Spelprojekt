@@ -84,6 +84,6 @@ void GameSetupScreen::Initialize()
 
 void GameSetupScreen::SaveInfo()
 {
-	m_graphicHandle->RemoveLevelDraw(currentMap);
+	m_graphicHandle->RemoveLevelDraw();
 	m_gameInfo->map = currentMap;
 }

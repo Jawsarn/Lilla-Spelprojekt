@@ -159,7 +159,7 @@ public:
 	int GetNrOfAPressedAtStart();
 	float GetSpeed();
 	float GetDeltaAngle();
-
+	std::vector<PlayerWall*>* GetPlacedWalls();
 
 	//modifiers
 	void Die();
