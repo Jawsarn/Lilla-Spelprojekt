@@ -22,6 +22,7 @@ private:
 	int m_lastNodeIndex;
 	int m_pauseDudeIndex;
 	float m_timeSpentDuringPreUpdate;
+	int m_preUpdateCountdown;
 	GameScreenState m_state;
 public:
 	GameScreen(void);
@@ -43,6 +44,9 @@ private:
 	void UpdatePlayerRacePosition(int p_currentPlayer);
 	void DrawPlayerHUD(int p_player);
 	void DrawPlayer(int p_currentPlayer);
+	void UpdateSounds(int p_player,std::vector<UserCMD>* p_userCMDS);
+	void PlaySounds();
+	void StopSounds();
 
 	//help methods
 	void PlayerDieStaticObj(int p_currentPlayer);
