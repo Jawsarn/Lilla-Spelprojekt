@@ -295,7 +295,7 @@ void GraphicHandle::CreateLight(int p_PlayerIndex,XMFLOAT3 p_Color,UINT p_Object
 	m_GraphicEngine->AddObjectLight(p_ObjectId,p_LightStruct.m_Position,p_LightStruct.m_Color,p_LightStruct.m_Radius,p_LightStruct.m_LightID);
 }
 
-void GraphicHandle::CreateShipForGame(std::vector<XMMATRIX> p_PlayerWorld)
+void GraphicHandle::CreateShipForGame(std::vector<XMFLOAT4X4> p_PlayerWorld)
 {
 	for (int i = 0; i < m_Player.size(); i++)
 	{
@@ -332,12 +332,15 @@ void GraphicHandle::CreateShipForGame(std::vector<XMMATRIX> p_PlayerWorld)
 		m_GraphicEngine->CreateParticleCBSetup(XMFLOAT3(0,0,0), 1, XMFLOAT3(0,0,0), 5, 2.0f, XMFLOAT2(0.2f,0.2f), 0.05f, t_ParticleBufferDataID1);
 		m_GraphicEngine->CreateParticleCBSetup(XMFLOAT3(0,0,0), 1, XMFLOAT3(0,0,0), 5, 2.0f, XMFLOAT2(0.2f,0.2f), 0.05f, t_ParticleBufferDataID2);
 
+	
 		UINT t_ParticleSystemID;
-		m_GraphicEngine->CreateParticleSystem(0, L"ParticleSmoke.dds",t_InitParticleID1, XMFLOAT3(0.5f,0.3f,0), t_ParticleBufferDataID1, 10000, t_ParticleSystemID );
+		m_GraphicEngine->CreateParticleSystem(0, L"ParticleEngineCircle.dds",t_InitParticleID1, XMFLOAT3(0.5f,0.3f,0), t_ParticleBufferDataID1, 1000, m_Colours[m_PlayerColour[i]], t_ParticleSystemID );
 		m_GraphicEngine->AddObjectParticleSystem(m_Player[i], t_ParticleSystemID);
 
-		m_GraphicEngine->CreateParticleSystem(0, L"ParticleSmoke.dds",t_InitParticleID2, XMFLOAT3(-0.5f,0.3f,0), t_ParticleBufferDataID2, 10000, t_ParticleSystemID );
+		m_GraphicEngine->CreateParticleSystem(0, L"ParticleEngineCircle.dds",t_InitParticleID2, XMFLOAT3(-0.5f,0.3f,0), t_ParticleBufferDataID2, 1000, m_Colours[m_PlayerColour[i]], t_ParticleSystemID );
 		m_GraphicEngine->AddObjectParticleSystem(m_Player[i], t_ParticleSystemID);
+		
+		
 		
 	}
 }
@@ -528,7 +531,11 @@ UINT GraphicHandle::CreateWall(int p_WhatWall,CXMMATRIX p_PlayerWallWorld,int p_
 
 void GraphicHandle::CreateDrawObject(std::vector <UINT> p_UINTMeshLista, CXMMATRIX p_World,XMFLOAT3 p_Colour,UINT & o_ObjectID, bool p_ShouldItBeDrawn)
 {
-	m_GraphicEngine->CreateDrawObject(p_UINTMeshLista,p_World,p_Colour,p_ShouldItBeDrawn, o_ObjectID);
+	XMFLOAT4X4 t_Tempi;
+
+	XMStoreFloat4x4( &t_Tempi, p_World);
+
+	m_GraphicEngine->CreateDrawObject(p_UINTMeshLista,t_Tempi,p_Colour,p_ShouldItBeDrawn, o_ObjectID);
 }
 
 void GraphicHandle::RemoveLevelDraw(int p_RemoveLevelDraw)

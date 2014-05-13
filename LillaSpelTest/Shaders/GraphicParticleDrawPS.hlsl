@@ -18,7 +18,7 @@ float4 PS(GS_OUTPUT input) : SV_TARGET
 	
 	finalColor = diffuseTexture.Sample(wrapSampler, input.Tex);
 	//finalColor = float4(1,1,1,1);
-	
+	finalColor *= float4(Color, 1);
 	
 	finalColor.w -= (input.Age / input.Lifespan);
 	

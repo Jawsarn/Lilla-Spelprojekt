@@ -21,14 +21,17 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4],string p_tauntSound[
 	m_graphicHandle->CreateMapLights(t_centerSplinePositions);
 
 	m_lastNodeIndex = m_mapNodes->at(m_mapNodes->size()-1)->m_Index;
-	vector<XMMATRIX> t_shipWorldMatrices;
+	vector<XMFLOAT4X4> t_shipWorldMatrices;
 	vector<UINT> t_colors;
 	vector<UINT> t_whichVehicles;
 	for (int i = 0; i < p_numberOfPlayers; i++)
 	{
 
 		m_players.push_back(new Player(m_mapNodes->at(0),(180/p_numberOfPlayers)*i, i));
-		t_shipWorldMatrices.push_back(m_players[i]->GetWorldMatrix());
+		//t_shipWorldMatrices.push_back(m_players[i]->GetWorldMatrix());
+		XMFLOAT4X4 t_TempWorld;
+		XMStoreFloat4x4( &t_TempWorld, m_players[i]->GetWorldMatrix());
+		t_shipWorldMatrices.push_back(t_TempWorld);
 		t_colors.push_back(p_color[i]);
 		t_whichVehicles.push_back(p_whatVehicle[i]);
 		m_tauntSound[i] = p_tauntSound[i];
