@@ -33,6 +33,7 @@ JoinGameScreen::JoinGameScreen(GameInfo* p_gameInfo,GraphicHandle* p_graphicsHan
 
 	m_tauntSounds.push_back("taunt1.wav");
 	m_tauntSounds.push_back("taunt2.wav");
+	m_tauntSounds.push_back("taunt3.wav");
 	m_numberOfTaunts = m_tauntSounds.size();
 }
 
