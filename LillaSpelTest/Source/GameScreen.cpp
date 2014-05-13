@@ -21,14 +21,15 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4],string p_tauntSound[
 	m_graphicHandle->CreateMapLights(t_centerSplinePositions);
 
 	m_lastNodeIndex = m_mapNodes->at(m_mapNodes->size()-1)->m_Index;
-	vector<XMMATRIX> t_shipWorldMatrices;
+	vector<XMFLOAT4X4> t_shipWorldMatrices;
 	vector<UINT> t_colors;
 	vector<UINT> t_whichVehicles;
 	for (int i = 0; i < p_numberOfPlayers; i++)
 	{
-
-		m_players.push_back(new Player(m_mapNodes->at(0),(180/p_numberOfPlayers)*i, i));
-		t_shipWorldMatrices.push_back(m_players[i]->GetWorldMatrix());
+		m_players.push_back(new Player(m_mapNodes->at(0),0.5*3.1415*i, i));
+		XMFLOAT4X4 t_TempWorld;
+		XMStoreFloat4x4( &t_TempWorld, m_players[i]->GetWorldMatrix());
+		t_shipWorldMatrices.push_back(t_TempWorld);
 		t_colors.push_back(p_color[i]);
 		t_whichVehicles.push_back(p_whatVehicle[i]);
 		m_tauntSound[i] = p_tauntSound[i];
@@ -141,20 +142,18 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 		else
 			m_players[i]->SetFinalDirection();
 	}
-	for (int i = 0; i < m_players.size(); i++)
+	switch(m_state)
 	{
-		switch(m_state)
+	case PLAY:
+		m_collisionManager->PlayerVsPlayer(m_players);
+		for (int i = 0; i < m_players.size(); i++)
 		{
-		case PLAY:
-			if(!m_players[i]->GetImmortal())
-			{
-				CollisionCheck(i, p_dt,p_userCMDS->at(i) );
-				m_collisionManager->PlayerVsPlayer(m_players);
-			}
+			CollisionCheck(i, p_dt,p_userCMDS->at(i) );
+			DrawPlayer(i);
 		}
-		DrawPlayer(i);
 	}
-	return GAME_SCREEN;
+	
+		return GAME_SCREEN;
 }
 void GameScreen::Draw()
 {

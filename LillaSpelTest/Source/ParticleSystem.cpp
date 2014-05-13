@@ -23,12 +23,13 @@ ParticleSystem::~ParticleSystem(void)
 
 }
 
-HRESULT ParticleSystem::Initialize( ID3D11Device* p_Device, ID3D11DeviceContext* p_DeviceContext, ID3D11DepthStencilState* p_NoWriteDepthState, ID3D11DepthStencilState* p_DepthOff, ID3D11BlendState* p_BlendOn, ID3D11BlendState* p_BlendOff )
+HRESULT ParticleSystem::Initialize( ID3D11Device* p_Device, ID3D11DeviceContext* p_DeviceContext, ID3D11DepthStencilState* p_NoWriteDepthState, ID3D11DepthStencilState* p_DepthOff, ID3D11BlendState* p_BlendOn,ID3D11BlendState* p_BlendOff, ID3D11Buffer* p_PerObjectBuffer)
 {
 	HRESULT hr = S_OK;
 	m_ShaderLoader = new ShaderLoader();
 	m_Device = p_Device;
 	m_DeviceContext = p_DeviceContext;
+	m_PerObjectBuffer = p_PerObjectBuffer;
 
 	m_NoWriteDepthState = p_NoWriteDepthState;
 	m_DepthOff = p_DepthOff;
@@ -142,7 +143,7 @@ HRESULT ParticleSystem::CreateShaders()
 	return hr;
 }
 
-HRESULT ParticleSystem::CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName , UINT p_StartBufferID, XMFLOAT3 p_ObjectPosition, UINT p_DataID, UINT p_MaxParticles, UINT &systemID)
+HRESULT ParticleSystem::CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName , UINT p_StartBufferID, XMFLOAT3 p_ObjectPosition, UINT p_DataID, UINT p_MaxParticles, XMFLOAT3 p_Color,UINT &systemID)
 {
 	HRESULT hr = S_OK;
 
@@ -159,6 +160,7 @@ HRESULT ParticleSystem::CreateParticleSystem(UINT p_EffectType, const wchar_t * 
 	t_NewSystem.startBufferID = p_StartBufferID;
 	t_NewSystem.objectPosition = p_ObjectPosition; 
 	t_NewSystem.perEffectDataID = p_DataID;
+	t_NewSystem.color = p_Color;
 
 	t_NewSystem.firstrun = true;
 
@@ -391,6 +393,12 @@ void ParticleSystem::Draw(float dt)
 	{
 		ParticleEffectSystem t_CurSys = m_ParticleEffectSystems[i];
 		
+		PerObjectBuffer t_pobj;
+		t_pobj.Color = t_CurSys.color;
+		t_pobj.typeOfObject = 0;
+		t_pobj.World = XMMatrixIdentity();
+
+		m_DeviceContext->UpdateSubresource( m_PerObjectBuffer, 0, nullptr, &t_pobj, 0, 0 );
 
 		//update effect buffer data
 		m_DeviceContext->UpdateSubresource( m_PerEffectBuffer, 0, nullptr, &m_PerEffectData[t_CurSys.perEffectDataID], 0, 0 );
