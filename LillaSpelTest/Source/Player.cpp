@@ -97,10 +97,11 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_deathShakeMaxIntensity = 8;//reversed intensity: higher number means lower intensity. Because logic
 	m_deathShakeIntensityDrop = 4;
 
-	m_bumpIntensity = 1;
-	m_baseBumpIntensity = 3;
+	
+	m_bumpIntensity = 1; //set low for big-assed bump
+	m_baseBumpIntensity = 3; //set high for big-assed bump
 
-	m_bobFrequency = 0.01;
+	m_bobFrequency = 1;
 	m_bobIntensity = 0.1;
 
 	////FINAL WORLD MATRIX INITIALIZATION

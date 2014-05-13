@@ -27,7 +27,7 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4],string p_tauntSound[
 	for (int i = 0; i < p_numberOfPlayers; i++)
 	{
 
-		m_players.push_back(new Player(m_mapNodes->at(0),(180/p_numberOfPlayers)*i, i));
+		m_players.push_back(new Player(m_mapNodes->at(0),0.5*3.1415*i, i));
 		t_shipWorldMatrices.push_back(m_players[i]->GetWorldMatrix());
 		t_colors.push_back(p_color[i]);
 		t_whichVehicles.push_back(p_whatVehicle[i]);
