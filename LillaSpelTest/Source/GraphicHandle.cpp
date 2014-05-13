@@ -79,18 +79,22 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 		//for (int k = 0; k < length; k++) //så vi kan ha flera olika väggar per bana.
 		//{
 			
-		/////t_TempStringForWall =p_LevelNames[i];
-		//////////t_TempStringForWall += "/LevelWalls";
+		t_TempStringForWall =p_LevelNames[i];
+		t_TempStringForWall += "/LevelWalls";//4123
+		m_MeshLevelWall.push_back(InitializeObj(t_TempStringForWall));
 		/////här e för att fixa in levelskiten men den fackar ur bror vettefan varför kan vara en grej i obj att en skit hade 1 rad med shit men borde inte göra så att skiten fackar ur................................................................................................................................................................................................../////////////m_MeshLevelWall.push_back(InitializeObj(t_TempStringForWall));
 		//}
 
 	}
 
-
+	////skapar object för att rita ut för levelselection
 	m_Levels.resize(m_MeshLevels.size(),0);
+	m_LevelWalls.resize(m_MeshLevels.size(),0);
 	for (int i = 0; i < m_MeshLevels.size(); i++)
 	{
 		CreateDrawObject(m_MeshLevels[i],XMMatrixIdentity(),XMFLOAT3(1,1,1),m_Levels[i],false);
+		CreateDrawObject(m_MeshLevelWall[i],XMMatrixIdentity(),XMFLOAT3(1,1,1),m_LevelWalls[i],false);
+
 	}
 
 
@@ -112,7 +116,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 
 	//create a camera, just for testing and stuff, think you'll want to create it later with players tho, because the hud wont rely on camera at first
 
-	//(250,0,-100)			0,0,1					0,1,0                     4123
+	//(250,0,-100)			0,0,1					0,1,0   
 	for (int i = 0; i < 4; i++)
 	{
 		m_GraphicEngine->CreateCamera(XMFLOAT3(250,0,-100),XMFLOAT3(0,0,1),XMFLOAT3(0,1,0),XM_PIDIV4,p_Width/2,p_Height/2,1.0f,10000, m_CameraID[i]);
@@ -175,8 +179,10 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	//}
 
 	SelectVehicle(); // ska vara där för att initialize selectgrejen
-	//CreateWall(
-	//AddSelectionDraw();// bajsa på detta innan man lägger upp 4123
+	for (int i = 0; i < 4; i++)
+	{
+	SetSelectionColour(i, 0);
+	}
 }
 
 void GraphicHandle::ChangeLevelSelection(int p_WhatLevel)
@@ -185,10 +191,12 @@ void GraphicHandle::ChangeLevelSelection(int p_WhatLevel)
 	XMMATRIX t_TempWorldMatrix=XMMatrixIdentity();
 	XMFLOAT3 t_TempColour = XMFLOAT3(1,1,1);
 	m_GraphicEngine->AddObjectToDrawing(m_Levels[p_WhatLevel]);
+	m_GraphicEngine->AddObjectToDrawing(m_LevelWalls[p_WhatLevel]);
 
 	if( m_WhatLevelBefore!=p_WhatLevel)
 	{
 		m_GraphicEngine->RemoveObjectFromDrawing(m_Levels[m_WhatLevelBefore]);
+		m_GraphicEngine->RemoveObjectFromDrawing(m_LevelWalls[m_WhatLevelBefore]);
 	}
 	m_WhatLevelBefore=p_WhatLevel;
 }
@@ -248,13 +256,45 @@ void GraphicHandle::UpdateCameraVehicleSelection(UINT p_CameraLogicID, float p_L
 
 	}
 }
+void GraphicHandle::UpdateCameraVehicleSelectionSeperate(UINT p_CameraLogicID, float p_LookingAtWhatVehicle)
+{
+	if (p_CameraLogicID < 5)
+	{	
+		/////////////////////////////////fungerande
+		XMMATRIX t_Tempura = XMMatrixTranslation(0,1,100);
+		XMMATRIX t_TempRotationToGetOutCircle = XMMatrixRotationY(XM_PIDIV2*p_CameraLogicID);
+
+
+		XMMATRIX t_Rot = XMMatrixRotationY(2*XM_PI/m_MeshShips.size()*p_LookingAtWhatVehicle);
+		XMMATRIX t_Rot2 = XMMatrixRotationX(-XM_PIDIV4/10);
+
+		
+		t_Tempura = XMMatrixMultiply(t_Tempura,t_TempRotationToGetOutCircle);
+
+		t_Rot = XMMatrixMultiply(t_Rot,t_Rot2);//sätter ihop rotationerna
+		t_Rot = XMMatrixMultiply(t_Rot, t_Tempura);//roterar matrisen
+
+		t_Tempura = XMMatrixRotationY(XM_PI);//vänder med 180 grader
+
+		t_Rot = XMMatrixMultiply(t_Tempura,t_Rot);//lägger in den sista rotationen
+
+
+		//t_Rot = XMMatrixMultiply(t_Tempura,t_Rot);
+
+		m_GraphicEngine->SetCamera(m_CameraID[p_CameraLogicID],t_Rot);
+		/////////////////////////////////////////////////////////////////////////////////
+
+	}
+}
 void GraphicHandle::SetCameraVehicleSelection(UINT p_CameraLogicID)
 {
 	if (p_CameraLogicID < 5)
 	{	
 		/////////////////////////////////fungerande
-		XMMATRIX t_Tempura = XMMatrixTranslation(0,1,25*m_MeshShips.size());
-		XMMATRIX t_Rot = XMMatrixRotationY(2*XM_PI/m_MeshShips.size());
+		//XMMATRIX t_Tempura = XMMatrixTranslation(0,1,25*m_MeshShips.size());
+		XMMATRIX t_Tempura = XMMatrixTranslation(0,1,100);
+		//XMMATRIX t_Rot = XMMatrixRotationY(2*XM_PI/m_MeshShips.size());
+		XMMATRIX t_Rot = XMMatrixRotationY(XM_PIDIV2*p_CameraLogicID*3);
 		XMMATRIX t_Rot2 = XMMatrixRotationX(-XM_PIDIV4/4);
 
 		t_Rot = XMMatrixMultiply(t_Rot,t_Rot2);//sätter ihop rotationerna
@@ -541,12 +581,14 @@ void GraphicHandle::CreateDrawObject(std::vector <UINT> p_UINTMeshLista, CXMMATR
 void GraphicHandle::RemoveLevelDraw(int p_RemoveLevelDraw)
 {
 	m_GraphicEngine->RemoveObjectFromDrawing(m_Levels[p_RemoveLevelDraw]);
+	m_GraphicEngine->RemoveObjectFromDrawing(m_LevelWalls[p_RemoveLevelDraw]);
 	//m_GraphicEngine->AddObjectToDrawing();//ta bort skit ffs. levelväggarna
 }
 void GraphicHandle::AddLevelDraw(int p_AddLevelDraw)
 {
 	m_GraphicEngine->AddObjectToDrawing(m_Levels[p_AddLevelDraw]);
-	//m_GraphicEngine->AddObjectToDrawing();//ta bort skit ffs. levelväggarna o lägg till här iaf
+	m_GraphicEngine->AddObjectToDrawing(m_LevelWalls[p_AddLevelDraw]);
+	//m_GraphicEngine->AddObjectToDrawing(m_Mesh);//ta bort skit ffs. levelväggarna o lägg till här iaf
 }
 void GraphicHandle::RemoveSelectionDraw()
 {

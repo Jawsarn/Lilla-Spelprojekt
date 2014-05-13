@@ -30,6 +30,7 @@ private:
 	std::vector<UINT> m_PlayerLight;
 	UINT m_WhatLevelBefore;
 	std::vector <UINT> m_Levels;
+	std::vector <UINT> m_LevelWalls;
 	std::vector <std::string> m_WallNames;
 
 	
@@ -77,6 +78,7 @@ public:
 	void SelectVehicle();
 	void ChangeLevelSelection(int p_WhatLevel);
 	void UpdateCameraSelectLevel(int p_WhatLevel,int p_TheRotation);
+	void UpdateCameraVehicleSelectionSeperate(UINT p_CameraLogicID, float p_LookingAtWhatVehicle);
 	void UpdateCameraVehicleSelection(UINT p_CameraLogicID,float p_LookingAtWhatVehicle);
 	void JohnSetCamera(CXMMATRIX p_World, UINT p_CameraLogicID);
 	int GetAmountOfVehicles();
