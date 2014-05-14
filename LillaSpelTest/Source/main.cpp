@@ -19,6 +19,7 @@
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam );
 HRESULT InitializeWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow);
+void UpdateTime();
 void Update(std::vector<UserCMD>* p_userCMDs);
 void Run();
 
@@ -130,12 +131,13 @@ void Run()
 					////Player i controller disconnected, plz connect again message
 				}
 			}
-			ULONGLONG timeCur = GetTickCount64();
-			if( m_PrevTime == 0 )
-				m_PrevTime = timeCur;
-			m_DeltaTime = ( timeCur - m_PrevTime ) / 1000.0f;
-			m_GameTime += m_DeltaTime;
-			m_PrevTime = timeCur;
+			//ULONGLONG timeCur = GetTickCount64();
+			//if( m_PrevTime == 0 )
+			//	m_PrevTime = timeCur;
+			//m_DeltaTime = ( timeCur - m_PrevTime ) / 1000.0f;
+			//m_GameTime += m_DeltaTime;
+			//m_PrevTime = timeCur;
+			UpdateTime();
 			Update(userCMDS);
 			//t_azookaTest.Run();
 
@@ -179,6 +181,7 @@ void RunInitialization()
 		}
 		m_audioManager->RemoveSpecificSound("menu.mp3");
 		m_gameScreen = new GameScreen(m_gameInfo.playerColor, m_gameInfo.shipModell,m_gameInfo.tauntSound, m_levelNames[m_gameInfo.map], t_playerOnline, m_GraphicHandle, m_audioManager);
+		UpdateTime();
 		break;
 	case JOIN_GAME_SCREEN:
 		m_joinGameScreen->Initialize();
@@ -260,6 +263,16 @@ void Update(std::vector<UserCMD>* p_userCMDs)
 	default:
 		break;
 	}
+}
+
+void UpdateTime()
+{
+	ULONGLONG timeCur = GetTickCount64();
+	if( m_PrevTime == 0 )
+		m_PrevTime = timeCur;
+	m_DeltaTime = ( timeCur - m_PrevTime ) / 1000.0f;
+	m_GameTime += m_DeltaTime;
+	m_PrevTime = timeCur;
 }
 //callback inte helt fixat då den inte får ligga som en medlemsfunktion, och måste därför vara static => vilket gör att den inte kan kalla på medlemsfunktioner, kan fixas med att lägga den i ett namespace och trixa med "this" , eller ha den i main där allt är static och kan skriva funktioner som inte behöver en klass
 float t_bajs=0;

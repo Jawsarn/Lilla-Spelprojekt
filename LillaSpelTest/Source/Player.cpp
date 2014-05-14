@@ -77,7 +77,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 
 	//wall stuff
 	m_maxWalls = 10;
-	m_wallGain = 1;
+	m_wallGain = 0.1;
 	m_maxCooldown = 2;
 
 	//timers
@@ -730,7 +730,7 @@ float Player::GetHudBoosterInfo()
 float Player::GetHudWallInfo()
 {
 	//apparently wants 0 to be alot of walls, and 1 to be empty
-	return 1 - (m_maxWalls / m_wallMeter);
+	return 1 - (m_wallMeter/m_maxWalls );
 }
 
 bool Player::GetImmortal()
