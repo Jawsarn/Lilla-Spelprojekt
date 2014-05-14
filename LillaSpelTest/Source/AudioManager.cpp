@@ -57,6 +57,7 @@ void AudioManager::CreateSound(std::string p_fileName)
 		m_result = m_system->createSound(p_fileName.c_str(), FMOD_DEFAULT,0, &sound);
 
 		m_sounds[p_fileName].sound=sound;
+		m_sounds[p_fileName].volume = 1;
 	}
 
 }
@@ -132,6 +133,13 @@ void AudioManager::SetMasterVolume(float p_volumeBetween0and1)
 void AudioManager::PitchSpecificSound(std::string p_soundToPitch, float p_pitchValue)
 {
 	m_sounds[p_soundToPitch].channel->setFrequency(p_pitchValue);
+}
+
+void AudioManager::RemoveSpecificSound(std::string p_soundToRemove)
+{
+	m_sounds[p_soundToRemove].sound->release();
+	m_sounds.erase(p_soundToRemove);
+	
 }
 
 void AudioManager::CleanUpCrew()
