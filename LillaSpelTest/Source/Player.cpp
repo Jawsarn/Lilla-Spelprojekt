@@ -109,6 +109,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 
 
 	////FINAL WORLD MATRIX INITIALIZATION
+	SetDirection();
 	FixUpVectorRotation(m_angle);
 	FixOffsetFromCenterSpline();
 	UpdateWorldMatrix();
@@ -117,6 +118,17 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 
 Player::~Player(void)
 {
+	CleanUp();
+}
+
+void Player::CleanUp()
+{
+	//loopa igenom hela listan å ta bort objecten som pekarna i listan pekar på
+	for (int i = 0; i < m_placedWalls.size()-1; i++)
+	{
+		delete m_placedWalls[i];
+		m_placedWalls[i] = nullptr;
+	}
 }
 
 

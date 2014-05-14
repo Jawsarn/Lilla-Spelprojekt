@@ -41,5 +41,7 @@ public:
 	// the sound name is the files name:the pitch value is normally 44100, higher than that makes the sound go faster and vice versa
 	void PitchSpecificSound(std::string p_soundToPitch, float p_pitchValue);
 	void CleanUpCrew();
+
+	float GetMasterVolume();
 };
 

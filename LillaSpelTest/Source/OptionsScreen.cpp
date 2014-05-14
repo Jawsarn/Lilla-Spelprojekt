@@ -8,6 +8,8 @@ OptionsScreen::OptionsScreen(void)
 OptionsScreen::OptionsScreen(GameInfo* p_gameInfo, GraphicHandle* p_graphicsHandle, AudioManager* p_audioManager)
 	:MenuScreen(p_gameInfo,p_graphicsHandle,  p_audioManager)
 {
+	m_volume = m_audioManager->GetMasterVolume();
+
 	AddButton("Volume", DirectX::XMFLOAT2(0,0.6),0.5,1, L"Volume1.dds",L"Volume2.dds");
 	AddButton("Resolution", DirectX::XMFLOAT2(0,0.2),0.5,1,L"Resolution1.dds",L"Resolution2.dds");
 	AddButton("Full screen",DirectX::XMFLOAT2(0,-0.2),0.5,1,L"fullScreen1.dds",L"FullScreen2.dds");
@@ -33,7 +35,7 @@ OptionsScreen::OptionsScreen(GameInfo* p_gameInfo, GraphicHandle* p_graphicsHand
 		buttonList[i]->buttonHandle = i;
 	}
 	t_buttonHandles.push_back(t_volumeSlideHandle);
-	t_barOffsets.push_back(DirectX::XMFLOAT2(0,0));
+	t_barOffsets.push_back(DirectX::XMFLOAT2(1-m_volume,0));
 	m_volumeSlideHandle = t_barOffsets.size() - 1;
 
 	unsigned int t_templateHandle;
@@ -44,7 +46,7 @@ OptionsScreen::OptionsScreen(GameInfo* p_gameInfo, GraphicHandle* p_graphicsHand
 	currentButton = buttonList[0];
 	
 	m_fullScreen=false;
-	m_volume = 1;
+	
 }
 
 
