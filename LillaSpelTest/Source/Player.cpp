@@ -29,6 +29,14 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	//gets the corners from the map loader. Yes. This works
 	vector<XMFLOAT3> t_wallBoxCorners = t_mapLoader.LoadLogicalObj("walls/firstwall/mesh.obj").at(0);
 	vector <XMFLOAT3> t_playerShipBoxCorners = t_mapLoader.LoadLogicalObj("ships/pajfighter/mesh.obj").at(0);
+
+	vector<XMFLOAT3> t_derp = t_mapLoader.LoadLogicalObj("levels/Aztec/mesh.obj").at(0);
+	XMFLOAT3 t_derp2 = SetBoxExtents(t_derp);
+	vector<XMFLOAT3> t_derp3 = t_mapLoader.LoadLogicalObj("levels/Aztec/levelwalls/mesh.obj").at(0);
+	XMFLOAT3 t_derp4 = SetBoxExtents(t_derp);
+
+
+
 	m_wallBoxExtents = SetBoxExtents(t_wallBoxCorners);
 	m_playerShipBoxExtents = SetBoxExtents(t_playerShipBoxCorners);
 

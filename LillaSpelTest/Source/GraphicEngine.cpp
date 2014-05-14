@@ -80,7 +80,7 @@ HRESULT GraphicEngine::Initialize( UINT p_Width, UINT p_Height, HWND handleWindo
 		return hr;
 
 	m_ParticleSystem = m_ParticleSystem->GetInstance();
-	hr = m_ParticleSystem->Initialize(m_Device, m_DeviceContext, m_DepthStateNoWrite, m_DepthStateOff, m_BlendStateOn, m_BlendStateOff, m_PerObjectBuffer);
+	hr = m_ParticleSystem->Initialize(m_Device, m_DeviceContext, m_DepthStateNoWrite, m_DepthStateOff, m_BlendStateOn, m_BlendStateOff, m_PerFrameBuffer ,m_PerObjectBuffer);
 	if( FAILED( hr ) )
 		return hr;
 	
@@ -562,10 +562,6 @@ HRESULT GraphicEngine::InitializeConstantBuffers()
 	if ( FAILED( hr ) )
 		return hr;
 
-	t_BufferDesc.ByteWidth = sizeof(CBEyePosition);
-	hr = m_Device->CreateBuffer( &t_BufferDesc, nullptr, &m_ParticleEyePosBuffer) ;
-	if ( FAILED ( hr ) )
-		return hr;
 
 	//light buffer
 	m_StaticLights.resize(MAX_NUM_OF_LIGHTS);
@@ -592,13 +588,10 @@ HRESULT GraphicEngine::InitializeConstantBuffers()
 	hr = m_Device->CreateShaderResourceView(m_LightBuffer,&t_SrvDesc,&m_LightBufferSRV);
 
 
-	m_DeviceContext->VSSetConstantBuffers(0,1,&m_PerFrameBuffer);
-	m_DeviceContext->VSSetConstantBuffers(1,1,&m_PerObjectBuffer);
 
-	m_DeviceContext->GSSetConstantBuffers(0,1, &m_PerFrameBuffer);
-	m_DeviceContext->GSSetConstantBuffers(1,1,&m_PerObjectBuffer);
+	/*m_DeviceContext->GSSetConstantBuffers(0,1, &m_PerFrameBuffer);
+	m_DeviceContext->GSSetConstantBuffers(1,1,&m_PerObjectBuffer);*/
 	//m_DeviceContext->GSSetConstantBuffers(2,1,&m_HudConstantBuffer);
-	m_DeviceContext->GSSetConstantBuffers(4,1,&m_ParticleEyePosBuffer);
 
 	m_DeviceContext->PSSetConstantBuffers(0,1,&m_PerObjectBuffer);
 
@@ -1401,7 +1394,7 @@ void GraphicEngine::DrawGame(float p_DeltaTime)
 void GraphicEngine::UpdateFrameBuffer()
 {
 	PerFramebuffer t_PerFrame;
-	CBEyePosition t_CBEyeyPosition;
+
 	for (int i = 0; i < 4; i++)
 	{
 		if (m_ActiveCameras[i] != nullptr)
@@ -1416,7 +1409,7 @@ void GraphicEngine::UpdateFrameBuffer()
 			
 			t_PerFrame.fillers3 = XMFLOAT3(0,0,0);
 
-			t_CBEyeyPosition.EyePosition[i] = XMFLOAT4(t_Pos.x, t_Pos.y, t_Pos.z, 1);
+			t_PerFrame.EyePosition[i] = XMFLOAT4(t_Pos.x, t_Pos.y, t_Pos.z, 1);
 		}
 		else
 		{
@@ -1424,14 +1417,14 @@ void GraphicEngine::UpdateFrameBuffer()
 			t_PerFrame.fillers3 = XMFLOAT3(0,0,0);
 			t_PerFrame.Projection[i] = XMMatrixIdentity();
 			t_PerFrame.View[i] = XMMatrixIdentity();
-			t_CBEyeyPosition.EyePosition[i] = XMFLOAT4(0,0,0,0);
+			t_PerFrame.EyePosition[i] = XMFLOAT4(0,0,0,0);
 		}
 	}
 
 	t_PerFrame.NumberOfViewports = m_NumberOfViewports;
 
 	m_DeviceContext->UpdateSubresource(m_PerFrameBuffer,0,nullptr, &t_PerFrame,0,0);
-	m_DeviceContext->UpdateSubresource(m_ParticleEyePosBuffer, 0, nullptr, &t_CBEyeyPosition, 0,0);
+
 }
 
 void GraphicEngine::DrawOpaqueObjects()
@@ -1439,6 +1432,7 @@ void GraphicEngine::DrawOpaqueObjects()
 	//need to set the render target here if changing elsewhere
 	//m_DeviceContext->OMSetRenderTargets(1, &m_RenderTargetView, m_DepthStencilView);
 	m_DeviceContext->GSSetConstantBuffers(0,1, &m_PerFrameBuffer);
+	m_DeviceContext->GSSetConstantBuffers(1,1, &m_PerObjectBuffer);
 
 	//set depth state on
 	m_DeviceContext->OMSetDepthStencilState(m_DepthStateOn,0);
@@ -1706,9 +1700,9 @@ void GraphicEngine::CreateParticleSystem(UINT p_EffectType, const wchar_t * p_Fi
 	m_ParticleSystem->CreateParticleSystem(p_EffectType, p_FileName, p_StartBufferID, p_WorldPos, p_Data, p_MaxParticles, p_Color, o_SystemID);
 }
 
-void GraphicEngine::CreateParticleCBSetup(XMFLOAT3 p_ObjectPosition, float p_FlareEmitNumber, XMFLOAT3 p_EmitDirection, float p_InitSpawnAmount, float p_ParticleLifeSpan, XMFLOAT2 p_InitialSize, float p_SpawnTime,UINT &o_DataID)
+void GraphicEngine::CreateParticleCBSetup(XMFLOAT3 p_ObjectPosition, XMFLOAT3 p_EmitDirection, float p_InitSpawnAmount, float p_ParticleLifeSpan, XMFLOAT2 p_InitialSize, float p_SpawnTime,UINT &o_DataID)
 {
-	m_ParticleSystem->CreateCBsetup( p_ObjectPosition, p_FlareEmitNumber, p_EmitDirection, p_InitSpawnAmount, p_ParticleLifeSpan, p_InitialSize, p_SpawnTime, o_DataID);
+	m_ParticleSystem->CreateCBsetup( p_ObjectPosition, p_EmitDirection, p_InitSpawnAmount, p_ParticleLifeSpan, p_InitialSize, p_SpawnTime, o_DataID);
 }
 
 void GraphicEngine::UpdateParticleCB(UINT p_DataID, XMFLOAT3 p_WorldAcceler, float p_FlareEmitNumber, XMFLOAT3 p_EmitDirection, float p_InitSpawnAmount, float p_ParticleLifeSpan, XMFLOAT2 p_InitialSize)

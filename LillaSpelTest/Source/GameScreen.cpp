@@ -214,7 +214,13 @@ void GameScreen::CollisionCheck(int p_currentPlayer, float p_dt, UserCMD& p_user
 	MapNode* t_currMapNode = m_players[p_currentPlayer]->GetCurrentMapNode(); 
 	//player vs static obj
 	vector<StaticObj*>* m_wallsToCheck = &t_currMapNode->m_staticObjs;		
-	if(m_collisionManager->PlayerVsObj(m_players[p_currentPlayer]->GetCollisionBox(), m_wallsToCheck)!=1)    
+	if(m_wallsToCheck->size()>0)
+	{
+		int derp = 0;
+		derp++;
+
+	}
+	if(m_collisionManager->PlayerVsObj(m_players[p_currentPlayer]->GetCollisionBox(), m_wallsToCheck)!=-1)    
 	{
 		PlayerDieStaticObj(p_currentPlayer);
 	}

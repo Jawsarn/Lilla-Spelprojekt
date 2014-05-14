@@ -22,7 +22,8 @@ private:
 		UINT m_LightID;
 	};
 
-	
+	int m_CircleOffset;
+	int m_BigCircleOffset;
 	std::vector<UINT> m_Player;//vilket obj
 	std::vector <int> m_PlayerVehicle;
 	//std::vector<UINT> m_PlayerWalls;

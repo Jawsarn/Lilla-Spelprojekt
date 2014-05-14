@@ -23,13 +23,15 @@ ParticleSystem::~ParticleSystem(void)
 
 }
 
-HRESULT ParticleSystem::Initialize( ID3D11Device* p_Device, ID3D11DeviceContext* p_DeviceContext, ID3D11DepthStencilState* p_NoWriteDepthState, ID3D11DepthStencilState* p_DepthOff, ID3D11BlendState* p_BlendOn,ID3D11BlendState* p_BlendOff, ID3D11Buffer* p_PerObjectBuffer)
+HRESULT ParticleSystem::Initialize( ID3D11Device* p_Device, ID3D11DeviceContext* p_DeviceContext, ID3D11DepthStencilState* p_NoWriteDepthState, ID3D11DepthStencilState* p_DepthOff, ID3D11BlendState* p_BlendOn,ID3D11BlendState* p_BlendOff, ID3D11Buffer* p_PerFrameBuffer , ID3D11Buffer* p_PerObjectBuffer)
 {
 	HRESULT hr = S_OK;
 	m_ShaderLoader = new ShaderLoader();
 	m_Device = p_Device;
 	m_DeviceContext = p_DeviceContext;
+	m_PerFrameBuffer = p_PerFrameBuffer;
 	m_PerObjectBuffer = p_PerObjectBuffer;
+
 
 	m_NoWriteDepthState = p_NoWriteDepthState;
 	m_DepthOff = p_DepthOff;
@@ -229,11 +231,10 @@ HRESULT ParticleSystem::CreateInitParticlesBuffer(std::vector<Particle> p_StartP
 	return hr;
 }
 
-void ParticleSystem::CreateCBsetup(XMFLOAT3 p_SpawnPosition, float p_FlareEmitNumber, XMFLOAT3 p_EmitDirection, float p_InitSpawnAmount, float p_ParticleLifeSpan, XMFLOAT2 p_InitialSize, float p_SpawnTime, UINT &o_DataID)
+void ParticleSystem::CreateCBsetup(XMFLOAT3 p_SpawnPosition, XMFLOAT3 p_EmitDirection, float p_InitSpawnAmount, float p_ParticleLifeSpan, XMFLOAT2 p_InitialSize, float p_SpawnTime, UINT &o_DataID)
 {
 	CPerEffectBuffer t_NewCBSetup;
 	t_NewCBSetup.spawnPosition = p_SpawnPosition;
-	t_NewCBSetup.flareEmitNumber = p_FlareEmitNumber;
 	t_NewCBSetup.emitDirection = p_EmitDirection;
 	t_NewCBSetup.initSpawnAmount = p_InitSpawnAmount;
 	t_NewCBSetup.particleLifeSpan = p_ParticleLifeSpan;
@@ -257,16 +258,7 @@ HRESULT ParticleSystem::CreateConstantBuffer()
 	hr = m_Device->CreateBuffer( &bd, nullptr, &m_PerEffectBuffer );
 	if( FAILED(hr) )
 		return hr;
-
-	bd.ByteWidth = sizeof(CPerFrameParticleBuffer);
-
-	hr = m_Device->CreateBuffer( &bd, nullptr, &m_PerFrameBuffer); 
-
-	m_DeviceContext->VSSetConstantBuffers(2,1,&m_PerEffectBuffer);
-	m_DeviceContext->VSSetConstantBuffers(3,1,&m_PerFrameBuffer);
-											   
-	m_DeviceContext->GSSetConstantBuffers(2,1,&m_PerEffectBuffer);
-	m_DeviceContext->GSSetConstantBuffers(3,1,&m_PerFrameBuffer);
+							  
 
 	return hr;
 }
@@ -377,11 +369,7 @@ void ParticleSystem::Draw(float dt)
 	// make the OM to the backbuffer RENDER TARGET MAKE FIX OMG LULZ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NOT FIXED YET LULZ
 	m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 
-	CPerFrameParticleBuffer t_Cpfpb;
-	t_Cpfpb.deltaTime = dt;
-	t_Cpfpb.fillers = XMFLOAT3(0,0,0);
 
-	m_DeviceContext->UpdateSubresource( m_PerFrameBuffer, 0, nullptr, &t_Cpfpb, 0, 0 );
 	m_DeviceContext->HSSetShader(nullptr,nullptr,0);
 	m_DeviceContext->DSSetShader(nullptr,nullptr,0);
 
@@ -401,6 +389,7 @@ void ParticleSystem::Draw(float dt)
 		m_DeviceContext->UpdateSubresource( m_PerObjectBuffer, 0, nullptr, &t_pobj, 0, 0 );
 
 		//update effect buffer data
+		m_PerEffectData[t_CurSys.perEffectDataID].deltaTime = dt;
 		m_DeviceContext->UpdateSubresource( m_PerEffectBuffer, 0, nullptr, &m_PerEffectData[t_CurSys.perEffectDataID], 0, 0 );
 
 		//turn off depth 
@@ -433,6 +422,10 @@ void ParticleSystem::Draw(float dt)
 
 void ParticleSystem::UpdateParticles(UINT id)
 {
+	//sset the right buffers
+	m_DeviceContext->GSSetConstantBuffers(0, 1, &m_PerEffectBuffer );
+
+	
 	ParticleShaderProgram t_CurSysProgram = m_ParticleShaderPrograms[m_ParticleEffectSystems[id].programID];
 	
 	//set shaders
@@ -473,6 +466,9 @@ void ParticleSystem::UpdateParticles(UINT id)
 
 void ParticleSystem::DrawParticles(UINT id)
 {
+	//set buffers right
+	m_DeviceContext->GSSetConstantBuffers(0, 1, &m_PerFrameBuffer);
+	
 	ParticleShaderProgram t_CurSysProgram = m_ParticleShaderPrograms[m_ParticleEffectSystems[id].programID];
 	
 	//Set shaders 

@@ -1,4 +1,17 @@
-#include "GraphicParticleHelper.fx"
+
+
+cbuffer PerObjectBuffer	:register(c0)
+{
+	matrix World;
+	float3 Color;
+	float typeOfObject; //with types of textures etc
+}
+
+Texture2D diffuseTexture	: register(t0);
+
+
+SamplerState wrapSampler	: register(s0);
+
 
 struct GS_OUTPUT
 {

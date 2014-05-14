@@ -115,7 +115,7 @@ struct PerFramebuffer
 {
 	XMMATRIX View[4];
 	XMMATRIX Projection[4];
-	//XMFLOAT4 EyesPos[4];
+	XMFLOAT4 EyePosition[4];
 	XMFLOAT3 fillers3;
 	float NumberOfViewports;
 };
@@ -204,9 +204,4 @@ struct Particle //change in the input layout
 		Lifespan = p_in.Lifespan;
 		Type = p_in.Type;
 	}
-};
-
-struct CBEyePosition
-{
-	XMFLOAT4 EyePosition[4];
 };
