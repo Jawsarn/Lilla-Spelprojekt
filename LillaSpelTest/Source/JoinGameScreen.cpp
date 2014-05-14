@@ -122,7 +122,7 @@ void JoinGameScreen::Initialize()
 	}
 	m_graphicHandle->AddSelectionDraw();
 	m_graphicHandle ->SetViewportAmount(4);
-	
+	MenuScreen::Initialize();
 }
 
 void JoinGameScreen::MakeHud(const wchar_t* p_textureNames, int p_hudIndex)

@@ -72,8 +72,7 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	m_GraphicHandle->SetFullScreen(false);
 	m_audioManager = m_audioManager->GetInstance();
 	m_audioManager->PlaySpecificSound("menu.mp3",true,false);
-	m_audioManager->SetSpecificSoundVolume("menu.mp3",0.1);
-
+	m_audioManager->SetSpecificSoundVolume("menu.mp3",0.6);
 
 	m_mainMenuScreen = new MainMenuScreen(m_GraphicHandle, m_audioManager);
 	m_gameSetupScreen = new GameSetupScreen(&m_gameInfo,m_GraphicHandle, m_audioManager);
@@ -178,6 +177,7 @@ void RunInitialization()
 			if(m_gameInfo.playerOnline[i])
 				t_playerOnline++;
 		}
+		m_audioManager->RemoveSpecificSound("menu.mp3");
 		m_gameScreen = new GameScreen(m_gameInfo.playerColor, m_gameInfo.shipModell,m_gameInfo.tauntSound, m_levelNames[m_gameInfo.map], t_playerOnline, m_GraphicHandle, m_audioManager);
 		break;
 	case JOIN_GAME_SCREEN:

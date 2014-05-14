@@ -35,6 +35,11 @@ int MenuScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDs)
 }
 void MenuScreen::Draw(){}
 
+void MenuScreen::Initialize()
+{
+	m_audioManager->PlaySpecificSound("menu.mp3",true,false);
+}
+
 bool MenuScreen::FloatBetweenValues(float floatToCheck, float min, float max)
 {
 	return floatToCheck<max && floatToCheck>min;

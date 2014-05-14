@@ -94,6 +94,8 @@ private:
 
 	float m_bumpIntensity;
 	float m_baseBumpIntensity;
+	float m_angleShockwavePower;
+	float m_speedShockwavePower;
 	XMFLOAT3 m_unmodifiedTarget;
 	XMFLOAT3 m_unmodifiedUp;
 
@@ -130,7 +132,6 @@ public:
 	Player();
 	Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex);
 	~Player();
-	void CleanUp();
 
 	void Update(float p_dt,UserCMD p_userCMD); //Updates position and dropps walls
 	void UpdatePosition(float p_dt, UserCMD p_userCMD);
@@ -169,6 +170,7 @@ public:
 	void Start();
 	void SetSpeed(float p_speed);
 	void StartCollisionAftermath(float p_sideForce, float p_targetForce, int p_sideDirection, int p_targetDirection);
+	void StartShockWaveAftermath(int p_sideDirection, int p_targetDirection, float p_zValue, float p_xValue);
 	void SetPlayerBoost(float p_boost);
 	void SetPlayerRacePosition(int p_pos);
 	void IncreaseBoost(int p_nrOfWallsClose, float p_dt);
@@ -176,7 +178,8 @@ public:
 	void AngleMoveBack();
 
 private:
-
+	
+	void CleanUp();
 
 	//Update methods
 	void StartupSpam();

@@ -112,6 +112,9 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	//front bump
 	m_targetBumpIntensity = 0.3;
 
+	//Shockwave
+	m_angleShockwavePower = 1;
+	m_speedShockwavePower = 1;
 	m_bobFrequency = 1;
 	m_bobIntensity = 0.1;
 
@@ -886,3 +889,9 @@ void Player::StartCollisionAftermath(float p_sideForce, float p_targetForce, int
 	m_collisionAfterMath = true;
 }
 
+void Player::StartShockWaveAftermath(int p_sideDirection, int p_targetDirection, float p_zValue, float p_xValue)
+{
+	m_collisionAngleOffset = p_xValue * p_sideDirection * m_angleShockwavePower;
+	m_collisionAfterSpeed = p_zValue * p_targetDirection * m_speedShockwavePower;
+	m_collisionAfterMath = true;
+}

@@ -99,7 +99,7 @@ void OptionsScreen::Initialize()
 	m_graphicHandle->SetViewportAmount(1);
 	m_graphicHandle->UseHud(0,m_hudHandle);
 	m_graphicHandle->ChangeHudObjectTexture(m_hudHandle,currentButton->buttonHandle,1);
-
+	MenuScreen::Initialize();
 }
 
 
@@ -112,14 +112,14 @@ void OptionsScreen::AlterVolume(UserCMD& p_userCMD)
 			m_volume -= VOLUME_CHANGE;
 			timeSinceLastChange[0]=0;
 			m_audioManager->SetMasterVolume(m_volume);
-			m_graphicHandle->UpdateHudBarOffset(m_hudHandle,m_volumeSlideHandle,DirectX::XMFLOAT2(1-m_volume,0));
+			m_graphicHandle->UpdateHudBarOffset(m_hudHandle,m_volumeSlideHandle,DirectX::XMFLOAT2(1*0.83-m_volume*0.83,0));
 		} 
 		else if (p_userCMD.Joystick.x>0.8 && m_volume < MAX_VOLUME)
 		{
 			m_volume += VOLUME_CHANGE;
 			timeSinceLastChange[0]=0;
 			m_audioManager->SetMasterVolume(m_volume);
-			m_graphicHandle->UpdateHudBarOffset(m_hudHandle,m_volumeSlideHandle,DirectX::XMFLOAT2(1-m_volume,0));
+			m_graphicHandle->UpdateHudBarOffset(m_hudHandle,m_volumeSlideHandle,DirectX::XMFLOAT2(1*0.83-m_volume*0.83,0));
 		}
 		
 	}

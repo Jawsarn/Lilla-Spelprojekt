@@ -38,7 +38,11 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4],string p_tauntSound[
 	m_graphicHandle->SetAmountOfPlayers(p_numberOfPlayers);
 	m_graphicHandle->SetColourAndVehicle(t_colors, t_whichVehicles);
 	m_graphicHandle->CreateShipForGame(t_shipWorldMatrices);
-	DrawPlayer(0);
+	for (int i = 0; i < p_numberOfPlayers; i++)
+	{
+	DrawPlayer(i);
+
+	}
 	m_collisionManager = new CollisionManager();
 	m_preUpdateCountdown = 0;
 	PlaySounds();
@@ -69,6 +73,7 @@ GameScreen::~GameScreen(void)
 		delete m_players[i];
 		m_players[i] = nullptr;
 	}
+	delete m_mapLoader;
 }
 void GameScreen::Initialize()
 {

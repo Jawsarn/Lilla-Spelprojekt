@@ -61,5 +61,5 @@ void MainMenuScreen::Initialize()
 {
 	m_graphicHandle->SetViewportAmount(1);
 	m_graphicHandle->UseHud(0,m_hudHandle);
-
+	MenuScreen::Initialize();
 }

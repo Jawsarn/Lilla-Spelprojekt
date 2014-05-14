@@ -151,3 +151,23 @@ void CollisionManager::ShockWaveCollision(std::vector<Player*> p_playerList, int
 		}
 	}
 }
+
+void CollisionManager::SetShockWaveCollision(Player* p_playerWithShockWave, Player* p_intersectingPlayer)
+{
+	XMMATRIX t_p_playerWithShockWaveInverseMatrix = XMMatrixInverse(nullptr, p_playerWithShockWave->GetWorldMatrix());
+	XMVECTOR t_p_playerWithShockWaveLocalPosition = XMVector3Transform(XMLoadFloat3(&p_playerWithShockWave->GetPos()),t_p_playerWithShockWaveInverseMatrix);
+	XMVECTOR t_intersectingPlayerLocalPosition = XMVector3Transform(XMLoadFloat3(&p_intersectingPlayer->GetPos()),t_p_playerWithShockWaveInverseMatrix);
+
+	XMFLOAT3 t_ShockWavePlayPos;
+	XMFLOAT3 t_InterPlayPos;
+
+	XMStoreFloat3(&t_ShockWavePlayPos, t_p_playerWithShockWaveLocalPosition);
+	XMStoreFloat3(&t_InterPlayPos, t_intersectingPlayerLocalPosition);
+
+
+	float t_targetDirection = (t_InterPlayPos.z/abs(t_InterPlayPos.z));
+
+	float t_sideDirection = -1*(t_InterPlayPos.x/abs(t_InterPlayPos.x));
+
+	p_intersectingPlayer->StartShockWaveAftermath(t_sideDirection, t_targetDirection, t_InterPlayPos.z, t_InterPlayPos.x);
+}

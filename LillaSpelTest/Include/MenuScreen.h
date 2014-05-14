@@ -24,7 +24,7 @@ public:
 	~MenuScreen(void);
 	int virtual Update( float p_dt, std::vector<UserCMD>* p_userCMDs);
 	void virtual Draw();
-	void virtual Initialize() = 0;
+	void virtual Initialize();
 protected:
 	std::string virtual NavigateMenu(UserCMD& p_userCMD,unsigned int p_hudHandle);
 	void AddButton(std::string p_buttonName, DirectX::XMFLOAT2 p_centerPoint, float offsetX, float offsetY, const wchar_t* texture1, const wchar_t* texture2);
