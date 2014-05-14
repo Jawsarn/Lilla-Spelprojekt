@@ -40,7 +40,7 @@ void AudioManager::Initialize()
 
 	m_system->init(36,FMOD_INIT_NORMAL,NULL);
 	
-	m_masterVolume=1;
+	m_masterVolume=0.1;
 }
 
 void AudioManager::Update()
@@ -88,7 +88,8 @@ void AudioManager::PlaySpecificSound(std::string p_soundToPlay, bool p_loop, boo
 				//m_soundChannels[t_index]->stop();
 				m_result = m_system->playSound(FMOD_CHANNEL_FREE,m_sounds[p_soundToPlay].sound,false,&m_sounds[p_soundToPlay].channel);
 			}
-		}			
+		}	
+		SetSpecificSoundVolume(p_soundToPlay,1);
 	}
 	else
 	{
@@ -141,4 +142,9 @@ void AudioManager::PitchSpecificSound(std::string p_soundToPitch, float p_pitchV
 void AudioManager::CleanUpCrew()
 {
 
+}
+
+float AudioManager::GetMasterVolume()
+{
+	return m_masterVolume;
 }
