@@ -94,6 +94,8 @@ private:
 
 	float m_bumpIntensity;
 	float m_baseBumpIntensity;
+	float m_angleShockwavePower;
+	float m_speedShockwavePower;
 	XMFLOAT3 m_unmodifiedTarget;
 	XMFLOAT3 m_unmodifiedUp;
 
@@ -168,6 +170,7 @@ public:
 	void Start();
 	void SetSpeed(float p_speed);
 	void StartCollisionAftermath(float p_sideForce, float p_targetForce, int p_sideDirection, int p_targetDirection);
+	void StartShockWaveAftermath(int p_sideDirection, int p_targetDirection, float p_zValue, float p_xValue);
 	void SetPlayerBoost(float p_boost);
 	void SetPlayerRacePosition(int p_pos);
 	void IncreaseBoost(int p_nrOfWallsClose, float p_dt);
