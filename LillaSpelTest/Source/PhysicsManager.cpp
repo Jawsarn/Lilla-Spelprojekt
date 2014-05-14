@@ -71,8 +71,8 @@ void PhysicsManager::SetPlayerCollisions(Player* p_p1, Player* p_p2, float p_p1M
 	float t_p2Angle = t_mHelp.Abs(t_p2RadiusProjection);
 	//p_p1->StartCollisionAftermath(t_p1AngleDirection*t_p1Angle);
 	//p_p2->StartCollisionAftermath(t_p2AngleDirection*t_p2Angle);
-	p_p1->StartCollisionAftermath(t_p1AngleDirection*t_p2Angle,1);
-	p_p2->StartCollisionAftermath(t_p2AngleDirection*t_p1Angle,1);
+//	p_p1->StartCollisionAftermath(t_p1AngleDirection*t_p2Angle,1);
+	//p_p2->StartCollisionAftermath(t_p2AngleDirection*t_p1Angle,1);
 
 	p_p1->AngleMoveBack();
 	p_p2->AngleMoveBack();

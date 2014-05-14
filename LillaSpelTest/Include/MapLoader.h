@@ -14,7 +14,7 @@ public:
 	MapLoader(void);
 	vector<MapNode*>* LoadMap(string mapName);
 
-
+	
 	vector<vector<XMFLOAT3>> LoadLogicalObj(string p_objName);//really shouldn't be public, but player needs it to load collision boxes, so yolo right
 	~MapLoader(void);
 private:
@@ -23,6 +23,7 @@ private:
 	vector<StaticObj*> m_boxes;
 	MathHelper m_mathHelper;
 
+	void CleanUp();
 
 	//methods
 	//vector<vector<XMFLOAT3>> LoadLogicalObj(string p_objName);

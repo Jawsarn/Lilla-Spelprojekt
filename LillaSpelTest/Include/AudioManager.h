@@ -41,5 +41,9 @@ public:
 	// the sound name is the files name:the pitch value is normally 44100, higher than that makes the sound go faster and vice versa
 	void PitchSpecificSound(std::string p_soundToPitch, float p_pitchValue);
 	void CleanUpCrew();
+	// the sound name is the files name. this is for removing sounds that wont get played for quite a while, like in game main soundtrack
+	void RemoveSpecificSound(std::string p_soundToRemove);
+
+	float GetMasterVolume();
 };
 

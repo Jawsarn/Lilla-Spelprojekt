@@ -38,6 +38,11 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4],string p_tauntSound[
 	m_graphicHandle->SetAmountOfPlayers(p_numberOfPlayers);
 	m_graphicHandle->SetColourAndVehicle(t_colors, t_whichVehicles);
 	m_graphicHandle->CreateShipForGame(t_shipWorldMatrices);
+	for (int i = 0; i < p_numberOfPlayers; i++)
+	{
+	DrawPlayer(i);
+
+	}
 	m_collisionManager = new CollisionManager();
 	m_preUpdateCountdown = 0;
 	PlaySounds();
@@ -68,6 +73,7 @@ GameScreen::~GameScreen(void)
 		delete m_players[i];
 		m_players[i] = nullptr;
 	}
+	delete m_mapLoader;
 }
 void GameScreen::Initialize()
 {
@@ -208,7 +214,13 @@ void GameScreen::CollisionCheck(int p_currentPlayer, float p_dt, UserCMD& p_user
 	MapNode* t_currMapNode = m_players[p_currentPlayer]->GetCurrentMapNode(); 
 	//player vs static obj
 	vector<StaticObj*>* m_wallsToCheck = &t_currMapNode->m_staticObjs;		
-	if(m_collisionManager->PlayerVsObj(m_players[p_currentPlayer]->GetCollisionBox(), m_wallsToCheck)!=1)    
+	if(m_wallsToCheck->size()>0)
+	{
+		int derp = 0;
+		derp++;
+
+	}
+	if(m_collisionManager->PlayerVsObj(m_players[p_currentPlayer]->GetCollisionBox(), m_wallsToCheck)!=-1)    
 	{
 		PlayerDieStaticObj(p_currentPlayer);
 	}

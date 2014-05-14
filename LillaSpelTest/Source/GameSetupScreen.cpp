@@ -80,6 +80,7 @@ void GameSetupScreen::Initialize()
 	m_graphicHandle->SetViewportAmount(1);
 	m_graphicHandle->UseHud(0,m_hudHandle);
 	m_graphicHandle->ChangeLevelSelection(currentMap);
+	MenuScreen::Initialize();
 }
 
 void GameSetupScreen::SaveInfo()

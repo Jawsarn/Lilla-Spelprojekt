@@ -57,6 +57,7 @@ void AudioManager::CreateSound(std::string p_fileName)
 		m_result = m_system->createSound(p_fileName.c_str(), FMOD_DEFAULT,0, &sound);
 
 		m_sounds[p_fileName].sound=sound;
+		m_sounds[p_fileName].volume = 1;
 	}
 
 }
@@ -88,7 +89,8 @@ void AudioManager::PlaySpecificSound(std::string p_soundToPlay, bool p_loop, boo
 				//m_soundChannels[t_index]->stop();
 				m_result = m_system->playSound(FMOD_CHANNEL_FREE,m_sounds[p_soundToPlay].sound,false,&m_sounds[p_soundToPlay].channel);
 			}
-		}			
+		}	
+		SetSpecificSoundVolume(p_soundToPlay,1);
 	}
 	else
 	{
@@ -110,24 +112,19 @@ void AudioManager::SetSpecificSoundVolume(std::string p_soundToIncrease, float p
 	m_result = m_sounds[p_soundToIncrease].channel->setPaused(true);
 	m_result = m_sounds[p_soundToIncrease].channel->setVolume(m_masterVolume*p_volumeBetween0and1);
 	m_result = m_sounds[p_soundToIncrease].channel->setPaused(false);
+	m_sounds[p_soundToIncrease].volume=p_volumeBetween0and1;
 }
 
 void AudioManager::SetMasterVolume(float p_volumeBetween0and1)
 {
-	float t_volume;
 	for (std::map<std::string, AudioHolder>::iterator it = m_sounds.begin(); it != m_sounds.end(); it++)
 	{
 		it->second.channel->setPaused(true);
-		it->second.channel->getVolume(&t_volume);
-		if (t_volume != 0)
+		if (true)
 		{
-			t_volume = t_volume/m_masterVolume;
-			m_result = it->second.channel->setVolume(p_volumeBetween0and1* t_volume);
+			m_result = it->second.channel->setVolume(p_volumeBetween0and1 * it->second.volume);
 		}
-		else
-		{
-			m_result = it->second.channel->setVolume(p_volumeBetween0and1);
-		}
+	
 		
 		it->second.channel->setPaused(false);
 	}
@@ -138,7 +135,19 @@ void AudioManager::PitchSpecificSound(std::string p_soundToPitch, float p_pitchV
 	m_sounds[p_soundToPitch].channel->setFrequency(p_pitchValue);
 }
 
+void AudioManager::RemoveSpecificSound(std::string p_soundToRemove)
+{
+	m_sounds[p_soundToRemove].sound->release();
+	m_sounds.erase(p_soundToRemove);
+	
+}
+
 void AudioManager::CleanUpCrew()
 {
 
+}
+
+float AudioManager::GetMasterVolume()
+{
+	return m_masterVolume;
 }

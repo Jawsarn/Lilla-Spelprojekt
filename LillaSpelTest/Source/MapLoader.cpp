@@ -8,9 +8,22 @@ MapLoader::MapLoader(void)
 
 MapLoader::~MapLoader(void)
 {
-
+	CleanUp();
 }
 
+void MapLoader::CleanUp()
+{
+	for (int i = 0; i < m_logicalMap.size(); i++)
+	{
+		delete m_logicalMap[i];
+		m_logicalMap[i] = nullptr;
+	}
+	for (int i = 0; i < m_boxes.size(); i++)
+	{
+		delete m_boxes[i];
+		m_boxes[i] = nullptr;
+	}
+}
 string AddStrings(string p_string1, string p_string2)
 {
 	string r_string = p_string1;
@@ -67,32 +80,58 @@ void MapLoader::AssignBoxesToNodes()
 	{
 		//////////////////generate local box for MapNode i
 
-		XMVECTOR t_position = XMLoadFloat3(&m_logicalMap[i]->m_position);
-		XMVECTOR t_target = XMLoadFloat3(&m_logicalMap[i]->m_normal);
-		//create up vector. Here called radius, as up orientation doesn't really matter in a tube. 
-		XMFLOAT3 t_float3 = XMFLOAT3(0,0,1);
-		XMVECTOR t_vector= XMLoadFloat3(&t_float3);
-		XMVECTOR t_radiusVector = XMVector3Cross(t_vector, t_target);
+		//XMVECTOR t_position = XMLoadFloat3(&m_logicalMap[i]->m_position);
+		//XMVECTOR t_target = XMLoadFloat3(&m_logicalMap[i]->m_normal);
+		////create up vector. Here called radius, as up orientation doesn't really matter in a tube. 
+		//XMFLOAT3 t_float3 = XMFLOAT3(0,0,1);
+		//XMVECTOR t_vector= XMLoadFloat3(&t_float3);
+		//XMVECTOR t_radiusVector = XMVector3Cross(t_vector, t_target);
 
-		///////creates orientation quaternion
-		XMFLOAT4 t_boxOrientationQuaternion = XMFLOAT4(0,0,0,1);
-		//creates transformation matrix for orientation quaternion. Using lookat
-		XMMATRIX t_boxOrientationMatrix = XMMatrixLookAtLH(t_position, t_target, t_radiusVector);
-		XMVECTOR t_boxOrientationVector = XMLoadFloat4(&t_boxOrientationQuaternion);
-		t_boxOrientationVector = XMVector4Transform(t_boxOrientationVector, t_boxOrientationMatrix);
-		t_boxOrientationVector = XMVector4Normalize(t_boxOrientationVector);
-		XMStoreFloat4(&t_boxOrientationQuaternion, t_boxOrientationVector);
+		/////////creates orientation quaternion
+		//XMFLOAT4 t_boxOrientationQuaternion = XMFLOAT4(0,0,0,1);
+		////creates transformation matrix for orientation quaternion. Using lookat
+		//XMMATRIX t_boxOrientationMatrix = XMMatrixLookAtLH(t_position, t_target, t_radiusVector);
+		//XMVECTOR t_boxOrientationVector = XMLoadFloat4(&t_boxOrientationQuaternion);
+		//t_boxOrientationVector = XMVector4Transform(t_boxOrientationVector, t_boxOrientationMatrix);
+		//t_boxOrientationVector = XMVector4Normalize(t_boxOrientationVector);
+		//XMStoreFloat4(&t_boxOrientationQuaternion, t_boxOrientationVector);
 
-		///////creates local collision box
-		//creates box center
-		XMFLOAT3 t_boxCenter = m_mathHelper.VecAddVec(m_logicalMap[i]->m_position, m_mathHelper.FloatMultiVec(0.5f, m_logicalMap[i]->m_normal));
-		//checks which radius is largest. Don't wanna miss boxes in case of big slopes
-		float radius = m_logicalMap[i]->m_radius;
-		if(i<m_logicalMap.size()-1 && radius < m_logicalMap[i]->m_nextNode->m_radius)
-			radius = m_logicalMap[i]->m_nextNode->m_radius;
-		//uses radius and abs(normal) to create extents. (Normal is not normalized; it is the vector to the next node)
-		XMFLOAT3 t_boxExtents = XMFLOAT3(radius, radius, m_mathHelper.Abs(m_logicalMap[i]->m_normal));
-		BoundingOrientedBox t_box = BoundingOrientedBox(t_boxCenter, t_boxExtents, t_boxOrientationQuaternion);
+		/////////creates local collision box
+		////creates box center
+		//XMFLOAT3 t_boxCenter = m_mathHelper.VecAddVec(m_logicalMap[i]->m_position, m_mathHelper.FloatMultiVec(0.5f, m_logicalMap[i]->m_normal));
+		////checks which radius is largest. Don't wanna miss boxes in case of big slopes
+		//float radius = m_logicalMap[i]->m_radius;
+		//if(i<m_logicalMap.size()-1 && radius < m_logicalMap[i]->m_nextNode->m_radius)
+		//	radius = m_logicalMap[i]->m_nextNode->m_radius;
+		////uses radius and abs(normal) to create extents. (Normal is not normalized; it is the vector to the next node)
+		//XMFLOAT3 t_boxExtents = XMFLOAT3(radius, radius, m_mathHelper.Abs(m_logicalMap[i]->m_normal));
+		//BoundingOrientedBox t_box = BoundingOrientedBox(t_boxCenter, t_boxExtents, t_boxOrientationQuaternion);
+
+
+
+		////////////NEW CODE HERE!!!!/////////////
+
+		//get orientation quaternion
+		XMVECTOR t_eyeVector = XMLoadFloat3(&m_logicalMap[i]->m_position)+XMLoadFloat3(&m_logicalMap[i]->m_normal);
+		XMVECTOR t_upVector = XMLoadFloat3(&m_logicalMap[i]->m_radiusVector);
+		XMVECTOR t_targetVector = XMLoadFloat3(&m_logicalMap[i]->m_normal);
+		//XMMatrixInverse(nullptr, 
+		XMMATRIX t_matrix = XMMatrixInverse(nullptr, XMMatrixLookToLH(t_eyeVector, t_targetVector, t_upVector));
+		XMFLOAT4 t_orientation = XMFLOAT4(0,0,0,1);
+		XMStoreFloat4(&t_orientation,XMQuaternionRotationMatrix(t_matrix));
+
+		//get box extents
+		XMVECTOR t_normalLengthVector =  XMVector3Length(XMLoadFloat3(&m_logicalMap[i]->m_normal));
+		XMFLOAT3 t_normalLengthVectorDerp;
+		XMStoreFloat3(&t_normalLengthVectorDerp, t_normalLengthVector);
+		XMFLOAT3 t_boxExtents = XMFLOAT3(m_logicalMap[i]->m_radius,m_logicalMap[i]->m_radius, t_normalLengthVectorDerp.x);
+
+		//get position of box
+		XMFLOAT3 t_boxPosition;
+		XMStoreFloat3(&t_boxPosition, t_eyeVector);
+
+		BoundingOrientedBox t_box = BoundingOrientedBox(t_boxPosition, t_boxExtents, t_orientation);
+
 		for (int j = 0; j < m_boxes.size(); j++)
 		{
 			//BoundingOrientedBox derp = m_boxes[j];
