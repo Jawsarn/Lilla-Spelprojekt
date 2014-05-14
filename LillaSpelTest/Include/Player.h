@@ -128,6 +128,7 @@ public:
 	Player();
 	Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex);
 	~Player();
+	void CleanUp();
 
 	void Update(float p_dt,UserCMD p_userCMD); //Updates position and dropps walls
 	void UpdatePosition(float p_dt, UserCMD p_userCMD);
