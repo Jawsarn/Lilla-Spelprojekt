@@ -40,7 +40,7 @@ void AudioManager::Initialize()
 
 	m_system->init(36,FMOD_INIT_NORMAL,NULL);
 	
-	m_masterVolume=0.1;
+	m_masterVolume=1;
 }
 
 void AudioManager::Update()
@@ -111,24 +111,19 @@ void AudioManager::SetSpecificSoundVolume(std::string p_soundToIncrease, float p
 	m_result = m_sounds[p_soundToIncrease].channel->setPaused(true);
 	m_result = m_sounds[p_soundToIncrease].channel->setVolume(m_masterVolume*p_volumeBetween0and1);
 	m_result = m_sounds[p_soundToIncrease].channel->setPaused(false);
+	m_sounds[p_soundToIncrease].volume=p_volumeBetween0and1;
 }
 
 void AudioManager::SetMasterVolume(float p_volumeBetween0and1)
 {
-	float t_volume;
 	for (std::map<std::string, AudioHolder>::iterator it = m_sounds.begin(); it != m_sounds.end(); it++)
 	{
 		it->second.channel->setPaused(true);
-		it->second.channel->getVolume(&t_volume);
-		if (t_volume != 0)
+		if (true)
 		{
-			t_volume = t_volume/m_masterVolume;
-			m_result = it->second.channel->setVolume(p_volumeBetween0and1* t_volume);
+			m_result = it->second.channel->setVolume(p_volumeBetween0and1 * it->second.volume);
 		}
-		else
-		{
-			m_result = it->second.channel->setVolume(p_volumeBetween0and1);
-		}
+	
 		
 		it->second.channel->setPaused(false);
 	}

@@ -105,6 +105,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_bobIntensity = 0.1;
 
 	////FINAL WORLD MATRIX INITIALIZATION
+	SetDirection();
 	FixUpVectorRotation(m_angle);
 	FixOffsetFromCenterSpline();
 	UpdateWorldMatrix();
