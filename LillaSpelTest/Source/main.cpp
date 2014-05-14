@@ -73,7 +73,6 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	m_audioManager = m_audioManager->GetInstance();
 	m_audioManager->PlaySpecificSound("menu.mp3",true,false);
 	m_audioManager->SetSpecificSoundVolume("menu.mp3",0.6);
-	m_audioManager->RemoveSpecificSound("menu.mp3");
 
 	m_mainMenuScreen = new MainMenuScreen(m_GraphicHandle, m_audioManager);
 	m_gameSetupScreen = new GameSetupScreen(&m_gameInfo,m_GraphicHandle, m_audioManager);
