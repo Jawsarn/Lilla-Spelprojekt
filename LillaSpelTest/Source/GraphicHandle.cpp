@@ -35,8 +35,8 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 
 	UINT t_TempurTextur;
 	UINT t_TempurTexturNG;
-
-
+	m_CircleOffset = 4;
+	m_BigCircleOffset = 20;
 
 
 
@@ -235,8 +235,30 @@ void GraphicHandle::UpdateCamera(UINT p_CameraLogicID,float p_Walk, float p_Stra
 void GraphicHandle::UpdateCameraVehicleSelection(UINT p_CameraLogicID, float p_LookingAtWhatVehicle)
 {
 	if (p_CameraLogicID < 4)
+	{
+		//(1)
+		XMMATRIX t_Tempura = XMMatrixTranslation(0,-1,m_BigCircleOffset);// drar ut skiten till mitten av en cirkel  
+
+		//(2)
+		XMMATRIX t_Rotation = XMMatrixRotationY(-XM_PIDIV2*(p_CameraLogicID+2));//roteras till varje spelares cirkel
+		t_Tempura = XMMatrixMultiply(t_Rotation,t_Tempura);
+
+		//(3)
+		XMMATRIX t_RoteraRuntEgenCirkelPlatsen = XMMatrixTranslation(0,0,m_CircleOffset+5);
+		t_Rotation = XMMatrixRotationY(((2*XM_PI)/m_MeshShips.size())*p_LookingAtWhatVehicle);//t_RoteraRuntEgenCirkelPlatsen rotationen
+		t_RoteraRuntEgenCirkelPlatsen = XMMatrixMultiply(t_Rotation,t_RoteraRuntEgenCirkelPlatsen);
+		t_Tempura = XMMatrixMultiply(t_Tempura,t_RoteraRuntEgenCirkelPlatsen);
+
+
+		m_GraphicEngine->SetCamera(m_CameraID[p_CameraLogicID],t_Tempura);
+
+	}
+}
+void GraphicHandle::UpdateCameraVehicleSelectionSeperate(UINT p_CameraLogicID, float p_LookingAtWhatVehicle)
+{
+	if (p_CameraLogicID < 4)
 	{	
-		/////////////////////////////////fungerande
+				/////////////////////////////////fungerande
 		XMMATRIX t_Tempura = XMMatrixTranslation(0,1,40);
 		XMMATRIX t_Rot = XMMatrixRotationY(2*XM_PI/m_MeshShips.size()*p_LookingAtWhatVehicle);
 		XMMATRIX t_Rot2 = XMMatrixRotationX(-XM_PIDIV4/10);
@@ -254,35 +276,6 @@ void GraphicHandle::UpdateCameraVehicleSelection(UINT p_CameraLogicID, float p_L
 		m_GraphicEngine->SetCamera(m_CameraID[p_CameraLogicID],t_Rot);
 		/////////////////////////////////////////////////////////////////////////////////
 
-	}
-}
-void GraphicHandle::UpdateCameraVehicleSelectionSeperate(UINT p_CameraLogicID, float p_LookingAtWhatVehicle)
-{
-	if (p_CameraLogicID < 4)
-	{	
-		/////////////////////////////////fungerande
-		XMMATRIX t_Tempura = XMMatrixTranslation(0,1,100);
-		XMMATRIX t_TempRotationToGetOutCircle = XMMatrixRotationY(XM_PIDIV2*p_CameraLogicID);
-
-
-		XMMATRIX t_Rot = XMMatrixRotationY(2*XM_PI/m_MeshShips.size()*p_LookingAtWhatVehicle);
-		XMMATRIX t_Rot2 = XMMatrixRotationX(-XM_PIDIV4/10);
-
-		
-		t_Tempura = XMMatrixMultiply(t_Tempura,t_TempRotationToGetOutCircle);
-
-		t_Rot = XMMatrixMultiply(t_Rot,t_Rot2);//sätter ihop rotationerna
-		t_Rot = XMMatrixMultiply(t_Rot, t_Tempura);//roterar matrisen
-
-		t_Tempura = XMMatrixRotationY(XM_PI);//vänder med 180 grader
-
-		t_Rot = XMMatrixMultiply(t_Tempura,t_Rot);//lägger in den sista rotationen
-
-
-		//t_Rot = XMMatrixMultiply(t_Tempura,t_Rot);
-
-		m_GraphicEngine->SetCamera(m_CameraID[p_CameraLogicID],t_Rot);
-		/////////////////////////////////////////////////////////////////////////////////
 
 	}
 }
@@ -292,7 +285,7 @@ void GraphicHandle::SetCameraVehicleSelection(UINT p_CameraLogicID)
 	{	
 		/////////////////////////////////fungerande
 		//XMMATRIX t_Tempura = XMMatrixTranslation(0,1,25*m_MeshShips.size());
-		XMMATRIX t_Tempura = XMMatrixTranslation(0,1,100);
+		XMMATRIX t_Tempura = XMMatrixTranslation(0,1,50);
 		//XMMATRIX t_Rot = XMMatrixRotationY(2*XM_PI/m_MeshShips.size());
 		XMMATRIX t_Rot = XMMatrixRotationY(XM_PIDIV2*p_CameraLogicID*3);
 		XMMATRIX t_Rot2 = XMMatrixRotationX(-XM_PIDIV4/4);
@@ -387,7 +380,7 @@ void GraphicHandle::CreateShipForGame(std::vector<XMFLOAT4X4> p_PlayerWorld)
 void GraphicHandle::SelectVehicle()
 {
 
-	XMMATRIX t_WorldMat = XMMatrixTranslation(0,0,30);
+	XMMATRIX t_WorldMat = XMMatrixTranslation(0,0,m_BigCircleOffset);
 	XMFLOAT3 t_Color = XMFLOAT3(1,1,1);
 	
 	for (int k = 0; k < 4; k++)
@@ -400,11 +393,11 @@ void GraphicHandle::SelectVehicle()
 			t_Rot = XMMatrixMultiply(t_WorldMat, t_Rot);
 			
 
-			XMMATRIX t_OffSetTheCircleMat = XMMatrixTranslation(0,0,4);
+			XMMATRIX t_OffSetTheCircleMat = XMMatrixTranslation(0,0,m_CircleOffset);
 			XMMATRIX t_OffSetTheCircleMatRotation = XMMatrixRotationY((2*XM_PI*i/m_MeshShips.size()));
 			XMMATRIX t_SafteyMeasureMat = XMMatrixMultiply(t_OffSetTheCircleMat,t_OffSetTheCircleMatRotation);
 
-			t_Rot = XMMatrixMultiply( t_SafteyMeasureMat,t_Rot);
+			t_Rot = XMMatrixMultiply(t_SafteyMeasureMat,t_Rot);
 			
 
 			CreateDrawObject(m_MeshShips[i],
