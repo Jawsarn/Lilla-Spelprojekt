@@ -46,7 +46,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_wallMeter = 0;
 	m_coolDown = 0;
 	m_aButtonPressedAtStart = 0;
-	m_bobOffset = XMFLOAT3(0, 0, 0);
+	m_bobOffset = XMFLOAT3(0, 0, 0); //I think this makes the worldmatrix fucked in initialization
 	m_up = XMFLOAT3(0, 1, 0);
 	m_distance = 0.0f;
 	m_boostMeter = 0;//test value
@@ -64,7 +64,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_unmodifiedUp = XMFLOAT3(0,0,0);
 	m_bobTimer = 0;
 	m_collisionAfterSpeed = 0;
-
+	
 	////BALANCING VARIABLES
 
 
@@ -135,7 +135,8 @@ Player::~Player(void)
 void Player::CleanUp()
 {
 	//loopa igenom hela listan å ta bort objecten som pekarna i listan pekar på
-	for (int i = 0; i < m_placedWalls.size()-1; i++)
+	
+	for (int i = 0; i < m_placedWalls.size(); i++)
 	{
 		delete m_placedWalls[i];
 		m_placedWalls[i] = nullptr;

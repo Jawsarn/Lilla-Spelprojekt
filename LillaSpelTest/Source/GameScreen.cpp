@@ -24,6 +24,7 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4],string p_tauntSound[
 	vector<XMFLOAT4X4> t_shipWorldMatrices;
 	vector<UINT> t_colors;
 	vector<UINT> t_whichVehicles;
+
 	for (int i = 0; i < p_numberOfPlayers; i++)
 	{
 		m_players.push_back(new Player(m_mapNodes->at(0),0.5*3.1415*i, i));
@@ -40,8 +41,7 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4],string p_tauntSound[
 	m_graphicHandle->CreateShipForGame(t_shipWorldMatrices);
 	for (int i = 0; i < p_numberOfPlayers; i++)
 	{
-	DrawPlayer(i);
-
+		DrawPlayer(i);
 	}
 	m_collisionManager = new CollisionManager();
 	m_preUpdateCountdown = 0;
@@ -181,7 +181,7 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 		}
 	}
 	
-		return GAME_SCREEN;
+	return GAME_SCREEN;
 }
 void GameScreen::Draw()
 {
