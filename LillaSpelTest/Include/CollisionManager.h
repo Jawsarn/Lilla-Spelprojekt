@@ -21,6 +21,7 @@ public:
 	void PlayerVsPlayer(std::vector<Player*>p_playerList);
 	void CollisionManager::ShockWaveCollision(std::vector<Player*> p_playerList, int p_playerWithShockwave);
 	void CollisionManager::SetPlayerVsPlayer(Player* p_currentPlayer, Player* p_intersectingPlayer);
+	void CollisionManager::SetShockWaveCollision(Player* p_playerWithShockWave, Player* p_intersectingPlayer);
 
 private:
 	bool IntersectionTest(BoundingOrientedBox* a, BoundingOrientedBox* b);

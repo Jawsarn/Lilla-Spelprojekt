@@ -55,6 +55,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_unmodifiedTarget = XMFLOAT3(0,0,0);
 	m_unmodifiedUp = XMFLOAT3(0,0,0);
 	m_bobTimer = 0;
+	m_collisionAfterSpeed = 0;
 
 	////BALANCING VARIABLES
 
@@ -97,12 +98,18 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_deathShakeMaxIntensity = 8;//reversed intensity: higher number means lower intensity. Because logic
 	m_deathShakeIntensityDrop = 4;
 
-	
-	m_bumpIntensity = 1; //set low for big-assed bump
-	m_baseBumpIntensity = 3; //set high for big-assed bump
+	//side bump
+	m_bumpIntensity = 3; //set low for big-assed bump
+	m_baseBumpIntensity = 1; //set high for big-assed bump
+	//front bump
+	m_targetBumpIntensity = 0.3;
 
+	//Shockwave
+	m_angleShockwavePower = 1;
+	m_speedShockwavePower = 1;
 	m_bobFrequency = 1;
 	m_bobIntensity = 0.1;
+
 
 	////FINAL WORLD MATRIX INITIALIZATION
 	SetDirection();
@@ -466,8 +473,8 @@ void Player::UpdateWorldMatrix()
 	t_vehicleUpVector = XMVector3Transform(t_vehicleUpVector, t_directionRotationMatrixTarget);
 	t_vehicleUpVector = XMVector3Normalize(t_vehicleUpVector);
 
-	//roate along new up vector
-	XMMATRIX t_directionRotationMatrixUp = XMMatrixRotationAxis(t_vehicleUpVector, m_deltaAngle * 10);					//////////////////////////MAKE SURE YOU CHANGE THIS HARDCODED 10 CRAP////////////////
+	//rotate along new up vector
+	XMMATRIX t_directionRotationMatrixUp = XMMatrixRotationAxis(t_vehicleUpVector, m_deltaAngle * 10 * (3/m_speed));					//////////////////////////MAKE SURE YOU CHANGE THIS HARDCODED 10 CRAP////////////////
 	t_vehicleTargetVector = XMVector3Transform(t_vehicleTargetVector, t_directionRotationMatrixUp);
 	t_vehicleTargetVector = XMVector3Normalize(t_vehicleTargetVector);
 
@@ -850,6 +857,14 @@ void Player::ChangeState(PlayerState p_state)
 
 void Player::CollisionAftermath(float p_dt)
 {
+	if(m_collisionAfterSpeed!=0)
+	{
+		m_speed -= m_collisionAfterSpeed;
+		if(m_speed<0)
+			m_speed =0;
+		m_collisionAfterSpeed = 0;
+	}
+
 	m_collisionAfterMathTimer += p_dt;
 	m_angle += (2 - m_collisionAfterMathTimer)*m_collisionAngleOffset;
 	if (m_collisionAfterMathTimer >= 1)
@@ -859,9 +874,16 @@ void Player::CollisionAftermath(float p_dt)
 	}
 }
 
-void Player::StartCollisionAftermath(float p_angle, int p_direction)
+void Player::StartCollisionAftermath(float p_sideForce, float p_targetForce, int p_sideDirection, int p_targetDirection)
 {
-	m_collisionAngleOffset = p_angle/m_bumpIntensity+p_direction*(m_baseBumpIntensity/300);
+	m_collisionAngleOffset = (p_sideForce*p_sideDirection)/m_bumpIntensity+p_sideDirection*(m_baseBumpIntensity/300);	//yes, hard-coded 300. It's madness
+	m_collisionAfterSpeed = p_targetForce*p_targetDirection*m_targetBumpIntensity;
 	m_collisionAfterMath = true;
 }
 
+void Player::StartShockWaveAftermath(int p_sideDirection, int p_targetDirection, float p_zValue, float p_xValue)
+{
+	m_collisionAngleOffset = p_xValue * p_sideDirection * m_angleShockwavePower;
+	m_collisionAfterSpeed = p_zValue * p_targetDirection * m_speedShockwavePower;
+	m_collisionAfterMath = true;
+}

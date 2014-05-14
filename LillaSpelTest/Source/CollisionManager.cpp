@@ -64,25 +64,71 @@ bool CollisionManager::IntersectionTest(BoundingOrientedBox* a, BoundingOriented
 	return true;
 }
 
+
+
+
+
+
 void CollisionManager::SetPlayerVsPlayer(Player* p_currentPlayer, Player* p_intersectingPlayer)
 {
+	XMMATRIX t_currentPlayerInverseMatrix = XMMatrixInverse(nullptr, p_currentPlayer->GetWorldMatrix());
+
+	XMVECTOR t_currentPlayerLocalPosition = XMVector3Transform(XMLoadFloat3(&p_currentPlayer->GetPos()),t_currentPlayerInverseMatrix);
+	XMVECTOR t_intersectingPlayerLocalPosition = XMVector3Transform(XMLoadFloat3(&p_intersectingPlayer->GetPos()),t_currentPlayerInverseMatrix);
+
+	XMFLOAT3 t_testCurrPlayPos;
+	XMFLOAT3 t_testInterPlayPos;
+
+	XMStoreFloat3(&t_testCurrPlayPos, t_currentPlayerLocalPosition);
+	XMStoreFloat3(&t_testInterPlayPos, t_intersectingPlayerLocalPosition);
+
+
+	float t_targetDirection = (t_testInterPlayPos.z/abs(t_testInterPlayPos.z));
+	float t_targetForce = abs(p_intersectingPlayer->GetSpeed());
+
+	float t_sideDirection = -1*(t_testInterPlayPos.x/abs(t_testInterPlayPos.x));
+	float t_sideForce = abs(p_intersectingPlayer->GetDeltaAngle());
+
+	p_currentPlayer->StartCollisionAftermath(t_sideForce,t_targetForce ,t_sideDirection, t_targetDirection);
+	p_currentPlayer->AngleMoveBack();
+	//possibly needs a position move back. Don't really see how that happens though...
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	//old, albeit WORKING code
 	//retard code. Do not touch. It works now, leave it at that
-	float t_direction = 0;
+	/*float t_direction = 0;
 	if(p_intersectingPlayer->GetDeltaAngle()>0)
-		t_direction = 1;
+	t_direction = 1;
 	else if(p_intersectingPlayer->GetDeltaAngle()<0)
-		t_direction = -1;
+	t_direction = -1;
 	else
 	{
-		if(p_currentPlayer->GetDeltaAngle()>0)
-			t_direction = -1;
-		else if(p_currentPlayer->GetDeltaAngle()<0)
-			t_direction = 1;
+	if(p_currentPlayer->GetDeltaAngle()>0)
+	t_direction = -1;
+	else if(p_currentPlayer->GetDeltaAngle()<0)
+	t_direction = 1;
 	}
-	float t_bumpIntensity = abs(p_intersectingPlayer->GetDeltaAngle());
+	float t_bumpIntensity = abs(p_intersectingPlayer->GetDeltaAngle());*/
 
-	p_currentPlayer->StartCollisionAftermath(t_bumpIntensity*t_direction,t_direction);
-	p_currentPlayer->AngleMoveBack();
+	//p_currentPlayer->StartCollisionAftermath(t_bumpIntensity*t_direction,t_direction);
+	//p_currentPlayer->AngleMoveBack();
 
 }
 void CollisionManager::ShockWaveCollision(std::vector<Player*> p_playerList, int p_playerWithShockwave)
@@ -98,4 +144,24 @@ void CollisionManager::ShockWaveCollision(std::vector<Player*> p_playerList, int
 			}
 		}
 	}
+}
+
+void CollisionManager::SetShockWaveCollision(Player* p_playerWithShockWave, Player* p_intersectingPlayer)
+{
+	XMMATRIX t_p_playerWithShockWaveInverseMatrix = XMMatrixInverse(nullptr, p_playerWithShockWave->GetWorldMatrix());
+	XMVECTOR t_p_playerWithShockWaveLocalPosition = XMVector3Transform(XMLoadFloat3(&p_playerWithShockWave->GetPos()),t_p_playerWithShockWaveInverseMatrix);
+	XMVECTOR t_intersectingPlayerLocalPosition = XMVector3Transform(XMLoadFloat3(&p_intersectingPlayer->GetPos()),t_p_playerWithShockWaveInverseMatrix);
+
+	XMFLOAT3 t_ShockWavePlayPos;
+	XMFLOAT3 t_InterPlayPos;
+
+	XMStoreFloat3(&t_ShockWavePlayPos, t_p_playerWithShockWaveLocalPosition);
+	XMStoreFloat3(&t_InterPlayPos, t_intersectingPlayerLocalPosition);
+
+
+	float t_targetDirection = (t_InterPlayPos.z/abs(t_InterPlayPos.z));
+
+	float t_sideDirection = -1*(t_InterPlayPos.x/abs(t_InterPlayPos.x));
+
+	p_intersectingPlayer->StartShockWaveAftermath(t_sideDirection, t_targetDirection, t_InterPlayPos.z, t_InterPlayPos.x);
 }
