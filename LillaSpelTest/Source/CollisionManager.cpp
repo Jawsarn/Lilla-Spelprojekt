@@ -13,17 +13,23 @@ CollisionManager::~CollisionManager(void)
 
 int CollisionManager::PlayerVsObj(BoundingOrientedBox* p_player, std::vector<StaticObj*>* p_collisionBoxes)
 {
-	for (int i = 0; i < p_collisionBoxes->size(); i++)
+	if(p_collisionBoxes->size()>0)
 	{
-		if(p_collisionBoxes->at(i)->GetType() == 1) //uber hax ugly code to make sure we aren't affected by  hole boxes
+
+
+		for (int i = 0; i < p_collisionBoxes->size(); i++)
 		{
-			if(p_player->Intersects(*p_collisionBoxes->at(i)->GetBox()))
+			//if(p_collisionBoxes->at(i)->GetType() == 1)
+			if(true) //uber hax ugly code to make sure we aren't affected by  hole boxes
 			{
-				return p_collisionBoxes->at(i)->GetType();
+				if(p_player->Intersects(*p_collisionBoxes->at(i)->GetBox()))
+				{
+					return p_collisionBoxes->at(i)->GetType();
+				}
 			}
 		}
 	}
-	return 1;
+	return -1;
 }
 
 int CollisionManager::PlayerVsPlayerWall(BoundingOrientedBox* p_player, std::vector<PlayerWall*> p_collisionBoxes, int p_playerIndex) //copies the list. Might be bad, but its a list of pointers. No biggie
@@ -92,7 +98,7 @@ void CollisionManager::SetPlayerVsPlayer(Player* p_currentPlayer, Player* p_inte
 	p_currentPlayer->StartCollisionAftermath(t_sideForce,t_targetForce ,t_sideDirection, t_targetDirection);
 	p_currentPlayer->AngleMoveBack();
 	//possibly needs a position move back. Don't really see how that happens though...
-	
+
 
 
 
