@@ -69,6 +69,7 @@ GameScreen::~GameScreen(void)
 		delete m_players[i];
 		m_players[i] = nullptr;
 	}
+	delete m_mapLoader;
 }
 void GameScreen::Initialize()
 {

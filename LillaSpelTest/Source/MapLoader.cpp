@@ -8,9 +8,22 @@ MapLoader::MapLoader(void)
 
 MapLoader::~MapLoader(void)
 {
-
+	CleanUp();
 }
 
+void MapLoader::CleanUp()
+{
+	for (int i = 0; i < m_logicalMap.size(); i++)
+	{
+		delete m_logicalMap[i];
+		m_logicalMap[i] = nullptr;
+	}
+	for (int i = 0; i < m_boxes.size(); i++)
+	{
+		delete m_boxes[i];
+		m_boxes[i] = nullptr;
+	}
+}
 string AddStrings(string p_string1, string p_string2)
 {
 	string r_string = p_string1;
