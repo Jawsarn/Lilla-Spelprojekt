@@ -139,7 +139,7 @@ void CollisionManager::SetPlayerVsPlayer(Player* p_currentPlayer, Player* p_inte
 }
 void CollisionManager::ShockWaveCollision(std::vector<Player*> p_playerList, int p_playerWithShockwave)
 {
-	BoundingSphere t_shockWaveSphere = BoundingSphere(p_playerList[p_playerWithShockwave]->GetPos(), 1.5);
+	BoundingSphere t_shockWaveSphere = BoundingSphere(p_playerList[p_playerWithShockwave]->GetPos(), 3);
 	for (int i = 0; i < p_playerList.size(); i++)
 	{
 		if(i!=p_playerWithShockwave)
@@ -167,7 +167,7 @@ void CollisionManager::SetShockWaveCollision(Player* p_playerWithShockWave, Play
 
 	float t_targetDirection = (t_InterPlayPos.z/abs(t_InterPlayPos.z));
 
-	float t_sideDirection = -1*(t_InterPlayPos.x/abs(t_InterPlayPos.x));
+	float t_sideDirection = (t_InterPlayPos.x/abs(t_InterPlayPos.x));
 
-	p_intersectingPlayer->StartShockWaveAftermath(t_sideDirection, t_targetDirection, t_InterPlayPos.z, t_InterPlayPos.x);
+	p_intersectingPlayer->StartShockWaveAftermath(t_sideDirection, t_targetDirection, abs(t_InterPlayPos.z), abs(t_InterPlayPos.x));
 }
