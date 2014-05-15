@@ -62,7 +62,7 @@ void AudioManager::CreateSound(std::string p_fileName)
 
 }
 
-void AudioManager::PlaySpecificSound(std::string p_soundToPlay, bool p_loop, bool p_multipleSoundsOfSameSource)
+void AudioManager::PlaySpecificSound(std::string p_soundToPlay, bool p_loop, AudioPlayFunctions p_multipleSoundsOfSameSource)
 {
 	if (m_sounds[p_soundToPlay].sound != nullptr)
 	{
@@ -76,7 +76,7 @@ void AudioManager::PlaySpecificSound(std::string p_soundToPlay, bool p_loop, boo
 			m_sounds[p_soundToPlay].sound->setLoopCount(-1);
 		}
 
-		if (p_multipleSoundsOfSameSource)
+		if (p_multipleSoundsOfSameSource == AUDIO_PLAY_MULTIPLE)
 		{
 			m_result = m_system->playSound(FMOD_CHANNEL_FREE,m_sounds[p_soundToPlay].sound,false,&m_sounds[p_soundToPlay].channel);
 		}
@@ -87,6 +87,11 @@ void AudioManager::PlaySpecificSound(std::string p_soundToPlay, bool p_loop, boo
 			if (!t_isPlaying)
 			{
 				//m_soundChannels[t_index]->stop();
+				m_result = m_system->playSound(FMOD_CHANNEL_FREE,m_sounds[p_soundToPlay].sound,false,&m_sounds[p_soundToPlay].channel);
+			}
+			else if (p_multipleSoundsOfSameSource == AUDIO_STOP_AND_PLAY)
+			{
+				StopSpecificSound(p_soundToPlay);
 				m_result = m_system->playSound(FMOD_CHANNEL_FREE,m_sounds[p_soundToPlay].sound,false,&m_sounds[p_soundToPlay].channel);
 			}
 		}	
