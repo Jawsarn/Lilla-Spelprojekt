@@ -16,9 +16,11 @@
 #include "OptionsScreen.h"
 #include "PauseScreen.h"
 #include "AudioManager.h"
+#include "GoalScreen.h"
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam );
 HRESULT InitializeWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow);
+void UpdateTime();
 void Update(std::vector<UserCMD>* p_userCMDs);
 void Run();
 
@@ -32,6 +34,7 @@ Screen* m_mainMenuScreen;
 Screen* m_gameSetupScreen;
 Screen* m_optionsScreen;
 Screen* m_joinGameScreen;
+Screen* m_goalScreen;
 PauseScreen* m_pauseScreen;
 GameScreen* m_gameScreen;
 GameInfo m_gameInfo;
@@ -71,7 +74,7 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	m_GraphicHandle->Initialize(1920, 1080, m_HandleWindow,m_levelNames); //fix this ipnleagut variables right
 	m_GraphicHandle->SetFullScreen(false);
 	m_audioManager = m_audioManager->GetInstance();
-	m_audioManager->PlaySpecificSound("menu.mp3",true,false);
+	m_audioManager->PlaySpecificSound("menu.mp3",true,AUDIO_ONLY_PLAY_ONE);
 	m_audioManager->SetSpecificSoundVolume("menu.mp3",0.6);
 
 	m_mainMenuScreen = new MainMenuScreen(m_GraphicHandle, m_audioManager);
@@ -79,6 +82,7 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	m_optionsScreen = new OptionsScreen(&m_gameInfo,m_GraphicHandle, m_audioManager);
 	m_joinGameScreen = new JoinGameScreen(&m_gameInfo,m_GraphicHandle, m_audioManager);
 	m_pauseScreen = new PauseScreen(&m_gameInfo,m_GraphicHandle, m_audioManager);
+	m_goalScreen = new GoalScreen(m_GraphicHandle,m_audioManager);
 
 
 	//m_gameScreen = new GameScreen("dust2", 4, m_GraphicHandle);
@@ -130,12 +134,13 @@ void Run()
 					////Player i controller disconnected, plz connect again message
 				}
 			}
-			ULONGLONG timeCur = GetTickCount64();
-			if( m_PrevTime == 0 )
-				m_PrevTime = timeCur;
-			m_DeltaTime = ( timeCur - m_PrevTime ) / 1000.0f;
-			m_GameTime += m_DeltaTime;
-			m_PrevTime = timeCur;
+			//ULONGLONG timeCur = GetTickCount64();
+			//if( m_PrevTime == 0 )
+			//	m_PrevTime = timeCur;
+			//m_DeltaTime = ( timeCur - m_PrevTime ) / 1000.0f;
+			//m_GameTime += m_DeltaTime;
+			//m_PrevTime = timeCur;
+			UpdateTime();
 			Update(userCMDS);
 			//t_azookaTest.Run();
 
@@ -179,6 +184,7 @@ void RunInitialization()
 		}
 		m_audioManager->RemoveSpecificSound("menu.mp3");
 		m_gameScreen = new GameScreen(m_gameInfo.playerColor, m_gameInfo.shipModell,m_gameInfo.tauntSound, m_levelNames[m_gameInfo.map], t_playerOnline, m_GraphicHandle, m_audioManager);
+		UpdateTime();
 		break;
 	case JOIN_GAME_SCREEN:
 		m_joinGameScreen->Initialize();
@@ -188,6 +194,9 @@ void RunInitialization()
 		break;
 	case MAIN_MENU_SCREEN:
 		m_mainMenuScreen->Initialize();
+		break;
+	case GOAL_SCREEN:
+		m_goalScreen->Initialize();
 		break;
 	case SHUT_DOWN:
 		break;
@@ -254,12 +263,29 @@ void Update(std::vector<UserCMD>* p_userCMDs)
 			RunInitialization();
 		}
 		break;
+	case GOAL_SCREEN:
+		m_state = (ApplicationState)m_goalScreen->Update(m_DeltaTime,p_userCMDs);
+		if (m_state != GOAL_SCREEN)
+		{
+			RunInitialization();
+		}
+		break;
 	case SHUT_DOWN:
 		exit(1337);
 		break;
 	default:
 		break;
 	}
+}
+
+void UpdateTime()
+{
+	ULONGLONG timeCur = GetTickCount64();
+	if( m_PrevTime == 0 )
+		m_PrevTime = timeCur;
+	m_DeltaTime = ( timeCur - m_PrevTime ) / 1000.0f;
+	m_GameTime += m_DeltaTime;
+	m_PrevTime = timeCur;
 }
 //callback inte helt fixat då den inte får ligga som en medlemsfunktion, och måste därför vara static => vilket gör att den inte kan kalla på medlemsfunktioner, kan fixas med att lägga den i ett namespace och trixa med "this" , eller ha den i main där allt är static och kan skriva funktioner som inte behöver en klass
 float t_bajs=0;

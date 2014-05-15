@@ -24,6 +24,7 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4],string p_tauntSound[
 	vector<XMFLOAT4X4> t_shipWorldMatrices;
 	vector<UINT> t_colors;
 	vector<UINT> t_whichVehicles;
+
 	for (int i = 0; i < p_numberOfPlayers; i++)
 	{
 		m_players.push_back(new Player(m_mapNodes->at(0),0.5*3.1415*i, i));
@@ -33,6 +34,9 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4],string p_tauntSound[
 		t_colors.push_back(p_color[i]);
 		t_whichVehicles.push_back(p_whatVehicle[i]);
 		m_tauntSound[i] = p_tauntSound[i];
+		m_audioManager->CreateSound(m_tauntSound[i]);
+		m_audioManager->CreateSound(m_engineSound[i]);
+		m_vibrationTimer[i] = 0;
 	}
 
 	m_graphicHandle->SetAmountOfPlayers(p_numberOfPlayers);
@@ -40,8 +44,7 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4],string p_tauntSound[
 	m_graphicHandle->CreateShipForGame(t_shipWorldMatrices);
 	for (int i = 0; i < p_numberOfPlayers; i++)
 	{
-	DrawPlayer(i);
-
+		DrawPlayer(i);
 	}
 	m_collisionManager = new CollisionManager();
 	m_preUpdateCountdown = 0;
@@ -89,27 +92,27 @@ void GameScreen::PreUpdate(float p_dt, std::vector<UserCMD>* p_userCMDS, int p_P
 	m_timeSpentDuringPreUpdate +=(p_dt/m_players.size());
 	if (m_preUpdateCountdown != (int)m_timeSpentDuringPreUpdate && !(m_timeSpentDuringPreUpdate >=4))
 	{
-		m_audioManager->PlaySpecificSound("countdown.wav",false,false);
+		m_audioManager->PlaySpecificSound("countdown.wav",false,AUDIO_ONLY_PLAY_ONE);
 	}
 	if(m_timeSpentDuringPreUpdate>=1 && m_timeSpentDuringPreUpdate <2)
 	{
 		m_preUpdateCountdown = 1;
 		m_graphicHandle->ChangeHudObjectTexture(m_hudID[p_Player],3,1); 
-	
+
 
 	}
 	else if(m_timeSpentDuringPreUpdate >=2 && m_timeSpentDuringPreUpdate <3)
 	{
 		m_preUpdateCountdown = 2;
 		m_graphicHandle->ChangeHudObjectTexture(m_hudID[p_Player],3,2);
-	
+
 
 	}
 	else if(m_timeSpentDuringPreUpdate >=3 && m_timeSpentDuringPreUpdate <4)
 	{
 		m_preUpdateCountdown = 3;
 		m_graphicHandle->ChangeHudObjectTexture(m_hudID[p_Player],3,3);
-	
+
 
 	}
 	else if(m_timeSpentDuringPreUpdate >=4)
@@ -122,10 +125,10 @@ void GameScreen::PreUpdate(float p_dt, std::vector<UserCMD>* p_userCMDS, int p_P
 
 
 		m_state = PLAY;
-		m_audioManager->PlaySpecificSound("go.wav",false,false);
+		m_audioManager->PlaySpecificSound("go.wav",false,AUDIO_ONLY_PLAY_ONE);
 	}
 
-	
+
 
 
 
@@ -133,6 +136,7 @@ void GameScreen::PreUpdate(float p_dt, std::vector<UserCMD>* p_userCMDS, int p_P
 
 int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS) 
 {
+	int t_finnished = 0;
 	for (int i = 0; i < m_players.size(); i++)
 	{
 		if(PauseCheck(i, p_userCMDS->at(i)) == PAUSE_SCREEN)
@@ -145,8 +149,11 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 		{
 			//i don't even..
 
-
-
+			if (m_vibrationTimer[i] > 0)
+			{
+				UpdateVibration(p_dt,i,p_userCMDS->at(i));
+			}
+			
 			//ACTUAL PROPER UPDATE BEGINS
 			int t_playerUpdateResult = UpdatePlayer(i, p_dt, p_userCMDS->at(i));
 			if(t_playerUpdateResult ==1) //checks if a new wall is placed
@@ -168,7 +175,11 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 
 		}
 		else
+		{
+			m_audioManager->RemoveSpecificSound(m_engineSound[i]);
 			m_players[i]->SetFinalDirection();
+			t_finnished++;
+		}
 	}
 	switch(m_state)
 	{
@@ -176,12 +187,20 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 		m_collisionManager->PlayerVsPlayer(m_players);
 		for (int i = 0; i < m_players.size(); i++)
 		{
-			CollisionCheck(i, p_dt,p_userCMDS->at(i) );
-			DrawPlayer(i);
+			if(!m_players[i]->GetImmortal())
+				CollisionCheck(i, p_dt,p_userCMDS->at(i) );
 		}
+		break;
 	}
-	
-		return GAME_SCREEN;
+	for (int i = 0; i < m_players.size(); i++)
+	{
+		DrawPlayer(i);
+	}
+	if (t_finnished == m_players.size())
+	{
+		return GOAL_SCREEN;
+	}
+	return GAME_SCREEN;
 }
 void GameScreen::Draw()
 {
@@ -223,6 +242,9 @@ void GameScreen::CollisionCheck(int p_currentPlayer, float p_dt, UserCMD& p_user
 	if(m_collisionManager->PlayerVsObj(m_players[p_currentPlayer]->GetCollisionBox(), m_wallsToCheck)!=-1)    
 	{
 		PlayerDieStaticObj(p_currentPlayer);
+		p_userCMD.controller.Vibrate(30000,30000);
+		m_vibrationTimer[p_currentPlayer] = 0.5;
+		m_audioManager->PlaySpecificSound("crash.wav",false,AUDIO_PLAY_MULTIPLE);
 	}
 
 	//player vs playerwall
@@ -231,16 +253,20 @@ void GameScreen::CollisionCheck(int p_currentPlayer, float p_dt, UserCMD& p_user
 	if(t_collisionResult == -1)	
 	{
 		PlayerDiePlayerWall(p_currentPlayer);
+		p_userCMD.controller.Vibrate(30000,30000);
+		m_vibrationTimer[p_currentPlayer] = 0.5;
+		m_audioManager->PlaySpecificSound("crash.wav",false,AUDIO_PLAY_MULTIPLE);
 	}
 	else if (t_collisionResult>0)
 	{
 		PlayerCloseToWall(p_currentPlayer, t_collisionResult, p_dt);
+
 	}
 	//player vs player
-	//if (p_userCMD.yButtonPressed)
-	//{
-	//	m_collisionManager->ShockWaveCollision(m_players,p_currentPlayer);
-	//}
+	if (p_userCMD.yButtonPressed)
+	{
+		m_collisionManager->ShockWaveCollision(m_players,p_currentPlayer);
+	}
 }
 
 void GameScreen::UpdatePlayerRacePosition(int p_currentPlayer)
@@ -294,7 +320,7 @@ void GameScreen::UpdateSounds(int p_player,std::vector<UserCMD>* p_userCMDS)
 {
 	if (p_userCMDS->at(p_player).leftBumberPressed)
 	{
-		m_audioManager->PlaySpecificSound(m_tauntSound[p_player],false,false);
+		m_audioManager->PlaySpecificSound(m_tauntSound[p_player],false,AUDIO_ONLY_PLAY_ONE);
 	}
 	float t_pitchCoefficient = (m_players[p_player]->GetSpeed() < 25 ? m_players[p_player]->GetSpeed() : 25);
 	m_audioManager->PitchSpecificSound(m_engineSound[p_player], std::sqrt( t_pitchCoefficient) * 15000);
@@ -304,7 +330,7 @@ void GameScreen::PlaySounds()
 {
 	for (int i = 0; i < m_players.size(); i++)
 	{
-		m_audioManager->PlaySpecificSound(m_engineSound[i],true,false);
+		m_audioManager->PlaySpecificSound(m_engineSound[i],true,AUDIO_ONLY_PLAY_ONE);
 		m_audioManager->PitchSpecificSound(m_engineSound[i],0);
 	}
 }
@@ -315,6 +341,20 @@ void GameScreen::StopSounds()
 	{
 		m_audioManager->StopSpecificSound(m_engineSound[i]);
 	}
+}
+
+void GameScreen::UpdateVibration(float p_dt,int p_player, UserCMD& p_userCMD)
+{
+	m_vibrationTimer[p_player] -= p_dt;
+	if (m_vibrationTimer[p_player]<=0)
+	{
+		p_userCMD.controller.Vibrate(0,0);
+	}
+}
+
+void GameScreen::PlayShockWaveSound()
+{
+	m_audioManager->PlaySpecificSound("waca.wav",false,AUDIO_PLAY_MULTIPLE);
 }
 
 void GameScreen::CreatePlayerHUDs(int p_numberOfPlayers, int p_color[4], std::string p_mapName)

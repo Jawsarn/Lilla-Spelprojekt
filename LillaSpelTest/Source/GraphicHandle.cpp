@@ -370,15 +370,19 @@ void GraphicHandle::CreateShipForGame(std::vector<XMFLOAT4X4> p_PlayerWorld)
 
 		UINT t_ParticleBufferDataID1, t_ParticleBufferDataID2;
 		//the position here will be updated if object is updated
-		m_GraphicEngine->CreateParticleCBSetup(XMFLOAT3(0,0,0), 1, XMFLOAT3(0,0,0), 5, 2.0f, XMFLOAT2(0.2f,0.2f), 0.05f, t_ParticleBufferDataID1);
-		m_GraphicEngine->CreateParticleCBSetup(XMFLOAT3(0,0,0), 1, XMFLOAT3(0,0,0), 5, 2.0f, XMFLOAT2(0.2f,0.2f), 0.05f, t_ParticleBufferDataID2);
+		
+		m_GraphicEngine->CreateParticleCBSetup(XMFLOAT3(0,0,0), XMFLOAT3(0,0,0), 1, 4.0f, XMFLOAT2(0.2f,0.2f), 0.1f, t_ParticleBufferDataID1);
+		//m_GraphicEngine->CreateParticleCBSetup(XMFLOAT3(0,0,0), XMFLOAT3(0,0,0), 1, 4.0f, XMFLOAT2(0.2f,0.2f), 0.1f, t_ParticleBufferDataID2);
 
 	
 		UINT t_ParticleSystemID;
-		m_GraphicEngine->CreateParticleSystem(0, L"ParticleEngineCircle.dds",t_InitParticleID1, XMFLOAT3(0.5f,0.3f,0), t_ParticleBufferDataID1, 30, m_Colours[m_PlayerColour[i]], t_ParticleSystemID );
+		
+		m_GraphicEngine->CreateParticleSystem(0, L"ParticleEngineCircle.dds",t_InitParticleID1, XMFLOAT3(0.5f,0.3f,0), t_ParticleBufferDataID1, 1000, m_Colours[m_PlayerColour[i]], t_ParticleSystemID );
 		m_GraphicEngine->AddObjectParticleSystem(m_Player[i], t_ParticleSystemID);
+		
+		
 
-		m_GraphicEngine->CreateParticleSystem(0, L"ParticleEngineCircle.dds",t_InitParticleID2, XMFLOAT3(-0.5f,0.3f,0), t_ParticleBufferDataID2, 30, m_Colours[m_PlayerColour[i]], t_ParticleSystemID );
+		m_GraphicEngine->CreateParticleSystem(0, L"ParticleEngineCircle.dds",t_InitParticleID2, XMFLOAT3(-0.5f,0.3f,0), t_ParticleBufferDataID2, 1000, m_Colours[m_PlayerColour[i]], t_ParticleSystemID );
 		m_GraphicEngine->AddObjectParticleSystem(m_Player[i], t_ParticleSystemID);
 		
 		

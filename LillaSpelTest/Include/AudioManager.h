@@ -8,7 +8,7 @@
 #include <string>
 #include "Struct_AudioHolder.h"
 
-
+enum AudioPlayFunctions {AUDIO_STOP_AND_PLAY, AUDIO_ONLY_PLAY_ONE, AUDIO_PLAY_MULTIPLE};
 class AudioManager
 {
 private:
@@ -32,7 +32,7 @@ public:
 	void Update();
 	void CreateSound(std::string p_fileName);
 	// the sound name is the files name: if the sound hasn't been created yet it will be created, if that fails the sound wont play
-	void PlaySpecificSound(std::string p_soundToPlay, bool p_loop,bool p_multipleSoundsOfSameSource);
+	void PlaySpecificSound(std::string p_soundToPlay, bool p_loop,AudioPlayFunctions p_multipleSoundsOfSameSource);
 	// the sound name is the files name
 	void StopSpecificSound(std::string p_soundToStop);
 	// the sound name is the files name

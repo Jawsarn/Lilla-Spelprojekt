@@ -78,7 +78,7 @@ public:
 
 	//particlesystem functions
 	void CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName, UINT p_StartBufferID, XMFLOAT3 p_WorldPos, UINT p_Data, UINT p_MaxParticles, XMFLOAT3 p_Color, UINT &o_SystemID );
-	void CreateParticleCBSetup(XMFLOAT3 p_ObjectPosition, float p_FlareEmitNumber, XMFLOAT3 p_EmitDirection, float p_InitSpawnAmount, float p_ParticleLifeSpan, XMFLOAT2 p_InitialSize, float p_SpawnTime, UINT &o_DataID);
+	void CreateParticleCBSetup(XMFLOAT3 p_ObjectPosition, XMFLOAT3 p_EmitDirection, float p_InitSpawnAmount, float p_ParticleLifeSpan, XMFLOAT2 p_InitialSize, float p_SpawnTime, UINT &o_DataID);
 	void UpdateParticleCB(UINT p_DataID, XMFLOAT3 p_WorldAcceler, float p_FlareEmitNumber, XMFLOAT3 p_EmitDirection, float p_InitSpawnAmount, float p_ParticleLifeSpan, XMFLOAT2 p_InitialSize);
 	void CreateInitParticleBuffer(std::vector<Particle> startParticles, UINT &bufferID);
 	
@@ -210,7 +210,6 @@ private:
 	ID3D11Buffer* m_PerObjectBuffer;
 	ID3D11Buffer* m_PerComputeBuffer;
 	ID3D11Buffer* m_HudConstantBuffer;
-	ID3D11Buffer* m_ParticleEyePosBuffer;
 
 	//light bufferu
 	ID3D11Buffer*				m_LightBuffer;
