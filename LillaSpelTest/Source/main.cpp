@@ -16,6 +16,7 @@
 #include "OptionsScreen.h"
 #include "PauseScreen.h"
 #include "AudioManager.h"
+#include "GoalScreen.h"
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam );
 HRESULT InitializeWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow);
@@ -33,6 +34,7 @@ Screen* m_mainMenuScreen;
 Screen* m_gameSetupScreen;
 Screen* m_optionsScreen;
 Screen* m_joinGameScreen;
+Screen* m_goalScreen;
 PauseScreen* m_pauseScreen;
 GameScreen* m_gameScreen;
 GameInfo m_gameInfo;
@@ -80,6 +82,7 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	m_optionsScreen = new OptionsScreen(&m_gameInfo,m_GraphicHandle, m_audioManager);
 	m_joinGameScreen = new JoinGameScreen(&m_gameInfo,m_GraphicHandle, m_audioManager);
 	m_pauseScreen = new PauseScreen(&m_gameInfo,m_GraphicHandle, m_audioManager);
+	m_goalScreen = new GoalScreen(m_GraphicHandle,m_audioManager);
 
 
 	//m_gameScreen = new GameScreen("dust2", 4, m_GraphicHandle);
@@ -192,6 +195,9 @@ void RunInitialization()
 	case MAIN_MENU_SCREEN:
 		m_mainMenuScreen->Initialize();
 		break;
+	case GOAL_SCREEN:
+		m_goalScreen->Initialize();
+		break;
 	case SHUT_DOWN:
 		break;
 	default:
@@ -253,6 +259,13 @@ void Update(std::vector<UserCMD>* p_userCMDs)
 	case MAIN_MENU_SCREEN:
 		m_state = (ApplicationState)m_mainMenuScreen->Update(m_DeltaTime,p_userCMDs);
 		if (m_state != MAIN_MENU_SCREEN)
+		{
+			RunInitialization();
+		}
+		break;
+	case GOAL_SCREEN:
+		m_state = (ApplicationState)m_goalScreen->Update(m_DeltaTime,p_userCMDs);
+		if (m_state != GOAL_SCREEN)
 		{
 			RunInitialization();
 		}

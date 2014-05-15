@@ -112,7 +112,7 @@ private:
 	float m_gravityShiftProgress;
 	bool m_gravityShifting;
 	float m_gravityShiftCameraMoveSpeed;
-
+	float m_gravityShiftSpeed;
 
 	float m_bobTimer;
 	float m_bobFrequency;
@@ -120,6 +120,12 @@ private:
 
 
 	float m_previousAngle;
+
+
+	float m_abilityCooldown;
+	float m_shockWaveCooldown;
+	float m_gravityShiftCooldown;
+
 
 	//unused but perhaps needed stuff
 	XMFLOAT3 m_color;
@@ -164,6 +170,8 @@ public:
 	float GetSpeed();
 	float GetDeltaAngle();
 	std::vector<PlayerWall*>* GetPlacedWalls();
+	bool AbilityReady();
+	
 
 	//modifiers
 	void Die();
@@ -176,6 +184,7 @@ public:
 	void IncreaseBoost(int p_nrOfWallsClose, float p_dt);
 	void SetFinalDirection();
 	void AngleMoveBack();
+	void SetShockwaveCooldown();
 
 private:
 	
@@ -183,6 +192,7 @@ private:
 
 	//Update methods
 	void StartupSpam();
+	void HandleAbilities();
 	void Acceleration(float p_dt);
 	void Rotation(float p_dt);
 	void MovementAlongLogicalMap(float p_dt);

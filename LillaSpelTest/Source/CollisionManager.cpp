@@ -99,43 +99,6 @@ void CollisionManager::SetPlayerVsPlayer(Player* p_currentPlayer, Player* p_inte
 	p_currentPlayer->AngleMoveBack();
 	//possibly needs a position move back. Don't really see how that happens though...
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	//old, albeit WORKING code
-	//retard code. Do not touch. It works now, leave it at that
-	/*float t_direction = 0;
-	if(p_intersectingPlayer->GetDeltaAngle()>0)
-	t_direction = 1;
-	else if(p_intersectingPlayer->GetDeltaAngle()<0)
-	t_direction = -1;
-	else
-	{
-	if(p_currentPlayer->GetDeltaAngle()>0)
-	t_direction = -1;
-	else if(p_currentPlayer->GetDeltaAngle()<0)
-	t_direction = 1;
-	}
-	float t_bumpIntensity = abs(p_intersectingPlayer->GetDeltaAngle());*/
-
-	//p_currentPlayer->StartCollisionAftermath(t_bumpIntensity*t_direction,t_direction);
-	//p_currentPlayer->AngleMoveBack();
-
 }
 void CollisionManager::ShockWaveCollision(std::vector<Player*> p_playerList, int p_playerWithShockwave)
 {
@@ -170,4 +133,5 @@ void CollisionManager::SetShockWaveCollision(Player* p_playerWithShockWave, Play
 	float t_sideDirection = (t_InterPlayPos.x/abs(t_InterPlayPos.x));
 
 	p_intersectingPlayer->StartShockWaveAftermath(t_sideDirection, t_targetDirection, abs(t_InterPlayPos.z), abs(t_InterPlayPos.x));
+	p_playerWithShockWave->SetShockwaveCooldown();
 }
