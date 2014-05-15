@@ -114,14 +114,15 @@ void JoinGameScreen::Draw()
 
 void JoinGameScreen::Initialize()
 {
+	m_graphicHandle->AddSelectionDraw();
+	m_graphicHandle ->SetViewportAmount(4);
 	for (int i = 0; i < 4; i++)
 	{
 		m_graphicHandle->SetCameraVehicleSelection(i);
 		m_graphicHandle->UseHud(i,m_hudIDs[DISCONNECTED]);
 		m_playerStatus[i]=DISCONNECTED;
 	}
-	m_graphicHandle->AddSelectionDraw();
-	m_graphicHandle ->SetViewportAmount(4);
+
 	MenuScreen::Initialize();
 }
 
@@ -254,7 +255,7 @@ void JoinGameScreen::TauntChanger(int i, float p_dt, std::vector<UserCMD>* userC
 			{
 				m_selectedTauntSound[i] = m_numberOfTaunts-1;
 			}
-			m_audioManager->PlaySpecificSound(m_tauntSounds[m_selectedTauntSound[i]],false,true);
+			m_audioManager->PlaySpecificSound(m_tauntSounds[m_selectedTauntSound[i]],false,AUDIO_PLAY_MULTIPLE);
 			timeSinceLastChange[i]=0;
 		}
 		else if (userCMD->at(i).rightJoystick.x >0.8)
@@ -267,7 +268,7 @@ void JoinGameScreen::TauntChanger(int i, float p_dt, std::vector<UserCMD>* userC
 			{
 				m_selectedTauntSound[i] = 0;
 			}
-			m_audioManager->PlaySpecificSound(m_tauntSounds[m_selectedTauntSound[i]],false,true);
+			m_audioManager->PlaySpecificSound(m_tauntSounds[m_selectedTauntSound[i]],false,AUDIO_PLAY_MULTIPLE);
 			timeSinceLastChange[i]=0;
 		} 
 	}

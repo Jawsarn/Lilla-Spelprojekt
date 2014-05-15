@@ -37,7 +37,7 @@ void MenuScreen::Draw(){}
 
 void MenuScreen::Initialize()
 {
-	m_audioManager->PlaySpecificSound("menu.mp3",true,false);
+	m_audioManager->PlaySpecificSound("menu.mp3",true,AUDIO_ONLY_PLAY_ONE);
 }
 
 bool MenuScreen::FloatBetweenValues(float floatToCheck, float min, float max)
@@ -85,7 +85,7 @@ std::string MenuScreen::NavigateMenu(UserCMD& p_userCMD, unsigned int p_hudHandl
 		{
 			return ""; 
 		}
-		m_audioManager->PlaySpecificSound("waca.wav", false,false);
+		m_audioManager->PlaySpecificSound("buttonChange.wav", false,AUDIO_STOP_AND_PLAY);
 		timeSinceLastChange[0]=0;
 	}
 	return ""; 

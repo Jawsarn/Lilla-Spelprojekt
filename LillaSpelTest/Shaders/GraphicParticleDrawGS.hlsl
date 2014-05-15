@@ -1,4 +1,5 @@
 #include "GraphicParticleHelper.fx"
+#include "GraphicShaderHelper.fx"
 
 struct VS_OUTPUT
 {

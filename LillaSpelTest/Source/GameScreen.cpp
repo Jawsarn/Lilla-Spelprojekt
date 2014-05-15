@@ -24,6 +24,7 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4],string p_tauntSound[
 	vector<XMFLOAT4X4> t_shipWorldMatrices;
 	vector<UINT> t_colors;
 	vector<UINT> t_whichVehicles;
+
 	for (int i = 0; i < p_numberOfPlayers; i++)
 	{
 		m_players.push_back(new Player(m_mapNodes->at(0),0.5*3.1415*i, i));
@@ -33,6 +34,8 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4],string p_tauntSound[
 		t_colors.push_back(p_color[i]);
 		t_whichVehicles.push_back(p_whatVehicle[i]);
 		m_tauntSound[i] = p_tauntSound[i];
+		m_audioManager->CreateSound(m_tauntSound[i]);
+		m_audioManager->CreateSound(m_engineSound[i]);
 	}
 
 	m_graphicHandle->SetAmountOfPlayers(p_numberOfPlayers);
@@ -40,8 +43,7 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4],string p_tauntSound[
 	m_graphicHandle->CreateShipForGame(t_shipWorldMatrices);
 	for (int i = 0; i < p_numberOfPlayers; i++)
 	{
-	DrawPlayer(i);
-
+		DrawPlayer(i);
 	}
 	m_collisionManager = new CollisionManager();
 	m_preUpdateCountdown = 0;
@@ -89,27 +91,27 @@ void GameScreen::PreUpdate(float p_dt, std::vector<UserCMD>* p_userCMDS, int p_P
 	m_timeSpentDuringPreUpdate +=(p_dt/m_players.size());
 	if (m_preUpdateCountdown != (int)m_timeSpentDuringPreUpdate && !(m_timeSpentDuringPreUpdate >=4))
 	{
-		m_audioManager->PlaySpecificSound("countdown.wav",false,false);
+		m_audioManager->PlaySpecificSound("countdown.wav",false,AUDIO_ONLY_PLAY_ONE);
 	}
 	if(m_timeSpentDuringPreUpdate>=1 && m_timeSpentDuringPreUpdate <2)
 	{
 		m_preUpdateCountdown = 1;
 		m_graphicHandle->ChangeHudObjectTexture(m_hudID[p_Player],3,1); 
-	
+
 
 	}
 	else if(m_timeSpentDuringPreUpdate >=2 && m_timeSpentDuringPreUpdate <3)
 	{
 		m_preUpdateCountdown = 2;
 		m_graphicHandle->ChangeHudObjectTexture(m_hudID[p_Player],3,2);
-	
+
 
 	}
 	else if(m_timeSpentDuringPreUpdate >=3 && m_timeSpentDuringPreUpdate <4)
 	{
 		m_preUpdateCountdown = 3;
 		m_graphicHandle->ChangeHudObjectTexture(m_hudID[p_Player],3,3);
-	
+
 
 	}
 	else if(m_timeSpentDuringPreUpdate >=4)
@@ -122,10 +124,10 @@ void GameScreen::PreUpdate(float p_dt, std::vector<UserCMD>* p_userCMDS, int p_P
 
 
 		m_state = PLAY;
-		m_audioManager->PlaySpecificSound("go.wav",false,false);
+		m_audioManager->PlaySpecificSound("go.wav",false,AUDIO_ONLY_PLAY_ONE);
 	}
 
-	
+
 
 
 
@@ -168,7 +170,10 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 
 		}
 		else
+		{
+			m_audioManager->RemoveSpecificSound(m_engineSound[i]);
 			m_players[i]->SetFinalDirection();
+		}
 	}
 	switch(m_state)
 	{
@@ -176,12 +181,16 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 		m_collisionManager->PlayerVsPlayer(m_players);
 		for (int i = 0; i < m_players.size(); i++)
 		{
-			CollisionCheck(i, p_dt,p_userCMDS->at(i) );
-			DrawPlayer(i);
+			if(!m_players[i]->GetImmortal())
+				CollisionCheck(i, p_dt,p_userCMDS->at(i) );
 		}
+		break;
 	}
-	
-		return GAME_SCREEN;
+	for (int i = 0; i < m_players.size(); i++)
+	{
+		DrawPlayer(i);
+	}
+	return GAME_SCREEN;
 }
 void GameScreen::Draw()
 {
@@ -294,7 +303,7 @@ void GameScreen::UpdateSounds(int p_player,std::vector<UserCMD>* p_userCMDS)
 {
 	if (p_userCMDS->at(p_player).leftBumberPressed)
 	{
-		m_audioManager->PlaySpecificSound(m_tauntSound[p_player],false,false);
+		m_audioManager->PlaySpecificSound(m_tauntSound[p_player],false,AUDIO_ONLY_PLAY_ONE);
 	}
 	float t_pitchCoefficient = (m_players[p_player]->GetSpeed() < 25 ? m_players[p_player]->GetSpeed() : 25);
 	m_audioManager->PitchSpecificSound(m_engineSound[p_player], std::sqrt( t_pitchCoefficient) * 15000);
@@ -304,7 +313,7 @@ void GameScreen::PlaySounds()
 {
 	for (int i = 0; i < m_players.size(); i++)
 	{
-		m_audioManager->PlaySpecificSound(m_engineSound[i],true,false);
+		m_audioManager->PlaySpecificSound(m_engineSound[i],true,AUDIO_ONLY_PLAY_ONE);
 		m_audioManager->PitchSpecificSound(m_engineSound[i],0);
 	}
 }

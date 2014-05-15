@@ -4,7 +4,7 @@ cbuffer PerFrameBuffer : register(c0)
 {
 	matrix View[4];
 	matrix Projection[4];
-	//float4 EyesPos[4];
+	float4 EyePosition[4];
 	float3 fillers;
 	float NumberOfViewports;
 }
