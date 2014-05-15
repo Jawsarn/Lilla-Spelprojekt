@@ -146,7 +146,7 @@ void CollisionManager::ShockWaveCollision(std::vector<Player*> p_playerList, int
 		{
 			if(p_playerList[i]->GetCollisionBox()->Intersects(t_shockWaveSphere))
 			{
-				m_physMan->SetPlayerCollisions(p_playerList[p_playerWithShockwave],p_playerList[i], 0, 2);
+				SetShockWaveCollision(p_playerList[p_playerWithShockwave],p_playerList[i]);
 			}
 		}
 	}
