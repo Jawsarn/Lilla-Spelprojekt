@@ -23,7 +23,7 @@ GraphicHandle::~GraphicHandle()
 
 void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::vector <std::string> p_LevelNames)
 {
-
+	//4123     KONY fixa så att skeppen snurrar medans de snurrar=P
 
 	m_GraphicEngine = m_GraphicEngine->GetInstance();
 	m_GraphicEngine->Initialize(p_Width, p_Height, p_Handle);
@@ -52,7 +52,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	std::vector<std::string> t_ShipNames;
 	t_ShipNames.push_back("Ships/MilleniumKalk");
 	t_ShipNames.push_back("Ships/PajFighter");
-	t_ShipNames.push_back("Walls/FirstWall");
+	t_ShipNames.push_back("Ships/BullProof");
 	t_ShipNames.push_back("Ships/SpazMnik");
 
 	for (int i = 0; i < t_ShipNames.size(); i++)
@@ -80,7 +80,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 		//{
 			
 		t_TempStringForWall =p_LevelNames[i];
-		t_TempStringForWall += "/LevelWalls";//4123
+		t_TempStringForWall += "/LevelWalls";
 		m_MeshLevelWall.push_back(InitializeObj(t_TempStringForWall));
 		/////här e för att fixa in levelskiten men den fackar ur bror vettefan varför kan vara en grej i obj att en skit hade 1 rad med shit men borde inte göra så att skiten fackar ur................................................................................................................................................................................................../////////////m_MeshLevelWall.push_back(InitializeObj(t_TempStringForWall));
 		//}
@@ -234,6 +234,39 @@ void GraphicHandle::UpdateCamera(UINT p_CameraLogicID,float p_Walk, float p_Stra
 }
 void GraphicHandle::UpdateCameraVehicleSelection(UINT p_CameraLogicID, float p_LookingAtWhatVehicle)
 {
+	//m_SelectionShips
+		if (p_CameraLogicID < 4)
+	{
+		for (int i = 0; i < m_SelectionShips[p_CameraLogicID].size(); i++)
+		{
+			
+			
+			///1
+		XMMATRIX t_RoteraRuntEgenCirkelPlatsen = XMMatrixTranslation(0,0,m_BigCircleOffset);//drar ut den
+		XMMATRIX t_Rotation = XMMatrixRotationY(XM_PIDIV2*p_CameraLogicID);//roterar så att det e din cirkel
+		t_RoteraRuntEgenCirkelPlatsen = XMMatrixMultiply(t_RoteraRuntEgenCirkelPlatsen,t_Rotation);
+
+
+
+		//2
+		XMMATRIX t_Tempura = XMMatrixTranslation(0,0,m_CircleOffset);//sätter ut dem i en mindre cirkel o sprider ut dom
+		t_Rotation = XMMatrixRotationY((((((2*XM_PI)/m_SelectionShips[p_CameraLogicID].size())))*p_LookingAtWhatVehicle)+(((((2*XM_PI)/m_SelectionShips[p_CameraLogicID].size())))*i));/// ¨^^^^^^^^^^^^^^^
+		t_Tempura = XMMatrixMultiply(t_Tempura,t_Rotation);
+		t_RoteraRuntEgenCirkelPlatsen= XMMatrixMultiply(t_Tempura,t_RoteraRuntEgenCirkelPlatsen);
+
+
+		if (p_LookingAtWhatVehicle==1 ||p_LookingAtWhatVehicle==0||p_LookingAtWhatVehicle==2|| p_LookingAtWhatVehicle==3)
+		{
+			XMFLOAT4X4 t_Tempus;
+			XMStoreFloat4x4(&t_Tempus,t_RoteraRuntEgenCirkelPlatsen);
+			m_SelectionShipMatrix[p_CameraLogicID].at(i)=t_Tempus;
+		}
+		m_GraphicEngine->MoveObject(m_SelectionShips[p_CameraLogicID][i],t_RoteraRuntEgenCirkelPlatsen);
+		}
+	}
+}
+void GraphicHandle::UpdateCameraVehicleSelectionSeperate(UINT p_CameraLogicID, float p_LookingAtWhatVehicle)
+{
 	if (p_CameraLogicID < 4)
 	{
 		//(1)
@@ -251,31 +284,6 @@ void GraphicHandle::UpdateCameraVehicleSelection(UINT p_CameraLogicID, float p_L
 
 
 		m_GraphicEngine->SetCamera(m_CameraID[p_CameraLogicID],t_Tempura);
-
-	}
-}
-void GraphicHandle::UpdateCameraVehicleSelectionSeperate(UINT p_CameraLogicID, float p_LookingAtWhatVehicle)
-{
-	if (p_CameraLogicID < 4)
-	{	
-				/////////////////////////////////fungerande
-		XMMATRIX t_Tempura = XMMatrixTranslation(0,1,40);
-		XMMATRIX t_Rot = XMMatrixRotationY(2*XM_PI/m_MeshShips.size()*p_LookingAtWhatVehicle);
-		XMMATRIX t_Rot2 = XMMatrixRotationX(-XM_PIDIV4/10);
-
-		t_Rot = XMMatrixMultiply(t_Rot,t_Rot2);//sätter ihop rotationerna
-		t_Rot = XMMatrixMultiply(t_Rot, t_Tempura);//roterar matrisen
-
-		t_Tempura = XMMatrixRotationY(XM_PI);//vänder med 180 grader
-
-		t_Rot = XMMatrixMultiply(t_Tempura,t_Rot);//lägger in den sista rotationen
-
-
-		//t_Rot = XMMatrixMultiply(t_Tempura,t_Rot);
-
-		m_GraphicEngine->SetCamera(m_CameraID[p_CameraLogicID],t_Rot);
-		/////////////////////////////////////////////////////////////////////////////////
-
 
 	}
 }
