@@ -19,6 +19,7 @@ private:
 	std::vector<UINT> m_hudID;
 	std::string m_tauntSound[4];
 	std::string m_engineSound[4];
+	float m_vibrationTimer[4];
 	int m_lastNodeIndex;
 	int m_pauseDudeIndex;
 	float m_timeSpentDuringPreUpdate;
@@ -47,6 +48,8 @@ private:
 	void UpdateSounds(int p_player,std::vector<UserCMD>* p_userCMDS);
 	void PlaySounds();
 	void StopSounds();
+	void UpdateVibration(float p_dt,int p_player, UserCMD& p_userCMD);
+	void PlayShockWaveSound();
 
 	//help methods
 	void PlayerDieStaticObj(int p_currentPlayer);
