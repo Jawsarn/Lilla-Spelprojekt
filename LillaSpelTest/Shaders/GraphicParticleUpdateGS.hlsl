@@ -49,7 +49,7 @@ void GS( point Particle input[1],  inout PointStream< Particle > ptStream )
 	//float3 pos = 0.5f*t*t*worldAcceler + t*input[0].InitialVelW + input[0].InitialPosW;
 	//float3 vel = input[0].InitialVelW;
 
-	if (input[0].Type > 0)
+	if (origin.Type > 0)
 	{
 		if (t > spawnTime) //may swap this to something
 		{
@@ -69,7 +69,7 @@ void GS( point Particle input[1],  inout PointStream< Particle > ptStream )
 			}
 
 
-			input[0].Age = 0;
+			origin.Age = 0;
 			ptStream.Append(origin);
 		}
 		else
