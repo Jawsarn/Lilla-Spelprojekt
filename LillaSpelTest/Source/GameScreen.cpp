@@ -263,10 +263,10 @@ void GameScreen::CollisionCheck(int p_currentPlayer, float p_dt, UserCMD& p_user
 
 	}
 	//player vs player
-	//if (p_userCMD.yButtonPressed)
-	//{
-	//	m_collisionManager->ShockWaveCollision(m_players,p_currentPlayer);
-	//}
+	if (p_userCMD.yButtonPressed)
+	{
+		m_collisionManager->ShockWaveCollision(m_players,p_currentPlayer);
+	}
 }
 
 void GameScreen::UpdatePlayerRacePosition(int p_currentPlayer)
