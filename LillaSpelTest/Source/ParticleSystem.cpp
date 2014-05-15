@@ -189,8 +189,8 @@ HRESULT ParticleSystem::CreateParticleSystem(UINT p_EffectType, const wchar_t * 
 
 	m_ParticleVertexBuffer.push_back(t_NewBuff);
 
-	t_NewSystem.drawVertexBufferID = (m_VertexShaders.size() - 1); //could've put this as a general thing that it was + 1, but for reading purposes I put it as a variable
-	t_NewSystem.updateVertexBufferID = (m_VertexShaders.size() -2);
+	t_NewSystem.drawVertexBufferID = (m_ParticleVertexBuffer.size() - 1); //could've put this as a general thing that it was + 1, but for reading purposes I put it as a variable
+	t_NewSystem.updateVertexBufferID = (m_ParticleVertexBuffer.size() -2);
 
 
 	m_ParticleEffectSystems.push_back(t_NewSystem);
