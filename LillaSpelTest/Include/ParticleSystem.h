@@ -100,6 +100,7 @@ private:
 
 		float particleLifeSpan;
 		float spawnTime;
+
 		XMFLOAT2 initialSize;
 
 		

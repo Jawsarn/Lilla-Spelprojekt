@@ -62,7 +62,7 @@ void GS( point Particle input[1],  inout PointStream< Particle > ptStream )
 				p.InitialVelW = float3(0,0,0)/*emitDirection + vel + random*/;
 				p.SizeW = initialSize;
 				p.Age = 0.0f;
-				p.Lifespan = 1.0f;
+				p.Lifespan = particleLifeSpan;
 				p.Type = origin.Type - 1;
 
 				ptStream.Append(p);
