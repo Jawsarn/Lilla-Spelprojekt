@@ -360,11 +360,13 @@ void GraphicHandle::CreateShipForGame(std::vector<XMFLOAT4X4> p_PlayerWorld)
 		m_GraphicEngine->CreateInitParticleBuffer(t_InitParticles, t_InitParticleID1);
 		m_GraphicEngine->CreateInitParticleBuffer(t_InitParticles, t_InitParticleID2);
 
-		UINT t_ParticleBufferDataID1, t_ParticleBufferDataID2;
+		UINT t_ParticleBufferDataID1, t_ParticleBufferDataID2, t_ParticleBufferDataID3, t_ParticleBufferDataID4;
 		//the position here will be updated if object is updated
 		
-		m_GraphicEngine->CreateParticleCBSetup(XMFLOAT3(0,0,0), XMFLOAT3(0,0,0), 1, 4.0f, XMFLOAT2(0.2f,0.2f), 0.1f, t_ParticleBufferDataID1);
-		m_GraphicEngine->CreateParticleCBSetup(XMFLOAT3(0,0,0), XMFLOAT3(0,0,0), 1, 4.0f, XMFLOAT2(0.2f,0.2f), 0.1f, t_ParticleBufferDataID2);
+		m_GraphicEngine->CreateParticleCBSetup(XMFLOAT3(0,0,0), XMFLOAT3(0,0,0), 1, 10.0f, XMFLOAT2(0.2f,0.2f), 0.04f, t_ParticleBufferDataID1);
+		m_GraphicEngine->CreateParticleCBSetup(XMFLOAT3(0,0,0), XMFLOAT3(0,0,0), 1, 10.0f, XMFLOAT2(0.2f,0.2f), 0.04f, t_ParticleBufferDataID2);
+		m_GraphicEngine->CreateParticleCBSetup(XMFLOAT3(0,0,0), XMFLOAT3(0,0,0), 1, 10.0f, XMFLOAT2(0.2f,0.2f), 0.04f, t_ParticleBufferDataID3);
+		m_GraphicEngine->CreateParticleCBSetup(XMFLOAT3(0,0,0), XMFLOAT3(0,0,0), 1, 10.0f, XMFLOAT2(0.2f,0.2f), 0.04f, t_ParticleBufferDataID4);
 
 	
 		UINT t_ParticleSystemID;
