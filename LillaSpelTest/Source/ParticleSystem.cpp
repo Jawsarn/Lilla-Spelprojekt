@@ -145,7 +145,7 @@ HRESULT ParticleSystem::CreateShaders()
 	return hr;
 }
 
-HRESULT ParticleSystem::CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName , UINT p_StartBufferID, XMFLOAT3 p_ObjectPosition, UINT p_DataID, UINT p_MaxParticles, XMFLOAT3 p_Color,UINT &systemID)
+HRESULT ParticleSystem::CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName , UINT p_StartBufferID, UINT p_MaxParticles, XMFLOAT3 p_Color, float p_SpawnTimer , float p_ParticleLifeSpan, float p_SpawnAmount, XMFLOAT2 p_ParticleInitSize, CXMMATRIX p_WorldMatrix,UINT &systemID)
 {
 	HRESULT hr = S_OK;
 
@@ -160,12 +160,24 @@ HRESULT ParticleSystem::CreateParticleSystem(UINT p_EffectType, const wchar_t * 
 
 	t_NewSystem.textureID = m_TextureViews.size() -1;
 	t_NewSystem.startBufferID = p_StartBufferID;
-	t_NewSystem.objectPosition = p_ObjectPosition; 
-	t_NewSystem.perEffectDataID = p_DataID;
 	t_NewSystem.color = p_Color;
 
 	t_NewSystem.firstrun = true;
 
+	/*
+	//all data here
+	float spawnTimer;
+	float particleLifeSpan;
+	float spawnAmount;
+	XMFLOAT2 particleInitSize;
+
+	XMFLOAT4X4 worldMatrix;*/
+
+	t_NewSystem.spawnTimer = p_SpawnTimer;
+	t_NewSystem.particleLifeSpan = p_ParticleLifeSpan;
+	t_NewSystem.spawnAmount = p_SpawnAmount;
+	t_NewSystem.particleInitSize = p_ParticleInitSize;
+	XMStoreFloat4x4( &t_NewSystem.worldMatrix, p_WorldMatrix);
 
 	D3D11_BUFFER_DESC t_BufferDesc;
 	t_BufferDesc.ByteWidth = sizeof(Particle)*p_MaxParticles;
@@ -231,20 +243,7 @@ HRESULT ParticleSystem::CreateInitParticlesBuffer(std::vector<Particle> p_StartP
 	return hr;
 }
 
-void ParticleSystem::CreateCBsetup(XMFLOAT3 p_SpawnPosition, XMFLOAT3 p_EmitDirection, float p_InitSpawnAmount, float p_ParticleLifeSpan, XMFLOAT2 p_InitialSize, float p_SpawnTime, UINT &o_DataID)
-{
-	CPerEffectBuffer t_NewCBSetup;
-	t_NewCBSetup.spawnPosition = p_SpawnPosition;
-	t_NewCBSetup.emitDirection = p_EmitDirection;
-	t_NewCBSetup.initSpawnAmount = p_InitSpawnAmount;
-	t_NewCBSetup.particleLifeSpan = p_ParticleLifeSpan;
-	t_NewCBSetup.initialSize = p_InitialSize;
-	t_NewCBSetup.spawnTime = p_SpawnTime;
 
-	m_PerEffectData.push_back(t_NewCBSetup);
-
-	o_DataID = m_PerEffectData.size() -1;
-}
 
 HRESULT ParticleSystem::CreateConstantBuffer()
 {
@@ -317,15 +316,13 @@ HRESULT ParticleSystem::CreateRandomTexture1DSRV()
 	return hr;
 }
 
-HRESULT ParticleSystem::UpdatePositionOnCBsetup(UINT p_ParticleSystemID, CXMMATRIX p_WorldMatrix)
+HRESULT ParticleSystem::UpdateParticleSystemMatrix(UINT p_ParticleSystemID, CXMMATRIX p_WorldMatrix)
 {
 	HRESULT hr = S_OK;
 
-	XMVECTOR t_PosVector = XMLoadFloat3(&m_ParticleEffectSystems[p_ParticleSystemID].objectPosition);
-	
-	t_PosVector = XMVector3Transform(t_PosVector, p_WorldMatrix);
 
-	XMStoreFloat3( &m_PerEffectData[m_ParticleEffectSystems[p_ParticleSystemID].perEffectDataID].spawnPosition, t_PosVector);
+	XMStoreFloat4x4( &m_ParticleEffectSystems[p_ParticleSystemID].worldMatrix, p_WorldMatrix);
+	
 
 	return hr;
 }
@@ -389,8 +386,18 @@ void ParticleSystem::Draw(float dt)
 		m_DeviceContext->UpdateSubresource( m_PerObjectBuffer, 0, nullptr, &t_pobj, 0, 0 );
 
 		//update effect buffer data
-		m_PerEffectData[t_CurSys.perEffectDataID].deltaTime = dt;
-		m_DeviceContext->UpdateSubresource( m_PerEffectBuffer, 0, nullptr, &m_PerEffectData[t_CurSys.perEffectDataID], 0, 0 );
+
+		CPerEffectBuffer t_Cbpef;
+		t_Cbpef.deltaTime = dt;
+		t_Cbpef.fillers56 = XMFLOAT2(0,0);
+		t_Cbpef.initialSize = t_CurSys.particleInitSize;
+		t_Cbpef.particleLifeSpan = t_CurSys.particleLifeSpan;
+		t_Cbpef.spawnAmount = t_CurSys.spawnAmount;
+		t_Cbpef.spawnTimer = t_CurSys.spawnTimer;
+		t_Cbpef.worldMatrix = XMMatrixTranspose( XMLoadFloat4x4(&t_CurSys.worldMatrix) );
+
+		//m_PerEffectData[t_CurSys.perEffectDataID].deltaTime = dt;
+		m_DeviceContext->UpdateSubresource( m_PerEffectBuffer, 0, nullptr, &t_Cbpef, 0, 0 );
 
 		//turn off depth 
 		m_DeviceContext->OMSetDepthStencilState(m_DepthOff, 0);
