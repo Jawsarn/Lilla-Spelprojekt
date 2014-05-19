@@ -263,8 +263,9 @@ void GameScreen::CollisionCheck(int p_currentPlayer, float p_dt, UserCMD& p_user
 
 	}
 	//player vs player
-	if (p_userCMD.yButtonPressed)
+	if (p_userCMD.yButtonPressed&&m_players[p_currentPlayer]->AbilityReady())
 	{
+		m_players[p_currentPlayer]->SetShockwaveCooldown();
 		m_collisionManager->ShockWaveCollision(m_players,p_currentPlayer);
 	}
 }

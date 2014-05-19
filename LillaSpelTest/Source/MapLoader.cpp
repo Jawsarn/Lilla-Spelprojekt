@@ -126,6 +126,8 @@ void MapLoader::AssignBoxesToNodes()
 		XMStoreFloat3(&t_normalLengthVectorDerp, t_normalLengthVector);
 		XMFLOAT3 t_boxExtents = XMFLOAT3(m_logicalMap[i]->m_radius,m_logicalMap[i]->m_radius, t_normalLengthVectorDerp.x);
 
+
+
 		//get position of box
 		XMFLOAT3 t_boxPosition;
 		XMStoreFloat3(&t_boxPosition, t_eyeVector);
@@ -155,6 +157,7 @@ void MapLoader::LoadBoxes(vector<vector<XMFLOAT3>>* p_boxCornerPositions, Object
 	{
 		BoundingOrientedBox t_box = BoundingOrientedBox();
 		t_box.CreateFromPoints(t_box, 8, &p_boxCornerPositions->at(i).at(0), sizeof(XMFLOAT3));
+		t_box.Extents = m_mathHelper.FloatMultiVec(0.5, t_box.Extents);
 		m_boxes.push_back(new StaticObj(p_objectType, t_box));
 	}
 
