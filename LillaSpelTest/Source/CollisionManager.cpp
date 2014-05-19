@@ -102,7 +102,7 @@ void CollisionManager::SetPlayerVsPlayer(Player* p_currentPlayer, Player* p_inte
 }
 void CollisionManager::ShockWaveCollision(std::vector<Player*> p_playerList, int p_playerWithShockwave)
 {
-	BoundingSphere t_shockWaveSphere = BoundingSphere(p_playerList[p_playerWithShockwave]->GetPos(), 3);
+	BoundingSphere t_shockWaveSphere = BoundingSphere(p_playerList[p_playerWithShockwave]->GetPos(), 3.5);
 	for (int i = 0; i < p_playerList.size(); i++)
 	{
 		if(i!=p_playerWithShockwave)
