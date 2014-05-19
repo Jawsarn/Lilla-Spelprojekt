@@ -32,6 +32,7 @@ private:
 	UINT m_WhatLevelBefore;
 	std::vector <UINT> m_Levels;
 	std::vector <UINT> m_LevelWalls;
+	std::vector <UINT> m_LevelBoosts;
 	std::vector <std::string> m_WallNames;
 
 	
@@ -42,6 +43,7 @@ private:
 	
 	//std::vector<UINT> m_Buttons;
 	std::vector <std::vector<UINT>> m_MeshLevelWall;
+	std::vector <std::vector<UINT>> m_MeshLevelBoost;
 	std::vector <std::vector<UINT>>m_MeshPlayerWall;//borde kunna ha olika väggar(olika meshar då) om man vill
 	std::vector <std::vector<UINT>> m_MeshLevels;
 	std::vector<std::vector<UINT>> m_MeshShips;

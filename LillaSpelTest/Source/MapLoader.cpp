@@ -46,7 +46,7 @@ vector<MapNode*>* MapLoader::LoadMap(string p_mapName)
 	string t_edgeSplineString = AddStrings(t_SideTemp, "/EdgeSpline.obj");
 
 
-	string t_holeBoxString = AddStrings(t_SideTemp, "/HoleBoxes.obj");
+	string t_holeBoxString = AddStrings(t_SideTemp, "/BoostBoundingBox.obj");
 	string t_wallBoxString = AddStrings(t_SideTemp, "/WallBoundingBoxes.obj");		///////////TO BE CHANGED. RATHER SILLY AS IT IS//////////////
 
 	//Load all information necessary for node creation
