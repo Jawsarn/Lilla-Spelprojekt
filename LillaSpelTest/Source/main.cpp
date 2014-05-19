@@ -78,7 +78,7 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	m_audioManager->SetSpecificSoundVolume("menu.mp3",0.6);
 
 	m_mainMenuScreen = new MainMenuScreen(m_GraphicHandle, m_audioManager);
-	m_gameSetupScreen = new GameSetupScreen(&m_gameInfo,m_GraphicHandle, m_audioManager);
+	m_gameSetupScreen = new GameSetupScreen(&m_gameInfo,m_GraphicHandle, m_audioManager,m_levelNames);
 	m_optionsScreen = new OptionsScreen(&m_gameInfo,m_GraphicHandle, m_audioManager);
 	m_joinGameScreen = new JoinGameScreen(&m_gameInfo,m_GraphicHandle, m_audioManager);
 	m_pauseScreen = new PauseScreen(&m_gameInfo,m_GraphicHandle, m_audioManager);
@@ -183,6 +183,7 @@ void RunInitialization()
 				t_playerOnline++;
 		}
 		m_audioManager->RemoveSpecificSound("menu.mp3");
+		m_GraphicHandle->AddLevelDraw(m_gameInfo.map);
 		m_gameScreen = new GameScreen(m_gameInfo.playerColor, m_gameInfo.shipModell,m_gameInfo.tauntSound, m_levelNames[m_gameInfo.map], t_playerOnline, m_GraphicHandle, m_audioManager);
 		UpdateTime();
 		break;
@@ -235,10 +236,6 @@ void Update(std::vector<UserCMD>* p_userCMDs)
 		m_state = (ApplicationState)m_gameScreen->Update(m_DeltaTime,p_userCMDs);
 		if (m_state != GAME_SCREEN)
 		{
-			if (m_state != PAUSE_SCREEN)
-			{
-				delete m_gameScreen;
-			}
 			RunInitialization();
 		}
 		break;
@@ -267,6 +264,7 @@ void Update(std::vector<UserCMD>* p_userCMDs)
 		m_state = (ApplicationState)m_goalScreen->Update(m_DeltaTime,p_userCMDs);
 		if (m_state != GOAL_SCREEN)
 		{
+			delete m_gameScreen;
 			RunInitialization();
 		}
 		break;

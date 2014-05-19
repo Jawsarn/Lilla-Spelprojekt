@@ -14,6 +14,7 @@ PauseScreen::PauseScreen(GameInfo* p_gameInfo ,GraphicHandle* p_graphicHandle, A
 
 	FixButtonPointers();
 	MakeHud(m_hudHandle);
+	currentButton = buttonList[0];
 }
 
 PauseScreen::~PauseScreen(void)
@@ -48,7 +49,7 @@ void PauseScreen::Draw()
 void PauseScreen::Initialize(int p_whoPaused)	
 {
 	m_graphicHandle->UseHud(p_whoPaused,m_hudHandle);
-	//m_graphicHandle->ChangeHudObjectTexture(m_hudHandle,currentButton->buttonHandle,0);
+	m_graphicHandle->ChangeHudObjectTexture(m_hudHandle,currentButton->buttonHandle,0);
 	currentButton = buttonList[0];
 	m_graphicHandle->ChangeHudObjectTexture(m_hudHandle,currentButton->buttonHandle,1);
 	m_whoPaused = p_whoPaused;

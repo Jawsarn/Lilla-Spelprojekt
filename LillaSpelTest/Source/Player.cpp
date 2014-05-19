@@ -64,6 +64,11 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_unmodifiedUp = XMFLOAT3(0,1,0);
 	m_bobTimer = 0;
 	m_collisionAfterSpeed = 0;
+	m_finishProgress = 0;
+	m_finalDirection = 1;
+	m_finishSpeed = 0;
+	m_finishAngle = 0;
+	m_finishSlideSpeed = 0;
 
 	////BALANCING VARIABLES
 
@@ -72,8 +77,8 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_maxBoost = 5;
 	m_boostGain = 1;//prolly not gonna be used
 
-	m_maxSpeed = 5;
-	m_maxBoostSpeed = 80;
+	m_maxSpeed = 15;
+	m_maxBoostSpeed = 25;
 
 	m_acceleration = 15;
 	m_boostAcceleration = 30;
@@ -99,6 +104,9 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_cameraTrailDistanceTarget = 5;
 	//how high above the vehicle the camera is
 	m_cameraTrailDistanceUp = 1;
+	//how far to the right/left the camera will pan (used during finish)
+	m_cameraTrailDistanceRight = 1.7; //probably shouldn't be less due to clipping
+
 
 	m_gravityShiftCameraMoveSpeed = 2;
 	m_gravityShiftSpeed = 1;
@@ -113,8 +121,8 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_targetBumpIntensity = 0.3;
 
 	//Shockwave
-	m_angleShockwavePower = 0.05;
-	m_speedShockwavePower = 10;
+	m_angleShockwavePower = 0.015;//set low for minor shockwave angle
+	m_speedShockwavePower = 0.5;
 	m_bobFrequency = 1;
 	m_bobIntensity = 0.1;
 
@@ -122,6 +130,14 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_abilityCooldown = 3;
 	m_shockWaveCooldown = 2;
 	m_gravityShiftCooldown = 5;
+
+
+	m_finishCameraFollowSpeed = 4;
+	//min and max angles in radians
+	m_maxFinishAngle = 3.1415;
+	m_minFinishAngle = 3.1415/2;
+
+	m_finishSlideSpeedCoefficient = 0.01;
 
 	////FINAL WORLD MATRIX INITIALIZATION
 	SetDirection();
@@ -171,6 +187,7 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 		Acceleration(p_dt);
 		Rotation(p_dt);
 	}
+	//if(m_state!=FINISHING)
 	MovementAlongLogicalMap(p_dt);
 	SetDirection();
 
@@ -190,7 +207,7 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 	//matrices now updated. Ready to be grabbed from the GameScreen
 
 	UpdateCollisionBox();
-	if (!m_gravityShifting)
+	if (!m_gravityShifting&&m_state!=FINISHING)
 		r_returnInt = WallPlacement(p_dt);
 
 	UpdateTimers(p_dt);
@@ -393,15 +410,23 @@ void Player::UpdateTimers(float p_dt)
 {
 	////immortal and death timers
 	m_immortalTimer -= p_dt;
-	if (m_immortalTimer < 0&&m_state==IMMORTAL&&!m_gravityShifting)
+	if (m_immortalTimer < 0&&m_state==IMMORTAL&&!m_gravityShifting&&!m_hasWon)
 		m_state = NORMAL;
 	m_deathTimer -= p_dt;
 	if (m_gravityShifting)
 		m_gravityShiftProgress += p_dt*m_gravityShiftSpeed;
 	m_wallMeter += p_dt*m_wallGain*(4 - m_racePos);
+
+	
 	m_bobTimer += p_dt*m_bobFrequency;
 	m_abilityCooldown -= p_dt;
 
+	if(m_state==FINISHING)
+	{
+		m_finishProgress += 0.3*p_dt;
+		if(m_finishProgress>1)
+			m_finishProgress = 1;
+	}
 }
 
 
@@ -441,6 +466,9 @@ void Player::FixOffsetFromCenterSpline()
 void Player::BobOffset()
 {
 	float t_bob = sin(m_bobTimer*3.1415);
+	if(m_state == FINISHING&&t_bob<0.01)
+		m_bobFrequency = 0;
+
 	XMVECTOR t_bobVector = XMLoadFloat3(&m_bobOffset);
 	XMVECTOR t_unmodifidiedUpVector = XMLoadFloat3(&m_unmodifiedUp);
 	t_bobVector+=t_bob*t_unmodifidiedUpVector*m_bobIntensity;
@@ -453,7 +481,7 @@ void Player::BobOffset()
 	//declaring offset variables
 	//float t_bobX, t_bobY, t_bobZ;
 
-	//uniform_real_distribution<float> distribution(-1, 1);
+	//uniorm_real_distribution<loat> distribution(-1, 1);
 	//t_bobX = distribution(m_randomGenerator);
 	//t_bobY = distribution(m_randomGenerator);
 	//t_bobZ = distribution(m_randomGenerator);
@@ -476,10 +504,33 @@ void Player::DeathShake()
 
 void Player::UpdateWorldMatrix()
 {
-	//change to properly calibrate the camera offset (don't wanna have dat camera clip thru he wall)
-	//Vehicle Variables
+	//float t_radius = m_finishProgress*( m_mapNode->m_radius + (m_mapNode->m_radius / 4));
+	float t_radius = m_finishProgress*m_cameraTrailDistanceUp;
 	XMFLOAT3 t_position = XMFLOAT3(m_position.x, m_position.y, m_position.z);
 
+
+	float t_progressX = sin(m_finishProgress*3.1415);
+	float t_progressZ = cos(m_finishProgress*3.1415);
+	float t_progressY = m_finishProgress;
+
+
+	float t_cameraProgress = m_finishProgress*m_finishCameraFollowSpeed;
+	if(t_cameraProgress >1)
+		t_cameraProgress = 1;
+
+	float t_cameraProgressX = sin(t_cameraProgress*3.1415);
+	float t_cameraProgressZ = cos(t_cameraProgress*3.1415);
+	float t_cameraProgressY = m_finishProgress;
+
+
+
+	
+
+
+
+	float t_finishRotation = m_finishProgress*m_finalDirection*m_finishAngle;
+
+	float t_finishSlide = m_finishSpeed*m_finishProgress;
 
 	float t_cameraTailDistanceTarget = m_cameraTrailDistanceTarget;
 	if(m_currentUserCmd.leftTriggerPressed)
@@ -490,7 +541,13 @@ void Player::UpdateWorldMatrix()
 	XMVECTOR t_vehicleTargetVector = XMLoadFloat3(&m_direction);
 	XMVECTOR t_vehicleUpVector = XMLoadFloat3(&m_up);
 
-	XMVECTOR t_cameraEyeVector = t_vehicleEyeVector + t_vehicleUpVector*m_cameraTrailDistanceUp + t_cameraTailDistanceTarget*t_vehicleTargetVector*-1;
+	////////////////////VERY DUBIOUS ABOUT THIS ONE!!!////////////
+	t_vehicleEyeVector+=XMLoadFloat3(&m_unmodifiedTarget)*t_finishSlide;
+
+	//ordinary camera eye position offsets
+	XMVECTOR t_cameraEyeVector = t_vehicleEyeVector + t_vehicleUpVector*m_cameraTrailDistanceUp + t_cameraProgressZ*t_cameraTailDistanceTarget*t_vehicleTargetVector*-1;
+
+
 	XMVECTOR t_cameraUpVector = t_vehicleUpVector;
 	XMVECTOR t_cameraTargetVector = t_vehicleEyeVector;
 
@@ -501,9 +558,14 @@ void Player::UpdateWorldMatrix()
 	XMMATRIX t_directionRotationMatrixTarget = XMMatrixRotationAxis(t_vehicleTargetVector, m_deltaAngle * 5);					//////////////////////////MAKE SURE YOU CHANGE THIS HARDCODED 10 CRAP////////////////
 	t_vehicleUpVector = XMVector3Transform(t_vehicleUpVector, t_directionRotationMatrixTarget);
 	t_vehicleUpVector = XMVector3Normalize(t_vehicleUpVector);
-
+	XMMATRIX t_directionRotationMatrixUp;
 	//rotate along new up vector
-	XMMATRIX t_directionRotationMatrixUp = XMMatrixRotationAxis(t_vehicleUpVector, m_deltaAngle * 10 * (3/(m_speed+1)));//Gives a bad value during countdown				//////////////////////////MAKE SURE YOU CHANGE THIS HARDCODED 10 CRAP////////////////
+
+	if(m_state !=FINISHING)
+		t_directionRotationMatrixUp = XMMatrixRotationAxis(t_vehicleUpVector, m_deltaAngle * 10 * (3/(m_speed+1)));//Gives a bad value during countdown				//////////////////////////MAKE SURE YOU CHANGE THIS HARDCODED 10 CRAP////////////////
+	else
+		t_directionRotationMatrixUp = XMMatrixRotationAxis(t_vehicleUpVector, m_deltaAngle * 10 * (3/(m_finishSpeed+1))+t_finishRotation);
+
 	t_vehicleTargetVector = XMVector3Transform(t_vehicleTargetVector, t_directionRotationMatrixUp);
 	t_vehicleTargetVector = XMVector3Normalize(t_vehicleTargetVector);
 
@@ -511,7 +573,6 @@ void Player::UpdateWorldMatrix()
 	//XMStoreFloat3(&m_upVector, t_vehicleUpVector);
 
 	////CAMERA MATRIX GENERATION
-
 
 	//update camera angle
 
@@ -526,17 +587,24 @@ void Player::UpdateWorldMatrix()
 		m_cameraAngle -= m_cameraFollowSpeed;
 
 
-
+	//camera delayed follow thingy
 	XMMATRIX t_cameraRotationMatrix = XMMatrixRotationAxis(t_vehicleUnmoddedTargetVector, -m_deltaAngle - m_cameraAngle * 10);
 	t_cameraUpVector = XMVector3Transform(t_cameraUpVector, t_cameraRotationMatrix);
 	t_cameraUpVector = XMVector3Normalize(t_cameraUpVector);
 
 
 
-	XMStoreFloat4x4(&m_cameraMatrix, XMMatrixLookAtLH(t_cameraEyeVector, t_cameraTargetVector, t_cameraUpVector));
+	////special finish line position offsets (can be done during race too. God bless trigonometry)
+	//offsets to the right of the Vehicle
+	t_cameraEyeVector+=m_cameraTrailDistanceRight*t_cameraProgressX*XMVector3Cross(XMLoadFloat3(&m_unmodifiedTarget), XMLoadFloat3(&m_unmodifiedUp));
+
+
+	/////FINAL CAMERA MATRIX SET/////////
+	XMStoreFloat4x4(&m_cameraMatrix, XMMatrixLookAtLH(t_cameraEyeVector, t_cameraTargetVector+XMLoadFloat3(&m_unmodifiedUp)*t_radius*t_cameraProgressY, t_cameraUpVector));
 
 
 	XMVECTOR t_bobOffsetVector = XMLoadFloat3(&m_bobOffset);
+	/////FINAL VEHICLE WORLD MATRIX SET//////////
 	XMStoreFloat4x4(&m_worldMatrix, XMMatrixLookToLH(t_vehicleEyeVector + t_bobOffsetVector, t_vehicleTargetVector, t_vehicleUpVector));
 
 	//store direction of car for wall placement
@@ -609,7 +677,7 @@ void Player::GravityShift(float p_progress)
 		m_state = NORMAL;
 	}
 
-	
+
 	t_unmodifiedUpVector = XMVector3Normalize(t_unmodifiedUpVector);
 
 
@@ -774,6 +842,11 @@ bool Player::GetImmortal()
 	return(m_state == IMMORTAL);
 }
 
+bool Player::HasFinished()
+{
+	return(m_state==FINISHING);
+}
+
 
 
 int Player::GetPlayerIndex()
@@ -858,6 +931,37 @@ void Player::Start()
 	m_speed = (float)(m_aButtonPressedAtStart) / 2;
 	m_state = NORMAL;
 }
+
+void Player::Finish()
+{
+	m_finishSlideSpeed = m_speed*0.3;
+	m_finishSpeed = m_speed;
+	m_cameraAngle = 0;
+	if(m_deltaAngle>0)
+		m_finalDirection = 1;
+	else if(m_deltaAngle<0)
+		m_finalDirection = -1;
+	else
+	{
+		//random direction if going straight
+		uniform_real_distribution<float> distribution(-1,1);
+		float t_derpDesignator=0;
+		t_derpDesignator = distribution(m_randomGenerator);
+		if(t_derpDesignator>0)
+			m_finalDirection = 1;
+		else
+			m_finalDirection = -1;
+	}
+
+	uniform_real_distribution<float> distribution(m_minFinishAngle, m_maxFinishAngle);
+	m_finishAngle = distribution(m_randomGenerator);
+
+
+	m_speed =0;
+	m_state = FINISHING;
+	m_hasWon = true;
+}
+
 
 void Player::SetSpeed(float p_speed)
 {

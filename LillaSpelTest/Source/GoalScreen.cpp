@@ -30,7 +30,7 @@ int GoalScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDs)
 	{
 		return GAME_SCREEN;
 	}
-	else if (t_menuChoice == "Main menu")
+	else if (t_menuChoice == "Main Menu")
 	{
 		return MAIN_MENU_SCREEN;
 	}
