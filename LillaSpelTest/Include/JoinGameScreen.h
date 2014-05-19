@@ -16,6 +16,7 @@ private:
 	int m_modellIncrease[4];
 	int m_color[4];
 	int m_selectedTauntSound[4];
+	float m_whatVehicleToLookAt[4];
 	unsigned int m_hudIDs[4];
 public:
 	JoinGameScreen(void);

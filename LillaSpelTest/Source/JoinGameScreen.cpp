@@ -24,6 +24,7 @@ JoinGameScreen::JoinGameScreen(GameInfo* p_gameInfo,GraphicHandle* p_graphicsHan
 		m_selectedTauntSound[i] = 0;
 		m_playerStatus[i] = DISCONNECTED;
 		m_modellIncrease[i] = 0;
+		m_whatVehicleToLookAt[i] = 0;
 	}
 
 	MakeHud(L"Connect.dds", DISCONNECTED);
@@ -35,6 +36,8 @@ JoinGameScreen::JoinGameScreen(GameInfo* p_gameInfo,GraphicHandle* p_graphicsHan
 	m_tauntSounds.push_back("taunt2.wav");
 	m_tauntSounds.push_back("taunt3.wav");
 	m_numberOfTaunts = m_tauntSounds.size();
+
+	
 }
 
 JoinGameScreen::~JoinGameScreen(void)
@@ -44,7 +47,9 @@ JoinGameScreen::~JoinGameScreen(void)
 int JoinGameScreen::Update(float p_dt,std::vector<UserCMD>* userCMD)
 {
 	MenuScreen::Update(p_dt,userCMD);
-	
+	static float t_gameTime = 0;
+	t_gameTime += p_dt;
+
 	for (int i = 0; i < 4; i++)
 	{
 		m_graphicHandle->UpdateSelectVehicle(p_dt,i);
@@ -57,6 +62,7 @@ int JoinGameScreen::Update(float p_dt,std::vector<UserCMD>* userCMD)
 				{
 					m_playerStatus[i] = (PlayerStatus)(m_playerStatus[i]+1);
 					m_graphicHandle->UseHud(i,m_hudIDs[m_playerStatus[i]]);
+					m_graphicHandle->SetVehicleSelectionCamera(i);
 				}
 				
 			}
@@ -69,7 +75,7 @@ int JoinGameScreen::Update(float p_dt,std::vector<UserCMD>* userCMD)
 					m_graphicHandle->UseHud(i,m_hudIDs[m_playerStatus[i]]);
 					if (m_playerStatus[i] == DISCONNECTED)
 					{
-						m_graphicHandle->SetCameraVehicleSelection(i);
+						m_graphicHandle->InitializeJoinScreenCamera(i);
 					}
 				}
 			}
@@ -101,7 +107,8 @@ int JoinGameScreen::Update(float p_dt,std::vector<UserCMD>* userCMD)
 			ColorChanger(i,p_dt,userCMD);
 			TauntChanger(i,p_dt,userCMD);
 		}
-	
+
+		m_graphicHandle->UpdateCameraVehicleSelection(i,m_whatVehicleToLookAt[i],-t_gameTime);
 			
 		
 	}
@@ -118,7 +125,7 @@ void JoinGameScreen::Initialize()
 	m_graphicHandle ->SetViewportAmount(4);
 	for (int i = 0; i < 4; i++)
 	{
-		m_graphicHandle->SetCameraVehicleSelection(i);
+		m_graphicHandle->InitializeJoinScreenCamera(i);
 		m_graphicHandle->UseHud(i,m_hudIDs[DISCONNECTED]);
 		m_playerStatus[i]=DISCONNECTED;
 	}
@@ -149,7 +156,6 @@ void JoinGameScreen::MakeHud(const wchar_t* p_textureNames, int p_hudIndex)
 void JoinGameScreen::SaveInfo()
 {
 	m_graphicHandle->RemoveSelectionDraw();
-	m_graphicHandle->AddLevelDraw(m_gameInfo->map);
 	for (int i = 0; i < 4; i++)
 	{
 		if (m_playerStatus[i] != DISCONNECTED)
@@ -164,20 +170,22 @@ void JoinGameScreen::SaveInfo()
 
 void JoinGameScreen::ModellChanger(int i, float p_dt, std::vector<UserCMD>* userCMD)
 {
+
+	
 	if (timeSinceLastChange[i] < 0.5 && m_modellIncrease[i]!=0)
 	{
 		if (m_modellIncrease[i] == 1)
 		{
-			m_graphicHandle->UpdateCameraVehicleSelection(i,(m_modell[i]-1)+timeSinceLastChange[i]*2);
+			m_whatVehicleToLookAt[i] = (m_modell[i]-1)+timeSinceLastChange[i]*2;
 		}
 		else if (m_modellIncrease[i] == -1)
 		{
-			m_graphicHandle->UpdateCameraVehicleSelection(i,(m_modell[i]+1)-timeSinceLastChange[i]*2);
+			m_whatVehicleToLookAt[i] =(m_modell[i]+1)-timeSinceLastChange[i]*2;
 		}			
 	}
-	else if (timeSinceLastChange[i] < 1.2)
+	else if (timeSinceLastChange[i] < 5 && m_modellIncrease[i] != 0)
 	{
-		m_graphicHandle->UpdateCameraVehicleSelection(i,m_modell[i]);
+		m_whatVehicleToLookAt[i] = m_modell[i];
 		m_modellIncrease[i]=0;
 	}
 	else if (userCMD->at(i).Joystick.x < -0.8)

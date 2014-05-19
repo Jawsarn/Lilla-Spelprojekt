@@ -23,7 +23,7 @@ GraphicHandle::~GraphicHandle()
 
 void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::vector <std::string> p_LevelNames)
 {
-
+	//4123     KONY fixa så att skeppen snurrar medans de snurrar=P
 
 	m_GraphicEngine = m_GraphicEngine->GetInstance();
 	m_GraphicEngine->Initialize(p_Width, p_Height, p_Handle);
@@ -52,7 +52,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	std::vector<std::string> t_ShipNames;
 	t_ShipNames.push_back("Ships/MilleniumKalk");
 	t_ShipNames.push_back("Ships/PajFighter");
-	t_ShipNames.push_back("Walls/FirstWall");
+	t_ShipNames.push_back("Ships/BullProof");
 	t_ShipNames.push_back("Ships/SpazMnik");
 
 	for (int i = 0; i < t_ShipNames.size(); i++)
@@ -80,7 +80,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 		//{
 			
 		t_TempStringForWall =p_LevelNames[i];
-		t_TempStringForWall += "/LevelWalls";//4123
+		t_TempStringForWall += "/LevelWalls";
 		m_MeshLevelWall.push_back(InitializeObj(t_TempStringForWall));
 		/////här e för att fixa in levelskiten men den fackar ur bror vettefan varför kan vara en grej i obj att en skit hade 1 rad med shit men borde inte göra så att skiten fackar ur................................................................................................................................................................................................../////////////m_MeshLevelWall.push_back(InitializeObj(t_TempStringForWall));
 		//}
@@ -216,11 +216,11 @@ void GraphicHandle::UpdateSelectVehicle(float p_DeltaTime, int p_PlayerID)
 
 	for (int i = 0; i < m_SelectionShipMatrix[p_PlayerID].size(); i++)
 	{
-		XMMATRIX t_Tempii = XMMatrixMultiply(t_Rotii,XMLoadFloat4x4(&m_SelectionShipMatrix[p_PlayerID][i]));
-		m_GraphicEngine->MoveObject(m_SelectionShips[p_PlayerID][i],t_Tempii);
-		XMFLOAT4X4 t_Storii;
-		XMStoreFloat4x4(&t_Storii,t_Tempii);
-		m_SelectionShipMatrix[p_PlayerID][i] = t_Storii;
+		//XMMATRIX t_Tempii = XMMatrixMultiply(t_Rotii,XMLoadFloat4x4(&m_SelectionShipMatrix[p_PlayerID][i]));
+		//m_GraphicEngine->MoveObject(m_SelectionShips[p_PlayerID][i],t_Rotii);
+		//XMFLOAT4X4 t_Storii;
+		//XMStoreFloat4x4(&t_Storii,t_Rotii);
+		//m_SelectionShipMatrix[p_PlayerID][i] = t_Storii;
 	}
 
 }
@@ -232,7 +232,60 @@ void GraphicHandle::UpdateCamera(UINT p_CameraLogicID,float p_Walk, float p_Stra
 		m_GraphicEngine->MoveCamera(m_CameraID[p_CameraLogicID],p_Walk,p_Strafe,p_Hover,p_Pitch,p_RotateY);
 	}
 }
-void GraphicHandle::UpdateCameraVehicleSelection(UINT p_CameraLogicID, float p_LookingAtWhatVehicle)
+void GraphicHandle::UpdateCameraVehicleSelection(UINT p_CameraLogicID, float p_LookingAtWhatVehicle,float p_DeltaTime)
+{
+	//m_SelectionShips
+		if (p_CameraLogicID < 4)
+	{
+		for (int i = 0; i < m_SelectionShips[p_CameraLogicID].size(); i++)
+		{
+			
+			
+			///1
+		XMMATRIX t_RoteraRuntEgenCirkelPlatsen = XMMatrixTranslation(0,0,m_BigCircleOffset);//drar ut den
+		XMMATRIX t_Rotation = XMMatrixRotationY(XM_PIDIV2*p_CameraLogicID);//roterar så att det e din cirkel
+		t_RoteraRuntEgenCirkelPlatsen = XMMatrixMultiply(t_RoteraRuntEgenCirkelPlatsen,t_Rotation);
+
+
+
+		//2
+		XMMATRIX t_Tempura = XMMatrixTranslation(0,0,m_CircleOffset);//sätter ut dem i en mindre cirkel o sprider ut dom
+		t_Rotation = XMMatrixRotationY((((((2*XM_PI)/m_SelectionShips[p_CameraLogicID].size())))*p_LookingAtWhatVehicle)+(((((2*XM_PI)/m_SelectionShips[p_CameraLogicID].size())))*i));/// ¨^^^^^^^^^^^^^^^
+		t_Tempura = XMMatrixMultiply(t_Tempura,t_Rotation);
+		t_RoteraRuntEgenCirkelPlatsen= XMMatrixMultiply(t_Tempura,t_RoteraRuntEgenCirkelPlatsen);
+
+		//m_GraphicEngine->MoveObject(m_SelectionShips[p_CameraLogicID][i],t_RoteraRuntEgenCirkelPlatsen);
+
+
+
+
+
+
+
+
+		XMMATRIX t_Rotii = XMMatrixRotationY(p_DeltaTime);
+		
+				//XMMATRIX t_Tempii = XMMatrixMultiply(t_Rotii,XMLoadFloat4x4(&m_SelectionShipMatrix[p_CameraLogicID][i]));
+				XMMATRIX t_Tempii = XMMatrixMultiply(t_Rotii,t_RoteraRuntEgenCirkelPlatsen);
+
+				//XMFLOAT4X4 t_Storii;
+				//XMStoreFloat4x4(&t_Storii,t_Tempii);
+				//m_SelectionShipMatrix[p_CameraLogicID][i] = t_Storii;
+		
+				//t_Tempii = XMMatrixMultiply(t_RoteraRuntEgenCirkelPlatsen,t_Tempii);
+
+				m_GraphicEngine->MoveObject(m_SelectionShips[p_CameraLogicID][i],t_Tempii);
+		
+		
+		
+	
+
+
+
+		}
+	}
+}
+void GraphicHandle::UpdateCameraVehicleSelectionSeperate(UINT p_CameraLogicID, float p_LookingAtWhatVehicle)
 {
 	if (p_CameraLogicID < 4)
 	{
@@ -254,14 +307,16 @@ void GraphicHandle::UpdateCameraVehicleSelection(UINT p_CameraLogicID, float p_L
 
 	}
 }
-void GraphicHandle::UpdateCameraVehicleSelectionSeperate(UINT p_CameraLogicID, float p_LookingAtWhatVehicle)
+void GraphicHandle::InitializeJoinScreenCamera(UINT p_CameraLogicID)
 {
 	if (p_CameraLogicID < 4)
 	{	
-				/////////////////////////////////fungerande
-		XMMATRIX t_Tempura = XMMatrixTranslation(0,1,40);
-		XMMATRIX t_Rot = XMMatrixRotationY(2*XM_PI/m_MeshShips.size()*p_LookingAtWhatVehicle);
-		XMMATRIX t_Rot2 = XMMatrixRotationX(-XM_PIDIV4/10);
+		/////////////////////////////////fungerande
+		//XMMATRIX t_Tempura = XMMatrixTranslation(0,1,25*m_MeshShips.size());
+		XMMATRIX t_Tempura = XMMatrixTranslation(0,1,50);
+		//XMMATRIX t_Rot = XMMatrixRotationY(2*XM_PI/m_MeshShips.size());
+		XMMATRIX t_Rot = XMMatrixRotationY(XM_PIDIV2*p_CameraLogicID*3);
+		XMMATRIX t_Rot2 = XMMatrixRotationX(-XM_PIDIV4/4);
 
 		t_Rot = XMMatrixMultiply(t_Rot,t_Rot2);//sätter ihop rotationerna
 		t_Rot = XMMatrixMultiply(t_Rot, t_Tempura);//roterar matrisen
@@ -276,16 +331,15 @@ void GraphicHandle::UpdateCameraVehicleSelectionSeperate(UINT p_CameraLogicID, f
 		m_GraphicEngine->SetCamera(m_CameraID[p_CameraLogicID],t_Rot);
 		/////////////////////////////////////////////////////////////////////////////////
 
-
 	}
 }
-void GraphicHandle::SetCameraVehicleSelection(UINT p_CameraLogicID)
+void GraphicHandle::SetVehicleSelectionCamera(UINT p_CameraLogicID)
 {
-	if (p_CameraLogicID < 4)
+		if (p_CameraLogicID < 4)
 	{	
 		/////////////////////////////////fungerande
 		//XMMATRIX t_Tempura = XMMatrixTranslation(0,1,25*m_MeshShips.size());
-		XMMATRIX t_Tempura = XMMatrixTranslation(0,1,50);
+		XMMATRIX t_Tempura = XMMatrixTranslation(0,2.5,m_BigCircleOffset+m_CircleOffset+12.5);
 		//XMMATRIX t_Rot = XMMatrixRotationY(2*XM_PI/m_MeshShips.size());
 		XMMATRIX t_Rot = XMMatrixRotationY(XM_PIDIV2*p_CameraLogicID*3);
 		XMMATRIX t_Rot2 = XMMatrixRotationX(-XM_PIDIV4/4);
