@@ -20,7 +20,7 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4],string p_tauntSound[
 	vector<XMFLOAT3> t_centerSplinePositions = m_mapLoader->LoadLogicalObj(p_mapName+"/CenterSpline.obj").at(0);
 	m_graphicHandle->CreateMapLights(t_centerSplinePositions);
 
-	m_lastNodeIndex = m_mapNodes->at(m_mapNodes->size()-1)->m_Index;
+	m_lastNodeIndex = m_mapNodes->at(m_mapNodes->size()-5)->m_Index;
 	vector<XMFLOAT4X4> t_shipWorldMatrices;
 	vector<UINT> t_colors;
 	vector<UINT> t_whichVehicles;
@@ -145,41 +145,37 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 			return PAUSE_SCREEN;
 		}
 		//first, semi-underdeveloped win condition check
-		if (m_lastNodeIndex != m_players[i]->GetCurrentMapNode()->m_Index)
+		if (m_lastNodeIndex <= m_players[i]->GetCurrentMapNode()->m_Index&&!m_players[i]->HasFinished())
 		{
-			//i don't even..
-
-			if (m_vibrationTimer[i] > 0)
-			{
-				UpdateVibration(p_dt,i,p_userCMDS->at(i));
-			}
-			
-			//ACTUAL PROPER UPDATE BEGINS
-			int t_playerUpdateResult = UpdatePlayer(i, p_dt, p_userCMDS->at(i));
-			if(t_playerUpdateResult ==1) //checks if a new wall is placed
-			{
-				PlacePlayerWall(i);
-			}
-
-			switch(m_state)
-			{
-			case COUNTDOWN:
-				PreUpdate(p_dt, p_userCMDS,i);
-				break;
-			case PLAY:
-				UpdatePlayerRacePosition(i);
-				DrawPlayerHUD(i);
-				UpdateSounds(i,p_userCMDS);
-				break;
-			}
-
-		}
-		else
-		{
+			m_players[i]->Finish();
 			m_audioManager->RemoveSpecificSound(m_engineSound[i]);
-			m_players[i]->SetFinalDirection();
 			t_finnished++;
+
 		}
+		if (m_vibrationTimer[i] > 0)
+		{
+			UpdateVibration(p_dt,i,p_userCMDS->at(i));
+		}
+
+		//ACTUAL PROPER UPDATE BEGINS
+		int t_playerUpdateResult = UpdatePlayer(i, p_dt, p_userCMDS->at(i));
+		if(t_playerUpdateResult ==1) //checks if a new wall is placed
+		{
+			PlacePlayerWall(i);
+		}
+
+		switch(m_state)
+		{
+		case COUNTDOWN:
+			PreUpdate(p_dt, p_userCMDS,i);
+			break;
+		case PLAY:
+			UpdatePlayerRacePosition(i);
+			DrawPlayerHUD(i);
+			UpdateSounds(i,p_userCMDS);
+			break;
+		}
+
 	}
 	switch(m_state)
 	{
@@ -198,7 +194,7 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 	}
 	if (t_finnished == m_players.size())
 	{
-		return GOAL_SCREEN;
+		//return GOAL_SCREEN;
 	}
 	return GAME_SCREEN;
 }

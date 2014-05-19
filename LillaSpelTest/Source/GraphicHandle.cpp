@@ -74,26 +74,33 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	for (int i = 0; i < m_Levels.size(); i++)
 	{
 		m_MeshLevels.push_back(InitializeObj(p_LevelNames[i]));
-
-		std::string t_TempStringForWall;
+		
+		std::string t_TempString;
 		//for (int k = 0; k < length; k++) //så vi kan ha flera olika väggar per bana.
 		//{
 			
-		t_TempStringForWall =p_LevelNames[i];
-		t_TempStringForWall += "/LevelWalls";
-		m_MeshLevelWall.push_back(InitializeObj(t_TempStringForWall));
+		t_TempString =p_LevelNames[i];
+		t_TempString += "/LevelWalls";
+		m_MeshLevelWall.push_back(InitializeObj(t_TempString));
 		/////här e för att fixa in levelskiten men den fackar ur bror vettefan varför kan vara en grej i obj att en skit hade 1 rad med shit men borde inte göra så att skiten fackar ur................................................................................................................................................................................................../////////////m_MeshLevelWall.push_back(InitializeObj(t_TempStringForWall));
 		//}
+		t_TempString =p_LevelNames[i];
+		t_TempString += "/LevelBoost";
+		m_MeshLevelBoost.push_back(InitializeObj(t_TempString));
+
+
 
 	}
 
 	////skapar object för att rita ut för levelselection
 	m_Levels.resize(m_MeshLevels.size(),0);
 	m_LevelWalls.resize(m_MeshLevels.size(),0);
+	m_LevelBoosts.resize(m_MeshLevels.size(),0);
 	for (int i = 0; i < m_MeshLevels.size(); i++)
 	{
 		CreateDrawObject(m_MeshLevels[i],XMMatrixIdentity(),XMFLOAT3(1,1,1),m_Levels[i],false);
 		CreateDrawObject(m_MeshLevelWall[i],XMMatrixIdentity(),XMFLOAT3(1,1,1),m_LevelWalls[i],false);
+		CreateDrawObject(m_MeshLevelBoost[i],XMMatrixIdentity(),XMFLOAT3(1,1,1),m_LevelBoosts[i],false);
 
 	}
 
@@ -183,6 +190,8 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	{
 	SetSelectionColour(i, 0);
 	}
+
+
 }
 
 void GraphicHandle::ChangeLevelSelection(int p_WhatLevel)
@@ -192,11 +201,13 @@ void GraphicHandle::ChangeLevelSelection(int p_WhatLevel)
 	XMFLOAT3 t_TempColour = XMFLOAT3(1,1,1);
 	m_GraphicEngine->AddObjectToDrawing(m_Levels[p_WhatLevel]);
 	m_GraphicEngine->AddObjectToDrawing(m_LevelWalls[p_WhatLevel]);
+	m_GraphicEngine->AddObjectToDrawing(m_LevelBoosts[p_WhatLevel]);
 
 	if( m_WhatLevelBefore!=p_WhatLevel)
 	{
 		m_GraphicEngine->RemoveObjectFromDrawing(m_Levels[m_WhatLevelBefore]);
 		m_GraphicEngine->RemoveObjectFromDrawing(m_LevelWalls[m_WhatLevelBefore]);
+		m_GraphicEngine->RemoveObjectFromDrawing(m_LevelBoosts[m_WhatLevelBefore]);
 	}
 	m_WhatLevelBefore=p_WhatLevel;
 }
@@ -646,6 +657,7 @@ void GraphicHandle::AddLevelDraw(int p_AddLevelDraw)
 {
 	m_GraphicEngine->AddObjectToDrawing(m_Levels[p_AddLevelDraw]);
 	m_GraphicEngine->AddObjectToDrawing(m_LevelWalls[p_AddLevelDraw]);
+	m_GraphicEngine->AddObjectToDrawing(m_LevelBoosts[p_AddLevelDraw]);
 	//m_GraphicEngine->AddObjectToDrawing(m_Mesh);//ta bort skit ffs. levelväggarna o lägg till här iaf
 }
 void GraphicHandle::RemoveSelectionDraw()
@@ -691,6 +703,7 @@ void GraphicHandle::RemovePlayers()
 		RemoveObject(m_Player[i]);
 	}
 }
+
 //light functions
 
 void GraphicHandle::CreateMapLights(std::vector<XMFLOAT3> p_CenterSpline)

@@ -11,7 +11,7 @@
 
 using namespace DirectX;
 
-enum PlayerState{NORMAL,DEAD,IMMORTAL, STARTING};
+enum PlayerState{NORMAL,DEAD,IMMORTAL, STARTING, FINISHING};
 
 #define DEATH_TIME 2
 #define IMMORTAL_TIME 2
@@ -101,8 +101,10 @@ private:
 
 	float m_cameraAngle;
 	float m_cameraFollowSpeed;
+
 	float m_cameraTrailDistanceUp;
 	float m_cameraTrailDistanceTarget;
+	float m_cameraTrailDistanceRight;
 
 	float m_deathShakeMaxIntensity;
 	float m_deathShakeIntensityDrop;
@@ -125,6 +127,17 @@ private:
 	float m_abilityCooldown;
 	float m_shockWaveCooldown;
 	float m_gravityShiftCooldown;
+
+	float m_finishProgress;
+	float m_finishSpeed;
+	float m_finishAngle;
+	int m_finalDirection;
+	float m_finishCameraFollowSpeed;
+	float m_minFinishAngle;
+	float m_maxFinishAngle;
+	float m_finishSlideSpeed;
+	float m_finishSlideSpeedCoefficient;
+
 
 
 	//unused but perhaps needed stuff
@@ -165,17 +178,19 @@ public:
 	float GetHudBoosterInfo();
 	float GetHudWallInfo();
 	bool GetImmortal();
+	bool HasFinished();
 	int GetPlayerIndex();
 	int GetNrOfAPressedAtStart();
 	float GetSpeed();
 	float GetDeltaAngle();
 	std::vector<PlayerWall*>* GetPlacedWalls();
 	bool AbilityReady();
-	
+
 
 	//modifiers
 	void Die();
 	void Start();
+	void Finish();
 	void SetSpeed(float p_speed);
 	void StartCollisionAftermath(float p_sideForce, float p_targetForce, int p_sideDirection, int p_targetDirection);
 	void StartShockWaveAftermath(int p_sideDirection, int p_targetDirection, float p_zValue, float p_xValue);
@@ -187,7 +202,7 @@ public:
 	void SetShockwaveCooldown();
 
 private:
-	
+
 	void CleanUp();
 
 	//Update methods
@@ -198,7 +213,7 @@ private:
 	void MovementAlongLogicalMap(float p_dt);
 	void SetDirection();
 	void FixWorldPosition();
-	
+
 	void UpdateCollisionBox();
 	int WallPlacement(float p_dt);
 	void UpdateTimers(float p_dt);
@@ -206,7 +221,7 @@ private:
 	//Help methods
 	void FixUpVectorRotation(float p_angle);
 	void FixOffsetFromCenterSpline();
-	
+
 	void PlaceWall();
 	void CollisionAftermath(float p_dt);
 	void UpdateWorldMatrix();
