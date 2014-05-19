@@ -2,16 +2,15 @@
 
 cbuffer CPerEffectBuffer	:register(b0)
 {
-	float3 spawnPosition;
-	float deltaTime;
+	float deltaTime; //done
+	float spawnAmount; //done
+	float particleLifeSpan; //done
+	float spawnTimer; //done
 
-	float particleLifeSpan;
-	float spawnTime;
-
-	float2 initialSize;
-
-	float initSpawnAmount;
-	float3 emitDirection;
+	float2 initialSize; //done
+	float2 fillers56;
+		
+	matrix worldMatrix;
 }
 
 
@@ -51,15 +50,16 @@ void GS( point Particle input[1],  inout PointStream< Particle > ptStream )
 
 	if (origin.Type > 0)
 	{
-		if (t > spawnTime) //may swap this to something
+		if (t > spawnTimer) //may swap this to something
 		{
+			float3 spawnPos = mul(float4(input[0].InitialPosW, 1), worldMatrix).xyz;
 			for (int i = 0; i < 1; i++) //something
 			{
 				//float3 random = 50*RandUnitVec3((float)i/(input[0].InitialPosW.x/10));
 				
 				Particle p;
-				p.InitialPosW = spawnPosition;
-				p.InitialVelW = float3(0,0,0)/*emitDirection + vel + random*/;
+				p.InitialPosW = spawnPos;
+				p.InitialVelW = float3(0,0,0)/* + vel + random*/;
 				p.SizeW = initialSize;
 				p.Age = 0.0f;
 				p.Lifespan = particleLifeSpan;

@@ -920,7 +920,7 @@ HRESULT GraphicEngine::MoveObject(UINT p_ObjectID, CXMMATRIX p_Matrix)
 		 //update particle effect..
 		 for (int i = 0; i < m_DrawObjects[p_ObjectID]->particleSystem.size(); i++)
 		 {
-			 m_ParticleSystem->UpdatePositionOnCBsetup(m_DrawObjects[p_ObjectID]->particleSystem[i], p_Matrix);
+			 m_ParticleSystem->UpdateParticleSystemMatrix(m_DrawObjects[p_ObjectID]->particleSystem[i], p_Matrix);
 		 }
 		 
 
@@ -1695,15 +1695,11 @@ void GraphicEngine::Cleanup()
 //==========Particle Effect functions========//
 ///////////////////////////////////////////////
 
-void GraphicEngine::CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName, UINT p_StartBufferID, XMFLOAT3 p_WorldPos, UINT p_Data, UINT p_MaxParticles, XMFLOAT3 p_Color ,UINT &o_SystemID )
+void GraphicEngine::CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName, UINT p_StartBufferID, UINT p_MaxParticles, XMFLOAT3 p_Color , float p_SpawnTimer, float p_ParticleLifeSpan, float p_SpawnAmount, XMFLOAT2 p_ParticleInitSize, CXMMATRIX p_WorldMatrix, UINT &o_SystemID )
 {
-	m_ParticleSystem->CreateParticleSystem(p_EffectType, p_FileName, p_StartBufferID, p_WorldPos, p_Data, p_MaxParticles, p_Color, o_SystemID);
+	m_ParticleSystem->CreateParticleSystem(p_EffectType, p_FileName, p_StartBufferID, p_MaxParticles, p_Color, p_SpawnTimer, p_ParticleLifeSpan, p_SpawnAmount, p_ParticleInitSize, p_WorldMatrix, o_SystemID);
 }
 
-void GraphicEngine::CreateParticleCBSetup(XMFLOAT3 p_ObjectPosition, XMFLOAT3 p_EmitDirection, float p_InitSpawnAmount, float p_ParticleLifeSpan, XMFLOAT2 p_InitialSize, float p_SpawnTime,UINT &o_DataID)
-{
-	m_ParticleSystem->CreateCBsetup( p_ObjectPosition, p_EmitDirection, p_InitSpawnAmount, p_ParticleLifeSpan, p_InitialSize, p_SpawnTime, o_DataID);
-}
 
 void GraphicEngine::UpdateParticleCB(UINT p_DataID, XMFLOAT3 p_WorldAcceler, float p_FlareEmitNumber, XMFLOAT3 p_EmitDirection, float p_InitSpawnAmount, float p_ParticleLifeSpan, XMFLOAT2 p_InitialSize)
 {

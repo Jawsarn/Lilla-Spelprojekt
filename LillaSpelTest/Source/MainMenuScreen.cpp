@@ -10,6 +10,7 @@ MainMenuScreen::MainMenuScreen(void)
 MainMenuScreen::MainMenuScreen(GraphicHandle* p_graphicsHandle, AudioManager* p_audioManager)
 	:MenuScreen(nullptr,p_graphicsHandle,p_audioManager)
 {
+	//Menu
 	AddButton("Start Game", DirectX::XMFLOAT2(0,0.5),0.5,1,L"startgame1.dds",L"StartGame2.dds");
 	AddButton("Options",DirectX::XMFLOAT2(0,0),0.5,1,L"Options1.dds",L"Options2.dds");
 	AddButton("Quit",DirectX::XMFLOAT2(0,-0.5),0.5,1,L"Quit1.dds",L"Quit2.dds");

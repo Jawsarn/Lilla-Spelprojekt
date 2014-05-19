@@ -18,10 +18,9 @@ public:
 	HRESULT Initialize( ID3D11Device* p_Device, ID3D11DeviceContext* p_DeviceContext, ID3D11DepthStencilState* p_NoWriteDepthState, ID3D11DepthStencilState* p_OffDepthState, ID3D11BlendState* p_OnBlendState, ID3D11BlendState* p_OffBlendState, ID3D11Buffer* p_PerFrameBuffer ,ID3D11Buffer* p_PerObjectBuffer );
 
 	HRESULT CreateInitParticlesBuffer(std::vector<Particle> p_StartParticles, UINT &o_BufferID);
-	void CreateCBsetup(XMFLOAT3 p_SpawnPosition, XMFLOAT3 emitDirection, float initSpawnAmount, float particleLifeSpan, XMFLOAT2 initialSize, float p_SpawnTime, UINT &dataID);
-	HRESULT CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName , UINT p_StartBufferID, XMFLOAT3 p_ObjectPosition, UINT p_DataID, UINT p_MaxParticles, XMFLOAT3 p_Color, UINT &systemID);
+	HRESULT ParticleSystem::CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName , UINT p_StartBufferID, UINT p_MaxParticles, XMFLOAT3 p_Color, float p_SpawnTimer , float p_ParticleLifeSpan, float p_SpawnAmount, XMFLOAT2 p_ParticleInitSize, CXMMATRIX p_WorldMatrix,UINT &systemID);
 //	void Reset(UINT systemID);
-	HRESULT UpdatePositionOnCBsetup(UINT p_ParticleSystemID, CXMMATRIX p_WorldMatrix);
+	HRESULT UpdateParticleSystemMatrix(UINT p_ParticleSystemID, CXMMATRIX p_WorldMatrix);
 	void Draw(float dt);
 
 
@@ -84,31 +83,40 @@ private:
 		UINT startBufferID;
 		UINT drawVertexBufferID;
 		UINT updateVertexBufferID;
-		XMFLOAT3 objectPosition;
 		XMFLOAT3 color;
-		UINT perEffectDataID; //maybe place data  here anyway?
 		bool firstrun;
+
+
+		//all data here
+		float spawnTimer;
+		float particleLifeSpan;
+		float spawnAmount;
+		XMFLOAT2 particleInitSize;
+
+		XMFLOAT4X4 worldMatrix;
+
 		// add here
 	};
 
 
 	struct CPerEffectBuffer
 	{
-		// for when the emit position/direction is varying
-		XMFLOAT3 spawnPosition;
-		float deltaTime;
+		float deltaTime; //done
+		float spawnAmount; //done
+		float particleLifeSpan; //done
+		float spawnTimer; //done
 
-		float particleLifeSpan;
-		float spawnTime;
+		XMFLOAT2 initialSize; //done
+		XMFLOAT2 fillers56;
 
-		XMFLOAT2 initialSize;
-
-		
-		float initSpawnAmount;
-		XMFLOAT3 emitDirection;
-		
+		XMMATRIX worldMatrix;
 	};
 
+	/*
+
+	maybe go with xmmatrix world , and keep the positions for emitters cause they're not visisble =S
+
+	*/
 
 
 
@@ -117,7 +125,6 @@ private:
 
 	std::vector<ParticleEffectSystem> m_ParticleEffectSystems;
 
-	std::vector<CPerEffectBuffer> m_PerEffectData;	
 
 	//Buffers?
 	ID3D11Buffer*				m_PerEffectBuffer;
