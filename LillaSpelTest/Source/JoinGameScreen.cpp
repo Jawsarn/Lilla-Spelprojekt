@@ -62,6 +62,7 @@ int JoinGameScreen::Update(float p_dt,std::vector<UserCMD>* userCMD)
 				{
 					m_playerStatus[i] = (PlayerStatus)(m_playerStatus[i]+1);
 					m_graphicHandle->UseHud(i,m_hudIDs[m_playerStatus[i]]);
+					m_graphicHandle->SetVehicleSelectionCamera(i);
 				}
 				
 			}
@@ -74,7 +75,7 @@ int JoinGameScreen::Update(float p_dt,std::vector<UserCMD>* userCMD)
 					m_graphicHandle->UseHud(i,m_hudIDs[m_playerStatus[i]]);
 					if (m_playerStatus[i] == DISCONNECTED)
 					{
-						m_graphicHandle->SetCameraVehicleSelection(i);
+						m_graphicHandle->InitializeJoinScreenCamera(i);
 					}
 				}
 			}
@@ -124,7 +125,7 @@ void JoinGameScreen::Initialize()
 	m_graphicHandle ->SetViewportAmount(4);
 	for (int i = 0; i < 4; i++)
 	{
-		m_graphicHandle->SetCameraVehicleSelection(i);
+		m_graphicHandle->InitializeJoinScreenCamera(i);
 		m_graphicHandle->UseHud(i,m_hudIDs[DISCONNECTED]);
 		m_playerStatus[i]=DISCONNECTED;
 	}
@@ -155,7 +156,6 @@ void JoinGameScreen::MakeHud(const wchar_t* p_textureNames, int p_hudIndex)
 void JoinGameScreen::SaveInfo()
 {
 	m_graphicHandle->RemoveSelectionDraw();
-	m_graphicHandle->AddLevelDraw(m_gameInfo->map);
 	for (int i = 0; i < 4; i++)
 	{
 		if (m_playerStatus[i] != DISCONNECTED)

@@ -82,6 +82,7 @@ public:
 	void UpdateCameraVehicleSelectionSeperate(UINT p_CameraLogicID, float p_LookingAtWhatVehicle);
 	void UpdateCameraVehicleSelection(UINT p_CameraLogicID,float p_LookingAtWhatVehicle,float p_DeltaTime);
 	void JohnSetCamera(CXMMATRIX p_World, UINT p_CameraLogicID);
+	void SetVehicleSelectionCamera(UINT p_CameraLogicID);
 	int GetAmountOfVehicles();
 	int GetAmountOfLevels();
 	int GetAmountOfColours();
@@ -90,7 +91,7 @@ public:
 	void SetColourAndVehicle(std::vector<UINT> p_PlayerColour,std::vector<UINT> p_PlayerVehicle);
 	void ChangeTexture(UINT p_HUDIDObj);
 	void SetAmountOfPlayers(int p_NrOfPlayers);
-	void SetCameraVehicleSelection(UINT p_CameraLogicID);
+	void InitializeJoinScreenCamera(UINT p_CameraLogicID);
 	/*void InitializeShip(std::string p_ShipStringName, UINT p_TextureDiffuseSpec, UINT p_TextureNormGlow);
 	void InitializeLevel(std::string p_LevelStringName, UINT p_Texture,UINT p_TextureNormGlow);
 	void InitializeWall(std::string p_PlayerWallStringName, UINT p_Texture,UINT p_TextureNormGlow);*/

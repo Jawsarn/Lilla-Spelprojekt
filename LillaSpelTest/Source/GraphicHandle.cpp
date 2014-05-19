@@ -307,13 +307,39 @@ void GraphicHandle::UpdateCameraVehicleSelectionSeperate(UINT p_CameraLogicID, f
 
 	}
 }
-void GraphicHandle::SetCameraVehicleSelection(UINT p_CameraLogicID)
+void GraphicHandle::InitializeJoinScreenCamera(UINT p_CameraLogicID)
 {
 	if (p_CameraLogicID < 4)
 	{	
 		/////////////////////////////////fungerande
 		//XMMATRIX t_Tempura = XMMatrixTranslation(0,1,25*m_MeshShips.size());
 		XMMATRIX t_Tempura = XMMatrixTranslation(0,1,50);
+		//XMMATRIX t_Rot = XMMatrixRotationY(2*XM_PI/m_MeshShips.size());
+		XMMATRIX t_Rot = XMMatrixRotationY(XM_PIDIV2*p_CameraLogicID*3);
+		XMMATRIX t_Rot2 = XMMatrixRotationX(-XM_PIDIV4/4);
+
+		t_Rot = XMMatrixMultiply(t_Rot,t_Rot2);//sätter ihop rotationerna
+		t_Rot = XMMatrixMultiply(t_Rot, t_Tempura);//roterar matrisen
+
+		t_Tempura = XMMatrixRotationY(XM_PI);//vänder med 180 grader
+
+		t_Rot = XMMatrixMultiply(t_Tempura,t_Rot);//lägger in den sista rotationen
+
+
+		//t_Rot = XMMatrixMultiply(t_Tempura,t_Rot);
+
+		m_GraphicEngine->SetCamera(m_CameraID[p_CameraLogicID],t_Rot);
+		/////////////////////////////////////////////////////////////////////////////////
+
+	}
+}
+void GraphicHandle::SetVehicleSelectionCamera(UINT p_CameraLogicID)
+{
+		if (p_CameraLogicID < 4)
+	{	
+		/////////////////////////////////fungerande
+		//XMMATRIX t_Tempura = XMMatrixTranslation(0,1,25*m_MeshShips.size());
+		XMMATRIX t_Tempura = XMMatrixTranslation(0,2.5,m_BigCircleOffset+m_CircleOffset+12.5);
 		//XMMATRIX t_Rot = XMMatrixRotationY(2*XM_PI/m_MeshShips.size());
 		XMMATRIX t_Rot = XMMatrixRotationY(XM_PIDIV2*p_CameraLogicID*3);
 		XMMATRIX t_Rot2 = XMMatrixRotationX(-XM_PIDIV4/4);
