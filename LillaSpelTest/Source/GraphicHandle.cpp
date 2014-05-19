@@ -354,7 +354,8 @@ void GraphicHandle::CreateShipForGame(std::vector<XMFLOAT4X4> p_PlayerWorld)
 
 		//create a particle system for engines , techis make this sum fun func
 		std::vector<Particle> t_InitParticles;
-		t_InitParticles.push_back(Particle(XMFLOAT3(0,0,0),XMFLOAT3(0,0,0),XMFLOAT2(1,1),0.0f,100.0f,1));
+		t_InitParticles.push_back(Particle(XMFLOAT3(-0.5f,0.3f,0),XMFLOAT3(0,0,0),XMFLOAT2(1,1),0.0f,100.0f,1));
+		t_InitParticles.push_back(Particle(XMFLOAT3(0.5f,0.3f,0),XMFLOAT3(0,0,0),XMFLOAT2(1,1),0.0f,100.0f,1));
 
 		UINT t_InitParticleID1, t_InitParticleID2;
 		m_GraphicEngine->CreateInitParticleBuffer(t_InitParticles, t_InitParticleID1);
@@ -369,11 +370,9 @@ void GraphicHandle::CreateShipForGame(std::vector<XMFLOAT4X4> p_PlayerWorld)
 		
 		XMMATRIX t_Tempus = XMMatrixIdentity();
 		//big ones
-		m_GraphicEngine->CreateParticleSystem(0, L"ParticleEngineCircle.dds",t_InitParticleID1, 1000, m_Colours[m_PlayerColour[i]], 0.1f, 3.0f, 1.0f,XMFLOAT2(0.1f,0.1f), t_Tempus,t_ParticleSystemID );
+		m_GraphicEngine->CreateParticleSystem( 0, L"ParticleEngineCircle.dds",t_InitParticleID1, 1000, m_Colours[m_PlayerColour[i]], 0.05f, 2.0f, 1.0f,XMFLOAT2(0.2f,0.2f), 1.0f, 1.0f, t_Tempus,t_ParticleSystemID );
 		m_GraphicEngine->AddObjectParticleSystem(m_Player[i], t_ParticleSystemID);
 		
-		m_GraphicEngine->CreateParticleSystem(0, L"ParticleEngineCircle.dds",t_InitParticleID2, 1000, m_Colours[m_PlayerColour[i]], 0.1f, 3.0f, 1.0f,XMFLOAT2(0.1f,0.1f), t_Tempus,t_ParticleSystemID );
-		m_GraphicEngine->AddObjectParticleSystem(m_Player[i], t_ParticleSystemID);
 
 		/*
 		m_GraphicEngine->CreateParticleSystem(0, L"ParticleEngineCircle.dds",t_InitParticleID2, XMFLOAT3(-0.5f,0.3f,0), t_ParticleBufferDataID2, 1000, m_Colours[m_PlayerColour[i]], t_ParticleSystemID );

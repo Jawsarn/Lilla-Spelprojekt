@@ -947,6 +947,11 @@ HRESULT GraphicEngine::UpdateDrawObjectColor(UINT p_ObjectID, XMFLOAT3 p_Color)
 
 void GraphicEngine::RemoveObject(UINT p_ObjectID)
 {
+	for (int i = 0; i < m_DrawObjects[p_ObjectID]->particleSystem.size(); i++)
+	{
+		RemoveParticleSystem(m_DrawObjects[p_ObjectID]->particleSystem[i]);
+	}
+
 	delete m_DrawObjects[p_ObjectID];
 	m_DrawObjects[p_ObjectID] = nullptr;
 
@@ -955,6 +960,7 @@ void GraphicEngine::RemoveObject(UINT p_ObjectID)
 	{
 		RemoveObjectFromDrawing(p_ObjectID);
 	}
+	
 }
 
 void GraphicEngine::RemoveObjectFromDrawing(UINT p_ObjectID)
@@ -1047,6 +1053,17 @@ HRESULT GraphicEngine::UpdateDynamicLight(UINT p_LightID, XMFLOAT3 p_Position, X
 	else
 	{
 		return E_FAIL;
+	}
+}
+
+void GraphicEngine::RestLights()
+{
+	m_CurrentNumOfLights = 0;
+	
+	for (int i = 0; i < MAX_NUM_OF_LIGHTS; i++)
+	{
+		m_StaticLights[i].radius = 0.0f;
+
 	}
 }
 
@@ -1695,18 +1712,18 @@ void GraphicEngine::Cleanup()
 //==========Particle Effect functions========//
 ///////////////////////////////////////////////
 
-void GraphicEngine::CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName, UINT p_StartBufferID, UINT p_MaxParticles, XMFLOAT3 p_Color , float p_SpawnTimer, float p_ParticleLifeSpan, float p_SpawnAmount, XMFLOAT2 p_ParticleInitSize, CXMMATRIX p_WorldMatrix, UINT &o_SystemID )
+void GraphicEngine::CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName, UINT p_StartBufferID, UINT p_MaxParticles, XMFLOAT3 p_Color , float p_SpawnTimer, float p_ParticleLifeSpan, float p_SpawnAmount, XMFLOAT2 p_ParticleInitSize, float p_Speed, float p_EngineSpeed, CXMMATRIX p_WorldMatrix, UINT &o_SystemID )
 {
-	m_ParticleSystem->CreateParticleSystem(p_EffectType, p_FileName, p_StartBufferID, p_MaxParticles, p_Color, p_SpawnTimer, p_ParticleLifeSpan, p_SpawnAmount, p_ParticleInitSize, p_WorldMatrix, o_SystemID);
-}
-
-
-void GraphicEngine::UpdateParticleCB(UINT p_DataID, XMFLOAT3 p_WorldAcceler, float p_FlareEmitNumber, XMFLOAT3 p_EmitDirection, float p_InitSpawnAmount, float p_ParticleLifeSpan, XMFLOAT2 p_InitialSize)
-{
-
+	m_ParticleSystem->CreateParticleSystem(p_EffectType, p_FileName, p_StartBufferID, p_MaxParticles, p_Color, p_SpawnTimer, p_ParticleLifeSpan, p_SpawnAmount, p_ParticleInitSize, p_Speed, p_EngineSpeed, p_WorldMatrix, o_SystemID);
 }
 
 void GraphicEngine::CreateInitParticleBuffer(std::vector<Particle> p_StartParticles, UINT &o_BufferID)
 {
 	m_ParticleSystem->CreateInitParticlesBuffer(p_StartParticles, o_BufferID);
 }
+
+void GraphicEngine::RemoveParticleSystem(UINT p_SystemID)
+{
+	m_ParticleSystem->RemoveParticleSystem(p_SystemID);
+}
+

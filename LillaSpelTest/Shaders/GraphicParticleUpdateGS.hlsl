@@ -8,7 +8,8 @@ cbuffer CPerEffectBuffer	:register(b0)
 	float spawnTimer; //done
 
 	float2 initialSize; //done
-	float2 fillers56;
+	float speed;
+	float engineSpeed;
 		
 	matrix worldMatrix;
 }
@@ -53,13 +54,14 @@ void GS( point Particle input[1],  inout PointStream< Particle > ptStream )
 		if (t > spawnTimer) //may swap this to something
 		{
 			float3 spawnPos = mul(float4(input[0].InitialPosW, 1), worldMatrix).xyz;
+			float3 velocity = mul(float4(0,0,-engineSpeed + speed,0), worldMatrix).xyz;
 			for (int i = 0; i < 1; i++) //something
 			{
 				//float3 random = 50*RandUnitVec3((float)i/(input[0].InitialPosW.x/10));
 				
 				Particle p;
 				p.InitialPosW = spawnPos;
-				p.InitialVelW = float3(0,0,0)/* + vel + random*/;
+				p.InitialVelW = velocity/* + vel + random*/;
 				p.SizeW = initialSize;
 				p.Age = 0.0f;
 				p.Lifespan = particleLifeSpan;

@@ -4,6 +4,7 @@
 #include <DirectXMath.h>
 #include "DDSTextureLoader.h"
 #include "GraphicStructs.h"
+#include <map>
 
 #pragma once
 
@@ -18,9 +19,10 @@ public:
 	HRESULT Initialize( ID3D11Device* p_Device, ID3D11DeviceContext* p_DeviceContext, ID3D11DepthStencilState* p_NoWriteDepthState, ID3D11DepthStencilState* p_OffDepthState, ID3D11BlendState* p_OnBlendState, ID3D11BlendState* p_OffBlendState, ID3D11Buffer* p_PerFrameBuffer ,ID3D11Buffer* p_PerObjectBuffer );
 
 	HRESULT CreateInitParticlesBuffer(std::vector<Particle> p_StartParticles, UINT &o_BufferID);
-	HRESULT ParticleSystem::CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName , UINT p_StartBufferID, UINT p_MaxParticles, XMFLOAT3 p_Color, float p_SpawnTimer , float p_ParticleLifeSpan, float p_SpawnAmount, XMFLOAT2 p_ParticleInitSize, CXMMATRIX p_WorldMatrix,UINT &systemID);
+	HRESULT CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName , UINT p_StartBufferID, UINT p_MaxParticles, XMFLOAT3 p_Color, float p_SpawnTimer , float p_ParticleLifeSpan, float p_SpawnAmount, XMFLOAT2 p_ParticleInitSize, float p_Speed, float p_EngineSpeed,CXMMATRIX p_WorldMatrix,UINT &systemID);
 //	void Reset(UINT systemID);
 	HRESULT UpdateParticleSystemMatrix(UINT p_ParticleSystemID, CXMMATRIX p_WorldMatrix);
+	void RemoveParticleSystem(UINT p_SystemID);
 	void Draw(float dt);
 
 
@@ -91,6 +93,8 @@ private:
 		float spawnTimer;
 		float particleLifeSpan;
 		float spawnAmount;
+		float speed;
+		float engineSpeed;
 		XMFLOAT2 particleInitSize;
 
 		XMFLOAT4X4 worldMatrix;
@@ -107,7 +111,8 @@ private:
 		float spawnTimer; //done
 
 		XMFLOAT2 initialSize; //done
-		XMFLOAT2 fillers56;
+		float speed;
+		float engineSpeed;
 
 		XMMATRIX worldMatrix;
 	};
@@ -123,7 +128,7 @@ private:
 
 	std::vector<ParticleShaderProgram> m_ParticleShaderPrograms;
 
-	std::vector<ParticleEffectSystem> m_ParticleEffectSystems;
+	std::map<UINT,ParticleEffectSystem*> m_ParticleEffectSystems;
 
 
 	//Buffers?

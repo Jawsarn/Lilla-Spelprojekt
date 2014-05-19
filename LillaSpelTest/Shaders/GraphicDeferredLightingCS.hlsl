@@ -94,7 +94,7 @@ float3 DirectIllumination(float3 pos, float3 norm , Light light,float inSpec,int
 		return float3(0,0,0);
 	}
 
-	float att = pow(max(0.1, 1.0 - (d / light.radius)), 2);
+	float att = pow(max(0.0f, 1.0 - (d / light.radius)), 2);
 
 	float3 toEye = -pos;
 	float3 v = reflect(-lightVec, norm);

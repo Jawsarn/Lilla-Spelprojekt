@@ -56,6 +56,7 @@ public:
 	void CreateStaticLight(XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius, UINT &o_LightID);
 	HRESULT CreateDynamicLight(XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius, UINT &o_LightID);
 	HRESULT UpdateDynamicLight(UINT p_LightID,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius);
+	void RestLights();
 
 	//hud functions //not yet implemented
 	void CreateHudTemplate(std::vector<UINT> p_ObjectIDs, UINT &o_HudID);
@@ -77,10 +78,10 @@ public:
 	void SetViewportAmount(int p_NumOfViewports);
 
 	//particlesystem functions
-	void CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName, UINT p_StartBufferID, UINT p_MaxParticles, XMFLOAT3 p_Color , float p_SpawnTimer, float p_ParticleLifeSpan, float p_SpawnAmount, XMFLOAT2 p_ParticleInitSize, CXMMATRIX p_WorldMatrix, UINT &o_SystemID );
+	void CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName, UINT p_StartBufferID, UINT p_MaxParticles, XMFLOAT3 p_Color , float p_SpawnTimer, float p_ParticleLifeSpan, float p_SpawnAmount, XMFLOAT2 p_ParticleInitSize, float p_Speed, float p_EngineSpeed, CXMMATRIX p_WorldMatrix, UINT &o_SystemID );
 	void UpdateParticleCB(UINT p_DataID, XMFLOAT3 p_WorldAcceler, float p_FlareEmitNumber, XMFLOAT3 p_EmitDirection, float p_InitSpawnAmount, float p_ParticleLifeSpan, XMFLOAT2 p_InitialSize);
 	void CreateInitParticleBuffer(std::vector<Particle> startParticles, UINT &bufferID);
-	
+	void RemoveParticleSystem(UINT p_SystemID);
 	void LoadPipeTerrain();
 	
 	

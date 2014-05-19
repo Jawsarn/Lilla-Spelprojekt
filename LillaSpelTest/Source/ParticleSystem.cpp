@@ -145,24 +145,26 @@ HRESULT ParticleSystem::CreateShaders()
 	return hr;
 }
 
-HRESULT ParticleSystem::CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName , UINT p_StartBufferID, UINT p_MaxParticles, XMFLOAT3 p_Color, float p_SpawnTimer , float p_ParticleLifeSpan, float p_SpawnAmount, XMFLOAT2 p_ParticleInitSize, CXMMATRIX p_WorldMatrix,UINT &systemID)
+HRESULT ParticleSystem::CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName , UINT p_StartBufferID, UINT p_MaxParticles, XMFLOAT3 p_Color, float p_SpawnTimer , float p_ParticleLifeSpan, float p_SpawnAmount, XMFLOAT2 p_ParticleInitSize, float p_Speed, float p_EngineSpeed,CXMMATRIX p_WorldMatrix,UINT &systemID)
 {
 	HRESULT hr = S_OK;
 
-	ParticleEffectSystem t_NewSystem;
+	ParticleEffectSystem* t_NewSystem = new ParticleEffectSystem();
 
-	t_NewSystem.programID = p_EffectType;
+	t_NewSystem->programID = p_EffectType;
 
 	ID3D11ShaderResourceView* t_NewTexture;
 
 	hr = CreateDDSTextureFromFile(m_Device, p_FileName,nullptr, &t_NewTexture);
 	m_TextureViews.push_back(t_NewTexture);
 
-	t_NewSystem.textureID = m_TextureViews.size() -1;
-	t_NewSystem.startBufferID = p_StartBufferID;
-	t_NewSystem.color = p_Color;
+	t_NewSystem->textureID = m_TextureViews.size() -1;
+	t_NewSystem->startBufferID = p_StartBufferID;
+	t_NewSystem->color = p_Color;
+	t_NewSystem->speed = p_Speed;
+	t_NewSystem->engineSpeed = p_EngineSpeed;
 
-	t_NewSystem.firstrun = true;
+	t_NewSystem->firstrun = true;
 
 	/*
 	//all data here
@@ -173,11 +175,11 @@ HRESULT ParticleSystem::CreateParticleSystem(UINT p_EffectType, const wchar_t * 
 
 	XMFLOAT4X4 worldMatrix;*/
 
-	t_NewSystem.spawnTimer = p_SpawnTimer;
-	t_NewSystem.particleLifeSpan = p_ParticleLifeSpan;
-	t_NewSystem.spawnAmount = p_SpawnAmount;
-	t_NewSystem.particleInitSize = p_ParticleInitSize;
-	XMStoreFloat4x4( &t_NewSystem.worldMatrix, p_WorldMatrix);
+	t_NewSystem->spawnTimer = p_SpawnTimer;
+	t_NewSystem->particleLifeSpan = p_ParticleLifeSpan;
+	t_NewSystem->spawnAmount = p_SpawnAmount;
+	t_NewSystem->particleInitSize = p_ParticleInitSize;
+	XMStoreFloat4x4( &t_NewSystem->worldMatrix, p_WorldMatrix);
 
 	D3D11_BUFFER_DESC t_BufferDesc;
 	t_BufferDesc.ByteWidth = sizeof(Particle)*p_MaxParticles;
@@ -201,12 +203,14 @@ HRESULT ParticleSystem::CreateParticleSystem(UINT p_EffectType, const wchar_t * 
 
 	m_ParticleVertexBuffer.push_back(t_NewBuff);
 
-	t_NewSystem.drawVertexBufferID = (m_ParticleVertexBuffer.size() - 1); //could've put this as a general thing that it was + 1, but for reading purposes I put it as a variable
-	t_NewSystem.updateVertexBufferID = (m_ParticleVertexBuffer.size() -2);
+	t_NewSystem->drawVertexBufferID = (m_ParticleVertexBuffer.size() - 1); //could've put this as a general thing that it was + 1, but for reading purposes I put it as a variable
+	t_NewSystem->updateVertexBufferID = (m_ParticleVertexBuffer.size() -2);
+
+	std::hash<ParticleEffectSystem*> T_Hashi;
+	systemID = T_Hashi(t_NewSystem);
 
 
-	m_ParticleEffectSystems.push_back(t_NewSystem);
-	systemID = m_ParticleEffectSystems.size() - 1;
+	m_ParticleEffectSystems[systemID] = t_NewSystem;
 
 	return hr;
 }
@@ -321,7 +325,7 @@ HRESULT ParticleSystem::UpdateParticleSystemMatrix(UINT p_ParticleSystemID, CXMM
 	HRESULT hr = S_OK;
 
 
-	XMStoreFloat4x4( &m_ParticleEffectSystems[p_ParticleSystemID].worldMatrix, p_WorldMatrix);
+	XMStoreFloat4x4( &m_ParticleEffectSystems[p_ParticleSystemID]->worldMatrix, p_WorldMatrix);
 	
 
 	return hr;
@@ -360,6 +364,10 @@ XMVECTOR ParticleSystem::RandUnitVec3()
 	}
 }
 
+void ParticleSystem::RemoveParticleSystem(UINT p_SystemID)
+{
+	m_ParticleEffectSystems.erase(p_SystemID);
+}
 
 void ParticleSystem::Draw(float dt)
 {
@@ -374,12 +382,12 @@ void ParticleSystem::Draw(float dt)
 
 
 	//old way
-	for (int i = 0; i < m_ParticleEffectSystems.size(); i++)
+	for (std::map<UINT, ParticleEffectSystem*>::iterator it = m_ParticleEffectSystems.begin(); it != m_ParticleEffectSystems.end(); it++)
 	{
-		ParticleEffectSystem t_CurSys = m_ParticleEffectSystems[i];
+		ParticleEffectSystem* t_CurSys = it->second;
 		
 		PerObjectBuffer t_pobj;
-		t_pobj.Color = t_CurSys.color;
+		t_pobj.Color = t_CurSys->color;
 		t_pobj.typeOfObject = 0;
 		t_pobj.World = XMMatrixIdentity();
 
@@ -389,12 +397,13 @@ void ParticleSystem::Draw(float dt)
 
 		CPerEffectBuffer t_Cbpef;
 		t_Cbpef.deltaTime = dt;
-		t_Cbpef.fillers56 = XMFLOAT2(0,0);
-		t_Cbpef.initialSize = t_CurSys.particleInitSize;
-		t_Cbpef.particleLifeSpan = t_CurSys.particleLifeSpan;
-		t_Cbpef.spawnAmount = t_CurSys.spawnAmount;
-		t_Cbpef.spawnTimer = t_CurSys.spawnTimer;
-		t_Cbpef.worldMatrix = XMMatrixTranspose( XMLoadFloat4x4(&t_CurSys.worldMatrix) );
+		t_Cbpef.speed = t_CurSys->speed;
+		t_Cbpef.engineSpeed = t_CurSys->engineSpeed;
+		t_Cbpef.initialSize = t_CurSys->particleInitSize;
+		t_Cbpef.particleLifeSpan = t_CurSys->particleLifeSpan;
+		t_Cbpef.spawnAmount = t_CurSys->spawnAmount;
+		t_Cbpef.spawnTimer = t_CurSys->spawnTimer;
+		t_Cbpef.worldMatrix = XMMatrixTranspose( XMLoadFloat4x4(&t_CurSys->worldMatrix) );
 
 		//m_PerEffectData[t_CurSys.perEffectDataID].deltaTime = dt;
 		m_DeviceContext->UpdateSubresource( m_PerEffectBuffer, 0, nullptr, &t_Cbpef, 0, 0 );
@@ -407,7 +416,7 @@ void ParticleSystem::Draw(float dt)
 		m_DeviceContext->OMSetBlendState(m_BlendOn,t_BlendFactors,0xffffffff);
 
 		//update the particles
-		UpdateParticles(i);
+		UpdateParticles(it->first);
 
 		//now swap buffers
 		ID3D11Buffer* bufferArray[1] = {0};
@@ -415,12 +424,12 @@ void ParticleSystem::Draw(float dt)
 
 		m_DeviceContext->SOSetTargets(1,bufferArray,&offset);
 		//swap buffers
-		std::swap( m_ParticleVertexBuffer[t_CurSys.drawVertexBufferID],m_ParticleVertexBuffer[t_CurSys.updateVertexBufferID]);
+		std::swap( m_ParticleVertexBuffer[t_CurSys->drawVertexBufferID],m_ParticleVertexBuffer[t_CurSys->updateVertexBufferID]);
 
 		//turn on depth with depth check but no write  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NOT FIXED YET
 		m_DeviceContext->OMSetDepthStencilState(m_NoWriteDepthState,0);
 
-		DrawParticles(i);
+		DrawParticles(it->first);
 
 		//turn blend off
 		m_DeviceContext->OMSetBlendState(m_BlendOff, t_BlendFactors,0xffffffff);
@@ -433,7 +442,7 @@ void ParticleSystem::UpdateParticles(UINT id)
 	m_DeviceContext->GSSetConstantBuffers(0, 1, &m_PerEffectBuffer );
 
 	
-	ParticleShaderProgram t_CurSysProgram = m_ParticleShaderPrograms[m_ParticleEffectSystems[id].programID];
+	ParticleShaderProgram t_CurSysProgram = m_ParticleShaderPrograms[m_ParticleEffectSystems[id]->programID];
 	
 	//set shaders
 	m_DeviceContext->VSSetShader(m_VertexShaders[t_CurSysProgram.updateVertexShader],nullptr,0);
@@ -447,23 +456,23 @@ void ParticleSystem::UpdateParticles(UINT id)
 	UINT offset = 0;
 
 	//set the input vertex buffer
-	if(m_ParticleEffectSystems[id].firstrun)
+	if(m_ParticleEffectSystems[id]->firstrun)
 	{
-		m_DeviceContext->IASetVertexBuffers( 0, 1, &m_InitParticleVertexBuffersWithNum[m_ParticleEffectSystems[id].startBufferID].vertexBuffer, &stride, &offset );
+		m_DeviceContext->IASetVertexBuffers( 0, 1, &m_InitParticleVertexBuffersWithNum[m_ParticleEffectSystems[id]->startBufferID].vertexBuffer, &stride, &offset );
 	}
 	else
 	{
-		m_DeviceContext->IASetVertexBuffers( 0, 1, &m_ParticleVertexBuffer[m_ParticleEffectSystems[id].drawVertexBufferID], &stride, &offset );
+		m_DeviceContext->IASetVertexBuffers( 0, 1, &m_ParticleVertexBuffer[m_ParticleEffectSystems[id]->drawVertexBufferID], &stride, &offset );
 	}
 	
 	//set the output vertex buffer
-	m_DeviceContext->SOSetTargets(1, &m_ParticleVertexBuffer[m_ParticleEffectSystems[id].updateVertexBufferID], &offset);
+	m_DeviceContext->SOSetTargets(1, &m_ParticleVertexBuffer[m_ParticleEffectSystems[id]->updateVertexBufferID], &offset);
 
 	//make the draw call based on firstrun
-	if(m_ParticleEffectSystems[id].firstrun)
+	if(m_ParticleEffectSystems[id]->firstrun)
 	{
-		m_DeviceContext->Draw(m_InitParticleVertexBuffersWithNum[m_ParticleEffectSystems[id].startBufferID].numOfVertices, 0);
-		m_ParticleEffectSystems[id].firstrun = false;
+		m_DeviceContext->Draw(m_InitParticleVertexBuffersWithNum[m_ParticleEffectSystems[id]->startBufferID].numOfVertices, 0);
+		m_ParticleEffectSystems[id]->firstrun = false;
 	}
 	else
 	{
@@ -476,7 +485,7 @@ void ParticleSystem::DrawParticles(UINT id)
 	//set buffers right
 	m_DeviceContext->GSSetConstantBuffers(0, 1, &m_PerFrameBuffer);
 	
-	ParticleShaderProgram t_CurSysProgram = m_ParticleShaderPrograms[m_ParticleEffectSystems[id].programID];
+	ParticleShaderProgram t_CurSysProgram = m_ParticleShaderPrograms[m_ParticleEffectSystems[id]->programID];
 	
 	//Set shaders 
 	m_DeviceContext->VSSetShader(m_VertexShaders[t_CurSysProgram.drawVertexShader],nullptr,0);
@@ -484,16 +493,16 @@ void ParticleSystem::DrawParticles(UINT id)
 	m_DeviceContext->PSSetShader(m_PixelShaders[t_CurSysProgram.drawPixelShader],nullptr,0);
 
 	//set input layout
-	m_DeviceContext->IASetInputLayout(m_InputLayouts[m_ParticleShaderPrograms[m_ParticleEffectSystems[id].programID].drawInputLayout]);
+	m_DeviceContext->IASetInputLayout(m_InputLayouts[m_ParticleShaderPrograms[m_ParticleEffectSystems[id]->programID].drawInputLayout]);
 
 	UINT stride = sizeof( Particle );
 	UINT offset = 0;
 
 	//set input vertex buffer
-	m_DeviceContext->IASetVertexBuffers( 0, 1, &m_ParticleVertexBuffer[m_ParticleEffectSystems[id].drawVertexBufferID], &stride, &offset);
+	m_DeviceContext->IASetVertexBuffers( 0, 1, &m_ParticleVertexBuffer[m_ParticleEffectSystems[id]->drawVertexBufferID], &stride, &offset);
 	
 	//update texture
-	m_DeviceContext->PSSetShaderResources(0, 1, &m_TextureViews[m_ParticleEffectSystems[id].textureID]);
+	m_DeviceContext->PSSetShaderResources(0, 1, &m_TextureViews[m_ParticleEffectSystems[id]->textureID]);
 
 	//draw the particles form memory
 	m_DeviceContext->DrawAuto();
