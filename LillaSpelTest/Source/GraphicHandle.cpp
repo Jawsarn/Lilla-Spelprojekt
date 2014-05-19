@@ -216,11 +216,11 @@ void GraphicHandle::UpdateSelectVehicle(float p_DeltaTime, int p_PlayerID)
 
 	for (int i = 0; i < m_SelectionShipMatrix[p_PlayerID].size(); i++)
 	{
-		XMMATRIX t_Tempii = XMMatrixMultiply(t_Rotii,XMLoadFloat4x4(&m_SelectionShipMatrix[p_PlayerID][i]));
-		m_GraphicEngine->MoveObject(m_SelectionShips[p_PlayerID][i],t_Tempii);
-		XMFLOAT4X4 t_Storii;
-		XMStoreFloat4x4(&t_Storii,t_Tempii);
-		m_SelectionShipMatrix[p_PlayerID][i] = t_Storii;
+		//XMMATRIX t_Tempii = XMMatrixMultiply(t_Rotii,XMLoadFloat4x4(&m_SelectionShipMatrix[p_PlayerID][i]));
+		//m_GraphicEngine->MoveObject(m_SelectionShips[p_PlayerID][i],t_Rotii);
+		//XMFLOAT4X4 t_Storii;
+		//XMStoreFloat4x4(&t_Storii,t_Rotii);
+		//m_SelectionShipMatrix[p_PlayerID][i] = t_Storii;
 	}
 
 }
@@ -232,7 +232,7 @@ void GraphicHandle::UpdateCamera(UINT p_CameraLogicID,float p_Walk, float p_Stra
 		m_GraphicEngine->MoveCamera(m_CameraID[p_CameraLogicID],p_Walk,p_Strafe,p_Hover,p_Pitch,p_RotateY);
 	}
 }
-void GraphicHandle::UpdateCameraVehicleSelection(UINT p_CameraLogicID, float p_LookingAtWhatVehicle)
+void GraphicHandle::UpdateCameraVehicleSelection(UINT p_CameraLogicID, float p_LookingAtWhatVehicle,float p_DeltaTime)
 {
 	//m_SelectionShips
 		if (p_CameraLogicID < 4)
@@ -254,14 +254,34 @@ void GraphicHandle::UpdateCameraVehicleSelection(UINT p_CameraLogicID, float p_L
 		t_Tempura = XMMatrixMultiply(t_Tempura,t_Rotation);
 		t_RoteraRuntEgenCirkelPlatsen= XMMatrixMultiply(t_Tempura,t_RoteraRuntEgenCirkelPlatsen);
 
+		//m_GraphicEngine->MoveObject(m_SelectionShips[p_CameraLogicID][i],t_RoteraRuntEgenCirkelPlatsen);
 
-		if (p_LookingAtWhatVehicle==1 ||p_LookingAtWhatVehicle==0||p_LookingAtWhatVehicle==2|| p_LookingAtWhatVehicle==3)
-		{
-			XMFLOAT4X4 t_Tempus;
-			XMStoreFloat4x4(&t_Tempus,t_RoteraRuntEgenCirkelPlatsen);
-			m_SelectionShipMatrix[p_CameraLogicID].at(i)=t_Tempus;
-		}
-		m_GraphicEngine->MoveObject(m_SelectionShips[p_CameraLogicID][i],t_RoteraRuntEgenCirkelPlatsen);
+
+
+
+
+
+
+
+		XMMATRIX t_Rotii = XMMatrixRotationY(p_DeltaTime);
+		
+				//XMMATRIX t_Tempii = XMMatrixMultiply(t_Rotii,XMLoadFloat4x4(&m_SelectionShipMatrix[p_CameraLogicID][i]));
+				XMMATRIX t_Tempii = XMMatrixMultiply(t_Rotii,t_RoteraRuntEgenCirkelPlatsen);
+
+				//XMFLOAT4X4 t_Storii;
+				//XMStoreFloat4x4(&t_Storii,t_Tempii);
+				//m_SelectionShipMatrix[p_CameraLogicID][i] = t_Storii;
+		
+				//t_Tempii = XMMatrixMultiply(t_RoteraRuntEgenCirkelPlatsen,t_Tempii);
+
+				m_GraphicEngine->MoveObject(m_SelectionShips[p_CameraLogicID][i],t_Tempii);
+		
+		
+		
+	
+
+
+
 		}
 	}
 }

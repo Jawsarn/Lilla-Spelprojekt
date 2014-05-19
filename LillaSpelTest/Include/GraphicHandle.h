@@ -80,7 +80,7 @@ public:
 	void ChangeLevelSelection(int p_WhatLevel);
 	void UpdateCameraSelectLevel(int p_WhatLevel,int p_TheRotation);
 	void UpdateCameraVehicleSelectionSeperate(UINT p_CameraLogicID, float p_LookingAtWhatVehicle);
-	void UpdateCameraVehicleSelection(UINT p_CameraLogicID,float p_LookingAtWhatVehicle);
+	void UpdateCameraVehicleSelection(UINT p_CameraLogicID,float p_LookingAtWhatVehicle,float p_DeltaTime);
 	void JohnSetCamera(CXMMATRIX p_World, UINT p_CameraLogicID);
 	int GetAmountOfVehicles();
 	int GetAmountOfLevels();
