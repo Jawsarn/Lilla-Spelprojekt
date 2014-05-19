@@ -1727,3 +1727,7 @@ void GraphicEngine::RemoveParticleSystem(UINT p_SystemID)
 	m_ParticleSystem->RemoveParticleSystem(p_SystemID);
 }
 
+void GraphicEngine::UpdateParticleSystem(UINT p_SystemID, float p_SpawnTimer, float p_ParticleLifespan, XMFLOAT2 p_ParticleInitSize, float p_Speed, float p_EngineSpeed )
+{
+	m_ParticleSystem->UpdateParticleSystem(p_SystemID, p_SpawnTimer, p_ParticleLifespan, p_ParticleInitSize, p_Speed, p_EngineSpeed);
+}

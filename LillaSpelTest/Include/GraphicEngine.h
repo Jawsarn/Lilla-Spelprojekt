@@ -82,7 +82,7 @@ public:
 	void UpdateParticleCB(UINT p_DataID, XMFLOAT3 p_WorldAcceler, float p_FlareEmitNumber, XMFLOAT3 p_EmitDirection, float p_InitSpawnAmount, float p_ParticleLifeSpan, XMFLOAT2 p_InitialSize);
 	void CreateInitParticleBuffer(std::vector<Particle> startParticles, UINT &bufferID);
 	void RemoveParticleSystem(UINT p_SystemID);
-	void LoadPipeTerrain();
+	void GraphicEngine::UpdateParticleSystem(UINT p_SystemID, float p_SpawnTimer, float p_ParticleLifespan, XMFLOAT2 p_ParticleInitSize, float p_Speed, float p_EngineSpeed );
 	
 	
 	

@@ -22,6 +22,7 @@ public:
 	HRESULT CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName , UINT p_StartBufferID, UINT p_MaxParticles, XMFLOAT3 p_Color, float p_SpawnTimer , float p_ParticleLifeSpan, float p_SpawnAmount, XMFLOAT2 p_ParticleInitSize, float p_Speed, float p_EngineSpeed,CXMMATRIX p_WorldMatrix,UINT &systemID);
 //	void Reset(UINT systemID);
 	HRESULT UpdateParticleSystemMatrix(UINT p_ParticleSystemID, CXMMATRIX p_WorldMatrix);
+	void UpdateParticleSystem(UINT p_SystemID, float p_SpawnTimer, float p_ParticleLifespan, XMFLOAT2 p_ParticleInitSize, float p_Speed, float p_EngineSpeed );
 	void RemoveParticleSystem(UINT p_SystemID);
 	void Draw(float dt);
 

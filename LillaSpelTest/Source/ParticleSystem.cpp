@@ -331,6 +331,15 @@ HRESULT ParticleSystem::UpdateParticleSystemMatrix(UINT p_ParticleSystemID, CXMM
 	return hr;
 }
 
+void ParticleSystem::UpdateParticleSystem(UINT p_SystemID, float p_SpawnTimer, float p_ParticleLifespan, XMFLOAT2 p_ParticleInitSize, float p_Speed, float p_EngineSpeed )
+{
+	m_ParticleEffectSystems[p_SystemID]->spawnTimer = p_SpawnTimer;
+	m_ParticleEffectSystems[p_SystemID]->particleLifeSpan = p_ParticleLifespan;
+	m_ParticleEffectSystems[p_SystemID]->particleInitSize = p_ParticleInitSize;
+	m_ParticleEffectSystems[p_SystemID]->speed = p_Speed;
+	m_ParticleEffectSystems[p_SystemID]->engineSpeed = p_EngineSpeed;
+}
+
 float ParticleSystem::RandF()
 {
 	return (float)(rand()) / (float)RAND_MAX;
