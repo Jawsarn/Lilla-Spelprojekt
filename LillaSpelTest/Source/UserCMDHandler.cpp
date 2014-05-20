@@ -99,4 +99,21 @@ void UserCMDHandler::AlterUserCMD(UserCMD& o_userCMD)
 	{
 		o_userCMD.rightBumberPressed = false;
 	}
+	if (state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB)
+	{
+		o_userCMD.leftRetardButtonPressed = true;
+	}
+	else
+	{
+		o_userCMD.leftRetardButtonPressed = false;
+	}
+	if (state.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB)
+	{
+		o_userCMD.rightRetardButtonPressed = true;
+	}
+	else
+	{
+		o_userCMD.rightRetardButtonPressed = false;
+	}
+
 }

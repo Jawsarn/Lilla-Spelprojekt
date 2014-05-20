@@ -12,6 +12,13 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4],string p_tauntSound[
 	m_engineSound[1] = "Engine2.wav";
 	m_engineSound[2] = "Engine3.wav";
 	m_engineSound[3] = "Engine4.wav";
+
+	m_audioManager->CreateSound("countdown.wav");
+	m_audioManager->SetSpecificSoundVolume("countdown.wav",0.1);
+	m_audioManager->CreateSound("go.wav");
+	m_audioManager->SetSpecificSoundVolume("go.wav",0.1);
+	m_audioManager->CreateSound("game2.mp3");
+
 	m_state = COUNTDOWN;
 	m_mapLoader = new MapLoader();
 	m_mapNodes = m_mapLoader->LoadMap(p_mapName);
@@ -20,7 +27,7 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4],string p_tauntSound[
 	vector<XMFLOAT3> t_centerSplinePositions = m_mapLoader->LoadLogicalObj(p_mapName+"/CenterSpline.obj").at(0);
 	m_graphicHandle->CreateMapLights(t_centerSplinePositions);
 
-	m_lastNodeIndex = m_mapNodes->at(m_mapNodes->size()-5)->m_Index;
+	m_lastNodeIndex = m_mapNodes->at(m_mapNodes->size()-15)->m_Index;
 	vector<XMFLOAT4X4> t_shipWorldMatrices;
 	vector<UINT> t_colors;
 	vector<UINT> t_whichVehicles;
@@ -54,7 +61,10 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4],string p_tauntSound[
 
 GameScreen::~GameScreen(void)
 {
+	////Remove sound////
+	m_audioManager->RemoveSpecificSound("game2.mp3");
 	////Remove Graphic Things////
+	m_graphicHandle->RemoveLights();
 	m_graphicHandle->RemoveLevelDraw();
 	m_graphicHandle->RemovePlayers();
 	std::vector<PlayerWall*>* t_playerWalls;
@@ -183,7 +193,7 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 		m_collisionManager->PlayerVsPlayer(m_players);
 		for (int i = 0; i < m_players.size(); i++)
 		{
-			if(!m_players[i]->GetImmortal())
+			if(!m_players[i]->GetImmortal()&&!m_players[i]->HasFinished())
 				CollisionCheck(i, p_dt,p_userCMDS->at(i) );
 		}
 		break;
@@ -235,12 +245,20 @@ void GameScreen::CollisionCheck(int p_currentPlayer, float p_dt, UserCMD& p_user
 		derp++;
 
 	}
-	if(m_collisionManager->PlayerVsObj(m_players[p_currentPlayer]->GetCollisionBox(), m_wallsToCheck)!=-1)    
+	int t_collisionReturn = m_collisionManager->PlayerVsObj(m_players[p_currentPlayer]->GetCollisionBox(), m_wallsToCheck);
+	if(t_collisionReturn==1)    
 	{
 		PlayerDieStaticObj(p_currentPlayer);
 		p_userCMD.controller.Vibrate(30000,30000);
 		m_vibrationTimer[p_currentPlayer] = 0.5;
 		m_audioManager->PlaySpecificSound("crash.wav",false,AUDIO_PLAY_MULTIPLE);
+	}
+	else if(t_collisionReturn==0)
+	{
+		m_players[p_currentPlayer]->PadBoost(p_dt);
+		p_userCMD.controller.Vibrate(60000,0);
+		m_vibrationTimer[p_currentPlayer] = 1.5;
+		//ljud?
 	}
 
 	//player vs playerwall
@@ -330,6 +348,7 @@ void GameScreen::PlaySounds()
 		m_audioManager->PlaySpecificSound(m_engineSound[i],true,AUDIO_ONLY_PLAY_ONE);
 		m_audioManager->PitchSpecificSound(m_engineSound[i],0);
 	}
+	m_audioManager->PlaySpecificSound("game2.mp3",true,AUDIO_ONLY_PLAY_ONE);
 }
 
 void GameScreen::StopSounds()
@@ -338,6 +357,7 @@ void GameScreen::StopSounds()
 	{
 		m_audioManager->StopSpecificSound(m_engineSound[i]);
 	}
+	m_audioManager->PauseSpecificSound("game2.mp3");
 }
 
 void GameScreen::UpdateVibration(float p_dt,int p_player, UserCMD& p_userCMD)

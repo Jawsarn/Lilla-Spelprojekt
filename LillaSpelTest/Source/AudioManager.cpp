@@ -57,7 +57,7 @@ void AudioManager::CreateSound(std::string p_fileName)
 		m_result = m_system->createSound(p_fileName.c_str(), FMOD_DEFAULT,0, &sound);
 
 		m_sounds[p_fileName].sound=sound;
-		m_sounds[p_fileName].volume = 1;
+		m_sounds[p_fileName].volume = -5;
 	}
 
 }
@@ -95,7 +95,15 @@ void AudioManager::PlaySpecificSound(std::string p_soundToPlay, bool p_loop, Aud
 				m_result = m_system->playSound(FMOD_CHANNEL_FREE,m_sounds[p_soundToPlay].sound,false,&m_sounds[p_soundToPlay].channel);
 			}
 		}	
-		SetSpecificSoundVolume(p_soundToPlay,1);
+		if (m_sounds[p_soundToPlay].volume == -5)
+		{
+			SetSpecificSoundVolume(p_soundToPlay,1);
+		}
+		else
+		{
+			SetSpecificSoundVolume(p_soundToPlay,m_sounds[p_soundToPlay].volume);
+		}
+		
 	}
 	else
 	{
@@ -111,6 +119,12 @@ void AudioManager::StopSpecificSound(std::string p_soundToStop)
 {
 	m_sounds[p_soundToStop].channel->stop();
 }
+
+void AudioManager::PauseSpecificSound(std::string p_soundToPause)
+{
+	m_sounds[p_soundToPause].channel->setPaused(true);
+}
+
 
 void AudioManager::SetSpecificSoundVolume(std::string p_soundToIncrease, float p_volumeBetween0and1)
 {
