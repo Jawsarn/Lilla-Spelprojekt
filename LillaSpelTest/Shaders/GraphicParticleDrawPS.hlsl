@@ -33,7 +33,7 @@ float4 PS(GS_OUTPUT input) : SV_TARGET
 	//finalColor = float4(1,1,1,1);
 	finalColor *= float4(Color, 1);
 	
-	finalColor.w -= (input.Age / input.Lifespan);
+	//finalColor.w -= (input.Age / input.Lifespan);
 	
 	
 

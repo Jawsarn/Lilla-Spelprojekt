@@ -177,30 +177,36 @@ struct HudConstantBuffer
 
 struct Particle //change in the input layout
 {
-	XMFLOAT3 InitialPosW;
-	XMFLOAT3 InitialVelW;
+	XMFLOAT3 InitialPosOneW;
+	XMFLOAT3 InitialPosTwoW;
+	XMFLOAT3 ParentVector;
 	XMFLOAT2 SizeW;
-	float Age;
+	float AgeOne;
+	float AgeTwo;
 	float Lifespan;
 	UINT Type;
 	
 	Particle()
 	{}
-	Particle(XMFLOAT3 p_InitPos, XMFLOAT3 p_InitVel, XMFLOAT2 p_SizeW, float p_age, float p_Lifespan, UINT p_Type)
+	Particle(XMFLOAT3 p_InitPos, XMFLOAT3 p_InitVel, XMFLOAT3 p_ParentVector,XMFLOAT2 p_SizeW, float p_AgeOne, float p_AgeTwo,float p_Lifespan, UINT p_Type)
 	{
-		InitialPosW = p_InitPos;
-		InitialVelW = p_InitVel;
+		InitialPosOneW = p_InitPos;
+		InitialPosTwoW = p_InitVel;
+		ParentVector = p_ParentVector;
 		SizeW = p_SizeW;
-		Age = p_age;
+		AgeOne = p_AgeOne;
+		AgeTwo = p_AgeTwo;
 		Lifespan = p_Lifespan;
 		Type = p_Type;
 	}
 	Particle operator=(Particle &p_in)
 	{
-		InitialPosW = p_in.InitialPosW;
-		InitialVelW = p_in.InitialVelW;
+		InitialPosOneW = p_in.InitialPosOneW;
+		InitialPosTwoW = p_in.InitialPosTwoW;
+		ParentVector = p_in.ParentVector;
 		SizeW = p_in.SizeW;
-		Age = p_in.Age;
+		AgeOne = p_in.AgeOne;
+		AgeTwo = p_in.AgeTwo;
 		Lifespan = p_in.Lifespan;
 		Type = p_in.Type;
 	}

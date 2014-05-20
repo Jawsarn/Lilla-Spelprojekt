@@ -2,9 +2,12 @@
 
 struct VS_OUTPUT
 {
-	float3 PosW : POSITION;
+	float3 PosOneW : POSITION0;
+	float3 PosTwoW : POSITION1;
+	float3 ParVector : VECTOR;
 	float2 Size : SIZE;
-	float Age : AGE;
+	float AgeOne : AGE0;
+	float AgeTwo : AGE1;
 	float Lifespan :LIFESPAN;
 	uint Type : TYPE; 
 };
@@ -12,11 +15,13 @@ struct VS_OUTPUT
 VS_OUTPUT VS(Particle vin)
 {
 	VS_OUTPUT vout;
-	float t = vin.Age;
 
 	// constant acceleration equation
-	vout.PosW = /*0.5f*t*t*worldAcceler + */t*vin.InitialVelW + vin.InitialPosW;
-	vout.Age = vin.Age;
+	vout.PosOneW = vin.InitialPosOneW;
+	vout.PosTwoW = vin.InitialPosTwoW;
+	vout.ParVector = vin.ParVector;
+	vout.AgeOne = vin.AgeOne;
+	vout.AgeTwo = vin.AgeTwo;
 	vout.Lifespan = vin.Lifespan;
 	vout.Type = vin.Type;
 	vout.Size = vin.SizeW;

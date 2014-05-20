@@ -19,7 +19,7 @@ public:
 	HRESULT Initialize( ID3D11Device* p_Device, ID3D11DeviceContext* p_DeviceContext, ID3D11DepthStencilState* p_NoWriteDepthState, ID3D11DepthStencilState* p_OffDepthState, ID3D11BlendState* p_OnBlendState, ID3D11BlendState* p_OffBlendState, ID3D11Buffer* p_PerFrameBuffer ,ID3D11Buffer* p_PerObjectBuffer );
 
 	HRESULT CreateInitParticlesBuffer(std::vector<Particle> p_StartParticles, UINT &o_BufferID);
-	HRESULT CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName , UINT p_StartBufferID, UINT p_MaxParticles, XMFLOAT3 p_Color, float p_SpawnTimer , float p_ParticleLifeSpan, float p_SpawnAmount, XMFLOAT2 p_ParticleInitSize, float p_Speed, float p_EngineSpeed,CXMMATRIX p_WorldMatrix,UINT &systemID);
+	HRESULT CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName , UINT p_StartBufferID, UINT p_MaxParticles, XMFLOAT3 p_Color, float p_SpawnTimer , float p_ParticleLifeSpan, float p_SpawnAmount, XMFLOAT2 p_ParticleInitSize, float p_Speed, float p_EngineSpeed, XMFLOAT4 p_EmitPos ,CXMMATRIX p_WorldMatrix,UINT &systemID);
 //	void Reset(UINT systemID);
 	HRESULT UpdateParticleSystemMatrix(UINT p_ParticleSystemID, CXMMATRIX p_WorldMatrix);
 	void UpdateParticleSystem(UINT p_SystemID, float p_SpawnTimer, float p_ParticleLifespan, XMFLOAT2 p_ParticleInitSize, float p_Speed, float p_EngineSpeed );
@@ -97,6 +97,8 @@ private:
 		float speed;
 		float engineSpeed;
 		XMFLOAT2 particleInitSize;
+		
+		XMFLOAT4 emitPosition;
 
 		XMFLOAT4X4 worldMatrix;
 
@@ -114,6 +116,8 @@ private:
 		XMFLOAT2 initialSize; //done
 		float speed;
 		float engineSpeed;
+
+		XMFLOAT4 emitPos;
 
 		XMMATRIX worldMatrix;
 	};
