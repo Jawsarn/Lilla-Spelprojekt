@@ -38,6 +38,10 @@ void MenuScreen::Draw(){}
 void MenuScreen::Initialize()
 {
 	m_audioManager->PlaySpecificSound("menu.mp3",true,AUDIO_ONLY_PLAY_ONE);
+	for (int i = 0; i < 4; i++)
+	{
+		timeSinceLastChange[i] = 0;
+	}
 }
 
 bool MenuScreen::FloatBetweenValues(float floatToCheck, float min, float max)
