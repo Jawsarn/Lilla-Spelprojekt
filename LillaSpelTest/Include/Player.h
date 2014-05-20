@@ -112,6 +112,7 @@ private:
 	float m_deathShakeIntensityDrop;
 
 	bool m_hasWon;
+	int m_lap;
 
 	float m_gravityShiftProgress;
 	bool m_gravityShifting;
@@ -187,6 +188,7 @@ public:
 	float GetDeltaAngle();
 	std::vector<PlayerWall*>* GetPlacedWalls();
 	bool AbilityReady();
+	int CurrentLap();
 
 
 	//modifiers
@@ -203,6 +205,7 @@ public:
 	void SetFinalDirection();
 	void AngleMoveBack();
 	void SetShockwaveCooldown();
+	void NextLap();
 
 private:
 

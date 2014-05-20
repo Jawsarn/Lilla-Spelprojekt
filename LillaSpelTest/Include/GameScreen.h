@@ -24,6 +24,7 @@ private:
 	int m_pauseDudeIndex;
 	float m_timeSpentDuringPreUpdate;
 	int m_preUpdateCountdown;
+	int m_nrOfLaps;
 	GameScreenState m_state;
 public:
 	GameScreen(void);

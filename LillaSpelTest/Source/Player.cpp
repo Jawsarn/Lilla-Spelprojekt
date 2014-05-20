@@ -70,6 +70,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_finishSpeed = 0;
 	m_finishAngle = 0;
 	m_finishSlideSpeed = 0;
+	m_lap = 1;
 
 	////BALANCING VARIABLES
 
@@ -903,6 +904,10 @@ bool Player::AbilityReady()
 	return (m_coolDown<=0);
 }
 
+int Player::CurrentLap()
+{
+	return m_lap;
+}
 
 //Modifiers
 void Player::Die()
@@ -948,6 +953,11 @@ void Player::AngleMoveBack()
 void Player::SetShockwaveCooldown()
 {
 	m_abilityCooldown = m_shockWaveCooldown;
+}
+
+void Player::NextLap()
+{
+	m_lap++;
 }
 
 void Player::Start()

@@ -8,6 +8,7 @@ GameScreen::GameScreen(void)
 GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4],string p_tauntSound[4], std::string p_mapName, int p_numberOfPlayers, GraphicHandle* p_graphicHandle, AudioManager* p_audioManager )
 	:Screen(p_graphicHandle, p_audioManager)
 {
+	m_nrOfLaps = 2;////SILLY HARDCODED TEST VALUE
 	m_engineSound[0] = "Engine1.wav";
 	m_engineSound[1] = "Engine2.wav";
 	m_engineSound[2] = "Engine3.wav";
@@ -156,10 +157,14 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 		//first, semi-underdeveloped win condition check
 		if (m_lastNodeIndex <= m_players[i]->GetCurrentMapNode()->m_Index&&!m_players[i]->HasFinished())
 		{
-			m_players[i]->Finish();
-			m_audioManager->RemoveSpecificSound(m_engineSound[i]);
-			t_finnished++;
-
+			if(m_players[i]->CurrentLap() >= m_nrOfLaps)
+			{
+				m_players[i]->Finish();
+				m_audioManager->RemoveSpecificSound(m_engineSound[i]);
+				t_finnished++;
+			}
+			else
+				m_players[i]->NextLap();
 		}
 		if (m_vibrationTimer[i] > 0)
 		{
