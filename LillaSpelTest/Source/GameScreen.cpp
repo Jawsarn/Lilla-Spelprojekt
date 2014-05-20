@@ -235,12 +235,20 @@ void GameScreen::CollisionCheck(int p_currentPlayer, float p_dt, UserCMD& p_user
 		derp++;
 
 	}
-	if(m_collisionManager->PlayerVsObj(m_players[p_currentPlayer]->GetCollisionBox(), m_wallsToCheck)!=-1)    
+	int t_collisionReturn = m_collisionManager->PlayerVsObj(m_players[p_currentPlayer]->GetCollisionBox(), m_wallsToCheck);
+	if(t_collisionReturn==1)    
 	{
 		PlayerDieStaticObj(p_currentPlayer);
 		p_userCMD.controller.Vibrate(30000,30000);
 		m_vibrationTimer[p_currentPlayer] = 0.5;
 		m_audioManager->PlaySpecificSound("crash.wav",false,AUDIO_PLAY_MULTIPLE);
+	}
+	else if(t_collisionReturn==0)
+	{
+		//setplayerspeed
+		p_userCMD.controller.Vibrate(60000,0);
+		m_vibrationTimer[p_currentPlayer] = 1.5;
+		//ljud?
 	}
 
 	//player vs playerwall
