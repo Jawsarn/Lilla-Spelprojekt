@@ -172,26 +172,38 @@ void JoinGameScreen::ModellChanger(int i, float p_dt, std::vector<UserCMD>* user
 {
 
 	
-	if (timeSinceLastChange[i] < 0.5 && m_modellIncrease[i]!=0)
+	if ( m_modellIncrease[i]!=0)
 	{
-		if (m_modellIncrease[i] == 1)
+		if (m_modellIncrease[i] > 0)
 		{
-			m_whatVehicleToLookAt[i] = (m_modell[i]-1)+timeSinceLastChange[i]*2;
+			m_whatVehicleToLookAt[i] = (m_modell[i]-1)+m_modellIncrease[i]*2;
+			m_modellIncrease[i]+=p_dt;
+			if (m_whatVehicleToLookAt[i]>=m_modell[i])
+			{
+				m_whatVehicleToLookAt[i] = m_modell[i];
+				m_modellIncrease[i] = 0;
+			}
 		}
-		else if (m_modellIncrease[i] == -1)
+		else if (m_modellIncrease[i] < 0)
 		{
-			m_whatVehicleToLookAt[i] =(m_modell[i]+1)-timeSinceLastChange[i]*2;
-		}			
+			m_whatVehicleToLookAt[i] =(m_modell[i]+1)+m_modellIncrease[i]*2;
+			m_modellIncrease[i]-=p_dt;
+			if (m_whatVehicleToLookAt[i]<=m_modell[i])
+			{
+				m_whatVehicleToLookAt[i] = m_modell[i];
+				m_modellIncrease[i] = 0;
+			}
+		}	
 	}
-	else if (timeSinceLastChange[i] < 5 && m_modellIncrease[i] != 0)
-	{
-		m_whatVehicleToLookAt[i] = m_modell[i];
-		m_modellIncrease[i]=0;
-	}
+	//else if (timeSinceLastChange[i] < 5 && m_modellIncrease[i] != 0)
+	//{
+	//	m_whatVehicleToLookAt[i] = m_modell[i];
+	//	m_modellIncrease[i]=0;
+	//}
 	else if (userCMD->at(i).Joystick.x < -0.8)
 	{
 		timeSinceLastChange[i]=0;
-		m_modellIncrease[i] = -1;
+		m_modellIncrease[i] = -p_dt;
 		if (m_modell[i] > 0)
 		{
 			m_modell[i]--;
@@ -204,7 +216,7 @@ void JoinGameScreen::ModellChanger(int i, float p_dt, std::vector<UserCMD>* user
 	else if (userCMD->at(i).Joystick.x > 0.8)
 	{
 		timeSinceLastChange[i]=0;
-		m_modellIncrease[i] = 1;
+		m_modellIncrease[i] = p_dt;
 		if (m_modell[i] < m_numberOfModells - 1)
 		{
 			m_modell[i]++;

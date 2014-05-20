@@ -29,10 +29,12 @@
 
 struct Particle //change in the input layout
 {
-	float3 InitialPosW : POSITION;
-	float3 InitialVelW : VELOCITY;
+	float3 InitialPosOneW : POSITION0;
+	float3 InitialPosTwoW : POSITION1;
+	float3 ParVector : VECTOR;
 	float2 SizeW : SIZE;
-	float Age : AGE;
+	float AgeOne : AGE0;
+	float AgeTwo : AGE1;
 	float Lifespan :LIFESPAN;
 	uint Type : TYPE;
 };

@@ -13,7 +13,7 @@ private:
 	int m_numberOfColors;
 	int m_numberOfTaunts;
 	int m_modell[4];
-	int m_modellIncrease[4];
+	float m_modellIncrease[4];
 	int m_color[4];
 	int m_selectedTauntSound[4];
 	float m_whatVehicleToLookAt[4];

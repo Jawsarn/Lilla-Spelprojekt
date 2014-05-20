@@ -61,9 +61,11 @@ HRESULT ParticleSystem::CreateShaders()
 	D3D11_INPUT_ELEMENT_DESC t_Layout[] =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "VELOCITY", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "POSITION", 1, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "VECTOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "SIZE", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "AGE", 0, DXGI_FORMAT_R32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "AGE", 1, DXGI_FORMAT_R32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "LIFESPAN", 0, DXGI_FORMAT_R32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "TYPE", 0, DXGI_FORMAT_R32_UINT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 
@@ -102,10 +104,12 @@ HRESULT ParticleSystem::CreateShaders()
 	D3D11_SO_DECLARATION_ENTRY t_Decl[] =
 	{
 		// semantic name, semantic index, start component, component count, output slot
-		{ 0 ,"POSITION", 0, 0, 3, 0 },   // output all components of position
-		{ 0 ,"VELOCITY", 0, 0, 3, 0 },     // output the first 3 of the normal
+		{ 0 ,"POSITION", 0, 0, 3, 0 },
+		{ 0 ,"POSITION", 1, 0, 3, 0 },// output all components of position
+		{ 0 ,"VECTOR",	 0, 0, 3, 0 },// output all components of position
 		{ 0 ,"SIZE",	 0, 0, 2, 0 },
 		{ 0 ,"AGE",		 0, 0, 1, 0 },
+		{ 0 ,"AGE",		 1, 0, 1, 0 },
 		{ 0 ,"LIFESPAN", 0, 0, 1, 0 },
 		{ 0 ,"TYPE",	 0, 0, 1, 0 },// output the first 2 texture coordinates
 	};
@@ -145,7 +149,7 @@ HRESULT ParticleSystem::CreateShaders()
 	return hr;
 }
 
-HRESULT ParticleSystem::CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName , UINT p_StartBufferID, UINT p_MaxParticles, XMFLOAT3 p_Color, float p_SpawnTimer , float p_ParticleLifeSpan, float p_SpawnAmount, XMFLOAT2 p_ParticleInitSize, float p_Speed, float p_EngineSpeed,CXMMATRIX p_WorldMatrix,UINT &systemID)
+HRESULT ParticleSystem::CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName , UINT p_StartBufferID, UINT p_MaxParticles, XMFLOAT3 p_Color, float p_SpawnTimer , float p_ParticleLifeSpan, float p_SpawnAmount, XMFLOAT2 p_ParticleInitSize, float p_Speed, float p_EngineSpeed, XMFLOAT4 p_EmitPos, CXMMATRIX p_WorldMatrix,UINT &systemID)
 {
 	HRESULT hr = S_OK;
 
@@ -163,7 +167,7 @@ HRESULT ParticleSystem::CreateParticleSystem(UINT p_EffectType, const wchar_t * 
 	t_NewSystem->color = p_Color;
 	t_NewSystem->speed = p_Speed;
 	t_NewSystem->engineSpeed = p_EngineSpeed;
-
+	
 	t_NewSystem->firstrun = true;
 
 	/*
@@ -179,6 +183,7 @@ HRESULT ParticleSystem::CreateParticleSystem(UINT p_EffectType, const wchar_t * 
 	t_NewSystem->particleLifeSpan = p_ParticleLifeSpan;
 	t_NewSystem->spawnAmount = p_SpawnAmount;
 	t_NewSystem->particleInitSize = p_ParticleInitSize;
+	t_NewSystem->emitPosition = p_EmitPos;
 	XMStoreFloat4x4( &t_NewSystem->worldMatrix, p_WorldMatrix);
 
 	D3D11_BUFFER_DESC t_BufferDesc;
@@ -412,6 +417,7 @@ void ParticleSystem::Draw(float dt)
 		t_Cbpef.particleLifeSpan = t_CurSys->particleLifeSpan;
 		t_Cbpef.spawnAmount = t_CurSys->spawnAmount;
 		t_Cbpef.spawnTimer = t_CurSys->spawnTimer;
+		t_Cbpef.emitPos = t_CurSys->emitPosition;
 		t_Cbpef.worldMatrix = XMMatrixTranspose( XMLoadFloat4x4(&t_CurSys->worldMatrix) );
 
 		//m_PerEffectData[t_CurSys.perEffectDataID].deltaTime = dt;

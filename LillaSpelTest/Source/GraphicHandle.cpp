@@ -437,23 +437,19 @@ void GraphicHandle::CreateShipForGame(std::vector<XMFLOAT4X4> p_PlayerWorld)
 
 		XMFLOAT3 t_Offsets = t_ParStru.posOffsets;
 		std::vector<Particle> t_InitParticles;
-		t_InitParticles.push_back(Particle(XMFLOAT3(-t_Offsets.x,	t_Offsets.y,	t_Offsets.z),XMFLOAT3(0,0,0),XMFLOAT2(1,1),0.0f,100.0f,1));
-		t_InitParticles.push_back(Particle(XMFLOAT3(t_Offsets.x,	t_Offsets.y,	t_Offsets.z),XMFLOAT3(0,0,0),XMFLOAT2(1,1),0.0f,100.0f,1));
+		t_InitParticles.push_back(Particle(XMFLOAT3(0,0,0), XMFLOAT3(0,0,0), XMFLOAT3(0, 1, 0) ,XMFLOAT2(1,1),0.0f, 0.0f,1.0f,1));
 
-		UINT t_InitParticleID1, t_InitParticleID2;
+		UINT t_InitParticleID1;
 		m_GraphicEngine->CreateInitParticleBuffer(t_InitParticles, t_InitParticleID1);
-		m_GraphicEngine->CreateInitParticleBuffer(t_InitParticles, t_InitParticleID2);
 
-		UINT t_ParticleBufferDataID1, t_ParticleBufferDataID2, t_ParticleBufferDataID3, t_ParticleBufferDataID4;
-		//the position here will be updated if object is updated
-		
-
-	
 		UINT t_ParticleSystemID;
 		
 		XMMATRIX t_Tempus = XMMatrixIdentity();
 		//big ones
-		m_GraphicEngine->CreateParticleSystem( 0, L"ParticleEngineCircle.dds",t_InitParticleID1, 1000, m_Colours[m_PlayerColour[i]], 0.05f, 2.0f, 1.0f,XMFLOAT2(0.2f,0.2f), 0.0f, 1.0f, t_Tempus,t_ParticleSystemID );
+		
+		m_GraphicEngine->CreateParticleSystem( 0, L"ParticleEngineTail.dds",t_InitParticleID1, 1000, m_Colours[m_PlayerColour[i]], 0.1f, 4.0f, 1.0f,XMFLOAT2(0.5f,0.5f), 0.0f, 1.0f, XMFLOAT4(t_Offsets.x, t_Offsets.y, t_Offsets.z, 1), t_Tempus,t_ParticleSystemID );
+		m_GraphicEngine->AddObjectParticleSystem(m_Player[i], t_ParticleSystemID);
+		m_GraphicEngine->CreateParticleSystem( 0, L"ParticleEngineTail.dds",t_InitParticleID1, 1000, m_Colours[m_PlayerColour[i]], 0.1f, 4.0f, 1.0f,XMFLOAT2(0.5f,0.5f), 0.0f, 1.0f, XMFLOAT4(-t_Offsets.x, t_Offsets.y, t_Offsets.z, 1), t_Tempus,t_ParticleSystemID );
 		m_GraphicEngine->AddObjectParticleSystem(m_Player[i], t_ParticleSystemID);
 		
 	}
@@ -788,6 +784,11 @@ void GraphicHandle::CreateMapLights(std::vector<XMFLOAT3> p_CenterSpline)
 
 		counter += 15;
 	}
+}
+
+void GraphicHandle::RemoveLights()
+{
+	m_GraphicEngine->RestLights();
 }
 
 

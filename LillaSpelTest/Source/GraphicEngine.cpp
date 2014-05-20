@@ -1712,9 +1712,9 @@ void GraphicEngine::Cleanup()
 //==========Particle Effect functions========//
 ///////////////////////////////////////////////
 
-void GraphicEngine::CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName, UINT p_StartBufferID, UINT p_MaxParticles, XMFLOAT3 p_Color , float p_SpawnTimer, float p_ParticleLifeSpan, float p_SpawnAmount, XMFLOAT2 p_ParticleInitSize, float p_Speed, float p_EngineSpeed, CXMMATRIX p_WorldMatrix, UINT &o_SystemID )
+void GraphicEngine::CreateParticleSystem(UINT p_EffectType, const wchar_t * p_FileName, UINT p_StartBufferID, UINT p_MaxParticles, XMFLOAT3 p_Color , float p_SpawnTimer, float p_ParticleLifeSpan, float p_SpawnAmount, XMFLOAT2 p_ParticleInitSize, float p_Speed, float p_EngineSpeed, XMFLOAT4 p_EmitPos, CXMMATRIX p_WorldMatrix, UINT &o_SystemID )
 {
-	m_ParticleSystem->CreateParticleSystem(p_EffectType, p_FileName, p_StartBufferID, p_MaxParticles, p_Color, p_SpawnTimer, p_ParticleLifeSpan, p_SpawnAmount, p_ParticleInitSize, p_Speed, p_EngineSpeed, p_WorldMatrix, o_SystemID);
+	m_ParticleSystem->CreateParticleSystem(p_EffectType, p_FileName, p_StartBufferID, p_MaxParticles, p_Color, p_SpawnTimer, p_ParticleLifeSpan, p_SpawnAmount, p_ParticleInitSize, p_Speed, p_EngineSpeed, p_EmitPos, p_WorldMatrix, o_SystemID);
 }
 
 void GraphicEngine::CreateInitParticleBuffer(std::vector<Particle> p_StartParticles, UINT &o_BufferID)

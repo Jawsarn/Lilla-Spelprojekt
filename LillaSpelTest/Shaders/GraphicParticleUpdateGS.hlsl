@@ -10,7 +10,9 @@ cbuffer CPerEffectBuffer	:register(b0)
 	float2 initialSize; //done
 	float speed;
 	float engineSpeed;
-		
+	
+	float4 emitPos;
+
 	matrix worldMatrix;
 }
 
@@ -38,46 +40,47 @@ float3 RandVec3(float offset)
 }
 
 
-[maxvertexcount(90)]
+[maxvertexcount(2)]
 void GS( point Particle input[1],  inout PointStream< Particle > ptStream )
 {
 	Particle origin = input[0];
 
-	origin.Age += deltaTime;
-	float t = origin.Age;
+	origin.AgeOne += deltaTime;
+	origin.AgeTwo += deltaTime;
+
+	float t = origin.AgeTwo;
 	float d = origin.Lifespan;
-	//float3 pos = 0.5f*t*t*worldAcceler + t*input[0].InitialVelW + input[0].InitialPosW;
-	//float3 vel = input[0].InitialVelW;
 
 	if (origin.Type > 0)
 	{
-		if (t > spawnTimer) //may swap this to something
+		origin.InitialPosOneW = mul(emitPos, worldMatrix).xyz;
+		origin.AgeOne = spawnTimer - t;
+
+		if (t > spawnTimer) //if the age form first has reached a limit, then set the second 
 		{
-			float3 spawnPos = mul(float4(input[0].InitialPosW, 1), worldMatrix).xyz;
-			float3 velocity = mul(float4(0,0,-engineSpeed + speed,0), worldMatrix).xyz;
-			for (int i = 0; i < 1; i++) //something
-			{
-				//float3 random = 50*RandUnitVec3((float)i/(input[0].InitialPosW.x/10));
-				
-				Particle p;
-				p.InitialPosW = spawnPos;
-				p.InitialVelW = velocity/* + vel + random*/;
-				p.SizeW = initialSize;
-				p.Age = 0.0f;
-				p.Lifespan = particleLifeSpan;
-				p.Type = origin.Type - 1;
+			//finish the particle you're on and craete the new one at age  0
+			origin.AgeTwo = origin.AgeOne + 1.0f;
+			origin.Type = 0;
 
-				ptStream.Append(p);
-			}
+			Particle newPart;
+			newPart.InitialPosOneW = mul(emitPos, worldMatrix).xyz;
+			newPart.InitialPosTwoW = newPart.InitialPosOneW;
+			newPart.ParVector = normalize(origin.InitialPosTwoW - origin.InitialPosOneW);
+			newPart.SizeW = initialSize;
+			newPart.AgeOne = 0.0f;
+			newPart.AgeTwo = 0.0f;
+			newPart.Lifespan = particleLifeSpan;
+			newPart.Type = 1;
 
-
-			origin.Age = 0;
-			ptStream.Append(origin);
+			ptStream.Append(newPart);
 		}
-		else
-		{
-			ptStream.Append(origin);
-		}
+		
+		//change position and age of second
+		
+
+		
+		//always append
+		ptStream.Append(origin);
 	}
 	else if(t <= d) //may swap this to a buffered stop or a Particle wise stop
 	{
