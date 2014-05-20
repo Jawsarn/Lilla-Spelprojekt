@@ -78,14 +78,14 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_maxBoost = 5;
 	m_boostGain = 1;//prolly not gonna be used
 
-	m_maxSpeed = 13;
-	m_maxBoostSpeed = 25;
+	m_maxSpeed = 25;
+	m_maxBoostSpeed = 50;
 
-	m_acceleration = 5;
+	m_acceleration = 10;
 	m_boostAcceleration = 30;
-	m_deceleration = 5;
-	m_break = 16;
-	m_boostFromPad = 100;//testValue
+	m_deceleration = 7;
+	m_break = 25;
+	m_boostFromPad = 300;//testValue
 
 	//how quickly you rotate
 	m_rotateSpeed = 0.05;
@@ -93,8 +93,8 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 
 	//wall stuff
 	m_maxWalls = 10;
-	m_wallGain = 0.1;
-	m_maxCooldown = 2;
+	m_wallGain = 0.7;
+	m_maxCooldown = 0.2;
 
 	//timers
 	m_maxImmortalTimer = 5;
@@ -105,9 +105,9 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_cameraFollowSpeed = 0.0005;
 
 	//how far behind the vehicle the camera is  //4321
-	m_cameraTrailDistanceTarget = 5;
+	m_cameraTrailDistanceTarget = 8;
 	//how high above the vehicle the camera is
-	m_cameraTrailDistanceUp = 1;
+	m_cameraTrailDistanceUp = 0.7;
 	//how far to the right/left the camera will pan (used during finish)
 	m_cameraTrailDistanceRight = 1.7; //probably shouldn't be less due to clipping
 
@@ -119,7 +119,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_deathShakeIntensityDrop = 4;
 
 	//side bump
-	m_bumpIntensity = 3; //set low for big-assed bump
+	m_bumpIntensity = 5; //set low for big-assed bump
 	m_baseBumpIntensity = 1; //set high for big-assed bump
 	//front bump
 	m_targetBumpIntensity = 0.3;
@@ -214,7 +214,7 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 	//matrices now updated. Ready to be grabbed from the GameScreen
 
 	UpdateCollisionBox();
-	if (!m_gravityShifting&&m_state!=FINISHING)
+	if (!m_gravityShifting&&m_state!=FINISHING&&m_state!=IMMORTAL)
 		r_returnInt = WallPlacement(p_dt);
 
 	UpdateTimers(p_dt);
@@ -403,22 +403,22 @@ void Player::UpdateCollisionBox()
 
 int Player::WallPlacement(float p_dt)
 {
-	m_coolDown -= p_dt;
+
 	//if the players wants to poop out walls
-	if (m_currentUserCmd.rightTriggerPressed && m_coolDown <= 0 && m_wallMeter >= 1)
+	if (m_currentUserCmd.leftTriggerPressed && m_coolDown <= 0 && m_wallMeter >= 1)
 	{
 		m_wallMeter -= 1;
 		PlaceWall();
-		m_coolDown = m_maxCooldown / 2;
+		m_coolDown = m_maxCooldown;
 		return  1;
 	}
 	//if the players meter is full
 	//yes, this could also have been one hell of a long if statement but fuggit
-	else if (m_coolDown <= 0 && m_wallMeter > m_maxWalls)
+	else if (m_wallMeter > m_maxWalls)//m_coolDown <= 0 && 
 	{
 		m_wallMeter = m_maxWalls;
 		m_wallMeter -= 1;
-		m_coolDown = m_maxCooldown;
+		//m_coolDown = m_maxCooldown;
 
 		PlaceWall();
 		return  1;
@@ -430,6 +430,7 @@ int Player::WallPlacement(float p_dt)
 void Player::UpdateTimers(float p_dt)
 {
 	////immortal and death timers
+	m_coolDown -= p_dt;
 	m_immortalTimer -= p_dt;
 	if (m_immortalTimer < 0&&m_state==IMMORTAL&&!m_gravityShifting&&!m_hasWon)
 		m_state = NORMAL;
@@ -556,7 +557,7 @@ void Player::UpdateWorldMatrix()
 	float t_finishSlide = m_finishSpeed*m_finishProgress;
 
 	float t_cameraTailDistanceTarget = m_cameraTrailDistanceTarget;
-	if(m_currentUserCmd.leftTriggerPressed)
+	if(m_currentUserCmd.leftBumberPressed)
 		t_cameraTailDistanceTarget*=-1;
 
 
@@ -623,7 +624,7 @@ void Player::UpdateWorldMatrix()
 
 
 	/////FINAL CAMERA MATRIX SET/////////
-	XMStoreFloat4x4(&m_cameraMatrix, XMMatrixLookAtLH(t_cameraEyeVector, t_cameraTargetVector+XMLoadFloat3(&m_unmodifiedUp)*t_radius*t_cameraProgressY, t_cameraUpVector));
+	XMStoreFloat4x4(&m_cameraMatrix, XMMatrixLookAtLH(t_cameraEyeVector+2*XMLoadFloat3(&m_unmodifiedTarget), t_cameraTargetVector+XMLoadFloat3(&m_unmodifiedUp)*t_radius*t_cameraProgressY, t_cameraUpVector));
 
 
 	XMVECTOR t_bobOffsetVector = XMLoadFloat3(&m_bobOffset);
@@ -645,7 +646,7 @@ void Player::UpdateWorldMatrix()
 void Player::GravityShift(float p_progress)
 {
 	float t_cameraTailDistanceTarget = m_cameraTrailDistanceTarget;
-	if(m_currentUserCmd.leftTriggerPressed)
+	if(m_currentUserCmd.leftBumberPressed)
 		t_cameraTailDistanceTarget*=-1;
 	m_state = IMMORTAL;
 	//time for reversing
