@@ -23,20 +23,21 @@ GraphicHandle::~GraphicHandle()
 
 void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::vector <std::string> p_LevelNames)
 {
-	//4123     KONY fixa så att skeppen snurrar medans de snurrar=P
+
 
 	m_GraphicEngine = m_GraphicEngine->GetInstance();
 	m_GraphicEngine->Initialize(p_Width, p_Height, p_Handle);
+
+
+
+
+	//UINT t_TempurTextur;
+	//UINT t_TempurTexturNG;
+
 	SetAmountOfPlayers(4);
-
-
 	m_WhatLevelBefore=0;
-
-
-	UINT t_TempurTextur;
-	UINT t_TempurTexturNG;
-	m_CircleOffset = 4;
-	m_BigCircleOffset = 20;
+	m_CircleOffset = 2.5;
+	m_BigCircleOffset = 10;
 
 
 
@@ -115,10 +116,12 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 		CreateDrawObject(m_MeshLevels[i],XMMatrixIdentity(),XMFLOAT3(1,1,1),m_Levels[i],false);
 		CreateDrawObject(m_MeshLevelWall[i],XMMatrixIdentity(),XMFLOAT3(1,1,1),m_LevelWalls[i],false);
 		CreateDrawObject(m_MeshLevelBoost[i],XMMatrixIdentity(),XMFLOAT3(1,1,1),m_LevelBoosts[i],false);
-
 	}
 
-
+	//for (int i = 0; i < m_Levels.size(); i++)
+	//{
+//
+	//}
 	///Laddar inte colours att välja på
 	m_Colours.push_back(XMFLOAT3(1,1,0));
 	m_Colours.push_back(XMFLOAT3(1,0,1));
@@ -137,13 +140,14 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 
 	//create a camera, just for testing and stuff, think you'll want to create it later with players tho, because the hud wont rely on camera at first
 
-	//(250,0,-100)			0,0,1					0,1,0   
 	for (int i = 0; i < 4; i++)
 	{
+		//									// 	pos					at				up		FoV			width	height	  near far
+		//m_GraphicEngine->CreateCamera(XMFLOAT3(250,0,-100),XMFLOAT3(0,0,1),XMFLOAT3(0,1,0),XM_PIDIV4,p_Width/2,p_Height/2,1.0f,10000, m_CameraID[i]);
 		m_GraphicEngine->CreateCamera(XMFLOAT3(250,0,-100),XMFLOAT3(0,0,1),XMFLOAT3(0,1,0),XM_PIDIV4,p_Width/2,p_Height/2,1.0f,10000, m_CameraID[i]);
-	}
+	
 	//m_GraphicEngine->CreateCamera(
-
+	}
 	//set cameras
 	for (int i = 0; i < 4; i++)
 	{
@@ -216,6 +220,8 @@ void GraphicHandle::ChangeLevelSelection(int p_WhatLevel)
 	m_GraphicEngine->AddObjectToDrawing(m_Levels[p_WhatLevel]);
 	m_GraphicEngine->AddObjectToDrawing(m_LevelWalls[p_WhatLevel]);
 	m_GraphicEngine->AddObjectToDrawing(m_LevelBoosts[p_WhatLevel]);
+
+	m_GraphicEngine->SetCamera(m_CameraID[0],XMMatrixTranslation(0,0,1000));
 
 	if( m_WhatLevelBefore!=p_WhatLevel)
 	{
@@ -338,7 +344,7 @@ void GraphicHandle::InitializeJoinScreenCamera(UINT p_CameraLogicID)
 	{	
 		/////////////////////////////////fungerande
 		//XMMATRIX t_Tempura = XMMatrixTranslation(0,1,25*m_MeshShips.size());
-		XMMATRIX t_Tempura = XMMatrixTranslation(0,1,50);
+		XMMATRIX t_Tempura = XMMatrixTranslation(0,1,35);
 		//XMMATRIX t_Rot = XMMatrixRotationY(2*XM_PI/m_MeshShips.size());
 		XMMATRIX t_Rot = XMMatrixRotationY(XM_PIDIV2*p_CameraLogicID*3);
 		XMMATRIX t_Rot2 = XMMatrixRotationX(-XM_PIDIV4/4);
@@ -364,10 +370,10 @@ void GraphicHandle::SetVehicleSelectionCamera(UINT p_CameraLogicID)
 	{	
 		/////////////////////////////////fungerande
 		//XMMATRIX t_Tempura = XMMatrixTranslation(0,1,25*m_MeshShips.size());
-		XMMATRIX t_Tempura = XMMatrixTranslation(0,2.5,m_BigCircleOffset+m_CircleOffset+12.5);
+		XMMATRIX t_Tempura = XMMatrixTranslation(0,2.5,m_BigCircleOffset+m_CircleOffset+3);//5.2
 		//XMMATRIX t_Rot = XMMatrixRotationY(2*XM_PI/m_MeshShips.size());
 		XMMATRIX t_Rot = XMMatrixRotationY(XM_PIDIV2*p_CameraLogicID*3);
-		XMMATRIX t_Rot2 = XMMatrixRotationX(-XM_PIDIV4/4);
+		XMMATRIX t_Rot2 = XMMatrixRotationX(-XM_PIDIV4/3.5);
 
 		t_Rot = XMMatrixMultiply(t_Rot,t_Rot2);//sätter ihop rotationerna
 		t_Rot = XMMatrixMultiply(t_Rot, t_Tempura);//roterar matrisen
@@ -780,7 +786,7 @@ void GraphicHandle::CreateMapLights(std::vector<XMFLOAT3> p_CenterSpline)
 		}
 
 
-		counter += 5;
+		counter += 15;
 	}
 }
 

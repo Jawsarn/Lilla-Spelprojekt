@@ -35,6 +35,8 @@ private:
 	float m_acceleration;
 	float m_boostAcceleration;
 	float m_deceleration;
+	float m_break;
+	float m_boostFromPad;
 
 	//rotation stuff
 	float m_rotateSpeed;
@@ -192,6 +194,7 @@ public:
 	void Start();
 	void Finish();
 	void SetSpeed(float p_speed);
+	void PadBoost(float p_dt);
 	void StartCollisionAftermath(float p_sideForce, float p_targetForce, int p_sideDirection, int p_targetDirection);
 	void StartShockWaveAftermath(int p_sideDirection, int p_targetDirection, float p_zValue, float p_xValue);
 	void SetPlayerBoost(float p_boost);

@@ -254,7 +254,7 @@ void GameScreen::CollisionCheck(int p_currentPlayer, float p_dt, UserCMD& p_user
 	}
 	else if(t_collisionReturn==0)
 	{
-		//setplayerspeed
+		m_players[p_currentPlayer]->PadBoost(p_dt);
 		p_userCMD.controller.Vibrate(60000,0);
 		m_vibrationTimer[p_currentPlayer] = 1.5;
 		//ljud?
