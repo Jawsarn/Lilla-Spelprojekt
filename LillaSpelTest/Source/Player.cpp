@@ -104,7 +104,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	//the speed at which camera follows the ship when turning
 	m_cameraFollowSpeed = 0.0005;
 
-	//how far behind the vehicle the camera is
+	//how far behind the vehicle the camera is  //4321
 	m_cameraTrailDistanceTarget = 5;
 	//how high above the vehicle the camera is
 	m_cameraTrailDistanceUp = 1;

@@ -37,6 +37,7 @@ private:
 	std::vector<UINT> m_PlayerLight;
 	UINT m_WhatLevelBefore;
 	std::vector <UINT> m_Levels;
+	//std::vector <XMFLOAT4X4> m_LevelSelectionCamera;
 	std::vector <UINT> m_LevelWalls;
 	std::vector <UINT> m_LevelBoosts;
 	std::vector <std::string> m_WallNames;
@@ -122,7 +123,6 @@ public:
 	void CreateDrawObject(std::vector <UINT> p_UINTMeshLista, CXMMATRIX p_World,XMFLOAT3 p_Colour,UINT & o_ObjectID,bool p_ShouldItBeDrawn);
 	void RemoveObject(UINT p_RemoveAt);
 	void RemovePlayers();
-
 	//light functions
 	void CreateMapLights(std::vector<XMFLOAT3> p_CenterSpline);
 
