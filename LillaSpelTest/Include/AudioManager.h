@@ -44,6 +44,8 @@ public:
 	// the sound name is the files name. this is for removing sounds that wont get played for quite a while, like in game main soundtrack
 	void RemoveSpecificSound(std::string p_soundToRemove);
 
+	void PauseSpecificSound(std::string p_soundToPause);
+
 	float GetMasterVolume();
 };
 

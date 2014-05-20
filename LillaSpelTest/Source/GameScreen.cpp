@@ -12,6 +12,13 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4],string p_tauntSound[
 	m_engineSound[1] = "Engine2.wav";
 	m_engineSound[2] = "Engine3.wav";
 	m_engineSound[3] = "Engine4.wav";
+
+	m_audioManager->CreateSound("countdown.wav");
+	m_audioManager->SetSpecificSoundVolume("countdown.wav",0.1);
+	m_audioManager->CreateSound("go.wav");
+	m_audioManager->SetSpecificSoundVolume("go.wav",0.1);
+	m_audioManager->CreateSound("game2.mp3");
+
 	m_state = COUNTDOWN;
 	m_mapLoader = new MapLoader();
 	m_mapNodes = m_mapLoader->LoadMap(p_mapName);
@@ -54,6 +61,8 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4],string p_tauntSound[
 
 GameScreen::~GameScreen(void)
 {
+	////Remove sound////
+	m_audioManager->RemoveSpecificSound("game2.mp3");
 	////Remove Graphic Things////
 	m_graphicHandle->RemoveLevelDraw();
 	m_graphicHandle->RemovePlayers();
@@ -338,6 +347,7 @@ void GameScreen::PlaySounds()
 		m_audioManager->PlaySpecificSound(m_engineSound[i],true,AUDIO_ONLY_PLAY_ONE);
 		m_audioManager->PitchSpecificSound(m_engineSound[i],0);
 	}
+	m_audioManager->PlaySpecificSound("game2.mp3",true,AUDIO_ONLY_PLAY_ONE);
 }
 
 void GameScreen::StopSounds()
@@ -346,6 +356,7 @@ void GameScreen::StopSounds()
 	{
 		m_audioManager->StopSpecificSound(m_engineSound[i]);
 	}
+	m_audioManager->PauseSpecificSound("game2.mp3");
 }
 
 void GameScreen::UpdateVibration(float p_dt,int p_player, UserCMD& p_userCMD)

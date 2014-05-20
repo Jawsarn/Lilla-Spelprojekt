@@ -120,6 +120,12 @@ void AudioManager::StopSpecificSound(std::string p_soundToStop)
 	m_sounds[p_soundToStop].channel->stop();
 }
 
+void AudioManager::PauseSpecificSound(std::string p_soundToPause)
+{
+	m_sounds[p_soundToPause].channel->setPaused(true);
+}
+
+
 void AudioManager::SetSpecificSoundVolume(std::string p_soundToIncrease, float p_volumeBetween0and1)
 {
 	m_result = m_sounds[p_soundToIncrease].channel->setPaused(true);
