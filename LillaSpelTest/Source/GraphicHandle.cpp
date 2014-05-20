@@ -36,8 +36,8 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 
 	SetAmountOfPlayers(4);
 	m_WhatLevelBefore=0;
-	m_CircleOffset = 4;
-	m_BigCircleOffset = 20;
+	m_CircleOffset = 2.5;
+	m_BigCircleOffset = 10;
 
 
 
@@ -344,7 +344,7 @@ void GraphicHandle::InitializeJoinScreenCamera(UINT p_CameraLogicID)
 	{	
 		/////////////////////////////////fungerande
 		//XMMATRIX t_Tempura = XMMatrixTranslation(0,1,25*m_MeshShips.size());
-		XMMATRIX t_Tempura = XMMatrixTranslation(0,1,50);
+		XMMATRIX t_Tempura = XMMatrixTranslation(0,1,35);
 		//XMMATRIX t_Rot = XMMatrixRotationY(2*XM_PI/m_MeshShips.size());
 		XMMATRIX t_Rot = XMMatrixRotationY(XM_PIDIV2*p_CameraLogicID*3);
 		XMMATRIX t_Rot2 = XMMatrixRotationX(-XM_PIDIV4/4);
@@ -370,10 +370,10 @@ void GraphicHandle::SetVehicleSelectionCamera(UINT p_CameraLogicID)
 	{	
 		/////////////////////////////////fungerande
 		//XMMATRIX t_Tempura = XMMatrixTranslation(0,1,25*m_MeshShips.size());
-		XMMATRIX t_Tempura = XMMatrixTranslation(0,2.5,m_BigCircleOffset+m_CircleOffset+12.5);
+		XMMATRIX t_Tempura = XMMatrixTranslation(0,2.5,m_BigCircleOffset+m_CircleOffset+3);//5.2
 		//XMMATRIX t_Rot = XMMatrixRotationY(2*XM_PI/m_MeshShips.size());
 		XMMATRIX t_Rot = XMMatrixRotationY(XM_PIDIV2*p_CameraLogicID*3);
-		XMMATRIX t_Rot2 = XMMatrixRotationX(-XM_PIDIV4/4);
+		XMMATRIX t_Rot2 = XMMatrixRotationX(-XM_PIDIV4/3.5);
 
 		t_Rot = XMMatrixMultiply(t_Rot,t_Rot2);//sätter ihop rotationerna
 		t_Rot = XMMatrixMultiply(t_Rot, t_Tempura);//roterar matrisen
