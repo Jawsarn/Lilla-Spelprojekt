@@ -138,8 +138,8 @@ private:
 	float m_finishSlideSpeed;
 	float m_finishSlideSpeedCoefficient;
 
-
-
+	float m_dampShipRotation;
+	float m_currentAngle;
 	//unused but perhaps needed stuff
 	XMFLOAT3 m_color;
 	PlayerState m_state;
@@ -213,6 +213,7 @@ private:
 	void MovementAlongLogicalMap(float p_dt);
 	void SetDirection();
 	void FixWorldPosition();
+	void DampDirectionRotation(float dt);
 
 	void UpdateCollisionBox();
 	int WallPlacement(float p_dt);
@@ -231,7 +232,6 @@ private:
 
 	void GravityShift(float p_progress);
 	void PostGravityShiftFix();
-
 
 	//this really does deserve its own class. Or something
 	XMFLOAT3 SetBoxExtents(vector<XMFLOAT3> p_corners);
