@@ -78,12 +78,14 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_maxBoost = 5;
 	m_boostGain = 1;//prolly not gonna be used
 
-	m_maxSpeed = 10;
+	m_maxSpeed = 13;
 	m_maxBoostSpeed = 25;
 
-	m_acceleration = 15;
+	m_acceleration = 5;
 	m_boostAcceleration = 30;
-	m_deceleration = 16;
+	m_deceleration = 5;
+	m_break = 16;
+	m_boostFromPad = 100;//testValue
 
 	//how quickly you rotate
 	m_rotateSpeed = 0.05;
@@ -176,7 +178,7 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 	m_currentUserCmd = p_userCMD;
 
 	if(!m_hasWon)
-	HandleAbilities();
+		HandleAbilities();
 	//Code for playervsplayercollisionaftermath
 	if (m_collisionAfterMath)
 	{
@@ -253,7 +255,7 @@ void Player::Acceleration(float p_dt)
 {
 	////Acceleration
 	//boost acceleration
-	if (m_currentUserCmd.rightBumberPressed && m_boostMeter > 0)
+	if (m_currentUserCmd.rightTriggerPressed && m_boostMeter > 0)
 	{
 		//check if max boost speed is attained, otherwise accelerate
 		if (m_maxBoostSpeed > m_speed)
@@ -267,6 +269,16 @@ void Player::Acceleration(float p_dt)
 		}
 		//lower remaining boost
 		m_boostMeter -= p_dt;
+	}
+
+	//break
+	else if(m_currentUserCmd.rightBumberPressed)
+	{
+		if(m_speed>0)
+			m_speed -= m_break*p_dt;
+		else 
+			m_speed = 0;
+
 	}
 	//ordinary acceleration
 	else
@@ -426,7 +438,7 @@ void Player::UpdateTimers(float p_dt)
 		m_gravityShiftProgress += p_dt*m_gravityShiftSpeed;
 	m_wallMeter += p_dt*m_wallGain*(4 - m_racePos);
 
-	
+
 	m_bobTimer += p_dt*m_bobFrequency;
 	m_abilityCooldown -= p_dt;
 
@@ -535,7 +547,7 @@ void Player::UpdateWorldMatrix()
 
 
 
-	
+
 
 
 
@@ -978,6 +990,10 @@ void Player::SetSpeed(float p_speed)
 	m_speed += p_speed;
 }
 
+void Player::PadBoost(float p_dt)
+{
+	m_speed += m_boostFromPad*p_dt*1000;
+}
 
 
 ////scrap
