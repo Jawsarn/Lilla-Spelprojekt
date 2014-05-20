@@ -125,6 +125,7 @@ public:
 	void RemovePlayers();
 	//light functions
 	void CreateMapLights(std::vector<XMFLOAT3> p_CenterSpline);
+	void RemoveLights();
 
 	//hud functions
 	void CreateHUD(UINT &o_HUDID);

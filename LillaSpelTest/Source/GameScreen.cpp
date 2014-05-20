@@ -64,6 +64,7 @@ GameScreen::~GameScreen(void)
 	////Remove sound////
 	m_audioManager->RemoveSpecificSound("game2.mp3");
 	////Remove Graphic Things////
+	m_graphicHandle->RemoveLights();
 	m_graphicHandle->RemoveLevelDraw();
 	m_graphicHandle->RemovePlayers();
 	std::vector<PlayerWall*>* t_playerWalls;

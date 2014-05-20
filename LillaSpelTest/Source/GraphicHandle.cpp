@@ -790,6 +790,11 @@ void GraphicHandle::CreateMapLights(std::vector<XMFLOAT3> p_CenterSpline)
 	}
 }
 
+void GraphicHandle::RemoveLights()
+{
+	m_GraphicEngine->RestLights();
+}
+
 
 
 //hud functions
