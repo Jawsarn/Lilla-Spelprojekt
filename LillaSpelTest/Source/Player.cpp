@@ -43,6 +43,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	//m_wallBoxExtents.y *= 0.1;
 
 	////VARIABLE INITIALIZATION (not relevant for game balancing)
+	m_currentAngle = 0;
 	m_wallMeter = 0;
 	m_coolDown = 0;
 	m_aButtonPressedAtStart = 0;
@@ -77,7 +78,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_maxBoost = 5;
 	m_boostGain = 1;//prolly not gonna be used
 
-	m_maxSpeed = 15;
+	m_maxSpeed = 10;
 	m_maxBoostSpeed = 25;
 
 	m_acceleration = 15;
@@ -86,6 +87,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 
 	//how quickly you rotate
 	m_rotateSpeed = 0.05;
+	m_dampShipRotation = 0.03;
 
 	//wall stuff
 	m_maxWalls = 10;
@@ -173,6 +175,7 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 	m_previousUserCmd = m_currentUserCmd;
 	m_currentUserCmd = p_userCMD;
 
+	if(!m_hasWon)
 	HandleAbilities();
 	//Code for playervsplayercollisionaftermath
 	if (m_collisionAfterMath)
@@ -182,9 +185,10 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 
 	if (m_state == STARTING)
 		StartupSpam();
+	else//if you ain't startin', you're boostin'
+		Acceleration(p_dt);
 	if (m_state == NORMAL || m_state == IMMORTAL)	
 	{
-		Acceleration(p_dt);
 		Rotation(p_dt);
 	}
 	//if(m_state!=FINISHING)
@@ -200,6 +204,7 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 
 	BobOffset();
 	//minor bob offset. Pisses mysterisk off
+	DampDirectionRotation(p_dt);
 
 	UpdateWorldMatrix();
 	if(m_gravityShifting)
@@ -286,6 +291,10 @@ void Player::Rotation(float p_dt)
 	m_deltaAngle = 0;
 	m_deltaAngle = m_currentUserCmd.Joystick.x*m_rotateSpeed;
 	m_angle += m_deltaAngle;
+	if(m_deltaAngle!=0)
+	{
+		m_currentAngle = m_deltaAngle;
+	}
 }
 
 void Player::MovementAlongLogicalMap(float p_dt)
@@ -421,9 +430,10 @@ void Player::UpdateTimers(float p_dt)
 	m_bobTimer += p_dt*m_bobFrequency;
 	m_abilityCooldown -= p_dt;
 
-	if(m_state==FINISHING)
+	if(m_state==FINISHING &&!m_gravityShifting)
 	{
 		m_finishProgress += 0.3*p_dt;
+		m_speed = (1-m_finishProgress)*m_finishSpeed;
 		if(m_finishProgress>1)
 			m_finishProgress = 1;
 	}
@@ -504,6 +514,7 @@ void Player::DeathShake()
 
 void Player::UpdateWorldMatrix()
 {
+
 	//float t_radius = m_finishProgress*( m_mapNode->m_radius + (m_mapNode->m_radius / 4));
 	float t_radius = m_finishProgress*m_cameraTrailDistanceUp;
 	XMFLOAT3 t_position = XMFLOAT3(m_position.x, m_position.y, m_position.z);
@@ -542,7 +553,7 @@ void Player::UpdateWorldMatrix()
 	XMVECTOR t_vehicleUpVector = XMLoadFloat3(&m_up);
 
 	////////////////////VERY DUBIOUS ABOUT THIS ONE!!!////////////
-	t_vehicleEyeVector+=XMLoadFloat3(&m_unmodifiedTarget)*t_finishSlide;
+	//t_vehicleEyeVector+=XMLoadFloat3(&m_unmodifiedTarget)*t_finishSlide;
 
 	//ordinary camera eye position offsets
 	XMVECTOR t_cameraEyeVector = t_vehicleEyeVector + t_vehicleUpVector*m_cameraTrailDistanceUp + t_cameraProgressZ*t_cameraTailDistanceTarget*t_vehicleTargetVector*-1;
@@ -555,16 +566,16 @@ void Player::UpdateWorldMatrix()
 
 	////VEHICLE TILT
 	//rotate along target vector
-	XMMATRIX t_directionRotationMatrixTarget = XMMatrixRotationAxis(t_vehicleTargetVector, m_deltaAngle * 5);					//////////////////////////MAKE SURE YOU CHANGE THIS HARDCODED 10 CRAP////////////////
+	XMMATRIX t_directionRotationMatrixTarget = XMMatrixRotationAxis(t_vehicleTargetVector, m_currentAngle * 5);					//////////////////////////MAKE SURE YOU CHANGE THIS HARDCODED 10 CRAP////////////////
 	t_vehicleUpVector = XMVector3Transform(t_vehicleUpVector, t_directionRotationMatrixTarget);
 	t_vehicleUpVector = XMVector3Normalize(t_vehicleUpVector);
 	XMMATRIX t_directionRotationMatrixUp;
 	//rotate along new up vector
 
 	if(m_state !=FINISHING)
-		t_directionRotationMatrixUp = XMMatrixRotationAxis(t_vehicleUpVector, m_deltaAngle * 10 * (3/(m_speed+1)));//Gives a bad value during countdown				//////////////////////////MAKE SURE YOU CHANGE THIS HARDCODED 10 CRAP////////////////
+		t_directionRotationMatrixUp = XMMatrixRotationAxis(t_vehicleUpVector, m_currentAngle * 10 * (4/(m_speed+1)));//Gives a bad value during countdown				//////////////////////////MAKE SURE YOU CHANGE THIS HARDCODED 10 CRAP////////////////
 	else
-		t_directionRotationMatrixUp = XMMatrixRotationAxis(t_vehicleUpVector, m_deltaAngle * 10 * (3/(m_finishSpeed+1))+t_finishRotation);
+		t_directionRotationMatrixUp = XMMatrixRotationAxis(t_vehicleUpVector, m_currentAngle * 10 * (4/(m_finishSpeed+1))+t_finishRotation);
 
 	t_vehicleTargetVector = XMVector3Transform(t_vehicleTargetVector, t_directionRotationMatrixUp);
 	t_vehicleTargetVector = XMVector3Normalize(t_vehicleTargetVector);
@@ -957,7 +968,6 @@ void Player::Finish()
 	m_finishAngle = distribution(m_randomGenerator);
 
 
-	m_speed =0;
 	m_state = FINISHING;
 	m_hasWon = true;
 }
@@ -1041,4 +1051,22 @@ void Player::StartShockWaveAftermath(int p_sideDirection, int p_targetDirection,
 	m_collisionAngleOffset = p_xValue * p_sideDirection * m_angleShockwavePower;
 	m_collisionAfterSpeed = -1*p_zValue * p_targetDirection * m_speedShockwavePower;
 	m_collisionAfterMath = true;
+}
+
+void Player::DampDirectionRotation(float p_dt)
+
+{	//TIME FOR RETARD HAXX!! makes the camera chase after the angle
+	int t_intBuffer = 1000000;
+	int t_deltaAngleInt = (int)(m_deltaAngle * t_intBuffer);
+	int t_currentAngleInt = (int)(m_currentAngle * t_intBuffer);
+
+	if(m_currentAngle > t_currentAngleInt)
+	{
+		m_currentAngle+=m_dampShipRotation*p_dt;
+	}
+	else if(m_currentAngle < t_currentAngleInt)
+	{
+		m_currentAngle-=m_dampShipRotation*p_dt;
+	}
+
 }

@@ -20,7 +20,7 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4],string p_tauntSound[
 	vector<XMFLOAT3> t_centerSplinePositions = m_mapLoader->LoadLogicalObj(p_mapName+"/CenterSpline.obj").at(0);
 	m_graphicHandle->CreateMapLights(t_centerSplinePositions);
 
-	m_lastNodeIndex = m_mapNodes->at(m_mapNodes->size()-5)->m_Index;
+	m_lastNodeIndex = m_mapNodes->at(m_mapNodes->size()-15)->m_Index;
 	vector<XMFLOAT4X4> t_shipWorldMatrices;
 	vector<UINT> t_colors;
 	vector<UINT> t_whichVehicles;
@@ -183,7 +183,7 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 		m_collisionManager->PlayerVsPlayer(m_players);
 		for (int i = 0; i < m_players.size(); i++)
 		{
-			if(!m_players[i]->GetImmortal())
+			if(!m_players[i]->GetImmortal()&&!m_players[i]->HasFinished())
 				CollisionCheck(i, p_dt,p_userCMDS->at(i) );
 		}
 		break;
