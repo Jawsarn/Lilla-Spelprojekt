@@ -1,4 +1,4 @@
-# Blender v2.70 (sub 0) OBJ File: 'PipePanic.blend'
+# Blender v2.70 (sub 0) OBJ File: 'PipePanic_2.blend'
 # www.blender.org
 mtllib CenterSpline.mtl
 g CenterSpline_Circle.008
@@ -220,7 +220,6 @@ v -101.084579 -7.168860 -0.620853
 v -76.066460 -7.168860 -0.620853
 v -51.048676 -7.168860 -0.620853
 v -26.031057 -7.168860 -0.620853
-v -1.012450 -7.168860 -0.620853
 l 1 2
 l 2 3
 l 3 4
@@ -438,4 +437,3 @@ l 214 215
 l 215 216
 l 216 217
 l 217 218
-l 218 219
