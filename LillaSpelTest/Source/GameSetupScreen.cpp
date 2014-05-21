@@ -107,6 +107,7 @@ void GameSetupScreen::SaveInfo()
 {
 	m_graphicHandle->RemoveLevelDraw();
 	m_gameInfo->map = currentMap;
+	m_gameInfo->numberOfLaps = m_numberOfLaps;
 }
 
 void GameSetupScreen::ChangeLevel(std::vector<UserCMD>* userCMD )
