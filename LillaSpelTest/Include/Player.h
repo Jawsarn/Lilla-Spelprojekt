@@ -146,6 +146,10 @@ private:
 	float m_dampShipRotation;
 	float m_currentAngle;
 	bool m_changedNode;
+
+	float m_radius;
+	float m_vehicleHoverDistance;
+
 	//unused but perhaps needed stuff
 	XMFLOAT3 m_color;
 	PlayerState m_state;

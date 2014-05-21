@@ -71,6 +71,8 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_finishAngle = 0;
 	m_finishSlideSpeed = 0;
 	m_lap = 1;
+
+	m_radius = p_startNode->m_radius;
 	m_changedNode = false;
 
 	////BALANCING VARIABLES
@@ -107,7 +109,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	//the speed at which camera follows the ship when turning
 	m_cameraFollowSpeed = 0.0005;
 
-	//how far behind the vehicle the camera is  //4321
+	//how far behind the vehicle the camera is 
 	m_cameraTrailDistanceTarget = 8;
 	//how high above the vehicle the camera is
 	m_cameraTrailDistanceUp = 0.7;
@@ -145,6 +147,8 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_minFinishAngle = 3.1415/2;
 
 	m_finishSlideSpeedCoefficient = 0.01;
+
+	m_vehicleHoverDistance = 1.5;
 
 	////FINAL WORLD MATRIX INITIALIZATION
 	SetDirection();
@@ -489,7 +493,7 @@ void Player::FixUpVectorRotation(float p_angle)
 
 void Player::FixOffsetFromCenterSpline()
 {
-	m_position = m_mathHelper.VecAddVec(m_position, m_mathHelper.FloatMultiVec(-m_mapNode->m_radius + (m_mapNode->m_radius / 4), m_up));
+	m_position = m_mathHelper.VecAddVec(m_position, m_mathHelper.FloatMultiVec(-m_radius+m_vehicleHoverDistance, m_up));
 }
 
 void Player::BobOffset()
@@ -671,9 +675,9 @@ void Player::GravityShift(float p_progress)
 	float t_cameraProgress = m_gravityShiftCameraMoveSpeed * p_progress;
 	if (t_cameraProgress > 1)
 		t_cameraProgress = 1;
-
-	float t_radius = m_mapNode->m_radius + cos(p_progress*3.14)*(m_mapNode->m_radius / 4);
-	float t_cameraRadius = m_mapNode->m_radius + cos(t_cameraProgress*3.14)*(m_mapNode->m_radius / 4);
+	//m_radius+m_vehicleHoverDistance
+	float t_radius = m_radius + cos(p_progress*3.14)*m_vehicleHoverDistance;
+	float t_cameraRadius = m_radius + cos(t_cameraProgress*3.14)*m_vehicleHoverDistance;
 
 
 	//XMVECTOR t_cameraEyeVector = t_eyeVector + t_upVector*m_cameraTrailDistanceUp + m_cameraTrailDistanceTarget*t_targetVector*-1;
