@@ -190,7 +190,7 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 
 	if (m_state == STARTING)
 		StartupSpam();
-	else if(!m_finishProgress)//if you ain't startin', you're boostin'
+	else//if you ain't startin', you're boostin'
 		Acceleration(p_dt);
 	if (m_state == NORMAL || m_state == IMMORTAL)	
 	{
@@ -222,7 +222,7 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 
 	UpdateTimers(p_dt);
 
-
+	
 
 	if (m_state == IMMORTAL)
 	{
@@ -298,6 +298,8 @@ void Player::Acceleration(float p_dt)
 	}
 	if (m_currentUserCmd.xButtonPressed)
 		m_speed += 2 * m_boostAcceleration*p_dt;
+	if(m_finishProgress>=1)
+		m_speed=0;
 }
 
 void Player::Rotation(float p_dt)
