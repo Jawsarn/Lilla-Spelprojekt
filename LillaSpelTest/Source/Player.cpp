@@ -93,7 +93,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_boostFromPad = 3000;//testValue
 
 	//how quickly you rotate
-	m_rotateSpeed = 0.05;
+	m_rotateSpeed = 0.15/pow(m_radius, 0.8);
 	m_dampShipRotation = 0.03;
 
 	//wall stuff
@@ -147,7 +147,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_minFinishAngle = 3.1415/2;
 
 	m_finishSlideSpeedCoefficient = 0.01;
-
+	m_isDrawn =true;
 	m_vehicleHoverDistance = 0.2*m_radius;
 
 	////FINAL WORLD MATRIX INITIALIZATION
@@ -1115,4 +1115,18 @@ void Player::DampDirectionRotation(float p_dt)
 		m_currentAngle-=m_dampShipRotation*p_dt;
 	}
 
+}
+float Player::GetMaxImmortalTimer()
+{
+	return m_maxImmortalTimer;
+}
+
+bool Player::GetDrawn()
+{
+	return m_isDrawn;
+}
+
+void Player::SetDrawn(bool p_condition)
+{
+	m_isDrawn = p_condition;
 }
