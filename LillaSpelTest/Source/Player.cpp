@@ -75,9 +75,8 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 
 	////BALANCING VARIABLES
 
-
-	//max boost meter
-	m_maxBoost = 5;
+	//speed
+	m_maxBoost = 5;//seconds you can boost whilst at max value
 	m_boostGain = 1;//prolly not gonna be used
 
 	m_maxSpeed = 25;
@@ -87,7 +86,8 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_boostAcceleration = 30;
 	m_deceleration = 7;
 	m_break = 25;
-	m_boostFromPad = 300;//testValue
+	m_minSpeed = 3;
+	m_boostFromPad = 3000;//testValue
 
 	//how quickly you rotate
 	m_rotateSpeed = 0.05;
@@ -276,10 +276,10 @@ void Player::Acceleration(float p_dt)
 	//break
 	else if(m_currentUserCmd.rightBumberPressed)
 	{
-		if(m_speed>0)
+		if(m_speed>m_minSpeed)
 			m_speed -= m_break*p_dt;
 		else 
-			m_speed = 0;
+			m_speed = m_minSpeed;
 
 	}
 	//ordinary acceleration
