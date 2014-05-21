@@ -148,7 +148,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 
 	m_finishSlideSpeedCoefficient = 0.01;
 
-	m_vehicleHoverDistance = 1.5;
+	m_vehicleHoverDistance = 0.2*m_radius;
 
 	////FINAL WORLD MATRIX INITIALIZATION
 	SetDirection();
@@ -596,9 +596,9 @@ void Player::UpdateWorldMatrix()
 	//rotate along new up vector
 
 	if(m_state !=FINISHING)
-		t_directionRotationMatrixUp = XMMatrixRotationAxis(t_vehicleUpVector, m_currentAngle * 10 * (4/(m_speed+1)));//Gives a bad value during countdown				//////////////////////////MAKE SURE YOU CHANGE THIS HARDCODED 10 CRAP////////////////
+		t_directionRotationMatrixUp = XMMatrixRotationAxis(t_vehicleUpVector, m_currentAngle * 10 * (3.1415/(m_speed+1)));//Gives a bad value during countdown				//////////////////////////MAKE SURE YOU CHANGE THIS HARDCODED 10 CRAP////////////////
 	else
-		t_directionRotationMatrixUp = XMMatrixRotationAxis(t_vehicleUpVector, m_currentAngle * 10 * (4/(m_finishSpeed+1))+t_finishRotation);
+		t_directionRotationMatrixUp = XMMatrixRotationAxis(t_vehicleUpVector, m_currentAngle * 10 * (3.1415/(m_finishSpeed+1))+t_finishRotation);
 
 	t_vehicleTargetVector = XMVector3Transform(t_vehicleTargetVector, t_directionRotationMatrixUp);
 	t_vehicleTargetVector = XMVector3Normalize(t_vehicleTargetVector);
@@ -634,7 +634,7 @@ void Player::UpdateWorldMatrix()
 
 
 	/////FINAL CAMERA MATRIX SET/////////
-	XMStoreFloat4x4(&m_cameraMatrix, XMMatrixLookAtLH(t_cameraEyeVector+2*XMLoadFloat3(&m_unmodifiedTarget), t_cameraTargetVector+XMLoadFloat3(&m_unmodifiedUp)*t_radius*t_cameraProgressY, t_cameraUpVector));
+	XMStoreFloat4x4(&m_cameraMatrix, XMMatrixLookAtLH(t_cameraEyeVector+0*XMLoadFloat3(&m_unmodifiedTarget), t_cameraTargetVector+XMLoadFloat3(&m_unmodifiedUp)*t_radius*t_cameraProgressY, t_cameraUpVector));
 
 
 	XMVECTOR t_bobOffsetVector = XMLoadFloat3(&m_bobOffset);
