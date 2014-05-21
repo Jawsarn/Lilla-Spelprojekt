@@ -29,6 +29,7 @@ HWND	m_HandleWindow;
 
 ApplicationState m_state;
 std::vector<std::string> m_levelNames;
+
 //// The different screens ////
 Screen* m_mainMenuScreen;
 Screen* m_gameSetupScreen;
@@ -62,12 +63,16 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	
 
 	m_LastMousePos = XMFLOAT2(0,0);
-
+	std::vector<bool> t_levelMultipleLaps;
 
 	m_levelNames.push_back("Levels/Assault");
+	t_levelMultipleLaps.push_back(false);
 	m_levelNames.push_back("Levels/Dust2");
+	t_levelMultipleLaps.push_back(false);
 	m_levelNames.push_back("Levels/Aztec");
+	t_levelMultipleLaps.push_back(false);
 	m_levelNames.push_back("Levels/Aztec2");
+	t_levelMultipleLaps.push_back(true);
 
 
 	m_GraphicHandle = m_GraphicHandle->GetInstance();
@@ -79,7 +84,7 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
 
 	m_mainMenuScreen = new MainMenuScreen(m_GraphicHandle, m_audioManager);
-	m_gameSetupScreen = new GameSetupScreen(&m_gameInfo,m_GraphicHandle, m_audioManager,m_levelNames);
+	m_gameSetupScreen = new GameSetupScreen(&m_gameInfo,m_GraphicHandle, m_audioManager,m_levelNames,t_levelMultipleLaps);
 	m_optionsScreen = new OptionsScreen(&m_gameInfo,m_GraphicHandle, m_audioManager);
 	m_joinGameScreen = new JoinGameScreen(&m_gameInfo,m_GraphicHandle, m_audioManager);
 	m_pauseScreen = new PauseScreen(&m_gameInfo,m_GraphicHandle, m_audioManager);
