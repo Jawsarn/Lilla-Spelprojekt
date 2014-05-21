@@ -71,6 +71,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_finishAngle = 0;
 	m_finishSlideSpeed = 0;
 	m_lap = 1;
+	m_changedNode = false;
 
 	////BALANCING VARIABLES
 
@@ -174,7 +175,7 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 {
 	m_direction = XMFLOAT3(0, 0, 1);//not sure if entirely needed...
 	int r_returnInt = 0;
-
+	m_changedNode = false;
 	m_previousUserCmd = m_currentUserCmd;
 	m_currentUserCmd = p_userCMD;
 
@@ -321,6 +322,7 @@ void Player::MovementAlongLogicalMap(float p_dt)
 		float t_remainingDistance = m_distance - m_mathHelper.Abs(m_mapNode->m_normal);
 		m_distance = t_remainingDistance;
 		m_mapNode = m_mapNode->m_nextNode;
+		m_changedNode = true;
 	}
 	//Moves the position along the normal of current node with distance
 	XMFLOAT3 t_nodeNormalDirection = m_mathHelper.Normalize(m_mapNode->m_normal);
@@ -909,6 +911,11 @@ int Player::CurrentLap()
 	return m_lap;
 }
 
+float Player::GetImmortalTimer()
+{
+	return m_immortalTimer;
+}
+
 //Modifiers
 void Player::Die()
 {
@@ -958,6 +965,11 @@ void Player::SetShockwaveCooldown()
 void Player::NextLap()
 {
 	m_lap++;
+}
+
+bool Player::ChangedNode()
+{
+	return m_changedNode;
 }
 
 void Player::Start()
