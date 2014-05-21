@@ -111,8 +111,8 @@ public:
 	void AddSelectionDraw();
 	void RemoveSelectionDraw();
 	void SetSelectionColour(int p_WhatPlayer, int p_ColourSelected);
-
-	
+	void RemoveDrawPlayer(int p_PlayerID);
+	void AddDrawPlayer(int p_PlayerID);
 	UINT CreateWall(int p_WhatWall,CXMMATRIX p_PlayerWallWorld,int p_WhatPlayer);
 
 
