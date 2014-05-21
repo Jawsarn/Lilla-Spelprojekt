@@ -144,7 +144,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_minFinishAngle = 3.1415/2;
 
 	m_finishSlideSpeedCoefficient = 0.01;
-
+	m_isDrawn =true;
 	////FINAL WORLD MATRIX INITIALIZATION
 	SetDirection();
 	FixUpVectorRotation(m_angle);
@@ -1108,4 +1108,18 @@ void Player::DampDirectionRotation(float p_dt)
 		m_currentAngle-=m_dampShipRotation*p_dt;
 	}
 
+}
+float Player::GetMaxImmortalTimer()
+{
+	return m_maxImmortalTimer;
+}
+
+bool Player::GetDrawn()
+{
+	return m_isDrawn;
+}
+
+void Player::SetDrawn(bool p_condition)
+{
+	m_isDrawn = p_condition;
 }

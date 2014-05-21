@@ -58,6 +58,7 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4],string p_tauntSound[
 	m_preUpdateCountdown = 0;
 	PlaySounds();
 	CreatePlayerHUDs(p_numberOfPlayers,p_color, p_mapName);
+	m_immortalCounter = 0;
 }
 
 GameScreen::~GameScreen(void)
@@ -179,13 +180,33 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 			PlacePlayerWall(i);
 		}
 
-		/*if (m_players[i]->GetImmortal())
+		if (m_players[i]->GetImmortal())
 		{
-			
-			if(powf(cos(p_dt),m_players[i]->GetMaxImmortalTimer-m_players[i]->GetImmortalTimer));
-			m_graphicHandle->RemoveDrawPlayer(i);
+			if (m_immortalCounter>m_players[i]->GetMaxImmortalTimer())
+			{
+				m_immortalCounter = 0;
+			}
+			m_immortalCounter+=p_dt;
 
-		}*/
+			if(cos(m_immortalCounter*m_immortalCounter*4)>0&&m_players[i]->GetDrawn())
+			{
+				m_graphicHandle->RemoveDrawPlayer(i);
+				m_players[i]->SetDrawn(false);
+			}
+			else if(cos(m_immortalCounter*m_immortalCounter*4)<0&&!m_players[i]->GetDrawn())
+			{
+				m_graphicHandle->AddDrawPlayer(i);
+				m_players[i]->SetDrawn(true);
+			}
+
+
+		}
+		else if(!m_players[i]->GetDrawn())
+		{
+			m_graphicHandle->AddDrawPlayer(i);
+			m_players[i]->SetDrawn(true);
+		}
+
 
 
 		switch(m_state)
