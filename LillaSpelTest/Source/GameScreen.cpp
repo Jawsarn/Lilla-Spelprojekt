@@ -179,11 +179,13 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 			PlacePlayerWall(i);
 		}
 
-		if (m_players[i]->GetImmortal())
+		/*if (m_players[i]->GetImmortal())
 		{
+			
+			if(powf(cos(p_dt),m_players[i]->GetMaxImmortalTimer-m_players[i]->GetImmortalTimer));
 			m_graphicHandle->RemoveDrawPlayer(i);
 
-		}
+		}*/
 
 
 		switch(m_state)
@@ -275,7 +277,7 @@ void GameScreen::CollisionCheck(int p_currentPlayer, float p_dt, UserCMD& p_user
 
 	//player vs playerwall
 	vector<PlayerWall*> t_playerWallsToCheck = t_currMapNode->m_playerWalls;
-	int t_collisionResult = m_collisionManager->PlayerVsPlayerWall(m_players[p_currentPlayer]->GetCollisionBox(), t_playerWallsToCheck, p_currentPlayer);
+	int t_collisionResult = m_collisionManager->PlayerVsPlayerWall(m_players[p_currentPlayer], t_playerWallsToCheck, p_currentPlayer);
 	if(t_collisionResult == -1)	
 	{
 		PlayerDiePlayerWall(p_currentPlayer);
