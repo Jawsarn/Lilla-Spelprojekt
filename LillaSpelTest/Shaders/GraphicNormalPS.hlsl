@@ -11,6 +11,8 @@ cbuffer PerObjectBuffer	:register(c0)
 
 Texture2D diffuseTexture	: register(t0);
 Texture2D normalGlow		: register(t1);
+TextureCube cubeMap			: register(t2);
+
 
 SamplerState wrapSampler	: register(s0);
 

@@ -68,14 +68,14 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	}
 	//add particle effects
 	ParticleStruct t_NewPart;
-	t_NewPart.posOffsets = XMFLOAT3(0.3f,0.1f,-0.5f);
+	t_NewPart.posOffsets = XMFLOAT3(0.35f,0.06f,-0.15f);
 
 	m_ShipParticleEffects.push_back(t_NewPart);
 	m_ShipParticleEffects.push_back(t_NewPart);
-	t_NewPart.posOffsets = XMFLOAT3(0.1f,0.05f,-0.5f);
+	t_NewPart.posOffsets = XMFLOAT3(0.1f,0.06f,-0.5f);
 
 	m_ShipParticleEffects.push_back(t_NewPart);
-	t_NewPart.posOffsets = XMFLOAT3(0.3f,0.1f,-0.5f);
+	t_NewPart.posOffsets = XMFLOAT3(0.35f,0.06f,-0.15f);
 	m_ShipParticleEffects.push_back(t_NewPart);
 
 
@@ -390,10 +390,12 @@ void GraphicHandle::SetVehicleSelectionCamera(UINT p_CameraLogicID)
 
 	}
 }
+
 void GraphicHandle::JohnSetCamera(CXMMATRIX p_World, UINT p_CameraLogicID)
 {
 	m_GraphicEngine->SetCamera(m_CameraID[p_CameraLogicID],p_World);
 }
+
 void GraphicHandle::CreatePlayer(std::vector<UINT> p_DrawPieceIDs, CXMMATRIX p_World, bool addToDrawNow, UINT &o_ObjectID,XMFLOAT3 p_Pos, XMFLOAT3 p_At, XMFLOAT3 p_Up, float p_FieldOfView, float p_Width, float p_Height, float p_NearZ, float p_FarZ, UINT &o_CameraID)
 {
 
@@ -408,6 +410,7 @@ void GraphicHandle::DrawGame(float p_DeltaTime) //test
 {
 	m_GraphicEngine->DrawGame(p_DeltaTime);
 }
+
 void GraphicHandle::CreateLight(int p_PlayerIndex,XMFLOAT3 p_Color,UINT p_ObjectId, LightStruct &p_LightStruct)
 {
 	m_GraphicEngine->AddObjectLight(p_ObjectId,p_LightStruct.m_Position,p_LightStruct.m_Color,p_LightStruct.m_Radius,p_LightStruct.m_LightID);
@@ -437,7 +440,7 @@ void GraphicHandle::CreateShipForGame(std::vector<XMFLOAT4X4> p_PlayerWorld)
 
 		XMFLOAT3 t_Offsets = t_ParStru.posOffsets;
 		std::vector<Particle> t_InitParticles;
-		t_InitParticles.push_back(Particle(XMFLOAT3(0,0,0), XMFLOAT3(0,0,0), XMFLOAT3(0, 1, 0) ,XMFLOAT2(1,1),0.0f, 0.0f,1.0f,1));
+		t_InitParticles.push_back(Particle(XMFLOAT3(0,0,0), XMFLOAT3(0,0,0), XMFLOAT3(0, 1, 0) ,XMFLOAT2(1,1),0.0f, 0.0f,0.0f,1));
 
 		UINT t_InitParticleID1;
 		m_GraphicEngine->CreateInitParticleBuffer(t_InitParticles, t_InitParticleID1);
@@ -447,13 +450,14 @@ void GraphicHandle::CreateShipForGame(std::vector<XMFLOAT4X4> p_PlayerWorld)
 		XMMATRIX t_Tempus = XMMatrixIdentity();
 		//big ones
 		
-		m_GraphicEngine->CreateParticleSystem( 0, L"ParticleEngineTail.dds",t_InitParticleID1, 1000, m_Colours[m_PlayerColour[i]], 0.1f, 4.0f, 1.0f,XMFLOAT2(0.2f,0.5f), 0.0f, 1.0f, XMFLOAT4(t_Offsets.x, t_Offsets.y, t_Offsets.z, 1), t_Tempus,t_ParticleSystemID );
+		m_GraphicEngine->CreateParticleSystem( 0, L"ParticleEngineTail.dds",t_InitParticleID1, 1000, m_Colours[m_PlayerColour[i]], 0.05f, 0.5f, 1.0f,XMFLOAT2(0.2f,0.5f), 0.0f, 1.0f, XMFLOAT4(t_Offsets.x, t_Offsets.y, t_Offsets.z, 1), t_Tempus,t_ParticleSystemID );
 		m_GraphicEngine->AddObjectParticleSystem(m_Player[i], t_ParticleSystemID);
-		m_GraphicEngine->CreateParticleSystem( 0, L"ParticleEngineTail.dds",t_InitParticleID1, 1000, m_Colours[m_PlayerColour[i]], 0.1f, 4.0f, 1.0f,XMFLOAT2(0.2f,0.5f), 0.0f, 1.0f, XMFLOAT4(-t_Offsets.x, t_Offsets.y, t_Offsets.z, 1), t_Tempus,t_ParticleSystemID );
+		m_GraphicEngine->CreateParticleSystem( 0, L"ParticleEngineTail.dds",t_InitParticleID1, 1000, m_Colours[m_PlayerColour[i]], 0.05f, 0.5f, 1.0f,XMFLOAT2(0.2f,0.5f), 0.0f, 1.0f, XMFLOAT4(-t_Offsets.x, t_Offsets.y, t_Offsets.z, 1), t_Tempus,t_ParticleSystemID );
 		m_GraphicEngine->AddObjectParticleSystem(m_Player[i], t_ParticleSystemID);
 		
 	}
 }
+
 void GraphicHandle::SelectVehicle()
 {
 
@@ -784,6 +788,9 @@ void GraphicHandle::CreateMapLights(std::vector<XMFLOAT3> p_CenterSpline)
 
 		counter += 15;
 	}
+	UINT id;
+	m_GraphicEngine->CreateStaticLight(p_CenterSpline[p_CenterSpline.size() - 1], XMFLOAT3(1,1,1), 30.0f,id);
+
 }
 
 void GraphicHandle::RemoveLights()
