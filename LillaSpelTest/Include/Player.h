@@ -36,6 +36,8 @@ private:
 	float m_boostAcceleration;
 	float m_deceleration;
 	float m_break;
+	float m_breakCoefficient;
+	float m_minSpeed;
 	float m_boostFromPad;
 
 	//rotation stuff
@@ -145,6 +147,11 @@ private:
 	float m_currentAngle;
 	bool m_changedNode;
 	bool m_isDrawn;
+
+
+	float m_radius;
+	float m_vehicleHoverDistance;
+
 	//unused but perhaps needed stuff
 	XMFLOAT3 m_color;
 	PlayerState m_state;

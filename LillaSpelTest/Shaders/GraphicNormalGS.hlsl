@@ -9,11 +9,12 @@ struct GS_INPUT
 
 struct GS_OUTPUT
 {
-	float4 Position : SV_POSITION;
-	float3 Normal	: NORMAL;
-	float2 Tex		: TEXCOORD;
-	float2 Depth	: DEPTH;
-	uint Viewport	: SV_ViewportArrayIndex;
+	float4 Position		: SV_POSITION;
+	float3 PositionW	: POSITION;
+	float3 Normal		: NORMAL;
+	float2 Tex			: TEXCOORD;
+	float2 Depth		: DEPTH;
+	uint Viewport		: SV_ViewportArrayIndex;
 };
 
 [maxvertexcount(12)]
@@ -25,6 +26,7 @@ void GS( triangle GS_INPUT input[3], inout TriangleStream<GS_OUTPUT> triangleStr
 		{
 			GS_OUTPUT output;
 			output.Position = mul(float4(input[i].Position, 1), World);
+			output.PositionW = output.Position;
 			output.Position = mul(output.Position, View[j]);
 			output.Position = mul(output.Position, Projection[j]);
 		/*	output.position = mul(output.position, ViewProjection);*/

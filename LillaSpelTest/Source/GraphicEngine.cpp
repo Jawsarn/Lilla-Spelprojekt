@@ -84,6 +84,11 @@ HRESULT GraphicEngine::Initialize( UINT p_Width, UINT p_Height, HWND handleWindo
 	if( FAILED( hr ) )
 		return hr;
 	
+	//test
+	UINT p_Skymap;
+	LoadTexture(L"Skymap.dds",p_Skymap);
+
+	SetSkymap(p_Skymap);
 
 	
 	return hr;
@@ -594,6 +599,7 @@ HRESULT GraphicEngine::InitializeConstantBuffers()
 	//m_DeviceContext->GSSetConstantBuffers(2,1,&m_HudConstantBuffer);
 
 	m_DeviceContext->PSSetConstantBuffers(0,1,&m_PerObjectBuffer);
+	m_DeviceContext->PSSetConstantBuffers(1,1,&m_PerFrameBuffer );
 
 	m_DeviceContext->CSSetConstantBuffers(0,1,&m_PerFrameBuffer);
 	m_DeviceContext->CSSetConstantBuffers(1,1,&m_PerComputeBuffer);
@@ -1730,4 +1736,13 @@ void GraphicEngine::RemoveParticleSystem(UINT p_SystemID)
 void GraphicEngine::UpdateParticleSystem(UINT p_SystemID, float p_SpawnTimer, float p_ParticleLifespan, XMFLOAT2 p_ParticleInitSize, float p_Speed, float p_EngineSpeed )
 {
 	m_ParticleSystem->UpdateParticleSystem(p_SystemID, p_SpawnTimer, p_ParticleLifespan, p_ParticleInitSize, p_Speed, p_EngineSpeed);
+}
+
+///////////////////////////////////////////////
+//==========Skymap functions=================//
+///////////////////////////////////////////////
+
+void GraphicEngine::SetSkymap(UINT p_TextureID)
+{
+	m_DeviceContext->PSSetShaderResources(2, 1, &m_Textures[p_TextureID]);
 }

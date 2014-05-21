@@ -29,7 +29,8 @@ void GS( point VS_OUTPUT gin[1], inout TriangleStream< GS_OUTPUT > tristreamStre
 	for (int i = 0; i < NumberOfViewports; i++)
 	{
 			
-		float2 d = gin[0].Size;
+		float2 dOne = gin[0].Size * (gin[0].Lifespan - gin[0].AgeOne)/gin[0].Lifespan; //
+		float2 dTwo = gin[0].Size * (gin[0].Lifespan - gin[0].AgeTwo)/gin[0].Lifespan;//
 
 		float3 toEyeOne = normalize( EyePosition[i] - gin[0].PosOneW );
 		float3 toEyeTwo = normalize( EyePosition[i] - gin[0].PosTwoW );
@@ -44,7 +45,7 @@ void GS( point VS_OUTPUT gin[1], inout TriangleStream< GS_OUTPUT > tristreamStre
 
 
 		GS_OUTPUT v0; //first left ?
-		v0.PosH.xyz = gin[0].PosOneW - toSideOne*d.x;
+		v0.PosH.xyz = gin[0].PosOneW - toSideOne*dOne.x;
 		v0.PosH = mul(float4(v0.PosH.xyz, 1.0f), View[i]);
 		v0.PosH = mul(v0.PosH, Projection[i]);
 		v0.Norm = normOne;
@@ -55,7 +56,7 @@ void GS( point VS_OUTPUT gin[1], inout TriangleStream< GS_OUTPUT > tristreamStre
 		tristreamStream.Append(v0);
 
 		GS_OUTPUT v1;
-		v1.PosH.xyz = gin[0].PosOneW + toSideOne*d.x;
+		v1.PosH.xyz = gin[0].PosOneW + toSideOne*dOne.x;
 		v1.PosH = mul(float4(v1.PosH.xyz, 1.0f), View[i]);
 		v1.PosH = mul(v1.PosH, Projection[i]);
 		v1.Norm = normOne;
@@ -66,7 +67,7 @@ void GS( point VS_OUTPUT gin[1], inout TriangleStream< GS_OUTPUT > tristreamStre
 		tristreamStream.Append(v1);
 
 		GS_OUTPUT v2; // second left?
-		v2.PosH.xyz = gin[0].PosTwoW - toSideTwo*d.x;
+		v2.PosH.xyz = gin[0].PosTwoW - toSideTwo*dTwo.x;
 		v2.PosH = mul(float4(v2.PosH.xyz, 1.0f), View[i]);
 		v2.PosH = mul(v2.PosH, Projection[i]);
 		v2.Norm = normTwo;
@@ -78,7 +79,7 @@ void GS( point VS_OUTPUT gin[1], inout TriangleStream< GS_OUTPUT > tristreamStre
 		tristreamStream.RestartStrip();
 
 		GS_OUTPUT v3; //second left...
-		v3.PosH.xyz = gin[0].PosTwoW - toSideTwo*d.x;
+		v3.PosH.xyz = gin[0].PosTwoW - toSideTwo*dTwo.x;
 		v3.PosH = mul(float4(v3.PosH.xyz, 1.0f), View[i]);
 		v3.PosH = mul(v3.PosH, Projection[i]);
 		v3.Norm = normTwo;
@@ -89,7 +90,7 @@ void GS( point VS_OUTPUT gin[1], inout TriangleStream< GS_OUTPUT > tristreamStre
 		tristreamStream.Append(v3);
 
 		GS_OUTPUT v4; //whwhw
-		v4.PosH.xyz = gin[0].PosOneW + toSideOne*d.x;
+		v4.PosH.xyz = gin[0].PosOneW + toSideOne*dOne.x;
 		v4.PosH = mul(float4(v4.PosH.xyz, 1.0f), View[i]);
 		v4.PosH = mul(v4.PosH, Projection[i]);
 		v4.Norm = normOne;
@@ -100,7 +101,7 @@ void GS( point VS_OUTPUT gin[1], inout TriangleStream< GS_OUTPUT > tristreamStre
 		tristreamStream.Append(v4);
 
 		GS_OUTPUT v5;
-		v5.PosH.xyz = gin[0].PosTwoW + toSideTwo*d.x;
+		v5.PosH.xyz = gin[0].PosTwoW + toSideTwo*dTwo.x;
 		v5.PosH = mul(float4(v5.PosH.xyz, 1.0f), View[i]);
 		v5.PosH = mul(v5.PosH, Projection[i]);
 		v5.Norm = normTwo;

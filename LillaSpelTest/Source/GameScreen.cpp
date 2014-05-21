@@ -180,7 +180,7 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 			PlacePlayerWall(i);
 		}
 
-		if (m_players[i]->GetImmortal())
+		if (m_players[i]->GetImmortal() && m_players[i]->GetImmortalTimer()>0)
 		{
 			if (m_immortalCounter>m_players[i]->GetMaxImmortalTimer())
 			{

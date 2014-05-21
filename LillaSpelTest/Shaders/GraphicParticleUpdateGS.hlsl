@@ -59,7 +59,7 @@ void GS( point Particle input[1],  inout PointStream< Particle > ptStream )
 		if (t > spawnTimer) //if the age form first has reached a limit, then set the second 
 		{
 			//finish the particle you're on and craete the new one at age  0
-			origin.AgeTwo = origin.AgeOne + 1.0f;
+			origin.AgeTwo = origin.AgeOne + spawnTimer;
 			origin.Type = 0;
 
 			Particle newPart;

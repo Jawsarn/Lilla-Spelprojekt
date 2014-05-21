@@ -16,6 +16,7 @@ struct GameInfo
 	bool playerOnline[4];
 	int resolution;
 	int map;
+	int numberOfLaps;
 
 	GameInfo()
 	{
