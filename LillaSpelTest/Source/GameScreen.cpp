@@ -179,6 +179,13 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 			PlacePlayerWall(i);
 		}
 
+		if (m_players[i]->GetImmortal())
+		{
+			m_graphicHandle->RemoveDrawPlayer(i);
+
+		}
+
+
 		switch(m_state)
 		{
 		case COUNTDOWN:
