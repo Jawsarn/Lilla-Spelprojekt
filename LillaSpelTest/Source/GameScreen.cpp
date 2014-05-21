@@ -8,7 +8,7 @@ GameScreen::GameScreen(void)
 GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4],string p_tauntSound[4], std::string p_mapName, int p_numberOfPlayers, GraphicHandle* p_graphicHandle, AudioManager* p_audioManager, int p_nrOfLaps)
 	:Screen(p_graphicHandle, p_audioManager)
 {
-	m_nrOfLaps = p_nrOfLaps;////SILLY HARDCODED TEST VALUE
+	m_nrOfLaps = p_nrOfLaps+1;
 	m_engineSound[0] = "Engine1.wav";
 	m_engineSound[1] = "Engine2.wav";
 	m_engineSound[2] = "Engine3.wav";
@@ -147,7 +147,7 @@ void GameScreen::PreUpdate(float p_dt, std::vector<UserCMD>* p_userCMDS, int p_P
 
 int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS) 
 {
-	int t_finnished = 0;
+	int t_finished = 0;
 	for (int i = 0; i < m_players.size(); i++)
 	{
 		if(PauseCheck(i, p_userCMDS->at(i)) == PAUSE_SCREEN)
@@ -155,16 +155,16 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 			StopSounds();
 			return PAUSE_SCREEN;
 		}
-		//first, semi-underdeveloped win condition check
-		if (m_lastNodeIndex <= m_players[i]->GetCurrentMapNode()->m_Index&&!m_players[i]->HasFinished())
+
+		if (m_lastNodeIndex == m_players[i]->GetCurrentMapNode()->m_Index&&!m_players[i]->HasFinished())
 		{
 			if(m_players[i]->CurrentLap() >= m_nrOfLaps)
 			{
 				m_players[i]->Finish();
 				m_audioManager->RemoveSpecificSound(m_engineSound[i]);
-				t_finnished++;
+				t_finished++;
 			}
-			else
+			else if(m_players[i]->ChangedNode())
 				m_players[i]->NextLap();
 		}
 		if (m_vibrationTimer[i] > 0)
@@ -178,6 +178,15 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 		{
 			PlacePlayerWall(i);
 		}
+
+		/*if (m_players[i]->GetImmortal())
+		{
+			
+			if(powf(cos(p_dt),m_players[i]->GetMaxImmortalTimer-m_players[i]->GetImmortalTimer));
+			m_graphicHandle->RemoveDrawPlayer(i);
+
+		}*/
+
 
 		switch(m_state)
 		{
@@ -207,7 +216,7 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 	{
 		DrawPlayer(i);
 	}
-	if (t_finnished == m_players.size())
+	if (t_finished == m_players.size())
 	{
 		//return GOAL_SCREEN;
 	}
@@ -268,7 +277,7 @@ void GameScreen::CollisionCheck(int p_currentPlayer, float p_dt, UserCMD& p_user
 
 	//player vs playerwall
 	vector<PlayerWall*> t_playerWallsToCheck = t_currMapNode->m_playerWalls;
-	int t_collisionResult = m_collisionManager->PlayerVsPlayerWall(m_players[p_currentPlayer]->GetCollisionBox(), t_playerWallsToCheck, p_currentPlayer);
+	int t_collisionResult = m_collisionManager->PlayerVsPlayerWall(m_players[p_currentPlayer], t_playerWallsToCheck, p_currentPlayer);
 	if(t_collisionResult == -1)	
 	{
 		PlayerDiePlayerWall(p_currentPlayer);

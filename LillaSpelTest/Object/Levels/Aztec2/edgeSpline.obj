@@ -1,4 +1,4 @@
-# Blender v2.70 (sub 0) OBJ File: 'PipePanic.blend'
+# Blender v2.70 (sub 0) OBJ File: 'PipePanic_2.blend'
 # www.blender.org
 mtllib EdgeSpline.mtl
 g EdgeSpline_Circle.009
@@ -220,7 +220,6 @@ v -101.085602 3.269549 -1.756468
 v -76.067490 3.269549 -1.756468
 v -51.049702 3.269549 -1.756468
 v -26.032084 3.269549 -1.756468
-v -1.013475 3.269549 -1.756468
 l 1 2
 l 2 3
 l 3 4
@@ -438,4 +437,3 @@ l 214 215
 l 215 216
 l 216 217
 l 217 218
-l 218 219

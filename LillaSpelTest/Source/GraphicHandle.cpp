@@ -695,7 +695,14 @@ void GraphicHandle::LoadTexture(const wchar_t* p_FileName, UINT &o_TextureID)
 {
 	m_GraphicEngine->LoadTexture(p_FileName, o_TextureID);
 }
-
+void GraphicHandle::RemoveDrawPlayer(int p_PlayerID)
+{
+	m_GraphicEngine->RemoveObjectFromDrawing(m_Player[p_PlayerID]);
+}
+void GraphicHandle::AddDrawPlayer(int p_PlayerID)
+{
+	m_GraphicEngine->AddObjectToDrawing(m_Player[p_PlayerID]);
+}
 void GraphicHandle::SetViewportAmount(UINT p_ViewportAmount)
 {
 	m_GraphicEngine->SetViewportAmount(p_ViewportAmount);

@@ -72,11 +72,13 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_finishSlideSpeed = 0;
 	m_lap = 1;
 
+	m_radius = p_startNode->m_radius;
+	m_changedNode = false;
+
 	////BALANCING VARIABLES
 
-
-	//max boost meter
-	m_maxBoost = 5;
+	//speed
+	m_maxBoost = 5;//seconds you can boost whilst at max value
 	m_boostGain = 1;//prolly not gonna be used
 
 	m_maxSpeed = 25;
@@ -85,8 +87,10 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_acceleration = 10;
 	m_boostAcceleration = 30;
 	m_deceleration = 7;
-	m_break = 25;
-	m_boostFromPad = 300;//testValue
+	m_break = 20;//static break force
+	m_breakCoefficient = 1;//coefficient that breaks depending on your current speed
+	m_minSpeed = 3;
+	m_boostFromPad = 3000;//testValue
 
 	//how quickly you rotate
 	m_rotateSpeed = 0.05;
@@ -105,7 +109,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	//the speed at which camera follows the ship when turning
 	m_cameraFollowSpeed = 0.0005;
 
-	//how far behind the vehicle the camera is  //4321
+	//how far behind the vehicle the camera is 
 	m_cameraTrailDistanceTarget = 8;
 	//how high above the vehicle the camera is
 	m_cameraTrailDistanceUp = 0.7;
@@ -144,6 +148,8 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 
 	m_finishSlideSpeedCoefficient = 0.01;
 
+	m_vehicleHoverDistance = 1.5;
+
 	////FINAL WORLD MATRIX INITIALIZATION
 	SetDirection();
 	FixUpVectorRotation(m_angle);
@@ -174,7 +180,7 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 {
 	m_direction = XMFLOAT3(0, 0, 1);//not sure if entirely needed...
 	int r_returnInt = 0;
-
+	m_changedNode = false;
 	m_previousUserCmd = m_currentUserCmd;
 	m_currentUserCmd = p_userCMD;
 
@@ -220,7 +226,7 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 
 	UpdateTimers(p_dt);
 
-
+	
 
 	if (m_state == IMMORTAL)
 	{
@@ -275,10 +281,10 @@ void Player::Acceleration(float p_dt)
 	//break
 	else if(m_currentUserCmd.rightBumberPressed)
 	{
-		if(m_speed>0)
-			m_speed -= m_break*p_dt;
+		if(m_speed>m_minSpeed)
+			m_speed -= m_break*p_dt+m_breakCoefficient*m_speed*p_dt;
 		else 
-			m_speed = 0;
+			m_speed = m_minSpeed;
 
 	}
 	//ordinary acceleration
@@ -296,6 +302,8 @@ void Player::Acceleration(float p_dt)
 	}
 	if (m_currentUserCmd.xButtonPressed)
 		m_speed += 2 * m_boostAcceleration*p_dt;
+	if(m_finishProgress>=1)
+		m_speed=0;
 }
 
 void Player::Rotation(float p_dt)
@@ -321,6 +329,7 @@ void Player::MovementAlongLogicalMap(float p_dt)
 		float t_remainingDistance = m_distance - m_mathHelper.Abs(m_mapNode->m_normal);
 		m_distance = t_remainingDistance;
 		m_mapNode = m_mapNode->m_nextNode;
+		m_changedNode = true;
 	}
 	//Moves the position along the normal of current node with distance
 	XMFLOAT3 t_nodeNormalDirection = m_mathHelper.Normalize(m_mapNode->m_normal);
@@ -484,7 +493,7 @@ void Player::FixUpVectorRotation(float p_angle)
 
 void Player::FixOffsetFromCenterSpline()
 {
-	m_position = m_mathHelper.VecAddVec(m_position, m_mathHelper.FloatMultiVec(-m_mapNode->m_radius + (m_mapNode->m_radius / 4), m_up));
+	m_position = m_mathHelper.VecAddVec(m_position, m_mathHelper.FloatMultiVec(-m_radius+m_vehicleHoverDistance, m_up));
 }
 
 void Player::BobOffset()
@@ -666,9 +675,9 @@ void Player::GravityShift(float p_progress)
 	float t_cameraProgress = m_gravityShiftCameraMoveSpeed * p_progress;
 	if (t_cameraProgress > 1)
 		t_cameraProgress = 1;
-
-	float t_radius = m_mapNode->m_radius + cos(p_progress*3.14)*(m_mapNode->m_radius / 4);
-	float t_cameraRadius = m_mapNode->m_radius + cos(t_cameraProgress*3.14)*(m_mapNode->m_radius / 4);
+	//m_radius+m_vehicleHoverDistance
+	float t_radius = m_radius + cos(p_progress*3.14)*m_vehicleHoverDistance;
+	float t_cameraRadius = m_radius + cos(t_cameraProgress*3.14)*m_vehicleHoverDistance;
 
 
 	//XMVECTOR t_cameraEyeVector = t_eyeVector + t_upVector*m_cameraTrailDistanceUp + m_cameraTrailDistanceTarget*t_targetVector*-1;
@@ -909,6 +918,11 @@ int Player::CurrentLap()
 	return m_lap;
 }
 
+float Player::GetImmortalTimer()
+{
+	return m_immortalTimer;
+}
+
 //Modifiers
 void Player::Die()
 {
@@ -958,6 +972,11 @@ void Player::SetShockwaveCooldown()
 void Player::NextLap()
 {
 	m_lap++;
+}
+
+bool Player::ChangedNode()
+{
+	return m_changedNode;
 }
 
 void Player::Start()
