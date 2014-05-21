@@ -30,7 +30,7 @@ public:
 	GameScreen(void);
 	int GetPauseDudeIndex();
 	void Initialize();
-	GameScreen(int p_colors[4], int p_whatVehicle[4],string p_tauntSound[4], string p_mapName, int p_numberOfPlayers, GraphicHandle* p_graphicHandle, AudioManager* p_audioManager);
+	GameScreen(int p_colors[4], int p_whatVehicle[4],string p_tauntSound[4], string p_mapName, int p_numberOfPlayers, GraphicHandle* p_graphicHandle, AudioManager* p_audioManager, int p_nrOfLaps);
 	~GameScreen(void);
 	int Update(float p_dt, std::vector<UserCMD>* p_userCMDS); //shouldnt be here
 	void PreUpdate(float p_dt, std::vector<UserCMD>* p_userCMDS, int p_Player);
