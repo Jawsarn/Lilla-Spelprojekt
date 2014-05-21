@@ -325,6 +325,10 @@ void GameScreen::DrawPlayer(int p_currentPlayer)
 void GameScreen::DrawPlayerHUD(int p_player)
 {
 	m_graphicHandle->ChangeHudObjectTexture(m_hudID[p_player],0,m_players[p_player]->GetRacePosition()-1);
+	//if (m_players[p_player]->CurrentLap() < m_nrOfLaps)
+	//{
+	//	m_graphicHandle->ChangeHudObjectTexture(m_hudID[p_player],4,m_players[p_player]->CurrentLap()-1);
+	//}
 	m_graphicHandle->UpdateHudBarOffset(m_hudID[p_player],1,DirectX::XMFLOAT2(m_players[p_player]->GetHudBoosterInfo(),0));
 	m_graphicHandle->UpdateHudBarOffset(m_hudID[p_player],2,DirectX::XMFLOAT2(m_players[p_player]->GetHudWallInfo(),0));
 }
@@ -347,7 +351,7 @@ void GameScreen::PlayerCloseToWall(int p_currentPlayer, int p_wallsCloseTo, floa
 
 void GameScreen::UpdateSounds(int p_player,std::vector<UserCMD>* p_userCMDS)
 {
-	if (p_userCMDS->at(p_player).leftBumberPressed)
+	if (p_userCMDS->at(p_player).leftRetardButtonPressed)
 	{
 		m_audioManager->PlaySpecificSound(m_tauntSound[p_player],false,AUDIO_ONLY_PLAY_ONE);
 	}
@@ -397,9 +401,11 @@ void GameScreen::CreatePlayerHUDs(int p_numberOfPlayers, int p_color[4], std::st
 	UINT t_boostBarHandle;
 	UINT t_wallBarHandle;
 	UINT t_MiedelHandle;
+	UINT t_lapsHandle;
 	std::vector<UINT> t_hudParts;
 	std::vector<UINT> t_textureIDs;
 	std::vector<UINT> t_textureCountDownID;
+
 	std::vector<DirectX::XMFLOAT2> t_barOffsets;
 	m_graphicHandle->LoadTexture(L"first.dds",t_texture);
 	t_textureIDs.push_back(t_texture);
@@ -444,6 +450,38 @@ void GameScreen::CreatePlayerHUDs(int p_numberOfPlayers, int p_color[4], std::st
 	m_graphicHandle->CreateHUDObject(DirectX::XMFLOAT2(0.0,0.0),DirectX::XMFLOAT2(0.2,0.2),t_textureCountDownID,t_MiedelHandle);
 	t_hudParts.push_back(t_MiedelHandle);
 	t_barOffsets.push_back(DirectX::XMFLOAT2(0,0));
+
+	t_textureIDs.clear();
+
+	//comment back for lap numbers and comment back in DrawHud, need to fix positioning 
+
+	//for (int i = 1; i < m_nrOfLaps; i++)
+	//{
+	//	char t_textureName[256];
+	//	itoa(i,t_textureName,10);
+	//	std::string t_string = t_textureName;
+	//	t_string += ".dds";
+	//	std::wstring t_wstring(t_string.begin(),t_string.end());
+	//	m_graphicHandle->LoadTexture(t_wstring.c_str(),t_texture);
+	//	t_textureIDs.push_back(t_texture);
+	//}
+	////for number of laps you have driven
+	//m_graphicHandle->CreateHUDObject(DirectX::XMFLOAT2(0,-0.5),DirectX::XMFLOAT2(0.5,0.2),t_textureIDs,t_lapsHandle);
+	//t_hudParts.push_back(t_lapsHandle);
+	//t_barOffsets.push_back(DirectX::XMFLOAT2(0,0));
+	////for total nubmer of laps
+	//t_textureIDs.erase(t_textureIDs.begin(),t_textureIDs.end()-1);
+	//m_graphicHandle->CreateHUDObject(DirectX::XMFLOAT2(0,0),DirectX::XMFLOAT2(0.5,0.2),t_textureIDs,t_lapsHandle);
+	//t_hudParts.push_back(t_lapsHandle);
+	//t_barOffsets.push_back(DirectX::XMFLOAT2(0,0));
+
+	//t_textureIDs.clear();
+	////for the slash in between
+	//m_graphicHandle->LoadTexture(L"slash.dds",t_texture);
+	//t_textureIDs.push_back(t_texture);
+	//m_graphicHandle->CreateHUDObject(DirectX::XMFLOAT2(0.85,0.7),DirectX::XMFLOAT2(0.5,0.2),t_textureIDs,t_lapsHandle);
+	//t_hudParts.push_back(t_lapsHandle);
+	//t_barOffsets.push_back(DirectX::XMFLOAT2(0,0));
 
 	m_graphicHandle->CreateHudTemplate(t_hudParts,t_templateHandle);
 
