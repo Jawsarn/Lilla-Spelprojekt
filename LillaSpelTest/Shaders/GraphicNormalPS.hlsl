@@ -7,6 +7,15 @@ cbuffer PerObjectBuffer	:register(c0)
 	float typeOfObject; //with types of textures etc
 }
 
+cbuffer PerFrameBuffer :register(c1)
+{
+	matrix View[4];
+	matrix Projection[4];
+	float4 EyePosition[4];
+	float3 fillers;
+	float NumberOfViewports;
+}
+
 
 
 Texture2D diffuseTexture	: register(t0);
@@ -18,11 +27,12 @@ SamplerState wrapSampler	: register(s0);
 
 struct GS_OUTPUT
 {
-	float4 Position : SV_POSITION;
-	float3 Normal	: NORMAL;
-	float2 Tex		: TEXCOORD;
-	float2 Depth	: DEPTH;
-	uint Viewport	: SV_ViewportArrayIndex;
+	float4 Position		: SV_POSITION;
+	float3 PositionW	: POSITION;
+	float3 Normal		: NORMAL;
+	float2 Tex			: TEXCOORD;
+	float2 Depth		: DEPTH;
+	uint Viewport		: SV_ViewportArrayIndex;
 };
 
 struct PS_OUTPUT
@@ -44,6 +54,13 @@ PS_OUTPUT PS(GS_OUTPUT input) : SV_TARGET
 	float depth = input.Depth.x / input.Depth.y;
 
 	output.Normal_Depth = float4(input.Normal, depth);
+
+
+	//skymap shizzle
+	float3 toObj = input.PositionW - EyePosition[input.Viewport];
+	float3 reflector = reflect(toObj, input.Normal);
+
+	diffuseColorSpecFac.xyz += diffuseColorSpecFac.w * cubeMap.Sample( wrapSampler, reflector);
 
 	float4 glowOut;
 	if (normalGlowFac.w > 0.1f)

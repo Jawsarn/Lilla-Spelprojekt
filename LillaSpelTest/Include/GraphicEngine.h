@@ -84,7 +84,8 @@ public:
 	void RemoveParticleSystem(UINT p_SystemID);
 	void UpdateParticleSystem(UINT p_SystemID, float p_SpawnTimer, float p_ParticleLifespan, XMFLOAT2 p_ParticleInitSize, float p_Speed, float p_EngineSpeed );
 	
-	
+	//skymap functions
+	void SetSkymap(UINT p_TextureID);
 	
 	//void RemoveFromDrawObjects();
 	//void AddToDrawObject();
@@ -163,6 +164,7 @@ private:
 	//aaand the blur buffers/glow
 	ID3D11ShaderResourceView*	m_BlurShaderResource;
 	ID3D11UnorderedAccessView* m_BlurBufferUAV;
+
 
 	UINT m_Width;
 	UINT m_Height;

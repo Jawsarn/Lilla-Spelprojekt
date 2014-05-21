@@ -832,3 +832,4 @@ void GraphicHandle::UpdateHudBarOffset(UINT p_hudID, UINT p_objectID, DirectX::X
 {
 	m_GraphicEngine->UpdateBarOffset(p_hudID,p_objectID,p_barOffset);
 }
+
