@@ -150,6 +150,7 @@ private:
 	ID3D11DepthStencilState*	m_DepthStateOn;
 	ID3D11DepthStencilState*	m_DepthStateOff;
 	ID3D11DepthStencilState*	m_DepthStateNoWrite;
+	ID3D11DepthStencilState*	m_LessEqualDepthState;
 	ID3D11SamplerState*			m_SamplerStateWrap;
 	ID3D11SamplerState*			m_SamplerStateLinearWrap;
 
@@ -229,5 +230,6 @@ private:
 	float m_NumberOfViewports;
 
 	UINT m_SkymapBufferID;
+	UINT m_SkymapDrawObjectID;
 };
 

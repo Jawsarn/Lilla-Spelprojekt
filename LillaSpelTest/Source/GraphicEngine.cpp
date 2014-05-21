@@ -90,6 +90,12 @@ HRESULT GraphicEngine::Initialize( UINT p_Width, UINT p_Height, HWND handleWindo
 
 	SetSkymap(p_Skymap);
 
+	std::vector<UINT> t_SkymapPices;
+	LoadMesh("Ellipsoid.obj",t_SkymapPices);
+	XMFLOAT4X4 t_Mat;
+	XMStoreFloat4x4(&t_Mat, XMMatrixIdentity());
+	CreateDrawObject(t_SkymapPices, t_Mat, XMFLOAT3(0,0,0), false, m_SkymapDrawObjectID);
+
 	
 	return hr;
 }
@@ -358,6 +364,15 @@ HRESULT GraphicEngine::InitializeDepthAndDepthStates()
 	t_DsDesc.DepthFunc = D3D11_COMPARISON_LESS;
 
 	hr = m_Device->CreateDepthStencilState(&t_DsDesc, &m_DepthStateNoWrite);
+	if( FAILED( hr ) )
+        return hr;
+
+	t_DsDesc.DepthEnable = true;
+	t_DsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	t_DsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+
+	hr = m_Device->CreateDepthStencilState(&t_DsDesc, &m_LessEqualDepthState);
+
 
 	m_DeviceContext->OMSetDepthStencilState(m_DepthStateOn, 0);
 
@@ -1419,7 +1434,7 @@ void GraphicEngine::DrawGame(float p_DeltaTime)
 	UpdateFrameBuffer();
 
 	//draw skymap
-	DrawSkyMap();
+	//DrawSkyMap();
 
 	//draw opaque objects
 	DrawOpaqueObjects();
@@ -1431,6 +1446,8 @@ void GraphicEngine::DrawGame(float p_DeltaTime)
 
 	//compute tiled lighting
 	ComputeTileDeferredLightning();
+
+	DrawSkyMap();
 
 	m_DeviceContext->OMSetRenderTargets(1, &m_RenderTargetView, m_DepthStencilView);
 	
@@ -1690,7 +1707,7 @@ void GraphicEngine::DrawHud()
 
 void GraphicEngine::DrawSkyMap()
 {
-	m_DeviceContext->OMSetRenderTargets( 1, &m_GbufferTargetViews[0], m_DepthStencilView);
+	m_DeviceContext->OMSetRenderTargets( 1, &m_RenderTargetView, m_DepthStencilView);
 
 	m_DeviceContext->GSSetConstantBuffers(0,1, &m_PerFrameBuffer);
 	m_DeviceContext->GSSetConstantBuffers(1,1, &m_PerObjectBuffer);
@@ -1705,8 +1722,13 @@ void GraphicEngine::DrawSkyMap()
 	set vertex buffer with m_SkymapID as id... well well ,u know the drill
 
 	*/
+	VertexBufferWithNOV t_VertexBuff = m_VertexBuffers[ m_DrawPieces[m_DrawObjects[m_SkymapDrawObjectID]->piecesID[0]].vertexBufferID];
+	m_DeviceContext->IASetVertexBuffers( 0, 1, &t_VertexBuff.vertexBuffer, &strides, &offsets);
 
+	//set depth and stuff
+	m_DeviceContext->OMSetDepthStencilState(m_LessEqualDepthState, 0);
 
+	m_DeviceContext->Draw( t_VertexBuff.numberOfVertices, 0 );
 }
 
 void GraphicEngine::ComputeGlow()

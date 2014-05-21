@@ -23,8 +23,8 @@ void GS( triangle GS_INPUT input[3], inout TriangleStream<GS_OUTPUT> triangleStr
 		{
 			GS_OUTPUT output;
 			output.PositionL = input[i].Position;
-			output.Position = mul(float4(input[i].Position, 1), View[j]);
-			output.Position = mul(output.Position, Projection[j]);
+			output.Position = mul(float4(input[i].Position, 0), View[j]);
+			output.Position = mul(float4(output.Position.xyz,1), Projection[j]).xyww;
 
 			output.Viewport = j;
 			triangleStream.Append(output);
