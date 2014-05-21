@@ -85,7 +85,8 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_acceleration = 10;
 	m_boostAcceleration = 30;
 	m_deceleration = 7;
-	m_break = 25;
+	m_break = 20;//static break force
+	m_breakCoefficient = 1;//coefficient that breaks depending on your current speed
 	m_minSpeed = 3;
 	m_boostFromPad = 3000;//testValue
 
@@ -189,7 +190,7 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 
 	if (m_state == STARTING)
 		StartupSpam();
-	else//if you ain't startin', you're boostin'
+	else if(!m_finishProgress)//if you ain't startin', you're boostin'
 		Acceleration(p_dt);
 	if (m_state == NORMAL || m_state == IMMORTAL)	
 	{
@@ -277,7 +278,7 @@ void Player::Acceleration(float p_dt)
 	else if(m_currentUserCmd.rightBumberPressed)
 	{
 		if(m_speed>m_minSpeed)
-			m_speed -= m_break*p_dt;
+			m_speed -= m_break*p_dt+m_breakCoefficient*m_speed*p_dt;
 		else 
 			m_speed = m_minSpeed;
 

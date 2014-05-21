@@ -36,6 +36,7 @@ private:
 	float m_boostAcceleration;
 	float m_deceleration;
 	float m_break;
+	float m_breakCoefficient;
 	float m_minSpeed;
 	float m_boostFromPad;
 
