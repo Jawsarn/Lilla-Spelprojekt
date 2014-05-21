@@ -146,6 +146,8 @@ private:
 	float m_dampShipRotation;
 	float m_currentAngle;
 	bool m_changedNode;
+	bool m_isDrawn;
+
 
 	float m_radius;
 	float m_vehicleHoverDistance;
@@ -180,6 +182,9 @@ public:
 	float GetDistanceTraveled(); 
 	float GetPlayerBoost();
 	float GetAngle();
+	float GetMaxImmortalTimer();
+	bool GetDrawn();
+	void SetDrawn(bool p_condition);
 
 	int GetRacePosition();
 	XMFLOAT3 GetRadiusVector();

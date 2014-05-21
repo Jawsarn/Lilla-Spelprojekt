@@ -26,6 +26,7 @@ private:
 	int m_preUpdateCountdown;
 	int m_nrOfLaps;
 	GameScreenState m_state;
+	float m_immortalCounter;
 public:
 	GameScreen(void);
 	int GetPauseDudeIndex();
