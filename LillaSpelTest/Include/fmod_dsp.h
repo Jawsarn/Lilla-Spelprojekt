@@ -548,7 +548,8 @@ typedef enum
 {
     FMOD_DSP_PITCHSHIFT_PITCH,       /* Pitch value.  0.5 to 2.0.  Default = 1.0. 0.5 = one octave down, 2.0 = one octave up.  1.0 does not change the pitch. */
     FMOD_DSP_PITCHSHIFT_FFTSIZE,     /* FFT window size.  256, 512, 1024, 2048, 4096.  Default = 1024.  Increase this to reduce 'smearing'.  This effect is a warbling sound similar to when an mp3 is encoded at very low bitrates. */
-    FMOD_DSP_PITCHSHIFT_OVERLAP,     /* Removed.  Do not use.  FMOD now uses 4 overlaps and cannot be changed. */
+    FMOD_DSP_PITCHSHIFT_OVERLAP,     /* Removed.  Do not use.  FMOD now uses 4 over
+									 and cannot be changed. */
     FMOD_DSP_PITCHSHIFT_MAXCHANNELS  /* Maximum channels supported.  0 to 16.  0 = same as fmod's default output polyphony, 1 = mono, 2 = stereo etc.  See remarks for more.  Default = 0.  It is suggested to leave at 0! */
 } FMOD_DSP_PITCHSHIFT;
 
