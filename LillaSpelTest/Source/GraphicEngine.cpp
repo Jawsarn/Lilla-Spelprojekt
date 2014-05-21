@@ -498,6 +498,33 @@ HRESULT GraphicEngine::InitializeShaders()
 	}
 
 
+	//skymap shaders
+	{
+		///GEOMETRY SHADER
+		ID3D11GeometryShader* t_GeometryShader;
+		hr = m_ShaderLoader->CreateGeometryShader(L"GraphicSkymapGS.hlsl","GS","gs_5_0",m_Device,&t_GeometryShader);
+		if( FAILED( hr ))
+			return hr;
+		m_GeometryShaders.push_back(t_GeometryShader);
+
+		//PIXEL SHADER
+		ID3D11PixelShader* t_PixelShader;
+		hr = m_ShaderLoader->CreatePixelShader(L"GraphicSkymapPS.hlsl","PS","ps_5_0",m_Device,&t_PixelShader);
+		if( FAILED( hr ))
+			return hr;
+		m_PixelShaders.push_back(t_PixelShader);
+
+		ShaderProgram t_NewProgram;
+		t_NewProgram.vertexShader = m_VertexShaders.size() - 2;
+		t_NewProgram.domainShader = -1;
+		t_NewProgram.hullShader = -1;
+		t_NewProgram.geometryShader = m_GeometryShaders.size() -1;
+		t_NewProgram.pixelShader = m_PixelShaders.size() - 1;
+		t_NewProgram.inputLayout = m_InputLayouts.size() - 2;
+		m_ShaderPrograms.push_back(t_NewProgram);
+
+	}
+
 	{
 		//COMPUTE SHADER deferred tiled rendering
 		ID3D11ComputeShader* t_ComputeShader;
@@ -1386,10 +1413,13 @@ void GraphicEngine::DrawGame(float p_DeltaTime)
 	m_DeviceContext->ClearUnorderedAccessViewFloat(m_BlurBufferUAV, t_ClearFloats);
 	
 	//set render target, I guess for if swapping between hud etc
-	m_DeviceContext->OMSetRenderTargets( 3, m_GbufferTargetViews, m_DepthStencilView);
+	//m_DeviceContext->OMSetRenderTargets( 3, m_GbufferTargetViews, m_DepthStencilView);
 
 	//update per frame buffer
 	UpdateFrameBuffer();
+
+	//draw skymap
+	DrawSkyMap();
 
 	//draw opaque objects
 	DrawOpaqueObjects();
@@ -1452,6 +1482,8 @@ void GraphicEngine::UpdateFrameBuffer()
 
 void GraphicEngine::DrawOpaqueObjects()
 {
+	
+	m_DeviceContext->OMSetRenderTargets( 3, m_GbufferTargetViews, m_DepthStencilView);
 	//need to set the render target here if changing elsewhere
 	//m_DeviceContext->OMSetRenderTargets(1, &m_RenderTargetView, m_DepthStencilView);
 	m_DeviceContext->GSSetConstantBuffers(0,1, &m_PerFrameBuffer);
@@ -1654,6 +1686,27 @@ void GraphicEngine::DrawHud()
 		}
 	}
 	m_DeviceContext->OMSetBlendState( m_BlendStateOff, t_BlendFactors, 0xffffffff );
+}
+
+void GraphicEngine::DrawSkyMap()
+{
+	m_DeviceContext->OMSetRenderTargets( 1, &m_GbufferTargetViews[0], m_DepthStencilView);
+
+	m_DeviceContext->GSSetConstantBuffers(0,1, &m_PerFrameBuffer);
+	m_DeviceContext->GSSetConstantBuffers(1,1, &m_PerObjectBuffer);
+
+	m_DeviceContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	UINT strides = sizeof(SimpleVertex);
+	UINT offsets = 0;
+
+	SetShaderProgram(m_ShaderPrograms[2]);
+
+	/*
+	set vertex buffer with m_SkymapID as id... well well ,u know the drill
+
+	*/
+
+
 }
 
 void GraphicEngine::ComputeGlow()

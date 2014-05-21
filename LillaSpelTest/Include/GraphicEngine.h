@@ -91,6 +91,7 @@ public:
 	//void AddToDrawObject();
 	void DrawGame(float p_DeltaTime);
 	void DrawMenu();
+	void DrawSkyMap();
 	
 	//swap full screen
 	void SetFullscreenState(bool p_IsFullScreen);
@@ -226,5 +227,7 @@ private:
 
 	//number of viewports active
 	float m_NumberOfViewports;
+
+	UINT m_SkymapBufferID;
 };
 
