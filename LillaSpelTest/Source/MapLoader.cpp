@@ -157,10 +157,21 @@ void MapLoader::LoadBoxes(vector<vector<XMFLOAT3>>* p_boxCornerPositions, Object
 	{
 		BoundingOrientedBox t_box = BoundingOrientedBox();
 		t_box.CreateFromPoints(t_box, 8, &p_boxCornerPositions->at(i).at(0), sizeof(XMFLOAT3));
-		t_box.Extents = m_mathHelper.FloatMultiVec(0.5, t_box.Extents);
+		t_box.Extents = m_mathHelper.FloatMultiVec(1, t_box.Extents);
 		m_boxes.push_back(new StaticObj(p_objectType, t_box));
 	}
 
+}
+void MapLoader::LoadBoostBoxes(vector<vector<XMFLOAT3>>* p_boxCornerPositions, ObjectType p_objectType)
+{
+	for (int i = 0; i < p_boxCornerPositions->size(); i++)
+	{
+		BoundingOrientedBox t_box = BoundingOrientedBox();
+		t_box.CreateFromPoints(t_box, 8, &p_boxCornerPositions->at(i).at(0), sizeof(XMFLOAT3));
+		t_box.Extents = m_mathHelper.FloatMultiVec(1, t_box.Extents);
+		t_box.Extents.y = 3;
+		m_boxes.push_back(new StaticObj(p_objectType, t_box));
+	}
 }
 
 void MapLoader::LoadNodes(vector<XMFLOAT3>* p_centerPositions, vector<XMFLOAT3>* p_edgePositions)

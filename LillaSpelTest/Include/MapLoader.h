@@ -29,6 +29,7 @@ private:
 	//vector<vector<XMFLOAT3>> LoadLogicalObj(string p_objName);
 	void LoadNodes(vector<XMFLOAT3>* p_centerPositions, vector<XMFLOAT3>* p_edgePositions);
 	void LoadBoxes(vector<vector<XMFLOAT3>>* p_boxCornerPositions, ObjectType p_objectType); 
+	void LoadBoostBoxes(vector<vector<XMFLOAT3>>* p_boxCornerPositions, ObjectType p_objectType);
 	void AssignBoxesToNodes();
 	XMVECTOR GetUpVector(XMFLOAT3 p_normal, XMFLOAT3 p_radius);
 

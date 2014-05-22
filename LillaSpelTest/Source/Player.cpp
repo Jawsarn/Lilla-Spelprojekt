@@ -1022,7 +1022,7 @@ void Player::SetSpeed(float p_speed)
 
 void Player::PadBoost(float p_dt)
 {
-	m_speed += m_boostFromPad*p_dt*1000;
+	m_speed += m_boostFromPad*p_dt;
 }
 
 
