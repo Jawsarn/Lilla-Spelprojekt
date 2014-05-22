@@ -40,13 +40,13 @@ GameSetupScreen::GameSetupScreen(GameInfo* p_gameInfo,GraphicHandle* p_graphicsH
 		m_graphicHandle->LoadTexture(t_wstring.c_str(),t_texture);
 		t_textures.push_back(t_texture);
 	}
-	m_graphicHandle->CreateHUDObject(DirectX::XMFLOAT2(0.0,0.7),DirectX::XMFLOAT2(0.2,0.2),t_textures,t_Handles);
+	m_graphicHandle->CreateHUDObject(DirectX::XMFLOAT2(-0.5,0.8),DirectX::XMFLOAT2(0.15,0.15),t_textures,t_Handles);
 	t_textures.clear();
 	t_objHandle.push_back(t_Handles);
 
 	m_graphicHandle->LoadTexture(L"Laps.dds",t_texture);
 	t_textures.push_back(t_texture);
-	m_graphicHandle->CreateHUDObject(DirectX::XMFLOAT2(-0.3,0.7),DirectX::XMFLOAT2(0.2,0.2),t_textures,t_Handles);
+	m_graphicHandle->CreateHUDObject(DirectX::XMFLOAT2(-0.7,0.8),DirectX::XMFLOAT2(0.15,0.15),t_textures,t_Handles);
 	t_objHandle.push_back(t_Handles);
 
 	m_graphicHandle->CreateHudTemplate(t_objHandle,t_Handles);
