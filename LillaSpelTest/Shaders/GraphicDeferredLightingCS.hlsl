@@ -405,7 +405,7 @@ void CS( uint3 threadID		: SV_DispatchThreadID,
 	finalColor += Specular[threadID.xy].xyz;
 	output[threadID.xy] = float4(finalColor.x,finalColor.y,finalColor.z, 1);
 	
-
+	//output[threadID.xy] = float4(DiffuseColor_Spec[threadID.xy].xyz,1);
 
 	/*float4 lightPos = mul(float4(lights[1].position,1), View[viewport]);
 

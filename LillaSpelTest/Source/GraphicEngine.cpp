@@ -1434,10 +1434,12 @@ void GraphicEngine::DrawGame(float p_DeltaTime)
 	UpdateFrameBuffer();
 
 	//draw skymap
-	//DrawSkyMap();
+	DrawSkyMap();
 
 	//draw opaque objects
 	DrawOpaqueObjects();
+
+	//DrawSkyMap();
 
 	m_DeviceContext->OMSetRenderTargets(0,nullptr,nullptr);
 
@@ -1447,7 +1449,7 @@ void GraphicEngine::DrawGame(float p_DeltaTime)
 	//compute tiled lighting
 	ComputeTileDeferredLightning();
 
-	DrawSkyMap();
+	//DrawSkyMap();
 
 	m_DeviceContext->OMSetRenderTargets(1, &m_RenderTargetView, m_DepthStencilView);
 	
@@ -1707,7 +1709,7 @@ void GraphicEngine::DrawHud()
 
 void GraphicEngine::DrawSkyMap()
 {
-	m_DeviceContext->OMSetRenderTargets( 1, &m_RenderTargetView, m_DepthStencilView);
+	m_DeviceContext->OMSetRenderTargets( 1, &m_GbufferTargetViews[1], m_DepthStencilView);
 
 	m_DeviceContext->GSSetConstantBuffers(0,1, &m_PerFrameBuffer);
 	m_DeviceContext->GSSetConstantBuffers(1,1, &m_PerObjectBuffer);
