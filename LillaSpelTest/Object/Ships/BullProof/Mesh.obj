@@ -1,7 +1,7 @@
 # Blender v2.70 (sub 0) OBJ File: 'SpaceShip_GameReady.blend'
 # www.blender.org
 mtllib ship2.mtl
-g Ship2_Mesh.003
+g Ship2
 v -0.017228 -0.079579 0.319258
 v -0.010604 -0.079504 0.316885
 v -0.005269 -0.080724 0.321307
