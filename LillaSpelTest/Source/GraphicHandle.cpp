@@ -52,9 +52,9 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	//init skepp
 	std::vector<std::string> t_ShipNames;
 	t_ShipNames.push_back("Ships/MilleniumKalk");
-	t_ShipNames.push_back("Ships/PajFighter");
 	t_ShipNames.push_back("Ships/BullProof");
-	t_ShipNames.push_back("Ships/SpazMnik");
+	t_ShipNames.push_back("Ships/PajFighter");
+	//t_ShipNames.push_back("Ships/SpazMnik");
 
 
 
@@ -64,7 +64,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	}
 	for (int i = 0; i < 4; i++)
 	{
-	m_SelectionShips[i].resize( m_MeshShips.size(), 0);
+		m_SelectionShips[i].resize( m_MeshShips.size(), 0);
 	}
 	//add particle effects
 	ParticleStruct t_NewPart;
@@ -89,11 +89,11 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	for (int i = 0; i < m_Levels.size(); i++)
 	{
 		m_MeshLevels.push_back(InitializeObj(p_LevelNames[i]));
-		
+
 		std::string t_TempString;
 		//for (int k = 0; k < length; k++) //så vi kan ha flera olika väggar per bana.
 		//{
-			
+
 		t_TempString =p_LevelNames[i];
 		t_TempString += "/LevelWalls";
 		m_MeshLevelWall.push_back(InitializeObj(t_TempString));
@@ -120,7 +120,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 
 	//for (int i = 0; i < m_Levels.size(); i++)
 	//{
-//
+	//
 	//}
 	///Laddar inte colours att välja på
 	m_Colours.push_back(XMFLOAT3(1,1,0));
@@ -145,8 +145,8 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 		//									// 	pos					at				up		FoV			width	height	  near far
 		//m_GraphicEngine->CreateCamera(XMFLOAT3(250,0,-100),XMFLOAT3(0,0,1),XMFLOAT3(0,1,0),XM_PIDIV4,p_Width/2,p_Height/2,1.0f,10000, m_CameraID[i]);
 		m_GraphicEngine->CreateCamera(XMFLOAT3(250,0,-100),XMFLOAT3(0,0,1),XMFLOAT3(0,1,0),XM_PIDIV4,p_Width/2,p_Height/2,1.0f,10000, m_CameraID[i]);
-	
-	//m_GraphicEngine->CreateCamera(
+
+		//m_GraphicEngine->CreateCamera(
 	}
 	//set cameras
 	for (int i = 0; i < 4; i++)
@@ -206,7 +206,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	SelectVehicle(); // ska vara där för att initialize selectgrejen
 	for (int i = 0; i < 4; i++)
 	{
-	SetSelectionColour(i, 0);
+		SetSelectionColour(i, 0);
 	}
 
 
@@ -233,7 +233,7 @@ void GraphicHandle::ChangeLevelSelection(int p_WhatLevel)
 }
 void GraphicHandle::UpdateCameraSelectLevel(int p_WhatLevel,int p_TheRotation)
 {
-	
+
 }
 void GraphicHandle::UpdatePlayer(int p_playerID,CXMMATRIX p_PlayerMatrix,CXMMATRIX p_CameraMatrix)
 {
@@ -266,54 +266,59 @@ void GraphicHandle::UpdateCamera(UINT p_CameraLogicID,float p_Walk, float p_Stra
 void GraphicHandle::UpdateCameraVehicleSelection(UINT p_CameraLogicID, float p_LookingAtWhatVehicle,float p_DeltaTime)
 {
 	//m_SelectionShips
-		if (p_CameraLogicID < 4)
+	if (p_CameraLogicID < 4)
 	{
 		for (int i = 0; i < m_SelectionShips[p_CameraLogicID].size(); i++)
 		{
-			
-			
+
+
 			///1
-		XMMATRIX t_RoteraRuntEgenCirkelPlatsen = XMMatrixTranslation(0,0,m_BigCircleOffset);//drar ut den
-		XMMATRIX t_Rotation = XMMatrixRotationY(XM_PIDIV2*p_CameraLogicID);//roterar så att det e din cirkel
-		t_RoteraRuntEgenCirkelPlatsen = XMMatrixMultiply(t_RoteraRuntEgenCirkelPlatsen,t_Rotation);
+			XMMATRIX t_RoteraRuntEgenCirkelPlatsen = XMMatrixTranslation(0,0,m_BigCircleOffset);//drar ut den
+			XMMATRIX t_Rotation = XMMatrixRotationY(XM_PIDIV2*p_CameraLogicID);//roterar så att det e din cirkel
+			t_RoteraRuntEgenCirkelPlatsen = XMMatrixMultiply(t_RoteraRuntEgenCirkelPlatsen,t_Rotation);
 
 
 
-		//2
-		XMMATRIX t_Tempura = XMMatrixTranslation(0,0,m_CircleOffset);//sätter ut dem i en mindre cirkel o sprider ut dom
-		t_Rotation = XMMatrixRotationY((((((2*XM_PI)/m_SelectionShips[p_CameraLogicID].size())))*p_LookingAtWhatVehicle)+(((((2*XM_PI)/m_SelectionShips[p_CameraLogicID].size())))*i));/// ¨^^^^^^^^^^^^^^^
-		t_Tempura = XMMatrixMultiply(t_Tempura,t_Rotation);
-		t_RoteraRuntEgenCirkelPlatsen= XMMatrixMultiply(t_Tempura,t_RoteraRuntEgenCirkelPlatsen);
+			//2
+			XMMATRIX t_Tempura = XMMatrixTranslation(0,0,m_CircleOffset);//sätter ut dem i en mindre cirkel o sprider ut dom
+			t_Rotation = XMMatrixRotationY((((2*XM_PI)/m_SelectionShips[p_CameraLogicID].size())*p_LookingAtWhatVehicle)-((2*XM_PI)/m_SelectionShips[p_CameraLogicID].size()*i));/// ¨^^^^^^^^^^^^^^^
 
-		//m_GraphicEngine->MoveObject(m_SelectionShips[p_CameraLogicID][i],t_RoteraRuntEgenCirkelPlatsen);
+			t_Tempura = XMMatrixMultiply(t_Tempura,t_Rotation);
+			t_RoteraRuntEgenCirkelPlatsen= XMMatrixMultiply(t_Tempura,t_RoteraRuntEgenCirkelPlatsen);
 
-
-
+			//m_GraphicEngine->MoveObject(m_SelectionShips[p_CameraLogicID][i],t_RoteraRuntEgenCirkelPlatsen);
 
 
 
 
 
-		XMMATRIX t_Rotii = XMMatrixRotationY(p_DeltaTime);
-		
-				//XMMATRIX t_Tempii = XMMatrixMultiply(t_Rotii,XMLoadFloat4x4(&m_SelectionShipMatrix[p_CameraLogicID][i]));
-				XMMATRIX t_Tempii = XMMatrixMultiply(t_Rotii,t_RoteraRuntEgenCirkelPlatsen);
 
-				//XMFLOAT4X4 t_Storii;
-				//XMStoreFloat4x4(&t_Storii,t_Tempii);
-				//m_SelectionShipMatrix[p_CameraLogicID][i] = t_Storii;
-		
-				//t_Tempii = XMMatrixMultiply(t_RoteraRuntEgenCirkelPlatsen,t_Tempii);
 
-				m_GraphicEngine->MoveObject(m_SelectionShips[p_CameraLogicID][i],t_Tempii);
-		
-		
-		
-	
+
+			XMMATRIX t_Rotii = XMMatrixRotationY(p_DeltaTime);
+
+			//XMMATRIX t_Tempii = XMMatrixMultiply(t_Rotii,XMLoadFloat4x4(&m_SelectionShipMatrix[p_CameraLogicID][i]));
+			XMMATRIX t_Tempii = XMMatrixMultiply(t_Rotii,t_RoteraRuntEgenCirkelPlatsen);
+
+			//XMFLOAT4X4 t_Storii;
+			//XMStoreFloat4x4(&t_Storii,t_Tempii);
+			//m_SelectionShipMatrix[p_CameraLogicID][i] = t_Storii;
+
+			//t_Tempii = XMMatrixMultiply(t_RoteraRuntEgenCirkelPlatsen,t_Tempii);
+
+			m_GraphicEngine->MoveObject(m_SelectionShips[p_CameraLogicID][i],t_Tempii);
+
+
+
+
 
 
 
 		}
+	}
+	if(p_LookingAtWhatVehicle==0||p_LookingAtWhatVehicle==1||p_LookingAtWhatVehicle==2)
+	{
+		int bajs=0;
 	}
 }
 void GraphicHandle::UpdateCameraVehicleSelectionSeperate(UINT p_CameraLogicID, float p_LookingAtWhatVehicle)
@@ -366,7 +371,7 @@ void GraphicHandle::InitializeJoinScreenCamera(UINT p_CameraLogicID)
 }
 void GraphicHandle::SetVehicleSelectionCamera(UINT p_CameraLogicID)
 {
-		if (p_CameraLogicID < 4)
+	if (p_CameraLogicID < 4)
 	{	
 		/////////////////////////////////fungerande
 		//XMMATRIX t_Tempura = XMMatrixTranslation(0,1,25*m_MeshShips.size());
@@ -446,15 +451,15 @@ void GraphicHandle::CreateShipForGame(std::vector<XMFLOAT4X4> p_PlayerWorld)
 		m_GraphicEngine->CreateInitParticleBuffer(t_InitParticles, t_InitParticleID1);
 
 		UINT t_ParticleSystemID;
-		
+
 		XMMATRIX t_Tempus = XMMatrixIdentity();
 		//big ones
-		
+
 		m_GraphicEngine->CreateParticleSystem( 0, L"ParticleEngineTail.dds",t_InitParticleID1, 1000, m_Colours[m_PlayerColour[i]], 0.05f, 0.5f, 1.0f,XMFLOAT2(0.2f,0.5f), 0.0f, 1.0f, XMFLOAT4(t_Offsets.x, t_Offsets.y, t_Offsets.z, 1), t_Tempus,t_ParticleSystemID );
 		m_GraphicEngine->AddObjectParticleSystem(m_Player[i], t_ParticleSystemID);
 		m_GraphicEngine->CreateParticleSystem( 0, L"ParticleEngineTail.dds",t_InitParticleID1, 1000, m_Colours[m_PlayerColour[i]], 0.05f, 0.5f, 1.0f,XMFLOAT2(0.2f,0.5f), 0.0f, 1.0f, XMFLOAT4(-t_Offsets.x, t_Offsets.y, t_Offsets.z, 1), t_Tempus,t_ParticleSystemID );
 		m_GraphicEngine->AddObjectParticleSystem(m_Player[i], t_ParticleSystemID);
-		
+
 	}
 }
 
@@ -463,32 +468,32 @@ void GraphicHandle::SelectVehicle()
 
 	XMMATRIX t_WorldMat = XMMatrixTranslation(0,0,m_BigCircleOffset);
 	XMFLOAT3 t_Color = XMFLOAT3(1,1,1);
-	
+
 	for (int k = 0; k < 4; k++)
 	{
 		for (int i = 0; i < m_MeshShips.size(); i++)
 		{
 
-			XMMATRIX t_Rot = XMMatrixRotationY(2*XM_PI/4*k);
+			//XMMATRIX t_Rot = XMMatrixRotationY(2*XM_PI/4*k);
 
-			t_Rot = XMMatrixMultiply(t_WorldMat, t_Rot);
-			
+			//t_Rot = XMMatrixMultiply(t_WorldMat, t_Rot);
 
-			XMMATRIX t_OffSetTheCircleMat = XMMatrixTranslation(0,0,m_CircleOffset);
-			XMMATRIX t_OffSetTheCircleMatRotation = XMMatrixRotationY((2*XM_PI*i/m_MeshShips.size()));
-			XMMATRIX t_SafteyMeasureMat = XMMatrixMultiply(t_OffSetTheCircleMat,t_OffSetTheCircleMatRotation);
 
-			t_Rot = XMMatrixMultiply(t_SafteyMeasureMat,t_Rot);
-			
+			//XMMATRIX t_OffSetTheCircleMat = XMMatrixTranslation(0,0,m_CircleOffset);
+			//XMMATRIX t_OffSetTheCircleMatRotation = XMMatrixRotationY(0);
+			//XMMATRIX t_SafteyMeasureMat = XMMatrixMultiply(t_OffSetTheCircleMat,t_OffSetTheCircleMatRotation);
 
+			//t_Rot = XMMatrixMultiply(t_SafteyMeasureMat,t_Rot);
+
+			XMMATRIX t_OffSetTheCircleMat = XMMatrixTranslation(0,0,0);
 			CreateDrawObject(m_MeshShips[i],
-				t_Rot,
+				t_OffSetTheCircleMat,
 				t_Color, 
 				m_SelectionShips[k][i],false);
 
-			XMFLOAT4X4 t_Tempus;
-			XMStoreFloat4x4(&t_Tempus, t_Rot);
-			m_SelectionShipMatrix[k].push_back(t_Tempus);
+			//XMFLOAT4X4 t_Tempus;
+			//XMStoreFloat4x4(&t_Tempus, t_OffSetTheCircleMat);
+			//m_SelectionShipMatrix[k].push_back(t_Tempus);
 		}
 
 	}
@@ -612,7 +617,7 @@ std::vector <UINT> GraphicHandle::InitializeObj(std::string p_ObjectStringName)
 	std::string t_TempurMeshString =t_TemplateString;
 	t_TempurMeshString +="/Mesh.obj";
 	m_GraphicEngine->LoadMesh(t_TempurMeshString,r_Mesh);
-	
+
 
 	for (int i = 0; i < r_Mesh.size(); i++)
 	{
