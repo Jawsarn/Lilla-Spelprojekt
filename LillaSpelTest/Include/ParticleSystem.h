@@ -26,6 +26,9 @@ public:
 	void RemoveParticleSystem(UINT p_SystemID);
 	void Draw(float dt);
 
+	void ActivateParticleSystem(UINT p_SystemID);
+	void DeactivateParticleSystem(UINT p_SystemID);
+
 
 private:
 
@@ -81,6 +84,7 @@ private:
 
 	struct ParticleEffectSystem
 	{
+		BOOL isActive;
 		UINT programID;
 		UINT textureID;
 		UINT startBufferID;

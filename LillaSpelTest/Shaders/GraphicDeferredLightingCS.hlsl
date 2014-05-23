@@ -163,7 +163,7 @@ PixelData GetPixelData(uint2 globalCord, int viewport)
 	return output;
 }
 
-void CalculateDepth(uint groupIndex, PixelData data)
+bool CalculateDepth(uint groupIndex, PixelData data)
 {
 	//gather info
 	float minZ = camNearFar.y; //camNearFar.y
@@ -196,6 +196,8 @@ void CalculateDepth(uint groupIndex, PixelData data)
 		InterlockedMin(minDepth, asuint(minZ));
 	}
 	GroupMemoryBarrierWithGroupSync();
+
+	return validPixel;
 }
 
 void CalculateFrustrums(uint2 groupID, inout float4 frustrumPlanes[6], int viewport)
@@ -311,7 +313,7 @@ void CS( uint3 threadID		: SV_DispatchThreadID,
 	/////////Calc Depth/////////
 	////////////////////////////
 	
-	CalculateDepth(groupIndex ,data);
+	bool isObject = CalculateDepth(groupIndex ,data);
 
 
 
@@ -400,7 +402,11 @@ void CS( uint3 threadID		: SV_DispatchThreadID,
 		}
 	//}
 
-	
+
+	if (!isObject)
+	{
+		finalColor = DiffuseColor_Spec[threadID.xy].xyz;
+	}
 
 	finalColor += Specular[threadID.xy].xyz;
 	output[threadID.xy] = float4(finalColor.x,finalColor.y,finalColor.z, 1);

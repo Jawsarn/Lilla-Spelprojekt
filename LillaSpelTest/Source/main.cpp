@@ -190,7 +190,7 @@ void RunInitialization()
 		}
 		m_audioManager->RemoveSpecificSound("menu.mp3");
 		m_GraphicHandle->AddLevelDraw(m_gameInfo.map);
-		m_gameScreen = new GameScreen(m_gameInfo.playerColor, m_gameInfo.shipModell,m_gameInfo.tauntSound, m_levelNames[m_gameInfo.map], t_playerOnline, m_GraphicHandle, m_audioManager,m_gameInfo.numberOfLaps);
+		m_gameScreen = new GameScreen(m_gameInfo.playerColor, m_gameInfo.shipModell,m_gameInfo.tauntSound, m_levelNames[m_gameInfo.map], t_playerOnline, m_GraphicHandle, m_audioManager,m_gameInfo.numberOfLaps, m_gameInfo.map);
 		m_gameScreen->Initialize();
 		UpdateTime();
 		break;

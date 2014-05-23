@@ -252,8 +252,6 @@ HRESULT ParticleSystem::CreateInitParticlesBuffer(std::vector<Particle> p_StartP
 	return hr;
 }
 
-
-
 HRESULT ParticleSystem::CreateConstantBuffer()
 {
 	HRESULT hr = S_OK;
@@ -349,11 +347,13 @@ float ParticleSystem::RandF()
 {
 	return (float)(rand()) / (float)RAND_MAX;
 }
+
 // Returns random float in [a, b).
 float ParticleSystem::RandF(float a, float b)
 {
 	return a + RandF()*(b-a);
 }
+
 XMVECTOR ParticleSystem::RandUnitVec3()
 {
 	XMVECTOR One = XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f);
@@ -383,6 +383,22 @@ void ParticleSystem::RemoveParticleSystem(UINT p_SystemID)
 	m_ParticleEffectSystems.erase(p_SystemID);
 }
 
+void ParticleSystem::ActivateParticleSystem(UINT p_SystemID)
+{
+	if (m_ParticleEffectSystems[p_SystemID] != nullptr)
+	{
+		m_ParticleEffectSystems[p_SystemID]->isActive = true;
+	}
+}
+
+void ParticleSystem::DeactivateParticleSystem(UINT p_SystemID)
+{
+	if (m_ParticleEffectSystems[p_SystemID] != nullptr)
+	{
+		m_ParticleEffectSystems[p_SystemID]->isActive = false;
+	}
+}
+
 void ParticleSystem::Draw(float dt)
 {
 	// make the OM to the backbuffer RENDER TARGET MAKE FIX OMG LULZ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NOT FIXED YET LULZ
@@ -400,54 +416,57 @@ void ParticleSystem::Draw(float dt)
 	{
 		ParticleEffectSystem* t_CurSys = it->second;
 		
-		PerObjectBuffer t_pobj;
-		t_pobj.Color = t_CurSys->color;
-		t_pobj.typeOfObject = 0;
-		t_pobj.World = XMMatrixIdentity();
+		if (t_CurSys->isActive)
+		{
+			PerObjectBuffer t_pobj;
+			t_pobj.Color = t_CurSys->color;
+			t_pobj.typeOfObject = 0;
+			t_pobj.World = XMMatrixIdentity();
 
-		m_DeviceContext->UpdateSubresource( m_PerObjectBuffer, 0, nullptr, &t_pobj, 0, 0 );
+			m_DeviceContext->UpdateSubresource( m_PerObjectBuffer, 0, nullptr, &t_pobj, 0, 0 );
 
-		//update effect buffer data
+			//update effect buffer data
 
-		CPerEffectBuffer t_Cbpef;
-		t_Cbpef.deltaTime = dt;
-		t_Cbpef.speed = t_CurSys->speed;
-		t_Cbpef.engineSpeed = t_CurSys->engineSpeed;
-		t_Cbpef.initialSize = t_CurSys->particleInitSize;
-		t_Cbpef.particleLifeSpan = t_CurSys->particleLifeSpan;
-		t_Cbpef.spawnAmount = t_CurSys->spawnAmount;
-		t_Cbpef.spawnTimer = t_CurSys->spawnTimer;
-		t_Cbpef.emitPos = t_CurSys->emitPosition;
-		t_Cbpef.worldMatrix = XMMatrixTranspose( XMLoadFloat4x4(&t_CurSys->worldMatrix) );
+			CPerEffectBuffer t_Cbpef;
+			t_Cbpef.deltaTime = dt;
+			t_Cbpef.speed = t_CurSys->speed;
+			t_Cbpef.engineSpeed = t_CurSys->engineSpeed;
+			t_Cbpef.initialSize = t_CurSys->particleInitSize;
+			t_Cbpef.particleLifeSpan = t_CurSys->particleLifeSpan;
+			t_Cbpef.spawnAmount = t_CurSys->spawnAmount;
+			t_Cbpef.spawnTimer = t_CurSys->spawnTimer;
+			t_Cbpef.emitPos = t_CurSys->emitPosition;
+			t_Cbpef.worldMatrix = XMMatrixTranspose( XMLoadFloat4x4(&t_CurSys->worldMatrix) );
 
-		//m_PerEffectData[t_CurSys.perEffectDataID].deltaTime = dt;
-		m_DeviceContext->UpdateSubresource( m_PerEffectBuffer, 0, nullptr, &t_Cbpef, 0, 0 );
+			//m_PerEffectData[t_CurSys.perEffectDataID].deltaTime = dt;
+			m_DeviceContext->UpdateSubresource( m_PerEffectBuffer, 0, nullptr, &t_Cbpef, 0, 0 );
 
-		//turn off depth 
-		m_DeviceContext->OMSetDepthStencilState(m_DepthOff, 0);
+			//turn off depth 
+			m_DeviceContext->OMSetDepthStencilState(m_DepthOff, 0);
 
-		//turn blend on
-		float t_BlendFactors[] = {0.0f, 0.0f, 0.0f, 0.0f};
-		m_DeviceContext->OMSetBlendState(m_BlendOn,t_BlendFactors,0xffffffff);
+			//turn blend on
+			float t_BlendFactors[] = {0.0f, 0.0f, 0.0f, 0.0f};
+			m_DeviceContext->OMSetBlendState(m_BlendOn,t_BlendFactors,0xffffffff);
 
-		//update the particles
-		UpdateParticles(it->first);
+			//update the particles
+			UpdateParticles(it->first);
 
-		//now swap buffers
-		ID3D11Buffer* bufferArray[1] = {0};
-		UINT offset = 0;
+			//now swap buffers
+			ID3D11Buffer* bufferArray[1] = {0};
+			UINT offset = 0;
 
-		m_DeviceContext->SOSetTargets(1,bufferArray,&offset);
-		//swap buffers
-		std::swap( m_ParticleVertexBuffer[t_CurSys->drawVertexBufferID],m_ParticleVertexBuffer[t_CurSys->updateVertexBufferID]);
+			m_DeviceContext->SOSetTargets(1,bufferArray,&offset);
+			//swap buffers
+			std::swap( m_ParticleVertexBuffer[t_CurSys->drawVertexBufferID],m_ParticleVertexBuffer[t_CurSys->updateVertexBufferID]);
 
-		//turn on depth with depth check but no write  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NOT FIXED YET
-		m_DeviceContext->OMSetDepthStencilState(m_NoWriteDepthState,0);
+			//turn on depth with depth check but no write  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NOT FIXED YET
+			m_DeviceContext->OMSetDepthStencilState(m_NoWriteDepthState,0);
 
-		DrawParticles(it->first);
+			DrawParticles(it->first);
 
-		//turn blend off
-		m_DeviceContext->OMSetBlendState(m_BlendOff, t_BlendFactors,0xffffffff);
+			//turn blend off
+			m_DeviceContext->OMSetBlendState(m_BlendOff, t_BlendFactors,0xffffffff);
+		}
 	}
 }
 

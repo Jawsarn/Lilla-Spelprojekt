@@ -995,6 +995,11 @@ HRESULT GraphicEngine::UpdateDrawObjectColor(UINT p_ObjectID, XMFLOAT3 p_Color)
 
 void GraphicEngine::RemoveObject(UINT p_ObjectID)
 {
+	if (m_ObjectsOnDrawingScheme[p_ObjectID])
+	{
+		RemoveObjectFromDrawing(p_ObjectID);
+	}
+	
 	for (int i = 0; i < m_DrawObjects[p_ObjectID]->particleSystem.size(); i++)
 	{
 		RemoveParticleSystem(m_DrawObjects[p_ObjectID]->particleSystem[i]);
@@ -1004,20 +1009,25 @@ void GraphicEngine::RemoveObject(UINT p_ObjectID)
 	m_DrawObjects[p_ObjectID] = nullptr;
 
 	m_DrawObjects.erase(p_ObjectID);
-	if (m_ObjectsOnDrawingScheme[p_ObjectID])
-	{
-		RemoveObjectFromDrawing(p_ObjectID);
-	}
-	
 }
 
 void GraphicEngine::RemoveObjectFromDrawing(UINT p_ObjectID)
 {
+	for (int i = 0; i < m_ObjectsOnDrawingScheme[p_ObjectID]->particleSystem.size(); i++)
+	{
+		m_ParticleSystem->DeactivateParticleSystem(m_ObjectsOnDrawingScheme[p_ObjectID]->particleSystem[i]);
+	}
+
 	m_ObjectsOnDrawingScheme.erase(p_ObjectID);
 }
 
 void GraphicEngine::AddObjectToDrawing(UINT p_ObjectID)
 {
+	for (int i = 0; i < m_DrawObjects[p_ObjectID]->particleSystem.size(); i++)
+	{
+		m_ParticleSystem->ActivateParticleSystem(m_DrawObjects[p_ObjectID]->particleSystem[i]);
+	}
+
 	m_ObjectsOnDrawingScheme[p_ObjectID] = m_DrawObjects[p_ObjectID];
 }
 
@@ -1813,6 +1823,32 @@ void GraphicEngine::RemoveParticleSystem(UINT p_SystemID)
 void GraphicEngine::UpdateParticleSystem(UINT p_SystemID, float p_SpawnTimer, float p_ParticleLifespan, XMFLOAT2 p_ParticleInitSize, float p_Speed, float p_EngineSpeed )
 {
 	m_ParticleSystem->UpdateParticleSystem(p_SystemID, p_SpawnTimer, p_ParticleLifespan, p_ParticleInitSize, p_Speed, p_EngineSpeed);
+}
+
+void GraphicEngine::DeactivateObjectsParticleSystems(UINT p_ObjectID)
+{
+	for (int i = 0; i < m_DrawObjects[p_ObjectID]->particleSystem.size(); i++)
+	{
+		m_ParticleSystem->DeactivateParticleSystem(m_DrawObjects[p_ObjectID]->particleSystem[i]);
+	}
+}
+
+void GraphicEngine::ActivateObjectsParticleSystems(UINT p_ObjectID)
+{
+	for (int i = 0; i < m_DrawObjects[p_ObjectID]->particleSystem.size(); i++)
+	{
+		m_ParticleSystem->ActivateParticleSystem(m_DrawObjects[p_ObjectID]->particleSystem[i]);
+	}
+}
+
+void GraphicEngine::DeactivateParticleSystem(UINT p_SystemID)
+{
+	m_ParticleSystem->DeactivateParticleSystem(p_SystemID);
+}
+
+void GraphicEngine::ActivateParticleSystem(UINT p_SystemID)
+{
+	m_ParticleSystem->DeactivateParticleSystem(p_SystemID);
 }
 
 ///////////////////////////////////////////////
