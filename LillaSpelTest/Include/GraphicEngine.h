@@ -83,7 +83,13 @@ public:
 	void CreateInitParticleBuffer(std::vector<Particle> startParticles, UINT &bufferID);
 	void RemoveParticleSystem(UINT p_SystemID);
 	void UpdateParticleSystem(UINT p_SystemID, float p_SpawnTimer, float p_ParticleLifespan, XMFLOAT2 p_ParticleInitSize, float p_Speed, float p_EngineSpeed );
-	
+	void DeactivateObjectsParticleSystems(UINT p_ObjectID);
+	void ActivateObjectsParticleSystems(UINT p_ObjectID);
+	void DeactivateParticleSystem(UINT p_SystemID);
+	void ActivateParticleSystem(UINT p_SystemID);
+
+
+
 	//skymap functions
 	void SetSkymap(UINT p_TextureID);
 	

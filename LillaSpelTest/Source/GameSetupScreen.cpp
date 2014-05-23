@@ -105,7 +105,7 @@ void GameSetupScreen::Initialize()
 
 void GameSetupScreen::SaveInfo()
 {
-	m_graphicHandle->RemoveLevelDraw();
+	m_graphicHandle->RemoveLevelDraw(currentMap);
 	m_gameInfo->map = currentMap;
 	m_gameInfo->numberOfLaps = m_numberOfLaps;
 }

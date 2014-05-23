@@ -22,6 +22,7 @@ private:
 	float m_vibrationTimer[4];
 	int m_lastNodeIndex;
 	int m_pauseDudeIndex;
+	int m_mapID;
 	float m_timeSpentDuringPreUpdate;
 	int m_preUpdateCountdown;
 	int m_nrOfLaps;
@@ -31,7 +32,7 @@ public:
 	GameScreen(void);
 	int GetPauseDudeIndex();
 	void Initialize();
-	GameScreen(int p_colors[4], int p_whatVehicle[4],string p_tauntSound[4], string p_mapName, int p_numberOfPlayers, GraphicHandle* p_graphicHandle, AudioManager* p_audioManager, int p_nrOfLaps);
+	GameScreen(int p_colors[4], int p_whatVehicle[4],string p_tauntSound[4], string p_mapName, int p_numberOfPlayers, GraphicHandle* p_graphicHandle, AudioManager* p_audioManager, int p_nrOfLaps, int p_mapID);
 	~GameScreen(void);
 	int Update(float p_dt, std::vector<UserCMD>* p_userCMDS); //shouldnt be here
 	void PreUpdate(float p_dt, std::vector<UserCMD>* p_userCMDS, int p_Player);

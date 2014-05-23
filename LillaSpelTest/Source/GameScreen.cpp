@@ -5,9 +5,10 @@ GameScreen::GameScreen(void)
 {
 }
 
-GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4],string p_tauntSound[4], std::string p_mapName, int p_numberOfPlayers, GraphicHandle* p_graphicHandle, AudioManager* p_audioManager, int p_nrOfLaps)
+GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4],string p_tauntSound[4], std::string p_mapName, int p_numberOfPlayers, GraphicHandle* p_graphicHandle, AudioManager* p_audioManager, int p_nrOfLaps,int p_mapID)
 	:Screen(p_graphicHandle, p_audioManager)
 {
+	m_mapID = p_mapID;
 	m_nrOfLaps = p_nrOfLaps+1;
 	m_engineSound[0] = "Engine1.wav";
 	m_engineSound[1] = "Engine2.wav";
@@ -67,7 +68,7 @@ GameScreen::~GameScreen(void)
 	m_audioManager->RemoveSpecificSound("game2.mp3");
 	////Remove Graphic Things////
 	m_graphicHandle->RemoveLights();
-	m_graphicHandle->RemoveLevelDraw();
+	m_graphicHandle->RemoveLevelDraw(m_mapID);
 	m_graphicHandle->RemovePlayers();
 	std::vector<PlayerWall*>* t_playerWalls;
 	int t_wallListSize;

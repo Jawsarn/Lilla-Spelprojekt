@@ -106,7 +106,7 @@ public:
 	void InitializeLevel(std::string p_LevelStringName, UINT p_Texture,UINT p_TextureNormGlow);
 	void InitializeWall(std::string p_PlayerWallStringName, UINT p_Texture,UINT p_TextureNormGlow);*/
 	std::vector <UINT> InitializeObj(std::string p_ObjectStringName);
-	void RemoveLevelDraw();
+	void RemoveLevelDraw(int p_WhatLevel);
 	void AddLevelDraw(int p_AddLevelDraw);
 	void AddSelectionDraw();
 	void RemoveSelectionDraw();
