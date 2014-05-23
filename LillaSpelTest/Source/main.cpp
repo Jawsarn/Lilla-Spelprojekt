@@ -20,6 +20,7 @@
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam );
 HRESULT InitializeWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow);
+void CleanUpCrew(std::vector<UserCMD>* p_userCMDs);
 void UpdateTime();
 void Update(std::vector<UserCMD>* p_userCMDs);
 void Run();
@@ -118,7 +119,7 @@ void Run()
 
 	//message game loop
 	MSG msg = {0};
-	while( WM_QUIT != msg.message )
+	while( WM_QUIT != msg.message && m_state != SHUT_DOWN)
 	{
 		//get messages and update
 		if ( PeekMessage( &msg, nullptr, 0, 0, PM_REMOVE ) )
@@ -166,7 +167,7 @@ void Run()
 			m_GraphicHandle->DrawGame(m_DeltaTime);
 		}
 	}
-
+	CleanUpCrew(userCMDS);
 	//cleanup
 }
 
@@ -276,7 +277,6 @@ void Update(std::vector<UserCMD>* p_userCMDs)
 		}
 		break;
 	case SHUT_DOWN:
-		exit(1337);
 		break;
 	default:
 		break;
@@ -425,7 +425,11 @@ HRESULT InitializeWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow)
 }
 
 
-void CleanUpCrew()
+void CleanUpCrew(std::vector<UserCMD>* p_userCMDs)
 {
-	//m_GraphicHandle->Cleanup();
+	for (int i = 0; i < p_userCMDs->size(); i++)
+	{
+		p_userCMDs->at(i).controller.Vibrate(0,0);
+	}
+	m_GraphicHandle->Cleanup();
 }

@@ -154,6 +154,7 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 		if(PauseCheck(i, p_userCMDS->at(i)) == PAUSE_SCREEN)
 		{
 			StopSounds();
+			StopAllVibration(p_userCMDS);
 			return PAUSE_SCREEN;
 		}
 
@@ -397,6 +398,14 @@ void GameScreen::StopSounds()
 		m_audioManager->StopSpecificSound(m_engineSound[i]);
 	}
 	m_audioManager->PauseSpecificSound("game2.mp3");
+}
+
+void GameScreen::StopAllVibration(std::vector<UserCMD>* p_userCMDS)
+{
+	for (int i = 0; i < p_userCMDS->size(); i++)
+	{
+		p_userCMDS->at(i).controller.Vibrate(0,0);
+	}
 }
 
 void GameScreen::UpdateVibration(float p_dt,int p_player, UserCMD& p_userCMD)

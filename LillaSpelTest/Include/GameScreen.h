@@ -57,6 +57,7 @@ private:
 	void PlayerDieStaticObj(int p_currentPlayer);
 	void PlayerDiePlayerWall(int p_currentPlayer);
 	void PlayerCloseToWall(int p_currentPlayer, int p_wallsCloseTo, float p_dt);
+	void StopAllVibration(std::vector<UserCMD>* p_userCMDS);
 
 	void CreatePlayerHUDs(int p_numberOfPlayers,int p_color[4], std::string p_mapName);
 
