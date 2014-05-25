@@ -143,7 +143,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 
 	m_finishSlideSpeedCoefficient = 0.01;
 	m_isDrawn =true;
-	m_vehicleHoverDistance = m_radius;
+	m_vehicleHoverDistance = 0.2*m_radius;
 
 	////FINAL WORLD MATRIX INITIALIZATION
 	SetDirection();
