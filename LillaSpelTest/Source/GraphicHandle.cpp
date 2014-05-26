@@ -763,11 +763,11 @@ void GraphicHandle::CreateMapLights(std::vector<XMFLOAT3> p_CenterSpline)
 	float g = 0;
 	float b = 0;
 	int colChanger = 0;
-	float t_ColChanger =  0.05f;
+	float t_ColChanger =  0.15f;
 	while (counter < (full))
 	{
 		UINT id;
-		m_GraphicEngine->CreateStaticLight(p_CenterSpline[counter],XMFLOAT3(r,g,b), 15.0f,id);
+		m_GraphicEngine->CreateStaticLight(p_CenterSpline[counter],XMFLOAT3(1,1,1), 50.0f,id);
 
 
 		if (colChanger == 0) //här blir det gult
@@ -826,7 +826,7 @@ void GraphicHandle::CreateMapLights(std::vector<XMFLOAT3> p_CenterSpline)
 		}
 
 
-		counter += 15;
+		counter += 5;
 	}
 	UINT id;
 	m_GraphicEngine->CreateStaticLight(p_CenterSpline[p_CenterSpline.size() - 1], XMFLOAT3(1,1,1), 30.0f,id);
