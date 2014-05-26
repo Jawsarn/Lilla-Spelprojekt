@@ -22,10 +22,10 @@ private:
 		UINT m_LightID;
 	};
 
-	struct ParticleStruct
+	struct PlayerEquipment
 	{
-		XMFLOAT3 posOffsets;
-
+		std::vector<XMFLOAT4> ParticlePosSize;
+		std::vector<XMFLOAT3> LightPos;
 	};
 
 	int m_CircleOffset;
@@ -54,7 +54,7 @@ private:
 	std::vector <std::vector<UINT>>m_MeshPlayerWall;//borde kunna ha olika väggar(olika meshar då) om man vill
 	std::vector <std::vector<UINT>> m_MeshLevels;
 	std::vector<std::vector<UINT>> m_MeshShips;
-	std::vector<ParticleStruct> m_ShipParticleEffects;
+	std::vector<PlayerEquipment> m_ShipParticleEffects;
 
 	std::vector<XMFLOAT3> m_Colours;
 

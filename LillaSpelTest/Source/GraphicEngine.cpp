@@ -1525,6 +1525,10 @@ void GraphicEngine::DrawOpaqueObjects()
 	UINT strides = sizeof(SimpleVertex);
 	UINT offsets = 0;
 
+	ShaderProgram t_Program = m_ShaderPrograms[0];
+	SetShaderProgram(t_Program);
+
+
 	//std::map<UINT, DrawObject*>::iterator it;
 	for (std::map<UINT, DrawObject*>::iterator it = m_ObjectsOnDrawingScheme.begin(); it != m_ObjectsOnDrawingScheme.end(); it++)
 	{
@@ -1545,8 +1549,7 @@ void GraphicEngine::DrawOpaqueObjects()
 			m_DeviceContext->IASetVertexBuffers(0, 1, &m_VertexBuffers[t_VertexBuffID].vertexBuffer, &strides, &offsets);
 
 			//set shader program
-			ShaderProgram t_Program = m_ShaderPrograms[0];//m_ShaderPrograms[m_DrawPieces[i].shaderProgramID]; // not yet implemented to get the right program
-			SetShaderProgram(t_Program);
+			
 
 			//update textures
 			SetTextures(m_DrawPieces[it->second->piecesID[i]]);

@@ -67,16 +67,38 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 		m_SelectionShips[i].resize( m_MeshShips.size(), 0);
 	}
 	//add particle effects
-	ParticleStruct t_NewPart;
-	t_NewPart.posOffsets = XMFLOAT3(0.35f,0.06f,-0.15f);
 
-	m_ShipParticleEffects.push_back(t_NewPart);
-	m_ShipParticleEffects.push_back(t_NewPart);
-	t_NewPart.posOffsets = XMFLOAT3(0.1f,0.06f,-0.5f);
+	PlayerEquipment t_NewEquip;
 
-	m_ShipParticleEffects.push_back(t_NewPart);
-	t_NewPart.posOffsets = XMFLOAT3(0.35f,0.06f,-0.15f);
-	m_ShipParticleEffects.push_back(t_NewPart);
+	std::vector<XMFLOAT4> t_PartPos;
+
+
+	//ship one
+	t_PartPos.push_back(XMFLOAT4(0.35f,0.06f,-0.15f,0.15f));
+	t_PartPos.push_back(XMFLOAT4(-0.35f,0.06f,-0.15f,0.15f));
+	t_NewEquip.ParticlePosSize = t_PartPos;
+
+	m_ShipParticleEffects.push_back(t_NewEquip);
+
+	//ship two
+	t_PartPos.clear();
+
+	t_PartPos.push_back(XMFLOAT4(0.1f,0.06f,-0.5f, 0.15f));
+	t_PartPos.push_back(XMFLOAT4(-0.1f,0.06f,-0.5f, 0.15f));
+	t_NewEquip.ParticlePosSize = t_PartPos;
+
+	m_ShipParticleEffects.push_back(t_NewEquip);
+
+	//ship three
+	t_PartPos.clear();
+
+	t_PartPos.push_back(XMFLOAT4(0.30f,0.15f,-0.15f, 0.15f));
+	t_PartPos.push_back(XMFLOAT4(-0.30f,0.15f,-0.15f, 0.15f));
+	t_PartPos.push_back(XMFLOAT4(0.0f,-0.1f,-0.15f, 0.20f));
+	t_NewEquip.ParticlePosSize = t_PartPos;
+
+	m_ShipParticleEffects.push_back(t_NewEquip);
+
 
 
 
@@ -423,6 +445,12 @@ void GraphicHandle::CreateLight(int p_PlayerIndex,XMFLOAT3 p_Color,UINT p_Object
 
 void GraphicHandle::CreateShipForGame(std::vector<XMFLOAT4X4> p_PlayerWorld)
 {
+	std::vector<Particle> t_InitParticles;
+	t_InitParticles.push_back(Particle(XMFLOAT3(0,0,0), XMFLOAT3(0,0,0), XMFLOAT3(0, 1, 0) ,XMFLOAT2(1,1),0.0f, 0.0f,0.0f,1));
+
+	UINT t_InitParticleID1;
+	m_GraphicEngine->CreateInitParticleBuffer(t_InitParticles, t_InitParticleID1);
+	
 	for (int i = 0; i < m_Player.size(); i++)
 	{
 		m_GraphicEngine->CreateDrawObject(m_MeshShips[m_PlayerVehicle[i]],
@@ -441,24 +469,24 @@ void GraphicHandle::CreateShipForGame(std::vector<XMFLOAT4X4> p_PlayerWorld)
 
 
 
-		ParticleStruct t_ParStru = m_ShipParticleEffects[m_PlayerVehicle[i]];
+		PlayerEquipment t_ParStru = m_ShipParticleEffects[m_PlayerVehicle[i]];
 
-		XMFLOAT3 t_Offsets = t_ParStru.posOffsets;
-		std::vector<Particle> t_InitParticles;
-		t_InitParticles.push_back(Particle(XMFLOAT3(0,0,0), XMFLOAT3(0,0,0), XMFLOAT3(0, 1, 0) ,XMFLOAT2(1,1),0.0f, 0.0f,0.0f,1));
+		for (int j = 0; j < t_ParStru.ParticlePosSize.size(); j++)
+		{
+			XMFLOAT4 t_Offsets = XMFLOAT4( t_ParStru.ParticlePosSize[j].x, t_ParStru.ParticlePosSize[j].y, t_ParStru.ParticlePosSize[j].z, 1 );
+			
 
-		UINT t_InitParticleID1;
-		m_GraphicEngine->CreateInitParticleBuffer(t_InitParticles, t_InitParticleID1);
+			UINT t_ParticleSystemID;
 
-		UINT t_ParticleSystemID;
+			XMMATRIX t_Tempus = XMMatrixIdentity();
+			//big ones
 
-		XMMATRIX t_Tempus = XMMatrixIdentity();
-		//big ones
+			m_GraphicEngine->CreateParticleSystem( 0, L"ParticleEngineTail.dds",t_InitParticleID1, 1000, m_Colours[m_PlayerColour[i]], 0.05f, t_ParStru.ParticlePosSize[j].w*5, 1.0f,XMFLOAT2( t_ParStru.ParticlePosSize[j].w, 0.5f ), 0.0f, 1.0f, t_Offsets, t_Tempus,t_ParticleSystemID );
+			m_GraphicEngine->AddObjectParticleSystem(m_Player[i], t_ParticleSystemID);
 
-		m_GraphicEngine->CreateParticleSystem( 0, L"ParticleEngineTail.dds",t_InitParticleID1, 1000, m_Colours[m_PlayerColour[i]], 0.05f, 0.5f, 1.0f,XMFLOAT2(0.2f,0.5f), 0.0f, 1.0f, XMFLOAT4(t_Offsets.x, t_Offsets.y, t_Offsets.z, 1), t_Tempus,t_ParticleSystemID );
-		m_GraphicEngine->AddObjectParticleSystem(m_Player[i], t_ParticleSystemID);
-		m_GraphicEngine->CreateParticleSystem( 0, L"ParticleEngineTail.dds",t_InitParticleID1, 1000, m_Colours[m_PlayerColour[i]], 0.05f, 0.5f, 1.0f,XMFLOAT2(0.2f,0.5f), 0.0f, 1.0f, XMFLOAT4(-t_Offsets.x, t_Offsets.y, t_Offsets.z, 1), t_Tempus,t_ParticleSystemID );
-		m_GraphicEngine->AddObjectParticleSystem(m_Player[i], t_ParticleSystemID);
+		}
+
+		
 
 	}
 }
