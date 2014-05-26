@@ -11,7 +11,7 @@ Player::Player()
 
 Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 {
-
+	
 
 	////MACRO STUFF
 	m_state = STARTING;
@@ -29,11 +29,6 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	//gets the corners from the map loader. Yes. This works
 	vector<XMFLOAT3> t_wallBoxCorners = t_mapLoader.LoadLogicalObj("walls/firstwall/mesh.obj").at(0);
 	vector <XMFLOAT3> t_playerShipBoxCorners = t_mapLoader.LoadLogicalObj("ships/pajfighter/mesh.obj").at(0);
-
-	vector<XMFLOAT3> t_derp = t_mapLoader.LoadLogicalObj("levels/Aztec/mesh.obj").at(0);
-	XMFLOAT3 t_derp2 = SetBoxExtents(t_derp);
-	vector<XMFLOAT3> t_derp3 = t_mapLoader.LoadLogicalObj("levels/Aztec/levelwalls/mesh.obj").at(0);
-	XMFLOAT3 t_derp4 = SetBoxExtents(t_derp);
 
 
 
@@ -593,18 +588,15 @@ void Player::UpdateWorldMatrix()
 	t_vehicleUpVector = XMVector3Transform(t_vehicleUpVector, t_directionRotationMatrixTarget);
 	t_vehicleUpVector = XMVector3Normalize(t_vehicleUpVector);
 	XMMATRIX t_directionRotationMatrixUp;
-	//rotate along new up vector
 
+	//rotate along new up vector
 	if(m_state !=FINISHING)
-		t_directionRotationMatrixUp = XMMatrixRotationAxis(t_vehicleUpVector, m_currentAngle * 10 * (3.1415/(m_speed+1)));//Gives a bad value during countdown				//////////////////////////MAKE SURE YOU CHANGE THIS HARDCODED 10 CRAP////////////////
+		t_directionRotationMatrixUp = XMMatrixRotationAxis(t_vehicleUpVector, m_currentAngle * 20 * (3.1415/(m_speed+1)));//Gives a bad value during countdown				//////////////////////////MAKE SURE YOU CHANGE THIS HARDCODED 10 CRAP////////////////
 	else
-		t_directionRotationMatrixUp = XMMatrixRotationAxis(t_vehicleUpVector, m_currentAngle * 10 * (3.1415/(m_finishSpeed+1))+t_finishRotation);
+		t_directionRotationMatrixUp = XMMatrixRotationAxis(t_vehicleUpVector, m_currentAngle * 20 * (3.1415/(m_finishSpeed+1))+t_finishRotation);
 
 	t_vehicleTargetVector = XMVector3Transform(t_vehicleTargetVector, t_directionRotationMatrixUp);
 	t_vehicleTargetVector = XMVector3Normalize(t_vehicleTargetVector);
-
-	//XMStoreFloat3(&m_direction, t_vehicleTargetVector);
-	//XMStoreFloat3(&m_upVector, t_vehicleUpVector);
 
 	////CAMERA MATRIX GENERATION
 
