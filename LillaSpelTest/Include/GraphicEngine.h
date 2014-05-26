@@ -22,6 +22,8 @@ using namespace DirectX;
 
 #define MAX_NUM_OF_LIGHTS 1024
 
+#define MAX_INSTANCEBUFFER_SIZE 100;
+
 class GraphicEngine
 {
 public:
@@ -47,7 +49,7 @@ public:
 	void RemoveObject(UINT p_ObjectID);
 	void RemoveObjectFromDrawing(UINT p_ObjectID);
 	void AddObjectToDrawing(UINT p_ObjectID);
-	void AddObjectToInstanced(UINT p_ObjectID);
+	HRESULT AddObjectToInstanced(UINT p_ObjectID);
 
 	//texture functions
 	HRESULT LoadTexture(const wchar_t * p_FileName, UINT &o_TextureID);

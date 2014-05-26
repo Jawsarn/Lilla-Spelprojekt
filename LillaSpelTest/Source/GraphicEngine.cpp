@@ -1033,23 +1033,53 @@ void GraphicEngine::AddObjectToDrawing(UINT p_ObjectID)
 	m_ObjectsOnDrawingScheme[p_ObjectID] = m_DrawObjects[p_ObjectID];
 }
 
-void GraphicEngine::AddObjectToInstanced(UINT p_ObjectID)
+HRESULT GraphicEngine::AddObjectToInstanced(UINT p_ObjectID)
 {
-	bool newInstance = false;
+	HRESULT hr = S_OK;
 	for (int i = 0; i < m_DrawObjects[p_ObjectID]->piecesID.size(); i++)
 	{
+		bool newInstance = false;
+
 		for (int j = 0; j < m_InstancedList.size(); j++)
 		{
 			XMFLOAT3 t_Col1 = m_DrawObjects[p_ObjectID]->color;
 			XMFLOAT3 t_Col2 = m_InstancedList[j].Color;
 
-			if (m_DrawPieces[m_DrawObjects[p_ObjectID]->piecesID[i]].vertexBufferID == m_InstancedList[j].VertexBufferID)
+			if (m_DrawPieces[m_DrawObjects[p_ObjectID]->piecesID[i]].vertexBufferID == m_DrawPieces[m_InstancedList[j].DrawPieceID].vertexBufferID)
 			{
 				if (t_Col1.x == t_Col2.x && t_Col1.y == t_Col2.y && t_Col1.z == t_Col2.z )
 				{
 					m_InstancedList[j].WorldMatrixes.push_back(m_DrawObjects[p_ObjectID]->worldMatrix);
+					newInstance = true;
 				}
 			}
+		}
+
+		//if there's none create new
+		if (!newInstance)
+		{
+			InstancedGroup t_NewGroup;
+			t_NewGroup.Color = m_DrawObjects[p_ObjectID]->color;
+			t_NewGroup.DrawPieceID = m_DrawObjects[i]->piecesID[i];
+			t_NewGroup.WorldMatrixes.push_back(m_DrawObjects[p_ObjectID]->worldMatrix);
+
+			ID3D11Buffer* t_NewInstancedBuffer;
+			//now create instanced buffer etc...
+			D3D11_BUFFER_DESC t_ibd;
+			t_ibd.Usage = D3D11_USAGE_DYNAMIC;
+			t_ibd.ByteWidth = sizeof(XMMATRIX) * MAX_INSTANCEBUFFER_SIZE;
+			t_ibd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+			t_ibd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+			t_ibd.MiscFlags = 0;
+			t_ibd.StructureByteStride = 0;
+
+			hr = m_Device->CreateBuffer(&t_ibd, 0, &t_NewInstancedBuffer);
+			if (FAILED(hr))
+				return hr;
+
+			t_NewGroup.InstanceBuffer = t_NewInstancedBuffer;
+
+			m_InstancedList.push_back(t_NewGroup);
 		}
 	}
 }
@@ -1589,47 +1619,34 @@ void GraphicEngine::DrawOpaqueInstancedObjects()
 	UINT strides = sizeof(SimpleVertex);
 	UINT offsets = 0;
 
+	UINT instanceStrides = sizeof(XMMATRIX);
+
+
 	ShaderProgram t_Program = m_ShaderPrograms[0];
 	SetShaderProgram(t_Program);
 
 
-	//for (int i = 0; i < m_InstancedList.size(); i++)
-	//{
-	//	//update the object buffer
-	//	PerObjectBuffer t_PerObjBuff;
-	//	t_PerObjBuff.World = XMMatrixTranspose( XMLoadFloat4x4( &it->second->worldMatrix ));
+	for (int i = 0; i < m_InstancedList.size(); i++)
+	{
+		//update the object buffer
+		PerObjectBuffer t_PerObjBuff;
+		t_PerObjBuff.World = XMMatrixTranspose( XMMatrixIdentity());
 
-	//	t_PerObjBuff.typeOfObject = 0;
-	//	t_PerObjBuff.Color = it->second->color;
+		t_PerObjBuff.typeOfObject = 0;
+		t_PerObjBuff.Color = m_InstancedList[i].Color;
 
+		m_DeviceContext->UpdateSubresource(m_PerObjectBuffer, 0, nullptr, &t_PerObjBuff, 0, 0 );
 
-
-	//}
-
-
-	//
-	//	
-
-	//	m_DeviceContext->UpdateSubresource(m_PerObjectBuffer, 0, nullptr, &t_PerObjBuff, 0, 0 );
-
-	//	int a = it->second->piecesID.size();
-	//	for (int i = 0; i < a; i++)
-	//	{
-	//		//set vertex buffer
-	//		UINT t_VertexBuffID = m_DrawPieces[it->second->piecesID[i]].vertexBufferID;
-	//		m_DeviceContext->IASetVertexBuffers(0, 1, &m_VertexBuffers[t_VertexBuffID].vertexBuffer, &strides, &offsets);
-
-	//		//set shader program
+		UINT t_VertexBuffID = m_DrawPieces[m_InstancedList[i].DrawPieceID].vertexBufferID;
+		m_DeviceContext->IASetVertexBuffers(0, 1, &m_VertexBuffers[t_VertexBuffID].vertexBuffer, &strides, &offsets);
+		m_DeviceContext->IASetVertexBuffers(1, 1, &m_InstancedList[i].InstanceBuffer, &instanceStrides , &offsets);
 
 
-	//		//update textures
-	//		SetTextures(m_DrawPieces[it->second->piecesID[i]]);
+		SetTextures(m_DrawPieces[m_InstancedList[i].DrawPieceID]);
 
 
-	//		//draw
-	//		m_DeviceContext->Draw(m_VertexBuffers[t_VertexBuffID].numberOfVertices, 0);
-	//	}
-	
+		m_DeviceContext->DrawInstanced(m_VertexBuffers[t_VertexBuffID].numberOfVertices, m_InstancedList[i].WorldMatrixes.size(),0,0);
+	}
 }
 
 void GraphicEngine::SetShaderProgram(ShaderProgram p_Program)

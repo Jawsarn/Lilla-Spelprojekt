@@ -215,7 +215,8 @@ struct Particle //change in the input layout
 
 struct InstancedGroup
 {
-	UINT VertexBufferID;
+	UINT DrawPieceID;
+	ID3D11Buffer* InstanceBuffer;
 	XMFLOAT3 Color;
 	std::vector<XMFLOAT4X4> WorldMatrixes;
 };
