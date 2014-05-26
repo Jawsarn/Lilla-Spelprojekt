@@ -40,6 +40,7 @@ private:
 	float m_breakCoefficient;
 	float m_minSpeed;
 	float m_boostFromPad;
+	float m_starUpSpamSpeed;
 
 	//rotation stuff
 	float m_rotateSpeed;
@@ -152,6 +153,7 @@ private:
 
 	float m_radius;
 	float m_vehicleHoverDistance;
+	float m_usedAbilityMaxCoolDown;
 
 	//unused but perhaps needed stuff
 	XMFLOAT3 m_color;
@@ -186,6 +188,7 @@ public:
 	float GetMaxImmortalTimer();
 	bool GetDrawn();
 	void SetDrawn(bool p_condition);
+	float GetRemainingAbilityCooldown();
 
 	int GetRacePosition();
 	XMFLOAT3 GetRadiusVector();
@@ -203,7 +206,7 @@ public:
 	bool AbilityReady();
 	int CurrentLap();
 	float GetImmortalTimer();
-	
+	bool DoneFinishing();
 
 
 	//modifiers
@@ -227,7 +230,7 @@ private:
 
 	void CleanUp();
 
-	//Update methods
+	//Update method
 	void StartupSpam();
 	void HandleAbilities();
 	void Acceleration(float p_dt);
@@ -245,6 +248,7 @@ private:
 	void FixUpVectorRotation(float p_angle);
 	void FixOffsetFromCenterSpline();
 
+	void StartCoolDown(float p_whatAbility);
 	void PlaceWall();
 	void CollisionAftermath(float p_dt);
 	void UpdateWorldMatrix();

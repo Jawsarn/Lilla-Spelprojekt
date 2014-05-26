@@ -11,7 +11,7 @@ Player::Player()
 
 Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 {
-	
+
 
 	////MACRO STUFF
 	m_state = STARTING;
@@ -45,7 +45,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_bobOffset = XMFLOAT3(0, 0, 0); //I think this makes the worldmatrix fucked in initialization
 	m_up = XMFLOAT3(0, 1, 0);
 	m_distance = 0.0f;
-	m_boostMeter = 5;//test value
+	m_boostMeter = 0;//test value
 	m_direction = DirectX::XMFLOAT3(0, 0, 1);
 	m_lastPlacedWall = nullptr;
 	m_speed = 0;
@@ -88,6 +88,8 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_boostFromPad = 5000;//testValue
 	m_megaBoostDecelerationCoefficient = 1.5;//used for when you're going stupidly fast (usually as a consequence of boostFromPad
 
+	m_starUpSpamSpeed=7;
+
 	//how quickly you rotate
 	m_rotateSpeed = 0.20/pow(m_radius, 0.8);
 	m_dampShipRotation = 0.03;
@@ -126,7 +128,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_targetBumpIntensity = 0.3;
 
 	//Shockwave
-	m_angleShockwavePower = 0.015;//set low for minor shockwave angle
+	m_angleShockwavePower = 0.01;//set low for minor shockwave angle
 	m_speedShockwavePower = 0.5;
 	m_bobFrequency = 1;
 	m_bobIntensity = 0.1;
@@ -151,6 +153,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	FixUpVectorRotation(m_angle);
 	FixOffsetFromCenterSpline();
 	UpdateWorldMatrix();
+	m_usedAbilityMaxCoolDown = m_abilityCooldown;
 }
 
 
@@ -206,8 +209,8 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 
 	FixOffsetFromCenterSpline();
 	//now offset from the center, following the tube edge
-
-	BobOffset();
+	if(!m_currentUserCmd.rightRetardButtonPressed)
+		BobOffset();
 	//minor bob offset. Pisses mysterisk off
 	DampDirectionRotation(p_dt);
 
@@ -219,10 +222,10 @@ int Player::ProperUpdatePosition(float p_dt, UserCMD p_userCMD)
 	UpdateCollisionBox();
 	if (!m_gravityShifting&&m_state!=FINISHING&&m_state!=IMMORTAL)
 		r_returnInt = WallPlacement(p_dt);
+	if(m_state!= STARTING)
+		UpdateTimers(p_dt);
 
-	UpdateTimers(p_dt);
 
-	
 
 	if (m_state == IMMORTAL)
 	{
@@ -250,6 +253,7 @@ void Player::HandleAbilities()
 		{
 			m_gravityShifting = true;
 			m_abilityCooldown = m_gravityShiftCooldown;
+			m_usedAbilityMaxCoolDown = m_gravityShiftCooldown;
 		}
 	}
 }
@@ -300,8 +304,6 @@ void Player::Acceleration(float p_dt)
 			m_speed -= p_dt*m_deceleration;
 		}
 	}
-	if (m_currentUserCmd.xButtonPressed)
-		m_speed += 2 * m_boostAcceleration*p_dt;
 	if(m_finishProgress>=1)
 		m_speed=0;
 }
@@ -907,7 +909,7 @@ std::vector<PlayerWall*>* Player::GetPlacedWalls()
 
 bool Player::AbilityReady()
 {
-	return (m_coolDown<=0);
+	return (m_abilityCooldown<=0);
 }
 
 int Player::CurrentLap()
@@ -918,6 +920,11 @@ int Player::CurrentLap()
 float Player::GetImmortalTimer()
 {
 	return m_immortalTimer;
+}
+
+bool Player::DoneFinishing()
+{
+	return m_finishProgress>=1;
 }
 
 //Modifiers
@@ -964,6 +971,7 @@ void Player::AngleMoveBack()
 void Player::SetShockwaveCooldown()
 {
 	m_abilityCooldown = m_shockWaveCooldown;
+	m_usedAbilityMaxCoolDown = m_shockWaveCooldown;
 }
 
 void Player::NextLap()
@@ -978,7 +986,7 @@ bool Player::ChangedNode()
 
 void Player::Start()
 {
-	m_speed = (float)(m_aButtonPressedAtStart) / 2;
+	m_speed = (float)(m_aButtonPressedAtStart) *m_starUpSpamSpeed;
 	m_state = NORMAL;
 }
 
@@ -1091,9 +1099,12 @@ void Player::StartCollisionAftermath(float p_sideForce, float p_targetForce, int
 
 void Player::StartShockWaveAftermath(int p_sideDirection, int p_targetDirection, float p_zValue, float p_xValue)
 {
-	m_collisionAngleOffset = p_xValue * p_sideDirection * m_angleShockwavePower;
-	m_collisionAfterSpeed = -1*p_zValue * p_targetDirection * m_speedShockwavePower;
-	m_collisionAfterMath = true;
+	if(m_state==NORMAL)
+	{
+		m_collisionAngleOffset = p_xValue * p_sideDirection * m_angleShockwavePower;
+		m_collisionAfterSpeed = -1*p_zValue * p_targetDirection * m_speedShockwavePower;
+		m_collisionAfterMath = true;
+	}
 }
 
 void Player::DampDirectionRotation(float p_dt)
@@ -1126,4 +1137,10 @@ bool Player::GetDrawn()
 void Player::SetDrawn(bool p_condition)
 {
 	m_isDrawn = p_condition;
+}
+
+float Player::GetRemainingAbilityCooldown()
+{
+	float t_tekis = m_abilityCooldown < 0 ? 0:m_abilityCooldown;
+	return t_tekis/m_usedAbilityMaxCoolDown;
 }
