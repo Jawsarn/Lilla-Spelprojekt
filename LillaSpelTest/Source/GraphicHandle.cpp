@@ -54,7 +54,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	t_ShipNames.push_back("Ships/MilleniumKalk");
 	t_ShipNames.push_back("Ships/BullProof");
 	t_ShipNames.push_back("Ships/PajFighter");
-	//t_ShipNames.push_back("Ships/SpazMnik");
+	t_ShipNames.push_back("Ships/SpazMnik");
 
 
 
@@ -99,6 +99,13 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 
 	m_ShipParticleEffects.push_back(t_NewEquip);
 
+	//ship four
+	t_PartPos.clear();
+	t_PartPos.push_back(XMFLOAT4(0.35f, 0.06f, -0.15f, 0.15f));
+	t_PartPos.push_back(XMFLOAT4(-0.35f, 0.06f, -0.15f, 0.15f));
+	t_NewEquip.ParticlePosSize = t_PartPos;
+
+	m_ShipParticleEffects.push_back(t_NewEquip);
 
 
 
