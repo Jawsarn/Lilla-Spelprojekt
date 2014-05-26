@@ -85,7 +85,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_break = 20;//static break force
 	m_breakCoefficient = 1;//coefficient that breaks depending on your current speed
 	m_minSpeed = 3;
-	m_boostFromPad = 3000;//testValue
+	m_boostFromPad = 1500;//testValue
 
 	//how quickly you rotate
 	m_rotateSpeed = 0.15/pow(m_radius, 0.8);

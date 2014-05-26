@@ -159,6 +159,7 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 			return PAUSE_SCREEN;
 		}
 
+		// next lap/win check
 		if (m_lastNodeIndex == m_players[i]->GetCurrentMapNode()->m_Index&&!m_players[i]->HasFinished())
 		{
 			if(m_players[i]->CurrentLap() >= m_nrOfLaps)
@@ -182,6 +183,7 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 			PlacePlayerWall(i);
 		}
 
+		//collision
 		if (m_players[i]->GetImmortal() && m_players[i]->GetImmortalTimer()>0)
 		{
 			if (m_immortalCounter>m_players[i]->GetMaxImmortalTimer())
@@ -203,6 +205,7 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 
 
 		}
+
 		else if(!m_players[i]->GetDrawn())
 		{
 			m_graphicHandle->AddDrawPlayer(i);
@@ -226,6 +229,7 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 	}
 	switch(m_state)
 	{
+	//pvp collision
 	case PLAY:
 		m_collisionManager->PlayerVsPlayer(m_players);
 		for (int i = 0; i < m_players.size(); i++)
@@ -235,13 +239,14 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 		}
 		break;
 	}
+	//draw player
 	for (int i = 0; i < m_players.size(); i++)
 	{
 		DrawPlayer(i);
 	}
 	if (t_finished == m_players.size())
 	{
-		//return GOAL_SCREEN;
+		return GOAL_SCREEN;
 	}
 	return GAME_SCREEN;
 }
