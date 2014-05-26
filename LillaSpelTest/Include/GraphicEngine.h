@@ -123,6 +123,7 @@ private:
 
 	void UpdateFrameBuffer();
 	void DrawOpaqueObjects();
+	void DrawOpaqueInstancedObjects();
 	void SetShaderProgram(ShaderProgram p_Program);
 	void SetTextures(DrawPiece p_DrawPiece);
 	void ComputeTileDeferredLightning();

@@ -1562,6 +1562,47 @@ void GraphicEngine::DrawOpaqueObjects()
 
 }
 
+void GraphicEngine::DrawOpaqueInstancedObjects()
+{
+	UINT strides = sizeof(SimpleVertex);
+	UINT offsets = 0;
+
+	ShaderProgram t_Program = m_ShaderPrograms[0];
+	SetShaderProgram(t_Program);
+
+
+	//std::map<UINT, DrawObject*>::iterator it;
+	for (std::map<UINT, DrawObject*>::iterator it = m_ObjectsOnDrawingScheme.begin(); it != m_ObjectsOnDrawingScheme.end(); it++)
+	{
+		//update the object buffer
+		PerObjectBuffer t_PerObjBuff;
+		t_PerObjBuff.World = XMMatrixTranspose( XMLoadFloat4x4( &it->second->worldMatrix ));
+
+		t_PerObjBuff.typeOfObject = 0;
+		t_PerObjBuff.Color = it->second->color;
+
+		m_DeviceContext->UpdateSubresource(m_PerObjectBuffer, 0, nullptr, &t_PerObjBuff, 0, 0 );
+
+		int a = it->second->piecesID.size();
+		for (int i = 0; i < a; i++)
+		{
+			//set vertex buffer
+			UINT t_VertexBuffID = m_DrawPieces[it->second->piecesID[i]].vertexBufferID;
+			m_DeviceContext->IASetVertexBuffers(0, 1, &m_VertexBuffers[t_VertexBuffID].vertexBuffer, &strides, &offsets);
+
+			//set shader program
+
+
+			//update textures
+			SetTextures(m_DrawPieces[it->second->piecesID[i]]);
+
+
+			//draw
+			m_DeviceContext->Draw(m_VertexBuffers[t_VertexBuffID].numberOfVertices, 0);
+		}
+	}
+}
+
 void GraphicEngine::SetShaderProgram(ShaderProgram p_Program)
 {
 	m_DeviceContext->IASetInputLayout(m_InputLayouts[p_Program.inputLayout]);
