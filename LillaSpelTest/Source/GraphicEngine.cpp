@@ -680,6 +680,8 @@ HRESULT GraphicEngine::InitializeGBuffers()
 		if (i == 2)
 		{
 			desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
+			desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+			t_SrvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		}
 
 		hr = m_Device->CreateTexture2D(&desc, 0, &t_Texture);
