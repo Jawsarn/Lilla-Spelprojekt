@@ -211,3 +211,11 @@ struct Particle //change in the input layout
 		Type = p_in.Type;
 	}
 };
+
+
+struct InstancedGroup
+{
+	UINT VertexBufferID;
+	XMFLOAT3 Color;
+	std::vector<XMFLOAT4X4> WorldMatrixes;
+};

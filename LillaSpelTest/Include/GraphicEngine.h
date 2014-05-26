@@ -47,6 +47,7 @@ public:
 	void RemoveObject(UINT p_ObjectID);
 	void RemoveObjectFromDrawing(UINT p_ObjectID);
 	void AddObjectToDrawing(UINT p_ObjectID);
+	void AddObjectToInstanced(UINT p_ObjectID);
 
 	//texture functions
 	HRESULT LoadTexture(const wchar_t * p_FileName, UINT &o_TextureID);
@@ -232,6 +233,10 @@ private:
 	std::vector<HudTemplate> m_HudTemplates;
 	std::map<UINT, Hud*> m_Huds;
 	int m_ViewportHud[4];
+
+
+
+	std::vector<InstancedGroup> m_InstancedList;
 
 	//number of viewports active
 	float m_NumberOfViewports;
