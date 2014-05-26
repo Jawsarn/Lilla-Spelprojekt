@@ -96,11 +96,11 @@ float3 DirectIllumination(float3 pos, float3 norm , Light light,float inSpec,int
 
 	float att = pow(max(0.0f, 1.0 - (d / light.radius)), 2);
 
-	float3 toEye = -pos;
+	float3 toEye = normalize(-pos);
 	float3 v = reflect(-lightVec, norm);
 
 
-	float specFactor = pow(max(dot(v,toEye), 0.0f), 2)*inSpec;
+	float specFactor = pow(max(dot(v,toEye), 0.0f), 1)*inSpec;
 
 	return (light.color *att * (diffuseFactor + specFactor));
 }
