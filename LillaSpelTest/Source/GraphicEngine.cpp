@@ -1590,9 +1590,9 @@ void GraphicEngine::DrawOpaqueInstancedObjects()
 	ShaderProgram t_Program = m_ShaderPrograms[0];
 	SetShaderProgram(t_Program);
 
-	m_DeviceContext->Map(,,)
 
-		d3d11_map_
+
+
 	//std::map<UINT, DrawObject*>::iterator it;
 	for (std::map<UINT, DrawObject*>::iterator it = m_ObjectsOnDrawingScheme.begin(); it != m_ObjectsOnDrawingScheme.end(); it++)
 	{
