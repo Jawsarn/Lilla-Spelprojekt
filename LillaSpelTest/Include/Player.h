@@ -35,6 +35,7 @@ private:
 	float m_acceleration;
 	float m_boostAcceleration;
 	float m_deceleration;
+	float m_megaBoostDecelerationCoefficient;
 	float m_break;
 	float m_breakCoefficient;
 	float m_minSpeed;
@@ -202,6 +203,7 @@ public:
 	bool AbilityReady();
 	int CurrentLap();
 	float GetImmortalTimer();
+	
 
 
 	//modifiers

@@ -74,7 +74,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 
 	//speed
 	m_maxBoost = 5;//seconds you can boost whilst at max value
-	m_boostGain = 1;//prolly not gonna be used
+	m_boostGain = 1.5;//prolly not gonna be used
 
 	m_maxSpeed = 25;
 	m_maxBoostSpeed = 50;
@@ -85,10 +85,11 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_break = 20;//static break force
 	m_breakCoefficient = 1;//coefficient that breaks depending on your current speed
 	m_minSpeed = 3;
-	m_boostFromPad = 1500;//testValue
+	m_boostFromPad = 5000;//testValue
+	m_megaBoostDecelerationCoefficient = 1.5;//used for when you're going stupidly fast (usually as a consequence of boostFromPad
 
 	//how quickly you rotate
-	m_rotateSpeed = 0.15/pow(m_radius, 0.8);
+	m_rotateSpeed = 0.20/pow(m_radius, 0.8);
 	m_dampShipRotation = 0.03;
 
 	//wall stuff
@@ -285,7 +286,11 @@ void Player::Acceleration(float p_dt)
 	//ordinary acceleration
 	else
 	{
-		if (m_maxSpeed > m_speed)
+		if(m_speed>m_maxBoostSpeed)
+		{
+			m_speed-=p_dt*m_speed*m_megaBoostDecelerationCoefficient;
+		}
+		else if (m_speed < m_maxSpeed)
 		{
 			m_speed += p_dt*m_acceleration;
 		}
@@ -935,7 +940,7 @@ void Player::SetPlayerBoost(float p_boost)
 
 void Player::IncreaseBoost(int p_nrOfWallsClose, float p_dt)
 {
-	m_boostMeter += p_nrOfWallsClose*p_dt*m_boostGain;
+	m_boostMeter += p_nrOfWallsClose*p_dt*m_boostGain*(m_racePos-1);
 }
 
 void Player::SetFinalDirection()
