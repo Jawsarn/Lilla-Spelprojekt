@@ -1611,7 +1611,15 @@ void GraphicEngine::ComputeTileDeferredLightning()
 
 	//update buffer here
 	PerComputeBuffer t_Pcb;
-	t_Pcb.camNearFar = XMFLOAT2(1.0f,10000); //HÅRDKODNING DELUX
+	if (m_Cameras[0] != nullptr)
+	{
+		t_Pcb.camNearFar = XMFLOAT2(m_Cameras[0]->GetNearDistance(),m_Cameras[0]->GetFarDistance());
+	}
+	else
+	{
+		t_Pcb.camNearFar = XMFLOAT2(1.0f,10000); //HÅRDKODNING DELUX
+	}
+	
 	if (m_NumberOfViewports > 2)
 	{
 		t_Pcb.screenDimensions = XMFLOAT2((FLOAT)m_Width/2, (FLOAT)m_Height/2);
