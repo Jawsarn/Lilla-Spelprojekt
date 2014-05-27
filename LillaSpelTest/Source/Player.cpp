@@ -415,7 +415,8 @@ void Player::UpdateCollisionBox()
 
 int Player::WallPlacement(float p_dt)
 {
-
+	if(m_wallMeter>m_maxWalls+1)
+		m_wallMeter = m_maxWalls+1;
 	//if the players wants to poop out walls
 	if (m_currentUserCmd.leftTriggerPressed && m_coolDown <= 0 && m_wallMeter >= 1)
 	{
@@ -430,7 +431,8 @@ int Player::WallPlacement(float p_dt)
 	{
 		m_wallMeter = m_maxWalls;
 		m_wallMeter -= 1;
-		//m_coolDown = m_maxCooldown;
+
+		m_coolDown = m_maxCooldown;
 
 		PlaceWall();
 		return  1;
@@ -445,7 +447,14 @@ void Player::UpdateTimers(float p_dt)
 	m_coolDown -= p_dt;
 	m_immortalTimer -= p_dt;
 	if (m_immortalTimer < 0&&m_state==IMMORTAL&&!m_gravityShifting&&!m_hasWon)
+	{
 		m_state = NORMAL;
+		if(m_wallMeter > m_maxWalls+1)
+		{
+			m_wallMeter = m_maxWalls+1;
+		}
+		m_coolDown = m_maxCooldown;
+	}
 	m_deathTimer -= p_dt;
 	if (m_gravityShifting)
 		m_gravityShiftProgress += p_dt*m_gravityShiftSpeed;
