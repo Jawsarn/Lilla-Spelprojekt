@@ -41,14 +41,16 @@ private:
 	std::vector <UINT> m_LevelWalls;
 	std::vector <UINT> m_LevelBoosts;
 	std::vector <std::string> m_WallNames;
+	std::vector <UINT> m_Pillar;
 
-	
+	float m_ColourChangerBoosts;
 	
 	
 	 std::vector<UINT> m_SelectionShips[4];
 	std::vector<XMFLOAT4X4> m_SelectionShipMatrix[4];
 	
 	//std::vector<UINT> m_Buttons;
+	std::vector <std::vector<UINT>> m_MeshPillar;
 	std::vector <std::vector<UINT>> m_MeshLevelWall;
 	std::vector <std::vector<UINT>> m_MeshLevelBoost;
 	std::vector <std::vector<UINT>>m_MeshPlayerWall;//borde kunna ha olika väggar(olika meshar då) om man vill
@@ -114,7 +116,7 @@ public:
 	void RemoveDrawPlayer(int p_PlayerID);
 	void AddDrawPlayer(int p_PlayerID);
 	UINT CreateWall(int p_WhatWall,CXMMATRIX p_PlayerWallWorld,int p_WhatPlayer);
-
+	void UpdateBoostColour(float p_DeltaTime);
 
 	void SetViewportAmount(UINT p_ViewportAmount);
 	void LoadTexture(const wchar_t* p_FileName, UINT &o_TextureID);

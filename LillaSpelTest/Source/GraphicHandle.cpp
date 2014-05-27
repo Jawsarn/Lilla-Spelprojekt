@@ -38,7 +38,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	m_WhatLevelBefore=0;
 	m_CircleOffset = 2.5;
 	m_BigCircleOffset = 10;
-
+	m_ColourChangerBoosts = 0;
 
 
 	////initWallTextures
@@ -66,6 +66,33 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	{
 		m_SelectionShips[i].resize( m_MeshShips.size(), 0);
 	}
+
+
+	/////Pillar
+
+	m_Pillar.resize(4,0);
+	m_MeshPillar.push_back(InitializeObj("Pillar"));
+
+
+	//	XMMATRIX t_Rot = XMMatrixRotationY(XM_PIDIV2*i);
+	XMMATRIX t_Tempura = XMMatrixTranslation(0,-1,m_BigCircleOffset);
+	CreateDrawObject(m_MeshPillar[0],t_Tempura,XMFLOAT3(1,1,1),m_Pillar[0],true,false);
+	
+	t_Tempura = XMMatrixTranslation(0,-1,-m_BigCircleOffset);
+	CreateDrawObject(m_MeshPillar[0],t_Tempura,XMFLOAT3(1,1,1),m_Pillar[1],true,false);
+	
+	t_Tempura = XMMatrixTranslation(m_BigCircleOffset,-1,0);
+	CreateDrawObject(m_MeshPillar[0],t_Tempura,XMFLOAT3(1,1,1),m_Pillar[2],true,false);
+	
+	t_Tempura = XMMatrixTranslation(-m_BigCircleOffset,-1,0);
+	CreateDrawObject(m_MeshPillar[0],t_Tempura,XMFLOAT3(1,1,1),m_Pillar[3],true,false);
+	//	t_Tempura = XMMatrixMultiply(t_Rot,t_Tempura);
+	
+	
+	//CreateDrawObject(m_MeshPillar[0],XMMatrixIdentity(),XMFLOAT3(1,1,1),m_Pillar[1],false);
+	//CreateDrawObject(m_MeshPillar[0],XMMatrixIdentity(),XMFLOAT3(1,1,1),m_Pillar[2],false);
+	//CreateDrawObject(m_MeshPillar[0],XMMatrixIdentity(),XMFLOAT3(1,1,1),m_Pillar[3],false);
+
 	//add particle effects
 
 	PlayerEquipment t_NewEquip;
@@ -147,18 +174,17 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 		CreateDrawObject(m_MeshLevelBoost[i],XMMatrixIdentity(),XMFLOAT3(1,1,1),m_LevelBoosts[i],false,false);
 	}
 
-	//for (int i = 0; i < m_Levels.size(); i++)
-	//{
-	//
-	//}
-	///Laddar inte colours att välja på
-	m_Colours.push_back(XMFLOAT3(1,1,0));
-	m_Colours.push_back(XMFLOAT3(1,0,1));
-	m_Colours.push_back(XMFLOAT3(0,1,1));
-	m_Colours.push_back(XMFLOAT3(1,0,0));
-	m_Colours.push_back(XMFLOAT3(0,0,1));
-	m_Colours.push_back(XMFLOAT3(0,1,0));
-	m_Colours.push_back(XMFLOAT3(1,1,1));
+
+
+
+	int t_ColourTemp = 1;
+	m_Colours.push_back(XMFLOAT3(t_ColourTemp,t_ColourTemp,0));
+	m_Colours.push_back(XMFLOAT3(t_ColourTemp,0,t_ColourTemp));
+	m_Colours.push_back(XMFLOAT3(0,t_ColourTemp,t_ColourTemp));
+	m_Colours.push_back(XMFLOAT3(t_ColourTemp,0,0));
+	m_Colours.push_back(XMFLOAT3(0,0,t_ColourTemp));
+	m_Colours.push_back(XMFLOAT3(0,t_ColourTemp,0));
+	m_Colours.push_back(XMFLOAT3(t_ColourTemp,t_ColourTemp,t_ColourTemp));
 
 
 
@@ -442,7 +468,20 @@ void GraphicHandle::CreatePlayer(std::vector<UINT> p_DrawPieceIDs, CXMMATRIX p_W
 
 void GraphicHandle::DrawGame(float p_DeltaTime) //test 
 {
+	UpdateBoostColour(p_DeltaTime);
 	m_GraphicEngine->DrawGame(p_DeltaTime);
+
+}
+void GraphicHandle::UpdateBoostColour(float p_DeltaTime)
+{
+	m_ColourChangerBoosts +=(p_DeltaTime*8);
+
+	float t_TempCol =(sin(m_ColourChangerBoosts))/2+0.65;
+	for (int i = 0; i < m_LevelBoosts.size(); i++)
+	{
+		m_GraphicEngine->UpdateDrawObjectColor(m_LevelBoosts[i],XMFLOAT3(t_TempCol,t_TempCol,t_TempCol));
+	}
+
 }
 
 void GraphicHandle::CreateLight(int p_PlayerIndex,XMFLOAT3 p_Color,UINT p_ObjectId, LightStruct &p_LightStruct)
@@ -488,7 +527,7 @@ void GraphicHandle::CreateShipForGame(std::vector<XMFLOAT4X4> p_PlayerWorld)
 			XMMATRIX t_Tempus = XMMatrixIdentity();
 			//big ones
 
-			m_GraphicEngine->CreateParticleSystem( 0, L"ParticleEngineTail.dds",t_InitParticleID1, 1000, m_Colours[m_PlayerColour[i]], 0.05f, t_ParStru.ParticlePosSize[j].w*5, 1.0f,XMFLOAT2( t_ParStru.ParticlePosSize[j].w, 0.5f ), 0.0f, 1.0f, t_Offsets, t_Tempus,t_ParticleSystemID );
+			m_GraphicEngine->CreateParticleSystem( 0, L"ParticleEngineTail.dds",t_InitParticleID1, 1000, m_Colours[m_PlayerColour[i]], 0.05f, t_ParStru.ParticlePosSize[j].w*8.0f, 1.0f,XMFLOAT2( t_ParStru.ParticlePosSize[j].w, 0.5f ), 0.0f, 1.0f, t_Offsets, t_Tempus,t_ParticleSystemID );
 			m_GraphicEngine->AddObjectParticleSystem(m_Player[i], t_ParticleSystemID);
 
 		}
@@ -717,6 +756,7 @@ void GraphicHandle::RemoveSelectionDraw()
 		{
 			m_GraphicEngine->RemoveObjectFromDrawing(m_SelectionShips[k][i]);
 		}
+		m_GraphicEngine->RemoveObjectFromDrawing(m_Pillar[k]);
 	}
 
 }
@@ -728,6 +768,7 @@ void GraphicHandle::AddSelectionDraw()
 		{
 			m_GraphicEngine->AddObjectToDrawing(m_SelectionShips[k][i]);
 		}
+		m_GraphicEngine->AddObjectToDrawing(m_Pillar[k]);
 	}
 
 }
