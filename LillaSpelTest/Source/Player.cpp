@@ -39,7 +39,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 
 	////VARIABLE INITIALIZATION (not relevant for game balancing)
 	m_currentAngle = 0;
-	m_wallMeter = 0;
+	m_wallMeter = 10;
 	m_coolDown = 0;
 	m_aButtonPressedAtStart = 0;
 	m_bobOffset = XMFLOAT3(0, 0, 0); //I think this makes the worldmatrix fucked in initialization
@@ -115,8 +115,8 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_cameraTrailDistanceRight = 1.7; //probably shouldn't be less due to clipping
 
 
-	m_gravityShiftCameraMoveSpeed = 2;
-	m_gravityShiftSpeed = 1;
+	m_gravityShiftCameraMoveSpeed = 1.5;
+	m_gravityShiftSpeed = 0.9;
 
 	m_deathShakeMaxIntensity = 8;//reversed intensity: higher number means lower intensity. Because logic
 	m_deathShakeIntensityDrop = 4;
@@ -262,7 +262,7 @@ void Player::Acceleration(float p_dt)
 {
 	////Acceleration
 	//boost acceleration
-	if (m_currentUserCmd.rightTriggerPressed && m_boostMeter > 0)
+	if (m_currentUserCmd.rightTriggerPressed && m_boostMeter > 0&& m_speed< m_maxBoostSpeed)
 	{
 		//check if max boost speed is attained, otherwise accelerate
 		if (m_maxBoostSpeed > m_speed)
@@ -512,6 +512,7 @@ void Player::FixOffsetFromCenterSpline()
 void Player::BobOffset()
 {
 	float t_bob = sin(m_bobTimer*3.1415);
+
 	if(m_state == FINISHING&&t_bob<0.01)
 		m_bobFrequency = 0;
 
@@ -974,6 +975,10 @@ void Player::SetPlayerBoost(float p_boost)
 void Player::IncreaseBoost(int p_nrOfWallsClose, float p_dt)
 {
 	m_boostMeter += p_nrOfWallsClose*p_dt*m_boostGain*(m_racePos-1);
+	if (m_boostMeter > m_maxBoost)
+	{
+		m_boostMeter = m_maxBoost;
+	}
 }
 
 void Player::SetFinalDirection()

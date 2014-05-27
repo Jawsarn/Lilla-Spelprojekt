@@ -22,7 +22,7 @@ using namespace DirectX;
 
 #define MAX_NUM_OF_LIGHTS 1024
 
-#define MAX_INSTANCEBUFFER_SIZE 2000;
+#define MAX_INSTANCEBUFFER_SIZE 4000;
 
 class GraphicEngine
 {
