@@ -110,6 +110,10 @@ public:
 	//cleanup
 	void Cleanup();
 
+
+	void MasterClear();
+
+
 private:
 
 	GraphicEngine();
@@ -139,7 +143,7 @@ private:
 	UINT CheckProgram(DrawPiece p_Piece);
 
 	void UpdateInstanceBuffer();
-	void MasterClear();
+	
 
 	static GraphicEngine* singleton;
 

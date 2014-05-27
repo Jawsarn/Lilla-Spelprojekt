@@ -811,6 +811,9 @@ void GraphicHandle::RemovePlayers()
 	{
 		RemoveObject(m_Player[i]);
 	}
+
+	//JAWS added to remove the darn shizzle
+	m_GraphicEngine->MasterClear();
 }
 
 //light functions

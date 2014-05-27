@@ -1050,9 +1050,13 @@ HRESULT GraphicEngine::UpdateDrawObjectColor(UINT p_ObjectID, XMFLOAT3 p_Color)
 
 void GraphicEngine::RemoveObject(UINT p_ObjectID)
 {
-	if (m_ObjectsOnDrawingScheme[p_ObjectID])
+	if (m_ObjectsOnDrawingScheme[p_ObjectID] != nullptr)
 	{
 		RemoveObjectFromDrawing(p_ObjectID);
+	}
+	else
+	{
+		m_ObjectsOnDrawingScheme.erase(p_ObjectID);
 	}
 	
 	for (int i = 0; i < m_DrawObjects[p_ObjectID]->particleSystem.size(); i++)
@@ -2220,7 +2224,6 @@ void GraphicEngine::SetSkymap(UINT p_TextureID)
 
 void GraphicEngine::MasterClear()
 {
-	
 	for (int i = 0; i < m_InstancedList.size(); i++)
 	{
 		m_InstancedList[i].InstanceBuffer->Release();
