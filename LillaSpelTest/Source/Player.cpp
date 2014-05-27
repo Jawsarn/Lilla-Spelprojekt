@@ -39,13 +39,13 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 
 	////VARIABLE INITIALIZATION (not relevant for game balancing)
 	m_currentAngle = 0;
-	m_wallMeter = 0;
+	m_wallMeter = 10;
 	m_coolDown = 0;
 	m_aButtonPressedAtStart = 0;
 	m_bobOffset = XMFLOAT3(0, 0, 0); //I think this makes the worldmatrix fucked in initialization
 	m_up = XMFLOAT3(0, 1, 0);
 	m_distance = 0.0f;
-	m_boostMeter = 10;//test value
+	m_boostMeter = 0;//test value
 	m_direction = DirectX::XMFLOAT3(0, 0, 1);
 	m_lastPlacedWall = nullptr;
 	m_speed = 0;
