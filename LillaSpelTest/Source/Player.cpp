@@ -501,6 +501,7 @@ void Player::FixOffsetFromCenterSpline()
 void Player::BobOffset()
 {
 	float t_bob = sin(m_bobTimer*3.1415);
+
 	if(m_state == FINISHING&&t_bob<0.01)
 		m_bobFrequency = 0;
 
