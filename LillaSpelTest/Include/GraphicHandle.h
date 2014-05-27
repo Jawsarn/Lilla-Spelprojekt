@@ -41,7 +41,7 @@ private:
 	std::vector <UINT> m_LevelWalls;
 	std::vector <UINT> m_LevelBoosts;
 	std::vector <std::string> m_WallNames;
-
+	float m_Width, m_Height;
 	
 	
 	

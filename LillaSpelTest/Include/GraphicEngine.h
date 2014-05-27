@@ -76,6 +76,7 @@ public:
 	HRESULT MoveCamera(UINT p_CameraID, float p_Walk, float p_Strafe, float p_Hover, float p_Pitch, float p_RotateY);
 	HRESULT SetCamera(UINT p_CameraID, XMFLOAT3 p_Pos, XMFLOAT3 p_At, XMFLOAT3 p_Up);
 	HRESULT SetCamera(UINT p_CameraID, CXMMATRIX p_Matrix);
+	void UpdateLens(UINT p_CameraID, float p_FieldOfView, float p_Width, float p_Height, float p_NearZ, float p_FarZ);
 	void UseCamera(UINT p_ViewPortID, UINT p_CameraID);
 
 	//viewport function
@@ -138,7 +139,7 @@ private:
 	UINT CheckProgram(DrawPiece p_Piece);
 
 	void UpdateInstanceBuffer();
-
+	void MasterClear();
 
 	static GraphicEngine* singleton;
 

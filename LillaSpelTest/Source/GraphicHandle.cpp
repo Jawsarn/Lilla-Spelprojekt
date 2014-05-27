@@ -23,7 +23,8 @@ GraphicHandle::~GraphicHandle()
 
 void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::vector <std::string> p_LevelNames)
 {
-
+	m_Width = p_Width;
+	m_Height = p_Height;
 
 	m_GraphicEngine = m_GraphicEngine->GetInstance();
 	m_GraphicEngine->Initialize(p_Width, p_Height, p_Handle);
@@ -34,7 +35,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	//UINT t_TempurTextur;
 	//UINT t_TempurTexturNG;
 
-	SetAmountOfPlayers(4);
+	
 	m_WhatLevelBefore=0;
 	m_CircleOffset = 2.5;
 	m_BigCircleOffset = 10;
@@ -238,7 +239,7 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 		SetSelectionColour(i, 0);
 	}
 
-
+	SetAmountOfPlayers(4);
 }
 
 void GraphicHandle::ChangeLevelSelection(int p_WhatLevel)
@@ -589,6 +590,17 @@ void GraphicHandle::SetAmountOfPlayers(int p_NrOfPlayers)
 		m_PlayerVehicle.resize(p_NrOfPlayers, 0);
 		m_PlayerColour.resize(p_NrOfPlayers,0);
 		m_PlayerLight.resize(p_NrOfPlayers,0);
+	}
+
+	if (p_NrOfPlayers == 2)
+	{
+		m_GraphicEngine->UpdateLens(m_CameraID[0], XM_PIDIV4, m_Width/2, m_Height, 1.0f, 10000);
+		m_GraphicEngine->UpdateLens(m_CameraID[1], XM_PIDIV4, m_Width/2, m_Height, 1.0f, 10000);
+	}
+	else
+	{
+		m_GraphicEngine->UpdateLens(m_CameraID[0], XM_PIDIV4, m_Width/2, m_Height/2, 1.0f, 10000);
+		m_GraphicEngine->UpdateLens(m_CameraID[1], XM_PIDIV4, m_Width/2, m_Height/2, 1.0f, 10000);
 	}
 }
 //void GraphicHandle::InitializeShip(std::string p_ShipStringName, UINT p_TextureDiffuseSpec, UINT p_TextureNormGlow)

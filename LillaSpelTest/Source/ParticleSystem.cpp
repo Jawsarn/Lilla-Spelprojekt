@@ -548,3 +548,68 @@ void ParticleSystem::DrawParticles(UINT id)
 //	if( perFrameBuffer ) perFrameBuffer->Release();
 //	if( randomTexSRV )randomTexSRV->Release();
 //}
+
+void ParticleSystem::Cleanup()
+{
+
+	if(m_Device) m_Device->Release();
+	if(m_DeviceContext) m_DeviceContext->Release();
+	
+	delete m_ShaderLoader;
+
+	if(m_RandomTexSRV) m_RandomTexSRV->Release();
+
+	for (int i = 0; i < m_VertexShaders.size(); i++)
+	{
+		if(m_VertexShaders[i]) m_VertexShaders[i]->Release();
+	}
+
+	for (int i = 0; i < m_GeometryShaders.size(); i++)
+	{
+		if(m_GeometryShaders[i]) m_GeometryShaders[i]->Release();
+	}
+
+	for (int i = 0; i < m_PixelShaders.size(); i++)
+	{
+		if(m_PixelShaders[i]) m_PixelShaders[i]->Release();
+	}
+
+	for (int i = 0; i < m_InputLayouts.size(); i++)
+	{
+		if(m_InputLayouts[i]) m_InputLayouts[i]->Release();
+	}
+
+	for (int i = 0; i < m_TextureViews.size(); i++)
+	{
+		if(m_TextureViews[i]) m_TextureViews[i]->Release();
+	}
+
+	for (int i = 0; i < m_InitParticleVertexBuffersWithNum.size(); i++)
+	{
+		if(m_InitParticleVertexBuffersWithNum[i].vertexBuffer) m_InitParticleVertexBuffersWithNum[i].vertexBuffer->Release();
+	}
+
+	for (int i = 0; i < m_ParticleVertexBuffer.size(); i++)
+	{
+		if(m_ParticleVertexBuffer[i]) m_ParticleVertexBuffer[i]->Release();
+	}
+
+
+
+
+	m_ParticleShaderPrograms.clear();
+
+
+	m_ParticleEffectSystems.clear();
+
+	if (m_PerFrameBuffer) m_PerFrameBuffer->Release();
+
+	//if (m_NoWriteDepthState) m_NoWriteDepthState->Release();
+	if (m_DepthOff) m_DepthOff->Release();
+	if (m_BlendOn) m_BlendOn->Release();
+	if (m_BlendOff) m_BlendOff->Release();
+
+	if (m_PerFrameBuffer) m_PerFrameBuffer->Release();
+	if (m_PerObjectBuffer) m_PerObjectBuffer->Release();
+
+}

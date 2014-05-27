@@ -29,6 +29,7 @@ public:
 	void ActivateParticleSystem(UINT p_SystemID);
 	void DeactivateParticleSystem(UINT p_SystemID);
 
+	void Cleanup();
 
 private:
 

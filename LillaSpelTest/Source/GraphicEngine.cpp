@@ -1464,6 +1464,11 @@ HRESULT GraphicEngine::SetCamera(UINT p_CameraID, CXMMATRIX p_Matrix)
 	return S_OK;
 }
 
+void GraphicEngine::UpdateLens(UINT p_CameraID, float p_FieldOfView, float p_Width, float p_Height, float p_NearZ, float p_FarZ)
+{
+	m_Cameras[p_CameraID]->SetLens(p_FieldOfView, p_Width / (FLOAT)p_Height, p_NearZ, p_FarZ);
+}
+
 void GraphicEngine::UseCamera(UINT p_ViewPortID, UINT p_CameraID)
 {
 	m_ActiveCameras[p_ViewPortID] = m_Cameras[p_CameraID];
@@ -1993,6 +1998,165 @@ void GraphicEngine::SetFullscreenState(bool p_IsFullScreen)
 void GraphicEngine::Cleanup()
 {
 	SetFullscreenState(false);
+
+	delete m_MeshLoader;
+
+	
+	
+
+	if (m_RenderTargetView) m_RenderTargetView->Release();
+
+	if (m_DepthStencil) m_DepthStencil->Release();
+
+	if (m_DepthStencilView) m_DepthStencilView->Release();
+	if (m_RasterizerStateNormal) m_RasterizerStateNormal->Release();
+	if (m_RasterizerStateWireframe) m_RasterizerStateWireframe->Release();
+
+	if (m_BlendStateOn) m_BlendStateOn->Release();
+	if (m_BlendStateOff) m_BlendStateOff->Release();
+
+	if (m_DepthStateOn) m_DepthStateOn->Release();
+	if (m_DepthStateOff) m_DepthStateOff->Release();
+
+	if (m_DepthStateNoWrite) m_DepthStateNoWrite->Release();
+	if (m_LessEqualDepthState) m_LessEqualDepthState->Release();
+	if (m_SamplerStateWrap) m_SamplerStateWrap->Release();
+	if (m_SamplerStateLinearWrap) m_SamplerStateLinearWrap->Release();
+
+	if (m_BackBufferUAV) m_BackBufferUAV->Release();
+
+	for (int i = 0; i < 3; i++)
+	{
+		if (m_GbufferShaderResource[i]) m_GbufferShaderResource[i]->Release();
+		if (m_GbufferTargetViews[i]) m_GbufferTargetViews[i]->Release();
+	}
+
+	if (m_GbufferGlowmapUAV) m_GbufferGlowmapUAV->Release();
+
+	if (m_BlurShaderResource) m_BlurShaderResource->Release();
+	if (m_BlurBufferUAV) m_BlurBufferUAV->Release();
+
+
+	delete m_ShaderLoader;
+
+	m_ParticleSystem->Cleanup();
+
+
+	m_ObjectsOnDrawingScheme.clear();
+
+
+	for (std::map<UINT, DrawObject*>::iterator it = m_DrawObjects.begin(); it != m_DrawObjects.end(); it++)
+	{
+		it->second->lightID.clear();
+		it->second->lightWorld.clear();
+		it->second->particleSystem.clear();
+		it->second->piecesID.clear();
+	}
+	m_DrawObjects.clear();
+
+	
+	m_DynamicLights.clear();
+
+	m_Cameras.clear();
+
+	
+	m_DrawPieces.clear();
+	
+	
+	for (int i = 0; i < m_Textures.size(); i++)
+	{
+		if (m_Textures[i]) m_Textures[i]->Release();
+	}
+
+	m_StaticLights.clear();
+
+	for (int i = 0; i < 4; i++)
+	{
+		m_ActiveCameras[i] = nullptr;
+	}
+
+
+	m_ShaderPrograms.clear();
+
+	for (int i = 0; i < m_VertexShaders.size(); i++)
+	{
+		if (m_VertexShaders[i]) m_VertexShaders[i]->Release();
+	}
+
+	for (int i = 0; i < m_HullShaders.size(); i++)
+	{
+		if (m_HullShaders[i]) m_HullShaders[i]->Release();
+	}
+
+	for (int i = 0; i < m_DomainShaders.size(); i++)
+	{
+		if (m_DomainShaders[i]) m_DomainShaders[i]->Release();
+	}
+
+	for (int i = 0; i < m_GeometryShaders.size(); i++)
+	{
+		if (m_GeometryShaders[i]) m_GeometryShaders[i]->Release();
+	}
+	
+	for (int i = 0; i < m_PixelShaders.size(); i++)
+	{
+		if (m_PixelShaders[i]) m_PixelShaders[i]->Release();
+	}
+
+	for (int i = 0; i < m_ComputeShaders.size(); i++)
+	{
+		if (m_ComputeShaders[i]) m_ComputeShaders[i]->Release();
+	}
+
+	for (int i = 0; i < m_InputLayouts.size(); i++)
+	{
+		if (m_InputLayouts[i]) m_InputLayouts[i]->Release();
+	}
+
+	for (int i = 0; i < m_VertexBuffers.size(); i++)
+	{
+		if (m_VertexBuffers[i].vertexBuffer) m_VertexBuffers[i].vertexBuffer->Release();
+	}
+
+
+	if (m_PerFrameBuffer) m_PerFrameBuffer->Release();
+	if (m_PerObjectBuffer) m_PerObjectBuffer->Release();
+	if (m_PerComputeBuffer) m_PerComputeBuffer->Release();
+	if (m_HudConstantBuffer) m_HudConstantBuffer->Release();
+
+	if (m_LightBuffer) m_LightBuffer->Release();
+	if (m_LightBufferSRV) m_LightBufferSRV->Release();
+
+	for (int i = 0; i < m_HudObjects.size(); i++)
+	{
+		m_HudObjects[i].textures.clear();
+	}
+	m_HudObjects.clear();
+
+	for (int i = 0; i < m_HudTemplates.size(); i++)
+	{
+		m_HudTemplates[i].hudObjects.clear();
+	}
+	m_HudTemplates.clear();
+
+	for (std::map<UINT, Hud*>::iterator it = m_Huds.begin(); it != m_Huds.end(); it++)
+	{
+		it->second->barOffsets.clear();
+	}
+	m_Huds.clear();
+
+	for (int i = 0; i < m_InstancedList.size(); i++)
+	{
+		m_InstancedList[i].WorldMatrixes.clear();
+		if(m_InstancedList[i].InstanceBuffer) m_InstancedList[i].InstanceBuffer->Release();
+	}
+	m_InstancedList.clear();
+
+	if(m_SwapChain) m_SwapChain->Release();
+	if(m_Device) m_Device->Release();
+	if(m_Device1) m_Device1->Release();
+	if(m_DeviceContext) m_DeviceContext->Release();
+	if(m_DeviceContext1) m_DeviceContext1->Release();
 }
 
 ///////////////////////////////////////////////
@@ -2053,3 +2217,17 @@ void GraphicEngine::SetSkymap(UINT p_TextureID)
 {
 	m_DeviceContext->PSSetShaderResources(2, 1, &m_Textures[p_TextureID]);
 }
+
+void GraphicEngine::MasterClear()
+{
+	
+	for (int i = 0; i < m_InstancedList.size(); i++)
+	{
+		m_InstancedList[i].InstanceBuffer->Release();
+		m_InstancedList[i].WorldMatrixes.clear();
+		if(m_InstancedList[i].InstanceBuffer) m_InstancedList[i].InstanceBuffer->Release();
+	}
+	
+	m_InstancedList.clear();
+}
+
