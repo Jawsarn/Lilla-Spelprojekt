@@ -2003,7 +2003,6 @@ void GraphicEngine::Cleanup()
 {
 	SetFullscreenState(false);
 
-	delete m_MeshLoader;
 
 	
 	
@@ -2014,7 +2013,7 @@ void GraphicEngine::Cleanup()
 
 	if (m_DepthStencilView) m_DepthStencilView->Release();
 	if (m_RasterizerStateNormal) m_RasterizerStateNormal->Release();
-	if (m_RasterizerStateWireframe) m_RasterizerStateWireframe->Release();
+	//if (m_RasterizerStateWireframe) m_RasterizerStateWireframe->Release();
 
 	if (m_BlendStateOn) m_BlendStateOn->Release();
 	if (m_BlendStateOff) m_BlendStateOff->Release();
