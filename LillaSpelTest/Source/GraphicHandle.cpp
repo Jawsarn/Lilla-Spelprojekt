@@ -142,9 +142,9 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 	m_LevelBoosts.resize(m_MeshLevels.size(),0);
 	for (int i = 0; i < m_MeshLevels.size(); i++)
 	{
-		CreateDrawObject(m_MeshLevels[i],XMMatrixIdentity(),XMFLOAT3(1,1,1),m_Levels[i],false);
-		CreateDrawObject(m_MeshLevelWall[i],XMMatrixIdentity(),XMFLOAT3(1,1,1),m_LevelWalls[i],false);
-		CreateDrawObject(m_MeshLevelBoost[i],XMMatrixIdentity(),XMFLOAT3(1,1,1),m_LevelBoosts[i],false);
+		CreateDrawObject(m_MeshLevels[i],XMMatrixIdentity(),XMFLOAT3(1,1,1),m_Levels[i],false,false);
+		CreateDrawObject(m_MeshLevelWall[i],XMMatrixIdentity(),XMFLOAT3(1,1,1),m_LevelWalls[i],false,false);
+		CreateDrawObject(m_MeshLevelBoost[i],XMMatrixIdentity(),XMFLOAT3(1,1,1),m_LevelBoosts[i],false,false);
 	}
 
 	//for (int i = 0; i < m_Levels.size(); i++)
@@ -462,7 +462,7 @@ void GraphicHandle::CreateShipForGame(std::vector<XMFLOAT4X4> p_PlayerWorld)
 	{
 		m_GraphicEngine->CreateDrawObject(m_MeshShips[m_PlayerVehicle[i]],
 			p_PlayerWorld[i],
-			m_Colours[m_PlayerColour[i]],true, 
+			m_Colours[m_PlayerColour[i]],true, false,
 			m_Player[i]);
 
 
@@ -524,7 +524,7 @@ void GraphicHandle::SelectVehicle()
 			CreateDrawObject(m_MeshShips[i],
 				t_OffSetTheCircleMat,
 				t_Color, 
-				m_SelectionShips[k][i],false);
+				m_SelectionShips[k][i],false, false);
 
 			//XMFLOAT4X4 t_Tempus;
 			//XMStoreFloat4x4(&t_Tempus, t_OffSetTheCircleMat);
@@ -670,7 +670,7 @@ UINT GraphicHandle::CreateWall(int p_WhatWall,CXMMATRIX p_PlayerWallWorld,int p_
 	CreateDrawObject(m_MeshPlayerWall[p_WhatWall],
 		p_PlayerWallWorld,
 		m_Colours[m_PlayerColour[p_WhatPlayer]], 
-		r_WhatWall,true);
+		r_WhatWall,false, true);
 
 	//LightStruct t_LightStruct;
 	//t_LightStruct.m_Color=m_Colours[m_PlayerColour[i]];//vi skcikar in en färg men kräver att dne har färg i lightstruct
@@ -683,13 +683,13 @@ UINT GraphicHandle::CreateWall(int p_WhatWall,CXMMATRIX p_PlayerWallWorld,int p_
 }
 
 
-void GraphicHandle::CreateDrawObject(std::vector <UINT> p_UINTMeshLista, CXMMATRIX p_World,XMFLOAT3 p_Colour,UINT & o_ObjectID, bool p_ShouldItBeDrawn)
+void GraphicHandle::CreateDrawObject(std::vector <UINT> p_UINTMeshLista, CXMMATRIX p_World,XMFLOAT3 p_Colour,UINT & o_ObjectID, bool p_ShouldItBeDrawn, bool p_ShouldItBeInstancedDraaaaawn)
 {
 	XMFLOAT4X4 t_Tempi;
 
 	XMStoreFloat4x4( &t_Tempi, p_World);
 
-	m_GraphicEngine->CreateDrawObject(p_UINTMeshLista,t_Tempi,p_Colour,p_ShouldItBeDrawn, o_ObjectID);
+	m_GraphicEngine->CreateDrawObject(p_UINTMeshLista,t_Tempi,p_Colour,p_ShouldItBeDrawn,p_ShouldItBeInstancedDraaaaawn, o_ObjectID);
 }
 
 void GraphicHandle::RemoveLevelDraw(int p_WhatLevel)

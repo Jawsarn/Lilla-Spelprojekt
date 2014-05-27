@@ -27,6 +27,7 @@ GraphicEngine::GraphicEngine(void)
 		m_ActiveCameras[i] = nullptr;
 		m_ViewportHud[i] = -1;
 	}
+	counter = 0;
 }
 
 GraphicEngine::~GraphicEngine(void)
@@ -94,7 +95,7 @@ HRESULT GraphicEngine::Initialize( UINT p_Width, UINT p_Height, HWND handleWindo
 	LoadMesh("Ellipsoid.obj",t_SkymapPices);
 	XMFLOAT4X4 t_Mat;
 	XMStoreFloat4x4(&t_Mat, XMMatrixIdentity());
-	CreateDrawObject(t_SkymapPices, t_Mat, XMFLOAT3(0,0,0), false, m_SkymapDrawObjectID);
+	CreateDrawObject(t_SkymapPices, t_Mat, XMFLOAT3(0,0,0), false, false, m_SkymapDrawObjectID);
 
 	
 	return hr;
@@ -540,6 +541,55 @@ HRESULT GraphicEngine::InitializeShaders()
 
 	}
 
+
+	{
+		//the instanced shaders
+
+		ID3D11VertexShader* t_VertexShader;
+		ID3D11InputLayout* t_InputLayout;
+		D3D11_INPUT_ELEMENT_DESC t_Layout[] =
+		{
+			{ "POSITION",		0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "NORMAL",			0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD",		0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "WORLDMATRIX",	0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+			{ "WORLDMATRIX",	1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+			{ "WORLDMATRIX",	2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+			{ "WORLDMATRIX",	3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+		};
+		UINT t_NumElements = ARRAYSIZE(t_Layout);
+
+		hr = m_ShaderLoader->CreateVertexShaderWithInputLayout(L"GraphicInstancedVS.hlsl","VS","vs_5_0",m_Device,&t_VertexShader,t_Layout,t_NumElements,&t_InputLayout);
+		if( FAILED( hr ) )
+			return hr;
+
+		m_VertexShaders.push_back(t_VertexShader);
+		m_InputLayouts.push_back(t_InputLayout);
+
+		///GEOMETRY SHADER
+		ID3D11GeometryShader* t_GeometryShader;
+		hr = m_ShaderLoader->CreateGeometryShader(L"GraphicInstancedGS.hlsl","GS","gs_5_0",m_Device,&t_GeometryShader);
+		if( FAILED( hr ))
+			return hr;
+		m_GeometryShaders.push_back(t_GeometryShader);
+
+		//PIXEL SHADER
+		//ID3D11PixelShader* t_PixelShader;
+		//hr = m_ShaderLoader->CreatePixelShader(L"GraphicNormalPS.hlsl","PS","ps_5_0",m_Device,&t_PixelShader);
+		//if( FAILED( hr ))
+		//	return hr;
+		//m_PixelShaders.push_back(t_PixelShader);
+
+		ShaderProgram t_NewProgram;
+		t_NewProgram.vertexShader = m_VertexShaders.size() - 1;
+		t_NewProgram.domainShader = -1;
+		t_NewProgram.hullShader = -1;
+		t_NewProgram.geometryShader = m_GeometryShaders.size() -1;
+		t_NewProgram.pixelShader = 0; //HÅRDKOD
+		t_NewProgram.inputLayout = m_InputLayouts.size() - 1;
+		m_ShaderPrograms.push_back(t_NewProgram);
+	}
+
 	{
 		//COMPUTE SHADER deferred tiled rendering
 		ID3D11ComputeShader* t_ComputeShader;
@@ -860,7 +910,7 @@ HRESULT GraphicEngine::AddTextureToDrawPiece(UINT p_DrawPieceID,UINT p_TextureID
 	return S_OK;
 }
 
-HRESULT GraphicEngine::CreateDrawObject(std::vector<UINT> p_DrawPieceIDs, XMFLOAT4X4 p_World, XMFLOAT3 p_Color, bool addToDrawNow, UINT &o_ObjectID)
+HRESULT GraphicEngine::CreateDrawObject(std::vector<UINT> p_DrawPieceIDs, XMFLOAT4X4 p_World, XMFLOAT3 p_Color, bool addToDrawNow, bool instancedDraw, UINT &o_ObjectID)
 {
 	try
 	{
@@ -885,8 +935,11 @@ HRESULT GraphicEngine::CreateDrawObject(std::vector<UINT> p_DrawPieceIDs, XMFLOA
 		return E_FAIL;
 	}
 	
-
-	if (addToDrawNow)
+	if (instancedDraw)
+	{
+		AddObjectToInstanced(o_ObjectID);
+	}
+	else if (addToDrawNow)
 	{
 		m_ObjectsOnDrawingScheme[o_ObjectID] = m_DrawObjects[o_ObjectID];
 	}
@@ -1051,6 +1104,9 @@ HRESULT GraphicEngine::AddObjectToInstanced(UINT p_ObjectID)
 				{
 					m_InstancedList[j].WorldMatrixes.push_back(m_DrawObjects[p_ObjectID]->worldMatrix);
 					newInstance = true;
+
+					m_InstancedList[j].numOfNewMatrixes++;
+					counter++;
 				}
 			}
 		}
@@ -1060,7 +1116,7 @@ HRESULT GraphicEngine::AddObjectToInstanced(UINT p_ObjectID)
 		{
 			InstancedGroup t_NewGroup;
 			t_NewGroup.Color = m_DrawObjects[p_ObjectID]->color;
-			t_NewGroup.DrawPieceID = m_DrawObjects[i]->piecesID[i];
+			t_NewGroup.DrawPieceID = m_DrawObjects[p_ObjectID]->piecesID[i];
 			t_NewGroup.WorldMatrixes.push_back(m_DrawObjects[p_ObjectID]->worldMatrix);
 
 			ID3D11Buffer* t_NewInstancedBuffer;
@@ -1080,6 +1136,39 @@ HRESULT GraphicEngine::AddObjectToInstanced(UINT p_ObjectID)
 			t_NewGroup.InstanceBuffer = t_NewInstancedBuffer;
 
 			m_InstancedList.push_back(t_NewGroup);
+
+			m_InstancedList[m_InstancedList.size() - 1].numOfNewMatrixes = 1;
+			counter++;
+		}
+	}
+}
+
+void GraphicEngine::UpdateInstanceBuffer()
+{
+	HRESULT hr = S_OK;
+	for (int j = 0; j < m_InstancedList.size(); j++)
+	{
+		int numOfNewMatrixes = m_InstancedList[j].numOfNewMatrixes;
+		int currNumOfMatrixes = m_InstancedList[j].WorldMatrixes.size() - numOfNewMatrixes;
+
+		if ( numOfNewMatrixes > 0)
+		{
+			D3D11_MAPPED_SUBRESOURCE t_MappedData;
+
+			hr = m_DeviceContext->Map( m_InstancedList[j].InstanceBuffer, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &t_MappedData );
+			if(FAILED(hr))
+				return;
+
+			XMMATRIX* dataView  = reinterpret_cast<XMMATRIX*>(t_MappedData.pData);
+
+			for (int i = 0; i < numOfNewMatrixes; i++)
+			{
+				dataView[currNumOfMatrixes + i ] = XMMatrixTranspose(XMLoadFloat4x4( &m_InstancedList[j].WorldMatrixes[currNumOfMatrixes + i] ));
+				//dataView->push_back( XMLoadFloat4x4( &m_InstancedList[j].WorldMatrixes[currNumOfMatrixes + i] ) );
+			}
+			m_DeviceContext->Unmap( m_InstancedList[j].InstanceBuffer, 0);
+
+			m_InstancedList[j].numOfNewMatrixes = 0;
 		}
 	}
 }
@@ -1501,6 +1590,9 @@ void GraphicEngine::DrawGame(float p_DeltaTime)
 	//draw opaque objects
 	DrawOpaqueObjects();
 
+	//draw instanced
+	DrawOpaqueInstancedObjects();
+
 	//DrawSkyMap();
 
 	m_DeviceContext->OMSetRenderTargets(0,nullptr,nullptr);
@@ -1616,13 +1708,15 @@ void GraphicEngine::DrawOpaqueObjects()
 
 void GraphicEngine::DrawOpaqueInstancedObjects()
 {
+	UpdateInstanceBuffer();
+	
 	UINT strides = sizeof(SimpleVertex);
 	UINT offsets = 0;
 
 	UINT instanceStrides = sizeof(XMMATRIX);
 
 
-	ShaderProgram t_Program = m_ShaderPrograms[0];
+	ShaderProgram t_Program = m_ShaderPrograms[3];
 	SetShaderProgram(t_Program);
 
 
@@ -1643,10 +1737,12 @@ void GraphicEngine::DrawOpaqueInstancedObjects()
 
 
 		SetTextures(m_DrawPieces[m_InstancedList[i].DrawPieceID]);
-
+		
 
 		m_DeviceContext->DrawInstanced(m_VertexBuffers[t_VertexBuffID].numberOfVertices, m_InstancedList[i].WorldMatrixes.size(),0,0);
 	}
+	ID3D11Buffer* t_DeleteBuffer = {0};
+	m_DeviceContext->IASetVertexBuffers(1,1, &t_DeleteBuffer, &instanceStrides ,&offsets);
 }
 
 void GraphicEngine::SetShaderProgram(ShaderProgram p_Program)
