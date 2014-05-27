@@ -22,7 +22,7 @@ using namespace DirectX;
 
 #define MAX_NUM_OF_LIGHTS 1024
 
-#define MAX_INSTANCEBUFFER_SIZE 100;
+#define MAX_INSTANCEBUFFER_SIZE 2000;
 
 class GraphicEngine
 {
@@ -40,7 +40,7 @@ public:
 	//object
 	HRESULT LoadMesh(std::string p_FileName, std::vector<UINT> &o_DrawPieceIDs);
 	HRESULT AddTextureToDrawPiece(UINT p_DrawPieceID, UINT p_TextureID,TextureType p_TextureType);
-	HRESULT CreateDrawObject(std::vector<UINT> p_DrawPieceIDs, XMFLOAT4X4 p_World, XMFLOAT3 p_Color, bool addToDrawNow, UINT &o_ObjectID);
+	HRESULT CreateDrawObject(std::vector<UINT> p_DrawPieceIDs, XMFLOAT4X4 p_World, XMFLOAT3 p_Color, bool addToDrawNow, bool instancedDraw, UINT &o_ObjectID);
 	HRESULT AddObjectLight(UINT p_ObjectID ,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float radius, UINT &o_LightID);
 	void AddObjectParticleSystem(UINT p_Object, UINT p_ParticleSystem);
 	HRESULT ChangeObjectsLight(UINT p_ObjectID, UINT p_LightID,XMFLOAT3 p_Position, XMFLOAT3 p_Color, float p_Radius);
@@ -50,6 +50,7 @@ public:
 	void RemoveObjectFromDrawing(UINT p_ObjectID);
 	void AddObjectToDrawing(UINT p_ObjectID);
 	HRESULT AddObjectToInstanced(UINT p_ObjectID);
+	void UpdateInstanceBuffer(UINT bufferID);
 
 	//texture functions
 	HRESULT LoadTexture(const wchar_t * p_FileName, UINT &o_TextureID);
@@ -135,6 +136,8 @@ private:
 	void ComputeGlow();
 
 	UINT CheckProgram(DrawPiece p_Piece);
+
+	void UpdateInstanceBuffer();
 
 
 	static GraphicEngine* singleton;
@@ -245,5 +248,6 @@ private:
 
 	UINT m_SkymapBufferID;
 	UINT m_SkymapDrawObjectID;
+	int counter;
 };
 

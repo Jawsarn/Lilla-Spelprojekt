@@ -122,7 +122,7 @@ public:
 	void LoadTexture(const wchar_t* p_FileName, UINT &o_TextureID);
 
 	
-	void CreateDrawObject(std::vector <UINT> p_UINTMeshLista, CXMMATRIX p_World,XMFLOAT3 p_Colour,UINT & o_ObjectID,bool p_ShouldItBeDrawn);
+	void CreateDrawObject(std::vector <UINT> p_UINTMeshLista, CXMMATRIX p_World,XMFLOAT3 p_Colour,UINT & o_ObjectID,bool p_ShouldItBeDrawn,bool p_ShouldItBeInstancedDraaaaawn);
 	void RemoveObject(UINT p_RemoveAt);
 	void RemovePlayers();
 	//light functions
