@@ -26,6 +26,8 @@ private:
 	float m_timeSpentDuringPreUpdate;
 	int m_preUpdateCountdown;
 	int m_nrOfLaps;
+	int m_nrOfFinishedPlayers;
+	float m_mapTotalDistance;
 	GameScreenState m_state;
 	float m_immortalCounter;
 public:

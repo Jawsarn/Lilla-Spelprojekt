@@ -40,7 +40,7 @@ void AudioManager::Initialize()
 
 	m_system->init(36,FMOD_INIT_NORMAL,NULL);
 	
-	m_masterVolume=1;
+	m_masterVolume=0.5;
 }
 
 void AudioManager::Update()

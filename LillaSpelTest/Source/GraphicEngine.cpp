@@ -680,6 +680,8 @@ HRESULT GraphicEngine::InitializeGBuffers()
 		if (i == 2)
 		{
 			desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
+			desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+			t_SrvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		}
 
 		hr = m_Device->CreateTexture2D(&desc, 0, &t_Texture);
@@ -1031,6 +1033,56 @@ void GraphicEngine::AddObjectToDrawing(UINT p_ObjectID)
 	m_ObjectsOnDrawingScheme[p_ObjectID] = m_DrawObjects[p_ObjectID];
 }
 
+HRESULT GraphicEngine::AddObjectToInstanced(UINT p_ObjectID)
+{
+	HRESULT hr = S_OK;
+	for (int i = 0; i < m_DrawObjects[p_ObjectID]->piecesID.size(); i++)
+	{
+		bool newInstance = false;
+
+		for (int j = 0; j < m_InstancedList.size(); j++)
+		{
+			XMFLOAT3 t_Col1 = m_DrawObjects[p_ObjectID]->color;
+			XMFLOAT3 t_Col2 = m_InstancedList[j].Color;
+
+			if (m_DrawPieces[m_DrawObjects[p_ObjectID]->piecesID[i]].vertexBufferID == m_DrawPieces[m_InstancedList[j].DrawPieceID].vertexBufferID)
+			{
+				if (t_Col1.x == t_Col2.x && t_Col1.y == t_Col2.y && t_Col1.z == t_Col2.z )
+				{
+					m_InstancedList[j].WorldMatrixes.push_back(m_DrawObjects[p_ObjectID]->worldMatrix);
+					newInstance = true;
+				}
+			}
+		}
+
+		//if there's none create new
+		if (!newInstance)
+		{
+			InstancedGroup t_NewGroup;
+			t_NewGroup.Color = m_DrawObjects[p_ObjectID]->color;
+			t_NewGroup.DrawPieceID = m_DrawObjects[i]->piecesID[i];
+			t_NewGroup.WorldMatrixes.push_back(m_DrawObjects[p_ObjectID]->worldMatrix);
+
+			ID3D11Buffer* t_NewInstancedBuffer;
+			//now create instanced buffer etc...
+			D3D11_BUFFER_DESC t_ibd;
+			t_ibd.Usage = D3D11_USAGE_DYNAMIC;
+			t_ibd.ByteWidth = sizeof(XMMATRIX) * MAX_INSTANCEBUFFER_SIZE;
+			t_ibd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+			t_ibd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+			t_ibd.MiscFlags = 0;
+			t_ibd.StructureByteStride = 0;
+
+			hr = m_Device->CreateBuffer(&t_ibd, 0, &t_NewInstancedBuffer);
+			if (FAILED(hr))
+				return hr;
+
+			t_NewGroup.InstanceBuffer = t_NewInstancedBuffer;
+
+			m_InstancedList.push_back(t_NewGroup);
+		}
+	}
+}
 
 ///////////////////////////////////////////////
 //==========Texture functions=================//
@@ -1525,6 +1577,10 @@ void GraphicEngine::DrawOpaqueObjects()
 	UINT strides = sizeof(SimpleVertex);
 	UINT offsets = 0;
 
+	ShaderProgram t_Program = m_ShaderPrograms[0];
+	SetShaderProgram(t_Program);
+
+
 	//std::map<UINT, DrawObject*>::iterator it;
 	for (std::map<UINT, DrawObject*>::iterator it = m_ObjectsOnDrawingScheme.begin(); it != m_ObjectsOnDrawingScheme.end(); it++)
 	{
@@ -1545,8 +1601,7 @@ void GraphicEngine::DrawOpaqueObjects()
 			m_DeviceContext->IASetVertexBuffers(0, 1, &m_VertexBuffers[t_VertexBuffID].vertexBuffer, &strides, &offsets);
 
 			//set shader program
-			ShaderProgram t_Program = m_ShaderPrograms[0];//m_ShaderPrograms[m_DrawPieces[i].shaderProgramID]; // not yet implemented to get the right program
-			SetShaderProgram(t_Program);
+			
 
 			//update textures
 			SetTextures(m_DrawPieces[it->second->piecesID[i]]);
@@ -1557,6 +1612,41 @@ void GraphicEngine::DrawOpaqueObjects()
 		}
 	}
 
+}
+
+void GraphicEngine::DrawOpaqueInstancedObjects()
+{
+	UINT strides = sizeof(SimpleVertex);
+	UINT offsets = 0;
+
+	UINT instanceStrides = sizeof(XMMATRIX);
+
+
+	ShaderProgram t_Program = m_ShaderPrograms[0];
+	SetShaderProgram(t_Program);
+
+
+	for (int i = 0; i < m_InstancedList.size(); i++)
+	{
+		//update the object buffer
+		PerObjectBuffer t_PerObjBuff;
+		t_PerObjBuff.World = XMMatrixTranspose( XMMatrixIdentity());
+
+		t_PerObjBuff.typeOfObject = 0;
+		t_PerObjBuff.Color = m_InstancedList[i].Color;
+
+		m_DeviceContext->UpdateSubresource(m_PerObjectBuffer, 0, nullptr, &t_PerObjBuff, 0, 0 );
+
+		UINT t_VertexBuffID = m_DrawPieces[m_InstancedList[i].DrawPieceID].vertexBufferID;
+		m_DeviceContext->IASetVertexBuffers(0, 1, &m_VertexBuffers[t_VertexBuffID].vertexBuffer, &strides, &offsets);
+		m_DeviceContext->IASetVertexBuffers(1, 1, &m_InstancedList[i].InstanceBuffer, &instanceStrides , &offsets);
+
+
+		SetTextures(m_DrawPieces[m_InstancedList[i].DrawPieceID]);
+
+
+		m_DeviceContext->DrawInstanced(m_VertexBuffers[t_VertexBuffID].numberOfVertices, m_InstancedList[i].WorldMatrixes.size(),0,0);
+	}
 }
 
 void GraphicEngine::SetShaderProgram(ShaderProgram p_Program)
@@ -1611,7 +1701,15 @@ void GraphicEngine::ComputeTileDeferredLightning()
 
 	//update buffer here
 	PerComputeBuffer t_Pcb;
-	t_Pcb.camNearFar = XMFLOAT2(1.0f,10000); //HÅRDKODNING DELUX
+	if (m_Cameras[0] != nullptr)
+	{
+		t_Pcb.camNearFar = XMFLOAT2(m_Cameras[0]->GetNearDistance(),m_Cameras[0]->GetFarDistance());
+	}
+	else
+	{
+		t_Pcb.camNearFar = XMFLOAT2(1.0f,10000); //HÅRDKODNING DELUX
+	}
+	
 	if (m_NumberOfViewports > 2)
 	{
 		t_Pcb.screenDimensions = XMFLOAT2((FLOAT)m_Width/2, (FLOAT)m_Height/2);

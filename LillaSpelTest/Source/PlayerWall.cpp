@@ -41,7 +41,7 @@ PlayerWall::PlayerWall(XMFLOAT3 p_color, XMFLOAT3* p_wallPos, XMFLOAT3* p_wallDi
 
 	m_box = BoundingOrientedBox(*p_wallPos, p_extents, t_quarternion);
 	//m_box.Transform(m_box, t_matrix);
-	m_sphere = BoundingSphere(*p_wallPos, p_extents.z);
+	m_sphere = BoundingSphere(*p_wallPos, p_extents.z*2);
 
 
 }
