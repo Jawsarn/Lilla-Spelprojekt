@@ -269,7 +269,7 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 		int t_doneFinishing = 0;
 		for (int i = 0; i< m_players.size();i++)
 		{
-			if(m_players[i]->DoneFinishing());
+			if(m_players[i]->DoneFinishing())
 			t_doneFinishing++;
 		}
 		if(t_doneFinishing>=m_players.size())
@@ -285,7 +285,7 @@ void GameScreen::Draw()
 
 int GameScreen::PauseCheck(int p_currentPlayer, UserCMD p_userCmd)
 {
-	if(p_userCmd.backButtonPressed)
+	if(p_userCmd.startButtonPressed)
 	{
 		m_pauseDudeIndex = p_currentPlayer;
 		return PAUSE_SCREEN;
@@ -318,7 +318,7 @@ void GameScreen::CollisionCheck(int p_currentPlayer, float p_dt, UserCMD& p_user
 	if(t_collisionReturn==1)    
 	{
 		PlayerDieStaticObj(p_currentPlayer);
-		p_userCMD.controller.Vibrate(30000,30000);
+		p_userCMD.controller.Vibrate(60000,60000);
 		m_vibrationTimer[p_currentPlayer] = 0.5;
 		m_audioManager->PlaySpecificSound("crash.wav",false,AUDIO_PLAY_MULTIPLE);
 	}
@@ -336,7 +336,7 @@ void GameScreen::CollisionCheck(int p_currentPlayer, float p_dt, UserCMD& p_user
 	if(t_collisionResult == -1)	
 	{
 		PlayerDiePlayerWall(p_currentPlayer);
-		p_userCMD.controller.Vibrate(30000,30000);
+		p_userCMD.controller.Vibrate(60000,60000);
 		m_vibrationTimer[p_currentPlayer] = 0.5;
 		m_audioManager->PlaySpecificSound("crash.wav",false,AUDIO_PLAY_MULTIPLE);
 	}
@@ -386,7 +386,8 @@ void GameScreen::DrawPlayerHUD(int p_player)
 		m_graphicHandle->ChangeHudObjectTexture(m_hudID[p_player],0,m_players[p_player]->GetRacePosition()-1);
 	}
 	m_graphicHandle->UpdateHudBarOffset(m_hudID[p_player],1,DirectX::XMFLOAT2(m_players[p_player]->GetHudBoosterInfo(),0));
-	m_graphicHandle->UpdateHudBarOffset(m_hudID[p_player],2,DirectX::XMFLOAT2(m_players[p_player]->GetHudWallInfo(),0));
+	float t_wallMeter = m_players[p_player]->GetHudWallInfo() <= 0 ? 0 : m_players[p_player]->GetHudWallInfo();
+	m_graphicHandle->UpdateHudBarOffset(m_hudID[p_player],2,DirectX::XMFLOAT2(t_wallMeter,0));
 	m_graphicHandle->UpdateHudBarOffset(m_hudID[p_player],7,DirectX::XMFLOAT2(m_players[p_player]->GetRemainingAbilityCooldown(),0));
 }
 
@@ -468,6 +469,9 @@ void GameScreen::CreatePlayerHUDs(int p_numberOfPlayers, int p_color[4], std::st
 	UINT t_MiedelHandle;
 	UINT t_lapsHandle;
 	UINT t_coolDownHandle;
+	UINT t_coolDownIconHandle;
+	UINT t_boostIconHandle;
+	UINT t_wallIconHandle;
 	std::vector<UINT> t_hudParts;
 	std::vector<UINT> t_textureIDs;
 	std::vector<UINT> t_textureCountDownID;
@@ -487,14 +491,38 @@ void GameScreen::CreatePlayerHUDs(int p_numberOfPlayers, int p_color[4], std::st
 	m_graphicHandle->CreateHUDObject(DirectX::XMFLOAT2(-0.8,0.8),DirectX::XMFLOAT2(0.1,0.1),t_textureIDs,t_placementHandle);
 	t_hudParts.push_back(t_placementHandle);
 	t_barOffsets.push_back(DirectX::XMFLOAT2(0,0));
-
-	m_graphicHandle->CreateHUDObject(DirectX::XMFLOAT2(0,-0.8),DirectX::XMFLOAT2(1,0.02),t_textureIDs,t_boostBarHandle);
+	t_textureIDs.clear();
+	m_graphicHandle->LoadTexture(L"BoostSlide.dds",t_texture);
+	t_textureIDs.push_back(t_texture);
+	m_graphicHandle->CreateHUDObject(DirectX::XMFLOAT2(0,-0.8),DirectX::XMFLOAT2(0.8,0.02),t_textureIDs,t_boostBarHandle);
 	t_hudParts.push_back(t_boostBarHandle);
 	t_barOffsets.push_back(DirectX::XMFLOAT2(1,0));
-	m_graphicHandle->CreateHUDObject(DirectX::XMFLOAT2(0,-0.9),DirectX::XMFLOAT2(1,0.02),t_textureIDs,t_wallBarHandle);
+	t_textureIDs.clear();
+	m_graphicHandle->LoadTexture(L"WallSlide.dds",t_texture);
+	t_textureIDs.push_back(t_texture);
+	m_graphicHandle->CreateHUDObject(DirectX::XMFLOAT2(0,-0.9),DirectX::XMFLOAT2(0.8,0.02),t_textureIDs,t_wallBarHandle);
 	t_hudParts.push_back(t_wallBarHandle);
 	t_barOffsets.push_back(DirectX::XMFLOAT2(1,0));
-	m_graphicHandle->CreateHUDObject(DirectX::XMFLOAT2(0,-0.7),DirectX::XMFLOAT2(1,0.02),t_textureIDs,t_coolDownHandle);
+	t_textureIDs.clear();
+	m_graphicHandle->LoadTexture(L"CoolDownSlide1.dds",t_texture);
+	t_textureIDs.push_back(t_texture);
+	m_graphicHandle->LoadTexture(L"CoolDownSlide2.dds",t_texture);
+	t_textureIDs.push_back(t_texture);
+	m_graphicHandle->CreateHUDObject(DirectX::XMFLOAT2(0,-0.7),DirectX::XMFLOAT2(0.8,0.02),t_textureIDs,t_coolDownHandle);
+
+	//For icons next to the correct bars
+	t_textureIDs.clear();
+	m_graphicHandle->LoadTexture(L"BoostIcon.dds",t_texture);
+	t_textureIDs.push_back(t_texture);
+	m_graphicHandle->CreateHUDObject(DirectX::XMFLOAT2(-0.9,-0.8),DirectX::XMFLOAT2(0.035,0.035),t_textureIDs,t_boostIconHandle);
+	t_textureIDs.clear();
+	m_graphicHandle->LoadTexture(L"WallIcon.dds",t_texture);
+	t_textureIDs.push_back(t_texture);
+	m_graphicHandle->CreateHUDObject(DirectX::XMFLOAT2(-0.9,-0.9),DirectX::XMFLOAT2(0.035,0.035),t_textureIDs,t_wallIconHandle);
+	t_textureIDs.clear();
+	m_graphicHandle->LoadTexture(L"CooldownIcon.dds",t_texture);
+	t_textureIDs.push_back(t_texture);
+	m_graphicHandle->CreateHUDObject(DirectX::XMFLOAT2(-0.9,-0.7),DirectX::XMFLOAT2(0.035,0.035),t_textureIDs,t_coolDownIconHandle);
 
 	std::wstring t_countdownTexture;
 	t_countdownTexture = wstring(p_mapName.begin(),p_mapName.end());
@@ -549,6 +577,14 @@ void GameScreen::CreatePlayerHUDs(int p_numberOfPlayers, int p_color[4], std::st
 	//for the ability cooldown. nr 7
 	t_hudParts.push_back(t_coolDownHandle);
 	t_barOffsets.push_back(DirectX::XMFLOAT2(1,0));
+
+	//for the icons. 8,9,10
+	t_hudParts.push_back(t_boostIconHandle);
+	t_barOffsets.push_back(DirectX::XMFLOAT2(0,0));
+	t_hudParts.push_back(t_wallIconHandle);
+	t_barOffsets.push_back(DirectX::XMFLOAT2(0,0));
+	t_hudParts.push_back(t_coolDownIconHandle);
+	t_barOffsets.push_back(DirectX::XMFLOAT2(0,0));
 
 	m_graphicHandle->CreateHudTemplate(t_hudParts,t_templateHandle);
 
