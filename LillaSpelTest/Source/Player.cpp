@@ -84,7 +84,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_deceleration = 7;
 	m_break = 20;//static break force
 	m_breakCoefficient = 1;//coefficient that breaks depending on your current speed
-	m_minSpeed = 3;
+	m_minSpeed = 7;
 	m_boostFromPad = 5000;//testValue
 	m_megaBoostDecelerationCoefficient = 1.5;//used for when you're going stupidly fast (usually as a consequence of boostFromPad
 
@@ -304,6 +304,8 @@ void Player::Acceleration(float p_dt)
 			m_speed -= p_dt*m_deceleration;
 		}
 	}
+	if(m_currentUserCmd.xButtonPressed)
+		m_speed += p_dt*m_boostAcceleration*2;
 	if(m_finishProgress>=1)
 		m_speed=0;
 }
@@ -415,7 +417,8 @@ void Player::UpdateCollisionBox()
 
 int Player::WallPlacement(float p_dt)
 {
-
+	if(m_wallMeter>m_maxWalls+1)
+		m_wallMeter = m_maxWalls+1;
 	//if the players wants to poop out walls
 	if (m_currentUserCmd.leftTriggerPressed && m_coolDown <= 0 && m_wallMeter >= 1)
 	{
@@ -430,7 +433,8 @@ int Player::WallPlacement(float p_dt)
 	{
 		m_wallMeter = m_maxWalls;
 		m_wallMeter -= 1;
-		//m_coolDown = m_maxCooldown;
+
+		m_coolDown = m_maxCooldown;
 
 		PlaceWall();
 		return  1;
@@ -445,7 +449,14 @@ void Player::UpdateTimers(float p_dt)
 	m_coolDown -= p_dt;
 	m_immortalTimer -= p_dt;
 	if (m_immortalTimer < 0&&m_state==IMMORTAL&&!m_gravityShifting&&!m_hasWon)
+	{
 		m_state = NORMAL;
+		if(m_wallMeter > m_maxWalls+1)
+		{
+			m_wallMeter = m_maxWalls+1;
+		}
+		m_coolDown = m_maxCooldown;
+	}
 	m_deathTimer -= p_dt;
 	if (m_gravityShifting)
 		m_gravityShiftProgress += p_dt*m_gravityShiftSpeed;
@@ -597,10 +608,25 @@ void Player::UpdateWorldMatrix()
 	XMMATRIX t_directionRotationMatrixUp;
 
 	//rotate along new up vector
-	if(m_state !=FINISHING)
-		t_directionRotationMatrixUp = XMMatrixRotationAxis(t_vehicleUpVector, m_currentAngle * 20 * (3.1415/(m_speed+1)));//Gives a bad value during countdown				//////////////////////////MAKE SURE YOU CHANGE THIS HARDCODED 10 CRAP////////////////
+	//if(m_state !=FINISHING)
+	//	t_directionRotationMatrixUp = XMMatrixRotationAxis(t_vehicleUpVector, m_currentAngle * 20 * (3.1415/(m_speed+1)));//Gives a bad value during countdown				//////////////////////////MAKE SURE YOU CHANGE THIS HARDCODED 10 CRAP////////////////
+	//else
+	//	t_directionRotationMatrixUp = XMMatrixRotationAxis(t_vehicleUpVector, m_currentAngle * 20 * (3.1415/(m_finishSpeed+1))+t_finishRotation);
+
+	///////////////////////NEW STUFF//////////////
+	float t_turnCoefficient = 0;
+	if(m_speed > m_maxBoostSpeed)
+		t_turnCoefficient = 0;
 	else
-		t_directionRotationMatrixUp = XMMatrixRotationAxis(t_vehicleUpVector, m_currentAngle * 20 * (3.1415/(m_finishSpeed+1))+t_finishRotation);
+		t_turnCoefficient = (m_maxBoostSpeed-m_speed)/m_maxBoostSpeed;
+
+
+
+	if(m_state !=FINISHING)
+		t_directionRotationMatrixUp = XMMatrixRotationAxis(t_vehicleUpVector, m_currentAngle*20*sin((3.1415/2)*t_turnCoefficient));//Gives a bad value during countdown				//////////////////////////MAKE SURE YOU CHANGE THIS HARDCODED 10 CRAP////////////////
+	else
+		t_directionRotationMatrixUp = XMMatrixRotationAxis(t_vehicleUpVector, m_currentAngle*20+t_finishRotation);
+	/////////////////////NEW STUFF ENDS///////////////
 
 	t_vehicleTargetVector = XMVector3Transform(t_vehicleTargetVector, t_directionRotationMatrixUp);
 	t_vehicleTargetVector = XMVector3Normalize(t_vehicleTargetVector);
