@@ -974,6 +974,10 @@ void Player::SetPlayerBoost(float p_boost)
 void Player::IncreaseBoost(int p_nrOfWallsClose, float p_dt)
 {
 	m_boostMeter += p_nrOfWallsClose*p_dt*m_boostGain*(m_racePos-1);
+	if (m_boostMeter > m_maxBoost)
+	{
+		m_boostMeter = m_maxBoost;
+	}
 }
 
 void Player::SetFinalDirection()
