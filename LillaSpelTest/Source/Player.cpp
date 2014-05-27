@@ -77,7 +77,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_boostGain = 1.5;//prolly not gonna be used
 
 	m_maxSpeed = 25;
-	m_maxBoostSpeed = 600;
+	m_maxBoostSpeed = 50;
 
 	m_acceleration = 10;
 	m_boostAcceleration = 30;
@@ -91,7 +91,7 @@ Player::Player(MapNode* p_startNode, float p_startAngle, int p_playerIndex)
 	m_starUpSpamSpeed=7;
 
 	//how quickly you rotate
-	m_rotateSpeed = 0.2/pow(m_radius, 0.8);
+	m_rotateSpeed = 0.20/pow(m_radius, 0.8);
 	m_dampShipRotation = 0.03;
 
 	//wall stuff
