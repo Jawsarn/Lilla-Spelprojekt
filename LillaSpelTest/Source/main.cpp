@@ -69,7 +69,7 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	m_levelNames.push_back("Levels/Assault");
 	t_levelMultipleLaps.push_back(false);
 	m_levelNames.push_back("Levels/Dust2");
-	t_levelMultipleLaps.push_back(false);
+	t_levelMultipleLaps.push_back(true);
 	m_levelNames.push_back("Levels/Aztec");
 	t_levelMultipleLaps.push_back(false);
 	m_levelNames.push_back("Levels/Aztec2");

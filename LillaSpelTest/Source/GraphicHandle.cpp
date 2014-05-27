@@ -76,16 +76,16 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 
 	//	XMMATRIX t_Rot = XMMatrixRotationY(XM_PIDIV2*i);
 	XMMATRIX t_Tempura = XMMatrixTranslation(0,-1,m_BigCircleOffset);
-	CreateDrawObject(m_MeshPillar[0],t_Tempura,XMFLOAT3(1,1,1),m_Pillar[0],true);
+	CreateDrawObject(m_MeshPillar[0],t_Tempura,XMFLOAT3(1,1,1),m_Pillar[0],true,false);
 	
 	t_Tempura = XMMatrixTranslation(0,-1,-m_BigCircleOffset);
-	CreateDrawObject(m_MeshPillar[0],t_Tempura,XMFLOAT3(1,1,1),m_Pillar[1],true);
+	CreateDrawObject(m_MeshPillar[0],t_Tempura,XMFLOAT3(1,1,1),m_Pillar[1],true,false);
 	
 	t_Tempura = XMMatrixTranslation(m_BigCircleOffset,-1,0);
-	CreateDrawObject(m_MeshPillar[0],t_Tempura,XMFLOAT3(1,1,1),m_Pillar[2],true);
+	CreateDrawObject(m_MeshPillar[0],t_Tempura,XMFLOAT3(1,1,1),m_Pillar[2],true,false);
 	
 	t_Tempura = XMMatrixTranslation(-m_BigCircleOffset,-1,0);
-	CreateDrawObject(m_MeshPillar[0],t_Tempura,XMFLOAT3(1,1,1),m_Pillar[3],true);
+	CreateDrawObject(m_MeshPillar[0],t_Tempura,XMFLOAT3(1,1,1),m_Pillar[3],true,false);
 	//	t_Tempura = XMMatrixMultiply(t_Rot,t_Tempura);
 	
 	
@@ -527,7 +527,7 @@ void GraphicHandle::CreateShipForGame(std::vector<XMFLOAT4X4> p_PlayerWorld)
 			XMMATRIX t_Tempus = XMMatrixIdentity();
 			//big ones
 
-			m_GraphicEngine->CreateParticleSystem( 0, L"ParticleEngineTail.dds",t_InitParticleID1, 1000, m_Colours[m_PlayerColour[i]], 0.05f, t_ParStru.ParticlePosSize[j].w*5, 1.0f,XMFLOAT2( t_ParStru.ParticlePosSize[j].w, 0.5f ), 0.0f, 1.0f, t_Offsets, t_Tempus,t_ParticleSystemID );
+			m_GraphicEngine->CreateParticleSystem( 0, L"ParticleEngineTail.dds",t_InitParticleID1, 1000, m_Colours[m_PlayerColour[i]], 0.05f, t_ParStru.ParticlePosSize[j].w*8.0f, 1.0f,XMFLOAT2( t_ParStru.ParticlePosSize[j].w, 0.5f ), 0.0f, 1.0f, t_Offsets, t_Tempus,t_ParticleSystemID );
 			m_GraphicEngine->AddObjectParticleSystem(m_Player[i], t_ParticleSystemID);
 
 		}
