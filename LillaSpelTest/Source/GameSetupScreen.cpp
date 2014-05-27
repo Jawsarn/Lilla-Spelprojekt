@@ -100,6 +100,7 @@ void GameSetupScreen::Initialize()
 	m_graphicHandle->ChangeLevelSelection(currentMap);
 	m_graphicHandle->ChangeHudObjectTexture(m_hudHandle,0,currentMap);
 	m_numberOfLaps = 1;
+	m_graphicHandle->ChangeHudObjectTexture(m_hudHandle,1,m_numberOfLaps-1);
 	MenuScreen::Initialize();
 }
 
