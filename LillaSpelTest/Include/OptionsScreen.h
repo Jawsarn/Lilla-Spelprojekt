@@ -11,6 +11,7 @@ private:
 	float m_volume;
 	DirectX::XMFLOAT2 m_resolution;
 	unsigned int m_hudHandle;
+	unsigned int m_controllerMappingHandle;
 	bool m_fullScreen;
 	unsigned int m_volumeSlideHandle;
 private:

@@ -11,18 +11,25 @@ OptionsScreen::OptionsScreen(GameInfo* p_gameInfo, GraphicHandle* p_graphicsHand
 	m_volume = m_audioManager->GetMasterVolume();
 
 	AddButton("Volume", DirectX::XMFLOAT2(0,0.6),0.5,1, L"Volume1.dds",L"Volume2.dds");
-	AddButton("Resolution", DirectX::XMFLOAT2(0,0.2),0.5,1,L"Resolution1.dds",L"Resolution2.dds");
+	AddButton("Controls", DirectX::XMFLOAT2(0,0.2),0.5,1,L"controls1.dds",L"controls2.dds");
 	AddButton("Full screen",DirectX::XMFLOAT2(0,-0.2),0.5,1,L"fullScreen1.dds",L"FullScreen2.dds");
 	AddButton("Back", DirectX::XMFLOAT2(0,-0.6),0.5,0.2,L"Back1.dds",L"Back2.dds");
-	std::vector<UINT> t_volumeSlideTextures;
-	UINT t_volumeSlideTexture;
-	UINT t_volumeSlideHandle;
-	m_graphicHandle->LoadTexture(L"VolumeSlide.dds",t_volumeSlideTexture);
-	t_volumeSlideTextures.push_back(t_volumeSlideTexture);
-	m_graphicHandle->CreateHUDObject(DirectX::XMFLOAT2(0,0.85),DirectX::XMFLOAT2(0.5,0.07),t_volumeSlideTextures,t_volumeSlideHandle);
-
-
 	FixButtonPointers();
+	std::vector<UINT> t_textures;
+	UINT t_texture;
+	UINT t_volumeSlideHandle;
+	m_graphicHandle->LoadTexture(L"VolumeSlide.dds",t_texture);
+	t_textures.push_back(t_texture);
+	m_graphicHandle->CreateHUDObject(DirectX::XMFLOAT2(0,0.85),DirectX::XMFLOAT2(0.5,0.07),t_textures,t_volumeSlideHandle);
+	t_textures.clear();
+	m_graphicHandle->LoadTexture(L"Nothing.dds", t_texture);
+	t_textures.push_back(t_texture);
+	m_graphicHandle->LoadTexture(L"ControllerMapping.dds", t_texture);
+	t_textures.push_back(t_texture);
+	m_graphicHandle->CreateHUDObject(DirectX::XMFLOAT2(0,0),DirectX::XMFLOAT2(1,1),t_textures,m_controllerMappingHandle);
+
+	
+	
 	//MakeHud(m_hudHandle);
 
 	std::vector<unsigned int> t_buttonHandles;
@@ -37,6 +44,9 @@ OptionsScreen::OptionsScreen(GameInfo* p_gameInfo, GraphicHandle* p_graphicsHand
 	t_buttonHandles.push_back(t_volumeSlideHandle);
 	t_barOffsets.push_back(DirectX::XMFLOAT2(1-m_volume,0));
 	m_volumeSlideHandle = t_barOffsets.size() - 1;
+	t_buttonHandles.push_back(m_controllerMappingHandle);
+	t_barOffsets.push_back(DirectX::XMFLOAT2(0,0));
+	m_controllerMappingHandle = t_barOffsets.size() - 1;
 
 	unsigned int t_templateHandle;
 	m_graphicHandle->CreateHudTemplate(t_buttonHandles,t_templateHandle);
@@ -63,10 +73,6 @@ int OptionsScreen::Update(float p_dt,std::vector<UserCMD>* userCMD )
 	{
 		AlterVolume(userCMD->at(0));
 	}
-	else if (t_menuChoice == "Resolution")
-	{
-
-	}
 	else if (t_menuChoice == "Back" || userCMD->at(0).backButtonPressed)
 	{
 		return MAIN_MENU_SCREEN;
@@ -84,6 +90,14 @@ int OptionsScreen::Update(float p_dt,std::vector<UserCMD>* userCMD )
 			m_fullScreen = true;
 		}
 		
+	}
+	if (currentButton->buttonName == "Controls" && userCMD->at(0).aButtonPressed)
+	{
+		m_graphicHandle->ChangeHudObjectTexture(m_hudHandle,m_controllerMappingHandle,1);
+	}
+	else
+	{
+		m_graphicHandle->ChangeHudObjectTexture(m_hudHandle,m_controllerMappingHandle,0);
 	}
 
 	return OPTIONS_SCREEN;
