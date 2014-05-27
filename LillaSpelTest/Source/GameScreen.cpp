@@ -269,8 +269,8 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 		int t_doneFinishing = 0;
 		for (int i = 0; i< m_players.size();i++)
 		{
-			if(m_players[i]->DoneFinishing());
-			t_doneFinishing++;
+			if(m_players[i]->DoneFinishing())
+				t_doneFinishing++;
 		}
 		if(t_doneFinishing>=m_players.size())
 			return GOAL_SCREEN;
