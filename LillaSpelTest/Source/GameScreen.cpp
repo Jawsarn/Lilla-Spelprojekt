@@ -61,7 +61,10 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4],string p_tauntSound[
 	m_preUpdateCountdown = 0;
 	PlaySounds();
 	CreatePlayerHUDs(p_numberOfPlayers,p_color, p_mapName);
-	m_immortalCounter = 0;
+	for (int i = 0; i < 4; i++)
+	{
+		m_immortalCounter[i]=0;
+	}
 
 	//calculate total length of map
 	for (int i = 0; i< m_mapNodes->size();i++)
@@ -113,6 +116,7 @@ void GameScreen::Initialize()
 		m_graphicHandle->UseHud(i,m_hudID[i]);
 	}
 	PlaySounds();
+
 }
 
 void GameScreen::PreUpdate(float p_dt, std::vector<UserCMD>* p_userCMDS, int p_Player)
@@ -206,20 +210,20 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 		}
 
 		//collision
-		if (m_players[i]->GetImmortal() && m_players[i]->GetImmortalTimer()>0)
+		if ((m_players[i]->GetImmortal() && m_players[i]->GetImmortalTimer()>0)||m_players[i]->IsGravityShifting())
 		{
-			if (m_immortalCounter>m_players[i]->GetMaxImmortalTimer())
+			if (m_immortalCounter[i]>m_players[i]->GetMaxImmortalTimer())
 			{
-				m_immortalCounter = 0;
+				m_immortalCounter[i] = 0;
 			}
-			m_immortalCounter+=p_dt;
+			m_immortalCounter[i]+=p_dt;
 
-			if(cos(m_immortalCounter*m_immortalCounter*4)>0&&m_players[i]->GetDrawn())
+			if(cos(m_immortalCounter[i]*m_immortalCounter[i]*4)>0&&m_players[i]->GetDrawn())
 			{
 				m_graphicHandle->RemoveDrawPlayer(i);
 				m_players[i]->SetDrawn(false);
 			}
-			else if(cos(m_immortalCounter*m_immortalCounter*4)<0&&!m_players[i]->GetDrawn())
+			else if(cos(m_immortalCounter[i]*m_immortalCounter[i]*4)<0&&!m_players[i]->GetDrawn())
 			{
 				m_graphicHandle->AddDrawPlayer(i);
 				m_players[i]->SetDrawn(true);

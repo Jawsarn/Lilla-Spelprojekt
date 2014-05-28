@@ -29,7 +29,7 @@ private:
 	int m_nrOfFinishedPlayers;
 	float m_mapTotalDistance;
 	GameScreenState m_state;
-	float m_immortalCounter;
+	float m_immortalCounter[4];
 public:
 	GameScreen(void);
 	int GetPauseDudeIndex();
