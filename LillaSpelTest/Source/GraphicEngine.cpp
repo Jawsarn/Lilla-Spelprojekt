@@ -1903,7 +1903,9 @@ void GraphicEngine::DrawHud()
 				m_DeviceContext->UpdateSubresource(m_HudConstantBuffer, 0, nullptr, &t_Hcb, 0, 0 );
 
 				//update texture and buffer and other stuff to constant buffer
-				UINT textureID = t_CurHudObject.textures[m_Huds[m_ViewportHud[j]]->activeTexture[i]];
+
+				UINT t_Tempos = m_Huds[m_ViewportHud[j]]->activeTexture[i];
+				UINT textureID = t_CurHudObject.textures[t_Tempos];
 
 
 				//set texture

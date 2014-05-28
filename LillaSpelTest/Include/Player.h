@@ -155,6 +155,7 @@ private:
 	float m_vehicleHoverDistance;
 	float m_usedAbilityMaxCoolDown;
 
+
 	//unused but perhaps needed stuff
 	XMFLOAT3 m_color;
 	PlayerState m_state;
@@ -207,6 +208,7 @@ public:
 	int CurrentLap();
 	float GetImmortalTimer();
 	bool DoneFinishing();
+	bool IsGravityShifting();
 
 
 	//modifiers

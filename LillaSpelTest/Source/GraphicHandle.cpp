@@ -77,16 +77,16 @@ void GraphicHandle::Initialize(UINT p_Width, UINT p_Height, HWND p_Handle, std::
 
 	//	XMMATRIX t_Rot = XMMatrixRotationY(XM_PIDIV2*i);
 	XMMATRIX t_Tempura = XMMatrixTranslation(0,-1,m_BigCircleOffset);
-	CreateDrawObject(m_MeshPillar[0],t_Tempura,XMFLOAT3(1,1,1),m_Pillar[0],true,false);
+	CreateDrawObject(m_MeshPillar[0],t_Tempura,XMFLOAT3(1,1,1),m_Pillar[0],false,false);
 	
 	t_Tempura = XMMatrixTranslation(0,-1,-m_BigCircleOffset);
-	CreateDrawObject(m_MeshPillar[0],t_Tempura,XMFLOAT3(1,1,1),m_Pillar[1],true,false);
+	CreateDrawObject(m_MeshPillar[0],t_Tempura,XMFLOAT3(1,1,1),m_Pillar[1],false,false);
 	
 	t_Tempura = XMMatrixTranslation(m_BigCircleOffset,-1,0);
-	CreateDrawObject(m_MeshPillar[0],t_Tempura,XMFLOAT3(1,1,1),m_Pillar[2],true,false);
+	CreateDrawObject(m_MeshPillar[0],t_Tempura,XMFLOAT3(1,1,1),m_Pillar[2],false,false);
 	
 	t_Tempura = XMMatrixTranslation(-m_BigCircleOffset,-1,0);
-	CreateDrawObject(m_MeshPillar[0],t_Tempura,XMFLOAT3(1,1,1),m_Pillar[3],true,false);
+	CreateDrawObject(m_MeshPillar[0],t_Tempura,XMFLOAT3(1,1,1),m_Pillar[3],false,false);
 	//	t_Tempura = XMMatrixMultiply(t_Rot,t_Tempura);
 	
 	
@@ -570,6 +570,7 @@ void GraphicHandle::SelectVehicle()
 			//XMStoreFloat4x4(&t_Tempus, t_OffSetTheCircleMat);
 			//m_SelectionShipMatrix[k].push_back(t_Tempus);
 		}
+		
 
 	}
 
@@ -781,8 +782,15 @@ void GraphicHandle::AddSelectionDraw()
 			m_GraphicEngine->AddObjectToDrawing(m_SelectionShips[k][i]);
 		}
 		m_GraphicEngine->AddObjectToDrawing(m_Pillar[k]);
-	}
 
+		
+	}
+	UINT t_LightID;
+	float t_bajs = 1.0f;
+	m_GraphicEngine->CreateStaticLight(XMFLOAT3(0,1,m_BigCircleOffset+m_CircleOffset+t_bajs),XMFLOAT3(1,1,1),30,t_LightID);
+	m_GraphicEngine->CreateStaticLight(XMFLOAT3(0,1,-m_BigCircleOffset-m_CircleOffset-t_bajs),XMFLOAT3(1,1,1),30,t_LightID);
+	m_GraphicEngine->CreateStaticLight(XMFLOAT3(m_BigCircleOffset+m_CircleOffset+t_bajs,1,0),XMFLOAT3(1,1,1),30,t_LightID);
+	m_GraphicEngine->CreateStaticLight(XMFLOAT3(-m_BigCircleOffset-m_CircleOffset-t_bajs,1,0),XMFLOAT3(1,1,1),30,t_LightID);
 }
 void GraphicHandle::LoadTexture(const wchar_t* p_FileName, UINT &o_TextureID)
 {

@@ -954,6 +954,11 @@ bool Player::DoneFinishing()
 	return m_finishProgress>=1;
 }
 
+bool Player::IsGravityShifting()
+{
+	return m_gravityShiftProgress>0;
+}
+
 //Modifiers
 void Player::Die()
 {

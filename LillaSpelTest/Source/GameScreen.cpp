@@ -31,7 +31,7 @@ GameScreen::GameScreen(int p_color[4], int p_whatVehicle[4],string p_tauntSound[
 	vector<XMFLOAT3> t_centerSplinePositions = m_mapLoader->LoadLogicalObj(p_mapName+"/CenterSpline.obj").at(0);
 	m_graphicHandle->CreateMapLights(t_centerSplinePositions);
 
-	m_lastNodeIndex = m_mapNodes->at(m_mapNodes->size()-15)->m_Index;
+	m_lastNodeIndex = m_mapNodes->at(m_mapNodes->size()-1)->m_Index;
 	vector<XMFLOAT4X4> t_shipWorldMatrices;
 	vector<UINT> t_colors;
 	vector<UINT> t_whichVehicles;
@@ -175,22 +175,24 @@ int GameScreen::Update(float p_dt, std::vector<UserCMD>* p_userCMDS)
 		}
 
 		// next lap/win check
-		if (m_lastNodeIndex == m_players[i]->GetCurrentMapNode()->m_Index&&!m_players[i]->HasFinished())
+		if(m_players[i]->CurrentLap() >= m_nrOfLaps&&!m_players[i]->HasFinished())
 		{
-			if(m_players[i]->CurrentLap() >= m_nrOfLaps)
+
+			m_graphicHandle->ChangeHudObjectTexture(m_hudID[i],0,m_nrOfFinishedPlayers);
+			if (!m_players[i]->IsGravityShifting())
 			{
-
 				m_nrOfFinishedPlayers++;
-				m_graphicHandle->ChangeHudObjectTexture(m_hudID[i],0,m_nrOfFinishedPlayers - 1);
 				m_players[i]->Finish();
-				m_audioManager->RemoveSpecificSound(m_engineSound[i]);
-
-
-				t_finished++;
 			}
-			else if(m_players[i]->ChangedNode())
-				m_players[i]->NextLap();
+
+			m_audioManager->RemoveSpecificSound(m_engineSound[i]);
+
+
+			t_finished++;
 		}
+		else if(m_players[i]->ChangedNode()&&m_lastNodeIndex == m_players[i]->GetCurrentMapNode()->m_Index&&!m_players[i]->HasFinished())
+			m_players[i]->NextLap();
+
 		if (m_vibrationTimer[i] > 0)
 		{
 			UpdateVibration(p_dt,i,p_userCMDS->at(i));
@@ -383,7 +385,8 @@ void GameScreen::DrawPlayerHUD(int p_player)
 
 	if (m_players[p_player]->CurrentLap() < m_nrOfLaps && !m_players[p_player]->HasFinished())
 	{
-		m_graphicHandle->ChangeHudObjectTexture(m_hudID[p_player],4,m_players[p_player]->CurrentLap()-1);
+		int t_laps = m_players[p_player]->CurrentLap()-1 >= m_nrOfLaps - 1 ? m_nrOfLaps - 2 : m_players[p_player]->CurrentLap()-1;
+		m_graphicHandle->ChangeHudObjectTexture(m_hudID[p_player],4,t_laps);
 		m_graphicHandle->ChangeHudObjectTexture(m_hudID[p_player],0,m_players[p_player]->GetRacePosition()-1);
 	}
 	m_graphicHandle->UpdateHudBarOffset(m_hudID[p_player],1,DirectX::XMFLOAT2(m_players[p_player]->GetHudBoosterInfo(),0));
