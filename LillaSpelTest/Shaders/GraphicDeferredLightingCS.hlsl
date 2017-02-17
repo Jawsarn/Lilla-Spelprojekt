@@ -1,6 +1,6 @@
 //#include "GraphicShaderHelper.fx"
 
-cbuffer PerFrameBuffer : register(c0)
+cbuffer PerFrameBuffer : register(b0)
 {
 	matrix View[4];
 	matrix Projection[4];
@@ -9,7 +9,7 @@ cbuffer PerFrameBuffer : register(c0)
 	float NumberOfViewports;
 }
 
-cbuffer PerComputeBuffer : register(c1)
+cbuffer PerComputeBuffer : register(b1)
 {
 	float2 screenDimensions;
 	float2 camNearFar;

@@ -1,13 +1,13 @@
 
 
-cbuffer PerObjectBuffer	:register(c0)
+cbuffer PerObjectBuffer	:register(b0)
 {
 	matrix World;
 	float3 Color;
 	float typeOfObject; //with types of textures etc
 }
 
-cbuffer PerFrameBuffer :register(c1)
+cbuffer PerFrameBuffer :register(b1)
 {
 	matrix View[4];
 	matrix Projection[4];

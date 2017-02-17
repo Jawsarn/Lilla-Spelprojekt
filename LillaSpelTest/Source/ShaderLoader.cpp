@@ -92,12 +92,23 @@ HRESULT ShaderLoader::CreateDomainShader(WCHAR* p_FileName, LPCSTR p_EntryPoint,
 	return hr;
 }
 
+
+#include <fstream>
+using namespace std;
 HRESULT ShaderLoader::CreateGeometryShader(WCHAR* p_FileName, LPCSTR p_EntryPoint, LPCSTR p_ShaderModel, ID3D11Device* p_Device, ID3D11GeometryShader** o_ShaderOut)
 {
 	HRESULT hr = S_OK;
 
 	// Compile the geometry shader
 	ID3DBlob* p_PSBlob = nullptr;
+
+    ofstream program3data;
+    program3data.open("RIGHTHEREYOUGIT.txt");
+    program3data.close();
+    std::ifstream infile("RIGHTHEREYOUGIT.txt");
+    std::ifstream infile2("GraphicNormalGS.hlsl");
+    FILE* f;
+    fopen_s(&f, "GraphicNormalGS.hlsl", "r");
 
 	hr = CompileShaderFromFile( p_FileName, p_EntryPoint, p_ShaderModel, &p_PSBlob );
     if( FAILED( hr ) )
@@ -210,7 +221,11 @@ HRESULT ShaderLoader::CompileShaderFromFile( WCHAR* p_FileName, LPCSTR p_EntryPo
     {
         if( t_ErrorBlob )
         {
-            OutputDebugStringA( reinterpret_cast<const char*>( t_ErrorBlob->GetBufferPointer() ) );
+            ofstream myfile;
+            myfile.open("SHITHAPPENED.txt");
+            myfile << (char*)t_ErrorBlob->GetBufferPointer();
+            myfile.close();
+            OutputDebugStringA((char*)( t_ErrorBlob->GetBufferPointer() ) );
             t_ErrorBlob->Release();
         }
         return hr;

@@ -1,5 +1,5 @@
 
-cbuffer HudConstantBuffer : register(c0)
+cbuffer HudConstantBuffer : register(b0)
 {
 	float3 color;
 	float activeViewport;

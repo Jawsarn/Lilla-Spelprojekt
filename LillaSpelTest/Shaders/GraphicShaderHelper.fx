@@ -1,6 +1,6 @@
 
 
-cbuffer PerFrameBuffer : register(c0)
+cbuffer PerFrameBuffer : register(b0)
 {
 	matrix View[4];
 	matrix Projection[4];
@@ -9,7 +9,7 @@ cbuffer PerFrameBuffer : register(c0)
 	float NumberOfViewports;
 }
 
-cbuffer PerObjectBuffer	:register(c1)
+cbuffer PerObjectBuffer	:register(b1)
 {
 	matrix World;
 	float3 Color;
